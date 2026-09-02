@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YoSoy222 — Velas Artesanales & Joyería</title>
+    <meta name="description" content="Velas artesanales hechas con amor y energías positivas. Joyería espiritual, collares y pulseras. Envíos a todo México.">
+    <meta name="keywords" content="velas artesanales, velas mágicas, velas de strass, joyería espiritual, collares, pulseras, México">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🕯️</text></svg>">
+</head>
+<body>
+
+    <!-- NAVBAR -->
+    <nav class="navbar">
+        <a href="#" class="nav-brand"><span>Yo</span>Soy222</a>
+        <button class="nav-toggle">☰</button>
+        <ul class="nav-links">
+            <li><a href="#inicio">Inicio</a></li>
+            <li><a href="#nosotros">Nosotros</a></li>
+            <li><a href="#catalogo">Catálogo</a></li>
+            <li><a href="#contacto">Contacto</a></li>
+        </ul>
+        <a href="https://wa.me/521XXXXXXXXXX?text=Hola!%20Me%20interesan%20sus%20productos%20🕯️" 
+           class="nav-whatsapp" target="_blank">
+            💬 WhatsApp
+        </a>
+    </nav>
+
+    <!-- HERO -->
+    <section class="hero" id="inicio">
+        <div class="hero-content">
+            <div class="hero-icon">🕯️</div>
+            <h1><span>Yo</span>Soy222</h1>
+            <p class="subtitle">Velas Artesanales & Joyería Espiritual</p>
+            <p class="tagline">
+                Creamos velas únicas hechas con amor, energías positivas y los mejores materiales. 
+                Cada pieza es una obra de arte que ilumina tu espacio y alimenta tu alma.
+            </p>
+            <div class="hero-buttons">
+                <a href="#catalogo" class="btn btn-primary">✨ Ver Catálogo</a>
+                <a href="https://wa.me/521XXXXXXXXXX?text=Hola!%20Me%20interesan%20sus%20velas%20artesanales%20🕯️" 
+                   class="btn btn-whatsapp" target="_blank">
+                    💬 Pedir por WhatsApp
+                </a>
+                <a href="#nosotros" class="btn btn-outline">Conocer más</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ABOUT -->
+    <section class="section about" id="nosotros">
+        <div class="about-grid">
+            <div class="about-text">
+                <h3>Hechas con <span style="color: var(--accent)">amor</span> y dedicación</h3>
+                <p>
+                    En YoSoy222 cada vela es una pieza única, elaborada artesanalmente con cera de primera calidad 
+                    y decorada con strass, piedras naturales y detalles que las hacen especiales.
+                </p>
+                <p>
+                    Nuestra misión es crear productos que no solo iluminen tu hogar, sino que también 
+                    eleven tu energía y connecten con tu espiritualidad.
+                </p>
+                <div class="about-features">
+                    <div class="feature">
+                        <span class="feature-icon">🎨</span>
+                        <div>
+                            <h4>100% Artesanal</h4>
+                            <p>Cada pieza hecha a mano</p>
+                        </div>
+                    </div>
+                    <div class="feature">
+                        <span class="feature-icon">✨</span>
+                        <div>
+                            <h4>Materiales Premium</h4>
+                            <p>Cera y strass de alta calidad</p>
+                        </div>
+                    </div>
+                    <div class="feature">
+                        <span class="feature-icon">🚚</span>
+                        <div>
+                            <h4>Envíos a México</h4>
+                            <p>Recibe en tu puerta</p>
+                        </div>
+                    </div>
+                    <div class="feature">
+                        <span class="feature-icon">💬</span>
+                        <div>
+                            <h4>Atención Personal</h4>
+                            <p>Pedidos personalizados</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="about-image">
+                <img src="images/catalog/Aura Rosa.jpg" alt="Vela artesanal Aura Rosa">
+                <div class="about-badge">
+                    <div class="number">97+</div>
+                    <div class="label">Productos</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FEATURED PRODUCTS -->
+    <section class="section" id="destacados">
+        <div class="section-header">
+            <h2>Productos <span>Destacados</span></h2>
+            <div class="section-divider"></div>
+            <p>Nuestras velas y joyas más populares</p>
+        </div>
+        <div class="featured">
+            <div class="products-grid" id="featured-grid"></div>
+        </div>
+        <div style="text-align: center; margin-top: 2.5rem;">
+            <a href="#catalogo" class="btn btn-primary">Ver todo el catálogo →</a>
+        </div>
+    </section>
+
+    <!-- FULL CATALOG -->
+    <section class="section" id="catalogo" style="background: white;">
+        <div class="section-header">
+            <h2>Catálogo <span>Completo</span></h2>
+            <div class="section-divider"></div>
+            <p>Explora todas nuestras creaciones</p>
+        </div>
+        
+        <div style="max-width: 1200px; margin: 0 auto;">
+            <div style="display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap; margin-bottom: 2rem;">
+                <button class="filter-btn active" data-filter="all">Todos</button>
+                <button class="filter-btn" data-filter="vela">🕯️ Velas</button>
+                <button class="filter-btn" data-filter="pulsera">📿 Pulseras</button>
+                <button class="filter-btn" data-filter="collar">🔗 Collares</button>
+                <button class="filter-btn" data-filter="otro">✨ Otros</button>
+            </div>
+            <div class="products-grid" id="catalog-grid"></div>
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="cta" id="contacto">
+        <h2>¿Te gustó algo? <span>Hablemos</span></h2>
+        <p>Escríbenos por WhatsApp y te atendemos al instante. También puedes hacer pedidos personalizados.</p>
+        <a href="https://wa.me/521XXXXXXXXXX?text=Hola!%20Me%20interesan%20sus%20productos%20🕯️" 
+           class="btn btn-whatsapp" target="_blank" style="font-size: 1.1rem; padding: 1rem 2.5rem;">
+            💬 Escribir por WhatsApp
+        </a>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <div class="footer-grid">
+            <div class="footer-brand">
+                <h3><span>Yo</span>Soy222</h3>
+                <p>Velas artesanales y joyería espiritual hechas con amor en México. Cada pieza única, cada detalle especial.</p>
+            </div>
+            <div class="footer-col">
+                <h4>Navegación</h4>
+                <ul>
+                    <li><a href="#inicio">Inicio</a></li>
+                    <li><a href="#nosotros">Nosotros</a></li>
+                    <li><a href="#catalogo">Catálogo</a></li>
+                    <li><a href="#contacto">Contacto</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Contacto</h4>
+                <ul>
+                    <li><a href="https://wa.me/521XXXXXXXXXX" target="_blank">💬 WhatsApp</a></li>
+                    <li><a href="https://instagram.com/yosoy222" target="_blank">📸 Instagram</a></li>
+                    <li><a href="https://facebook.com/yosoy222" target="_blank">📘 Facebook</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            © 2026 YoSoy222 — Velas Artesanales. Todos los derechos reservados.
+        </div>
+    </footer>
+
+    <!-- WHATSAPP FLOAT -->
+    <a href="#" class="whatsapp-float" title="Escríbenos por WhatsApp">💬</a>
+
+    <!-- LIGHTBOX -->
+    <div class="lightbox" id="lightbox">
+        <button class="lightbox-close" id="lb-close">✕</button>
+        <button class="lightbox-nav lightbox-prev" id="lb-prev">‹</button>
+        <button class="lightbox-nav lightbox-next" id="lb-next">›</button>
+        <img class="lightbox-img" id="lb-img" src="" alt="">
+        <div class="lightbox-info">
+            <h3 id="lb-name"></h3>
+            <p id="lb-meta"></p>
+        </div>
+        <a class="lightbox-whatsapp" id="lb-whatsapp" href="#" target="_blank">
+            💬 Preguntar por este producto
+        </a>
+        <p id="lb-counter" style="color: rgba(255,255,255,0.5); font-size: 0.8rem; margin-top: 0.5rem;"></p>
+    </div>
+
+    <script src="js/app.js"></script>
+</body>
+</html>
