@@ -9,70 +9,65 @@
   /* ----- Config ----- */
   const WHATSAPP = '584126481628';
 
-  /* ----- Product data (from catalog Excel) ----- */
+  /* ----- Product data (synced from Catalogo.xlsx) ----- */
   const products = [
-    // === VELAS MOLDES ===
-    { file: "Rosa .jpg", name: "Rosa", cat: "vela", price: 7, desc: "Vela artesanal de 79grs. en forma de Rosa" },
-    { file: "Mini Corazones.jpg", name: "Mini Corazones", cat: "vela", price: 0.17, desc: "Wax Melts 1grs. en forma de Mini corazón" },
-    { file: "Rosa Pequeña.jpg", name: "Rosa Pequeña", cat: "vela", price: 4.5, desc: "Vela artesanal de 23grs. en forma de Rosa pequeña" },
-    { file: "Mini Margarita.jpg", name: "Mini Margarita", cat: "vela", price: 1.7, desc: "Wax Melts 6grs. en forma de Mini Margarita" },
-    { file: "Margarita.jpg", name: "Margarita", cat: "vela", price: 3, desc: "Vela artesanal de 16grs. en forma de Margarita pequeña" },
-    { file: "Tulipan.jpg", name: "Tulipán", cat: "vela", price: 5, desc: "Vela artesanal de 33grs. en forma de Tulipan pequeña" },
-    { file: "Buquet .jpg", name: "Buquet Tulipán", cat: "vela", price: 8.5, desc: "Vela artesanal de 83grs. en forma de Buquet Tulipan" },
-    { file: "Espiral.jpg", name: "Espiral", cat: "vela", price: 9.5, desc: "Vela artesanal de 104grs. en forma de Espiral" },
-    { file: "Sagrada Familia.jpg", name: "Sagrada Familia", cat: "vela", price: 7, desc: "Vela artesanal de 75grs. en forma de Sagrada Familia" },
-    { file: "Buda.jpg", name: "Buda", cat: "vela", price: 6.5, desc: "Vela artesanal de 20grs. en forma de Buda" },
-    { file: "Hamsa .jpg", name: "Hamsa", cat: "vela", price: 8, desc: "Vela artesanal de 75grs. en forma de Mano Hamsa" },
-    { file: "Corazón .jpg", name: "Corazón", cat: "vela", price: 13.5, desc: "Vela artesanal de 182grs. en forma de Corazón" },
-    { file: "Cruz .jpg", name: "Cruz con Paloma", cat: "vela", price: 7, desc: "Vela artesanal de 52grs. en forma de Cruz con palomita" },
-    { file: "Cubo .jpg", name: "Cubo", cat: "vela", price: 7, desc: "Vela artesanal de 40grs. en forma de Cubo" },
-    { file: "Virgen del Carmen.jpg", name: "Virgen del Carmen", cat: "vela", price: 7, desc: "Vela artesanal de 42grs. en forma de Virgen del Carmen" },
-    { file: "Mini Girasol.jpg", name: "Mini Girasol", cat: "vela", price: 1.7, desc: "Wax Melts en forma de Mini Girasol" },
-    { file: "Estrella.jpg", name: "Estrella", cat: "vela", price: 7, desc: "Vela artesanal en forma de Estrella" },
-    { file: "Corazon Blanca.jpg", name: "Corazón Blanca", cat: "vela", price: 7, desc: "Vela artesanal en forma de Corazón Blanco" },
-    { file: "Mandala.jpg", name: "Mandala", cat: "vela", price: 9, desc: "Vela artesanal de 98grs. en envase de metal decorativo" },
-    { file: "Vintage.jpg", name: "Vintage", cat: "vela", price: 9.5, desc: "Vela artesanal de 165grs. en envase de vidrio transparente" },
+    // === VELAS MOLDES (sheet: Velas Moldes) ===
+    { file: "Rosa .jpg", name: "Rosa", cat: "vela", price: 7, desc: "Vela artesanal de 79grs. en forma de Rosa, Elaborada con Cera de Soja en blanco, rosa claro, rosa oscuro. Aroma Coco, Lavanda, Jazmin." },
+    { file: "Mini Corazones.jpg", name: "Mini Corazones", cat: "vela", price: 0.17, desc: "Vela artesanal de 1grs. en forma de Mini corazón, Elaborada con Cera de Soja en blanco, rosa, rojo. Aroma Coco, Jazmin." },
+    { file: "Rosa Pequeña.jpg", name: "Rosa Pequeña", cat: "vela", price: 4.5, desc: "Vela artesanal de 23grs. en forma de Rosa pequeña presentada en palito decorativo. Elaborada con cera de soja en blanco, rosa, amarillo rosa claro. Aroma: Coco Vainilla." },
+    { file: "Mini Margarita.jpg", name: "Mini Margarita", cat: "vela", price: 1.7, desc: "Wax Melts 6grs. en forma de Mini Margarita. Elaborada con cera de soja en blanco, rosa, amarillo rosa claro. Aroma: Coco Vainilla, Canela." },
+    { file: "Margarita.jpg", name: "Margarita Pequeña", cat: "vela", price: 3, desc: "Vela artesanal de 16grs. en forma de Margarita pequeña presentada en palito decorativo. Elaborada con cera de soja en blanco, rosa, amarillo rosa claro. Aroma: Coco Vainilla." },
+    { file: "Tulipan.jpg", name: "Tulipán Pequeña", cat: "vela", price: 5, desc: "Vela artesanal de 33grs. en forma de Tulipan pequeña presentada en palito decorativo. Elaborada con cera de soja en blanco, rosa, amarillo rosa claro. Aroma: Coco Vainilla, Jazmin." },
+    { file: "Buquet .jpg", name: "Bouquet Tulipán", cat: "vela", price: 8.5, desc: "Vela artesanal de 83grs. en forma de Buquet Tulipan. Elaborada con cera de soja en blanco, rojo, amarillo, rosa claro. Aroma: Lavanda, Café." },
+    { file: "Espiral.jpg", name: "Espiral", cat: "vela", price: 9.5, desc: "Vela artesanal de 104grs. en forma de Espiral. Elaborada con cera de soja en blanco, verde, amarillo, azul. Aroma: Lavanda, Jazmin." },
+    { file: "Sagrada Familia.jpg", name: "Sagrada Familia", cat: "vela", price: 7, desc: "Vela artesanal de 75grs. en forma de Sagrada Familia. Elaborada con cera de soja en blanco, verde, amarillo, azul, rosa. Aroma: Lavanda, Jazmin, Coco Vainilla." },
+    { file: "Buda.jpg", name: "Buda", cat: "vela", price: 6.5, desc: "Vela artesanal de 20grs. en forma de Buda. Elaborada con cera de soja en blanco, verde, amarillo, azul, rosa, Beige. Aroma: Lavanda, Coco Vainilla." },
+    { file: "Hamsa .jpg", name: "Mano Hamsa", cat: "vela", price: 8, desc: "Vela artesanal de 75grs. en forma de Mano Hamsa. Elaborada con cera de soja en blanco, verde, rosa, beige. Aroma: Coco Vainilla, Canela." },
+    { file: "Corazón .jpg", name: "Corazón", cat: "vela", price: 13.5, desc: "Vela artesanal de 182grs. en forma de Corazón. Elaborada con cera de soja en blanco, rosa, rojo. Aroma: Coco Vainilla, Lavanda, Limon Fresh." },
+    { file: "Cruz .jpg", name: "Cruz con Paloma", cat: "vela", price: 7, desc: "Vela artesanal de 52grs. en forma de Cruz con palomita. Elaborada con cera de soja en blanco con rosa, amarillo, azul. Aroma: Coco Vainilla, Jazmin." },
+    { file: "Cubo .jpg", name: "Cubo", cat: "vela", price: 7, desc: "Vela artesanal de 40grs. en forma de Cubo. Elaborada con cera de soja en blanco, amarillo, azul, rosa. Aroma: Coco Vainilla, Canela." },
+    { file: "Virgen del Carmen.jpg", name: "Virgen del Carmen", cat: "vela", price: 7, desc: "Vela artesanal de 42grs. en forma de Virgen del Carmen. Elaborada con cera de soja en blanco, amarillo, azul, rosa. Aroma: Coco Vainilla, Canela." },
 
-    // === VELAS ENVASES ===
-    { file: "PETIT.jpg", name: "Petit", cat: "vela", price: 11, desc: "Vela artesanal de 171grs. en envase de vidrio transparente" },
-    { file: "Estrella1.jpg", name: "Estrella Envase", cat: "vela", price: 12, desc: "Vela artesanal de 285grs. en envase de vidrio transparente" },
-    { file: "Aura Rosa.jpg", name: "Aura Rosa", cat: "vela", price: 17, desc: "Vela artesanal de 342grs. en envase de vidrio transparente" },
-    { file: "Aura Tulipan.jpg", name: "Aura Tulipán", cat: "vela", price: 17, desc: "Vela artesanal de 335grs. en envase de vidrio transparente" },
-    { file: "Aura Corazón.jpg", name: "Aura Corazón", cat: "vela", price: 20, desc: "Vela artesanal de 418grs. en envase de vidrio transparente" },
-    { file: "Armonia.jpg", name: "Armonía Canela", cat: "vela", price: 22, desc: "Vela artesanal de 508grs. en envase de vidrio opaco" },
-    { file: "Vela Rosa.jpg", name: "Vela Rosa", cat: "vela", price: 85, desc: "Vela artesanal premium en forma de Rosa" },
-    { file: "Vela Canela.jpg", name: "Vela Canela", cat: "vela", price: 85, desc: "Vela artesanal premium de canela" },
-    { file: "Vela Estrellas.jpg", name: "Vela Estrellas", cat: "vela", price: 85, desc: "Vela artesanal premium con forma de estrellas" },
-    { file: "Vela Tulipan.jpg", name: "Vela Tulipán", cat: "vela", price: 85, desc: "Vela artesanal premium en forma de Tulipán" },
-    { file: "Velita Corazoncito.jpg", name: "Velita Corazoncito", cat: "vela", price: 75, desc: "Vela artesanal en forma de corazoncito" },
-    { file: "Sagrada Familia 1.jpg", name: "Sagrada Familia 1", cat: "vela", price: 7, desc: "Vela artesanal en forma de Sagrada Familia" },
+    // === VELAS ENVASES (sheet: Velas Envases) ===
+    { file: "Mini Petit.jpg", name: "Mini Petit", cat: "vela", price: 7.5, desc: "Vela artesanal de 123grs. Elaborado en envase de vidrio transparente, con tapa metalica dorada. Contiene una base de cera de soja blanca. Aroma: Coco Vainilla." },
+    { file: "Mandala.jpg", name: "Mandala", cat: "vela", price: 9, desc: "Vela artesanal de 98grs. Elaborada en envase de metal decorativo. Contiene cera blanca. Aroma: limón Fresh." },
+    { file: "Vintage.jpg", name: "Vintage", cat: "vela", price: 9.5, desc: "Vela artesanal de 165grs. Elaborado en envase de vidrio transparente, con tapa de corcho. Contiene una base de cera de soja en tonalidades blanco y rosado. Decorado con mecatillo y detalles florales en tono crema. Aroma: Jazmin." },
+    { file: "PETIT.jpg", name: "Petit", cat: "vela", price: 11, desc: "Vela artesanal de 171grs. Elaborado en envase de vidrio transparente, con tapa metalica dorada. Contiene una base de cera de soja blanca decorada con corazones rojos en superficie. Aroma: Limón Fresh." },
+    { file: "Estrella1.jpg", name: "Estrella", cat: "vela", price: 12, desc: "Vela artesanal de 285grs. Elaborado en envase de vidrio transparente, en forma de estrella. Contiene una base de cera de soja blanca y roja. Aroma: Coco, Café, Jasmin." },
+    { file: "Aura Rosa.jpg", name: "Aura Rosa", cat: "vela", price: 17, desc: "Vela artesanal de 342grs. Elaborado en envase de vidrio transparente con tapa de madera. Contiene una base de cera de soja blanca, con rosa pequeña en superficie. Aroma: Jazmin." },
+    { file: "Aura Tulipan.jpg", name: "Aura Tulipán", cat: "vela", price: 17, desc: "Vela artesanal de 335grs. Elaborado en envase de vidrio transparente con tapa de madera. Contiene una base de cera de soja blanca, con tulipan pequeña en superficie. Aroma: Coco Vainilla." },
+    { file: "Aura Corazón.jpg", name: "Aura Corazones", cat: "vela", price: 20, desc: "Vela artesanal de 418grs. Elaborado en envase de vidrio transparente con tapa de madera. Contiene una base de cera de soja marmoleada con blanco y rosa con corazones rojos en superficie. Aroma: Coco Vainilla." },
+    { file: "Armonia.jpg", name: "Armonía Canela", cat: "vela", price: 22, desc: "Vela artesanal de 508grs. Elaborado en envase de vidrio opaco con tapa de MDF. Contiene una base de cera de soja color canela y mecha de madera. Aroma: Canela." },
+    { file: "Armonia Coco.jpg", name: "Armonía Coco", cat: "vela", price: 23, desc: "Vela artesanal de 516grs. Elaborado en envase de vidrio opaco con tapa de MDF. Contiene una base de cera de soja blanca. Aroma: Coco." },
 
-    // === PULSERAS ===
-    { file: "Pulsera Infinito Azul.jpg", name: "Pulsera Infinito Azul", cat: "pulsera", price: 8, desc: "Pulsera Infinito simboliza conexión y propósito. Trenzado en hilo" },
-    { file: "Pulsera Infinito Beige.jpg", name: "Pulsera Infinito Beige", cat: "pulsera", price: 8, desc: "Pulsera Infinito simboliza conexión y propósito. Trenzado en hilo" },
-    { file: "Pulsera Infinito Roja.jpg", name: "Pulsera Infinito Roja", cat: "pulsera", price: 8, desc: "Pulsera Infinito simboliza conexión y propósito. Trenzado en hilo" },
-    { file: "Pulsera San Benito.jpg", name: "Pulsera San Benito", cat: "pulsera", price: 8, desc: "Pulsera San Benito conecta intención y protección. Trenzado en hilo" },
-    { file: "Pulsera Perla.jpg", name: "Pulsera Perla", cat: "pulsera", price: 6, desc: "Pulsera Perla irradia calma y claridad. Trenzado sutil" },
-    { file: "Pulsera Ojito.jpg", name: "Pulsera Ojito", cat: "pulsera", price: 6, desc: "Pulsera Ojito protege y equilibra tu energía. Trenzado en hilo" },
+    // === GARGANTILLAS (sheet: Gargantillas y Pulseras) ===
+    { file: "Gargantilla 2.jpg", name: "Gargantilla G-01", cat: "collar", price: 20, desc: "Gargantilla de Gold-Filled bañada en oro. Cuenta con broche estilo langosta. Dije de piedra natural a tu elección y un mini dije complementario. Mide 25cm de largo y tiene un grosor de 1,5mm." },
+    { file: "Gargantilla Lisa.jpg", name: "Gargantilla G-02", cat: "collar", price: 25, desc: "Gargantilla de Gold-Filled bañada en oro. Cuenta con broche estilo ancla para un cierre seguro y estetico. Dije de piedra natural a tu elección y un mini dije complementario. Mide 25cm de largo y tiene un grosor de 3mm." },
 
-    // === COLLARES ===
-    { file: "Gargantilla 2.jpg", name: "Gargantilla", cat: "collar", price: 20, desc: "Gargantilla de Gold-Filled bañada en oro. Broche de seguridad" },
-    { file: "Gargantilla Lisa.jpg", name: "Gargantilla Lisa", cat: "collar", price: 25, desc: "Gargantilla de Gold-Filled bañada en oro. Diseño liso" },
-    { file: "Collar Medio 02.jpg", name: "Collar Medio", cat: "collar", price: 25, desc: "Collar Medio de Gold-Filled bañada en oro" },
-    { file: "Collar Eslabon Medio.jpg", name: "Collar Eslabón Medio", cat: "collar", price: 30, desc: "Collar Medio de Gold-Filled con eslabones" },
-    { file: "Collar Largo 01.jpg", name: "Collar Largo", cat: "collar", price: 32, desc: "Collar Largo de Gold-Filled bañada en oro" },
+    // === COLLARES (sheet: Gargantillas y Pulseras) ===
+    { file: "Collar Medio 02.jpg", name: "Collar Medio C.M-01", cat: "collar", price: 25, desc: "Collar Medio de Gold-Filled bañada en oro. Cuenta con broche estilo ancla para un cierre seguro y estetico. Dije de piedra natural a tu elección y un mini dije complementario. Mide 29cm de largo y tiene un grosor de 3mm." },
+    { file: "Collar Eslabon Medio.jpg", name: "Collar Medio C.M-02", cat: "collar", price: 30, desc: "Collar Medio de Gold-Filled bañada en oro. Cuenta con broche estilo ancla para un cierre seguro y estetico. Dije de piedra natural a tu elección y un mini dije complementario. Mide 34cm de largo y tiene un grosor sólido de 4mm." },
+    { file: "Collar Largo 01.jpg", name: "Collar Largo C.L-01", cat: "collar", price: 32, desc: "Collar Largo de Gold-Filled bañada en oro. Cuenta con broche estilo ancla para un cierre seguro y estetico. Dije de piedra natural a tu elección y un mini dije complementario. Mide 40cm de largo y tiene un grosor sólido de 4mm." },
 
-    // === ACCESORIOS ===
-    { file: "Piedras Natural.jpg", name: "Piedras Naturales", cat: "otro", price: 7, desc: "Dijes Piedras Naturales. Cada una vibra con intención" },
+    // === PULSERAS (sheet: Gargantillas y Pulseras) ===
+    { file: "Pulsera Infinito Azul.jpg", name: "Pulsera Infinito", cat: "pulsera", price: 8, desc: "Pulsera Infinito simboliza conexión y propósito. Trenzado en hilo rojo, azul, beis acompaña tu energia. Un amuleto para recordar que todo lo que mereces, permeanece." },
+    { file: "Pulsera Infinito Beige.jpg", name: "Pulsera Infinito Beige", cat: "pulsera", price: 8, desc: "Pulsera Infinito simboliza conexión y propósito. Trenzado en hilo rojo, azul, beis acompaña tu energia. Un amuleto para recordar que todo lo que mereces, permeanece." },
+    { file: "Pulsera Infinito Roja.jpg", name: "Pulsera Infinito Roja", cat: "pulsera", price: 8, desc: "Pulsera Infinito simboliza conexión y propósito. Trenzado en hilo rojo, azul, beis acompaña tu energia. Un amuleto para recordar que todo lo que mereces, permeanece." },
+    { file: "Pulsera San Benito.jpg", name: "Pulsera San Benito", cat: "pulsera", price: 8, desc: "Pulsera San Benito conecta intención y protección. Trenzado en hilo rojo y un dije que acompaña tú energia." },
+    { file: "Pulsera Perla.jpg", name: "Pulsera Perla", cat: "pulsera", price: 6, desc: "Pulsera Perla irradia calma y claridad. Trenzado sutil y un centro que refleja luz y quilibrio." },
+    { file: "Pulsera Ojito.jpg", name: "Pulsera Ojito", cat: "pulsera", price: 6, desc: "Pulsera Ojito protege y equilibra tu energia. Trenzado en hilo rojo, y un ojo que acompaña tu camino." },
 
-    // === FRANELAS ===
-    { file: "image_1779928174716.jpg", name: "F-01 Loto Sagrado", cat: "franela", price: 16, desc: "Franela Loto Sagrado — diseño sagrado en tela de algodón" },
-    { file: "image_1779972568224.jpg", name: "F-02 Loto Sagrado", cat: "franela", price: 16, desc: "Franela Loto Sagrado — variante de color" },
-    { file: "image_1779972935496.jpg", name: "F-03 Loto Sagrado", cat: "franela", price: 16, desc: "Franela Loto Sagrado — tonos tierra" },
-    { file: "image_1779973394660.jpg", name: "F-04 Ser Feliz", cat: "franela", price: 14, desc: "Franela Ser Feliz — mensaje positivo en tela" },
-    { file: "image_1779974294919.jpg", name: "F-05 Hazte Caso", cat: "franela", price: 14, desc: "Franela Hazte Caso — diseño llamativo" },
-    { file: "image_1779992865576.jpg", name: "F-06 Cool", cat: "franela", price: 14, desc: "Franela Cool — estilo casual" },
-    { file: "image_1779993230752.jpg", name: "F-07 El Amor", cat: "franela", price: 14, desc: "Franela El Amor — diseño romántico" },
+    // === ACCESORIOS (sheet: Gargantillas y Pulseras) ===
+    { file: "Piedras Natural.jpg", name: "Piedras Naturales", cat: "otro", price: 7, desc: "Dijes Piedras Naturales. Cada una vibra con intención, protección, claridad, fuerza o calma." },
+
+    // === FRANELAS (sheet: Franelas) ===
+    { file: "image_1779928174716.jpg", name: "F-01 Loto Sagrado", cat: "franela", price: 16, desc: "Franela que une intención y estilo. El Loto renace, el Om eleva. Tela suave y resistente para acompañar tus días con calma y proposito." },
+    { file: "image_1779972568224.jpg", name: "F-02 Loto Sagrado", cat: "franela", price: 16, desc: "Franela que une intención y estilo. El Loto renace, el Om eleva. Tela suave y resistente para acompañar tus días con calma y proposito." },
+    { file: "image_1779972935496.jpg", name: "F-03 Loto Sagrado", cat: "franela", price: 16, desc: "Franela que une intención y estilo. El Loto renace, el Om eleva. Tela suave y resistente para acompañar tus días con calma y proposito." },
+    { file: "image_1779973394660.jpg", name: "F-04 Ser Feliz", cat: "franela", price: 14, desc: "Franela para mujeres que eligen calma sobre exigencia. Tela suave y diseño minimalista que acompaña tu bienestar. La felicidad es un plan que se viste." },
+    { file: "image_1779974294919.jpg", name: "F-05 Hazte Caso", cat: "franela", price: 14, desc: "Franela que honra tu intuición. Tela suave y diseño minimalista para acompañar tu energia." },
+    { file: "image_1779992865576.jpg", name: "F-06 Cool", cat: "franela", price: 14, desc: "Franela que afirma tu valor. Diseño limpio, tela suave y diseño minimalista que eleva tu energia." },
+    { file: "image_1779993230752.jpg", name: "F-07 El Amor", cat: "franela", price: 14, desc: "Franela que honra el poder del amor. Tela suave, diseño minimalista y un mensaje que ilumina tu energia. El amor da sentido y se siente." },
   ];
 
   /* Category mapping for display */
