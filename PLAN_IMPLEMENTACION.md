@@ -121,6 +121,7 @@
 - [x] Archivo `_headers` creado con el set completo — verificado con curl que **GitHub Pages NO lo aplica**; el set equivalente se sirve vía **Transform Rule de Cloudflare** (proxy activado en los 5 registros DNS)
 - [x] Proxy de Cloudflare activado en los 5 registros DNS (A + CNAME www) — sitio responde `server: cloudflare` con `cf-ray`
 - [x] Confirmado: sin secretos en el repo · `rel="noopener"` en enlaces externos · sin `eval`/`innerHTML` inseguro · SW solo cachea mismo origen
+- [x] **Cache Rule HTML en Cloudflare** (ruleset `http_request_cache_settings`): HTML cacheado en el edge con TTL 5 min (edge + browser) — HTML pasó de `DYNAMIC` a `cf-cache-status: HIT`, revalidación cada ~300s verificada (3 sep 2026)
 
 ---
 
@@ -149,8 +150,12 @@
 
 ### Performance / PWA
 - [x] Headers HTTP reales vía **Transform Rule en Cloudflare** (ruleset `http_response_headers_transform`): X-Frame-Options DENY, nosniff, Permissions-Policy, Referrer-Policy y HSTS (`max-age=31536000; includeSubDomains`) — verificados en vivo con curl (3 sep 2026)
+- [x] **Cache Rule HTML** en Cloudflare (ruleset `http_request_cache_settings`, TTL edge 5 min) — HTML cacheado en edge, deploys frescos en ~5 min
 - [ ] Banner/aviso "nueva versión disponible" cuando el service worker detecte update
 - [ ] Minificar CSS/JS
+
+### Seguridad (Cloudflare WAF)
+- [ ] **WAF Managed Ruleset** con acción `managed_challenge` (decisión del usuario: challenge, no block) en la fase `http_request_firewall_managed` — requiere token Cloudflare con permiso para esa fase (el actual con `#waf:edit` no accede; verificado 3 sep 2026)
 
 ### Funcionalidad / UX
 - [ ] Focus trap y gestión de foco al abrir el carrito y el lightbox (accesibilidad total)
@@ -172,6 +177,7 @@
 | Fase 6: WhatsApp real + redes | ✅ COMPLETADA | 3 sep 2026 |
 | Fase 7: PWA instalable/offline | ✅ COMPLETADA | 3 sep 2026 |
 | Fase 8: Seguridad | ✅ COMPLETADA | 3 sep 2026 |
+| Fase 10: Caché edge (Cloudflare) | ✅ COMPLETADA | 3 sep 2026 |
 | Fase 9: Correcciones + documentación | ✅ COMPLETADA | 3 sep 2026 |
 
 **El sitio está en producción y funcional.** Las tareas pendientes de arriba son mejoras incrementales, ninguna bloquea el lanzamiento.

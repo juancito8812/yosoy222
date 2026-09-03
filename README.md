@@ -391,6 +391,18 @@ strict-transport-security: max-age=31536000; includeSubDomains
   Verificado el 3 sep 2026 en `yosoy222.com` (página, CSS, imágenes y www) — el navegador los recibe con el `cf-ray` de Cloudflare.
 - ℹ️ El repo incluye un archivo `_headers` con el mismo set. GitHub Pages no lo lee, pero queda listo por si el sitio se mueve a Netlify o Cloudflare Pages, plataformas que sí lo aplican.
 
+### Caché en el edge (Cache Rule de Cloudflare)
+
+GitHub Pages sirve el HTML con `cache-control: max-age=600` y Cloudflare **no cacheaba HTML por defecto** (`cf-cache-status: DYNAMIC`). Para que los visitantes reciban respuestas desde el edge y los deploys se propaguen rápido, se creó una **Cache Rule** (ruleset `http_request_cache_settings`, 3 sep 2026):
+
+- **Expresión:** rutas `/`, `/*.html` y directorios (`/…/`) — es decir, todo el HTML del sitio.
+- **Edge TTL:** 5 minutos (`edge_ttl` mode `override_origin`, default 300) — el edge revalida contra GitHub Pages cada 5 min, así un deploy nuevo llega a los visitantes en ~5 min.
+- **Browser TTL:** 5 minutos (`browser_ttl` mode `override_origin`, default 300).
+
+Verificado en producción: `cf-cache-status` pasó de `DYNAMIC` a `HIT`/`REVALIDATED` con `age` creciente, ciclo de revalidación ~300s confirmado. El `cache-control` que ve el navegador queda en `max-age=600` (10 min, el mínimo que permite el plan y el mismo valor que ya mandaba el origin) — el edge es el que revalida cada 5 min.
+
+Si algún día quieres invalidar la caché al desplegar, la forma más simple es purgar desde el dashboard de Cloudflare (Caching → Purge → Custom purge → `https://yosoy222.com/`) o bajar el TTL a 60s y subirlo de nuevo.
+
 ### Ya seguro por diseño
 - ✅ Sin `eval()`, sin `innerHTML` con datos de usuario sin escapar
 - ✅ Sin secretos ni claves en el código ni en git
@@ -407,7 +419,8 @@ strict-transport-security: max-age=31536000; includeSubDomains
 ✅ **GitHub Pages:** Activado (deploy desde `main`, carpeta raíz)
 ✅ **Dominio:** yosoy222.com (Cloudflare)
 ✅ **HTTPS:** Habilitado
-✅ **Deploy automático:** cada push a `main` (~2 min)
+✅ **CDN:** Cloudflare proxy activado en los 5 registros + **Cache Rule HTML** (edge TTL 5 min)
+✅ **Deploy automático:** cada push a `main` (~2 min; el edge revalida cada ~5 min)
 
 ### Cómo se publica
 
