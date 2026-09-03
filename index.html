@@ -3,198 +3,246 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YoSoy222 — Velas Artesanales & Joyería</title>
-    <meta name="description" content="Velas artesanales hechas con amor y energías positivas. Joyería espiritual, collares y pulseras. Envíos a todo México.">
-    <meta name="keywords" content="velas artesanales, velas mágicas, velas de strass, joyería espiritual, collares, pulseras, México">
+    <title>YoSoy222 — Velas Artesanales y Accesorios</title>
+    <meta name="description" content="Velas artesanales, pulseras, collares y accesorios hechos a mano. Elige, escríbenos por WhatsApp y recibe en tu puerta. YoSoy222.">
+    <meta property="og:title" content="YoSoy222 — Velas Artesanales">
+    <meta property="og:description" content="Velas y accesorios hechos a mano. Pide directo por WhatsApp.">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%95%AF%EF%B8%8F%3C/text%3E%3C/svg%3E">
     <link rel="stylesheet" href="css/style.css">
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🕯️</text></svg>">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 </head>
 <body>
 
-    <!-- NAVBAR -->
-    <nav class="navbar">
-        <a href="#" class="nav-brand"><span>Yo</span>Soy222</a>
-        <button class="nav-toggle">☰</button>
-        <ul class="nav-links">
-            <li><a href="#inicio">Inicio</a></li>
-            <li><a href="#nosotros">Nosotros</a></li>
-            <li><a href="#catalogo">Catálogo</a></li>
-            <li><a href="#contacto">Contacto</a></li>
-        </ul>
-        <a href="https://wa.me/521XXXXXXXXXX?text=Hola!%20Me%20interesan%20sus%20productos%20🕯️" 
-           class="nav-whatsapp" target="_blank">
-            💬 WhatsApp
-        </a>
-    </nav>
+    <!-- ======================= HEADER ======================= -->
+    <header class="header" id="header">
+        <div class="container">
+            <a href="#inicio" class="logo" aria-label="YoSoy222 — inicio">
+                <span class="logo-mark">🕯️</span>
+                <span class="logo-text">YoSoy<span class="accent">222</span></span>
+            </a>
 
-    <!-- HERO -->
+            <nav class="nav" id="nav" aria-label="Navegación principal">
+                <a href="#inicio" class="nav-link active">Inicio</a>
+                <a href="#catalogo" class="nav-link">Catálogo</a>
+                <a href="#como-comprar" class="nav-link">Cómo comprar</a>
+                <a href="#contacto" class="nav-link">Contacto</a>
+            </nav>
+
+            <div class="header-actions">
+                <button class="cart-btn" id="cartBtn" aria-label="Abrir carrito">
+                    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <circle cx="9" cy="21" r="1.4"></circle>
+                        <circle cx="19" cy="21" r="1.4"></circle>
+                        <path d="M2.5 3h2l2.6 12.4a2 2 0 0 0 2 1.6h9.3a2 2 0 0 0 2-1.6L22 7H6"></path>
+                    </svg>
+                    <span class="cart-count" id="cartCount">0</span>
+                </button>
+                <button class="menu-toggle" id="menuToggle" aria-label="Abrir menú" aria-expanded="false">
+                    <span></span><span></span><span></span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- ======================= HERO ======================= -->
     <section class="hero" id="inicio">
-        <div class="hero-content">
-            <div class="hero-icon">🕯️</div>
-            <h1><span>Yo</span>Soy222</h1>
-            <p class="subtitle">Velas Artesanales & Joyería Espiritual</p>
-            <p class="tagline">
-                Creamos velas únicas hechas con amor, energías positivas y los mejores materiales. 
-                Cada pieza es una obra de arte que ilumina tu espacio y alimenta tu alma.
-            </p>
-            <div class="hero-buttons">
-                <a href="#catalogo" class="btn btn-primary">✨ Ver Catálogo</a>
-                <a href="https://wa.me/521XXXXXXXXXX?text=Hola!%20Me%20interesan%20sus%20velas%20artesanales%20🕯️" 
-                   class="btn btn-whatsapp" target="_blank">
-                    💬 Pedir por WhatsApp
+        <div class="container hero-inner">
+            <div class="hero-copy">
+                <p class="eyebrow">Hecho a mano · Con amor</p>
+                <h1>Velas que<br><em>encienden</em> tu<br>espacio.</h1>
+                <p class="hero-lead">Velas artesanales, pulseras, collares y detalles únicos. Cada pieza es hecha a mano — elige la tuya y la pedimos directo por WhatsApp.</p>
+                <div class="hero-actions">
+                    <a href="#catalogo" class="btn btn-primary">Ver el catálogo</a>
+                    <a href="#como-comprar" class="btn btn-ghost">Cómo comprar</a>
+                </div>
+            </div>
+            <div class="hero-visual" aria-hidden="true">
+                <figure class="hero-img hero-img-main">
+                    <img src="images/thumbs/Vela Rosa.jpg" alt="Vela artesanal rosa de YoSoy222" loading="eager">
+                </figure>
+                <figure class="hero-img hero-img-float">
+                    <img src="images/thumbs/Vela Canela.jpg" alt="Vela artesanal de canela" loading="eager">
+                </figure>
+            </div>
+        </div>
+    </section>
+
+    <!-- ======================= CATÁLOGO ======================= -->
+    <section class="catalogo" id="catalogo">
+        <div class="container">
+            <header class="catalogo-head">
+                <div>
+                    <p class="eyebrow">Nuestra colección</p>
+                    <h2>Catálogo de productos</h2>
+                </div>
+                <label class="search" for="searchInput">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
+                        <circle cx="11" cy="11" r="7"></circle>
+                        <path d="m20 20-3.5-3.5"></path>
+                    </svg>
+                    <input type="search" id="searchInput" placeholder="Buscar vela, pulsera, collar…" autocomplete="off">
+                </label>
+            </header>
+
+            <div class="filters" id="filters" role="group" aria-label="Filtrar por categoría">
+                <button class="filter-btn active" data-filter="todos">Todos</button>
+                <button class="filter-btn" data-filter="velas">Velas</button>
+                <button class="filter-btn" data-filter="pulseras">Pulseras</button>
+                <button class="filter-btn" data-filter="collares">Collares</button>
+                <button class="filter-btn" data-filter="accesorios">Accesorios</button>
+            </div>
+
+            <p class="results-count" id="resultsCount" role="status"></p>
+
+            <div class="products-grid" id="productsGrid"></div>
+
+            <div class="empty-state" id="emptyState" hidden>
+                <p>No encontramos productos con ese criterio.</p>
+                <button class="btn btn-primary" id="clearSearch">Ver todos</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- ======================= CÓMO COMPRAR ======================= -->
+    <section class="como-comprar" id="como-comprar">
+        <div class="container">
+            <header class="como-comprar-head">
+                <p class="eyebrow">Así de fácil</p>
+                <h2>Cómo comprar</h2>
+                <p>Sin pasarelas ni registros: eliges, nos escribes y lo coordinamos contigo.</p>
+            </header>
+            <ol class="steps">
+                <li class="step">
+                    <span class="step-num">1</span>
+                    <h3>Elige tus favoritas</h3>
+                    <p>Explora el catálogo y agrega al carrito todo lo que te guste.</p>
+                </li>
+                <li class="step">
+                    <span class="step-num">2</span>
+                    <h3>Escríbenos por WhatsApp</h3>
+                    <p>Tu pedido llega armado en un mensaje. Confirmamos disponibilidad y precios.</p>
+                </li>
+                <li class="step">
+                    <span class="step-num">3</span>
+                    <h3>Acordamos envío y pago</h3>
+                    <p>Elige recoger o recibir en tu puerta. Pagas por transferencia o al recibir.</p>
+                </li>
+            </ol>
+            <p class="como-comprar-note">¿Haces pedidos al mayoreo o quieres velas personalizadas? Escríbenos y te pasamos cotización.</p>
+        </div>
+    </section>
+
+    <!-- ======================= NOSOTROS ======================= -->
+    <section class="nosotros" id="nosotros">
+        <div class="container nosotros-inner">
+            <div class="nosotros-copy">
+                <p class="eyebrow">Nuestra historia</p>
+                <h2>Somos <em>YoSoy222</em></h2>
+                <p>Empezamos haciendo velas para regalar a quienes queremos. Hoy cada pieza que creamos —velas, pulseras, collares y detalles— sale de nuestras manos con la misma dedicación.</p>
+                <p>Usamos cera de calidad y aromas que transforman un espacio. Cada accesorio es una pieza única, pensada para consentirte o para regalar a alguien especial.</p>
+            </div>
+            <div class="nosotros-imgs">
+                <img src="images/thumbs/Armonia.jpg" alt="Accesorio artesanal Armonía" loading="lazy">
+                <img src="images/thumbs/Velita Corazoncito.jpg" alt="Velita artesanal en forma de corazón" loading="lazy">
+            </div>
+        </div>
+    </section>
+
+    <!-- ======================= CONTACTO ======================= -->
+    <section class="contacto" id="contacto">
+        <div class="container">
+            <header class="contacto-head">
+                <p class="eyebrow">Contacto</p>
+                <h2>Hablemos por donde te sea más fácil</h2>
+            </header>
+            <div class="contact-list">
+                <a class="contact-link" href="https://wa.me/521XXXXXXXXXX?text=Hola%20YoSoy222%2C%20me%20interesa%20hacer%20un%20pedido" target="_blank" rel="noopener">
+                    <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor" aria-hidden="true"><path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38a9.9 9.9 0 0 0 4.74 1.21c5.46 0 9.91-4.45 9.91-9.91S17.5 2 12.04 2m0 18.15a8.2 8.2 0 0 1-4.19-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.2 8.2 0 0 1-1.26-4.38c0-4.54 3.7-8.24 8.24-8.24a8.2 8.2 0 0 1 8.24 8.24c0 4.54-3.7 8.24-8.24 8.24m4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.13-.17.25-.64.81-.79.97-.14.17-.29.19-.54.06-.25-.12-1.05-.39-1.99-1.23-.74-.66-1.23-1.47-1.38-1.72-.14-.25-.02-.38.11-.51.11-.11.25-.29.37-.43.12-.14.17-.25.25-.41.08-.17.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.41-.42-.56-.43h-.48c-.17 0-.43.06-.66.31-.22.25-.86.85-.86 2.07 0 1.22.89 2.4 1.01 2.56.12.17 1.75 2.67 4.23 3.74.59.26 1.05.41 1.41.52.59.19 1.13.16 1.56.1.48-.07 1.47-.6 1.67-1.18.21-.58.21-1.07.15-1.18-.06-.1-.23-.16-.48-.29"/></svg>
+                    <span class="contact-name">WhatsApp</span>
+                    <span class="contact-detail">Respuesta rápida · Pide tu pedido aquí</span>
                 </a>
-                <a href="#nosotros" class="btn btn-outline">Conocer más</a>
+                <a class="contact-link" href="https://www.instagram.com/yosoy222" target="_blank" rel="noopener">
+                    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="2.5" y="2.5" width="19" height="19" rx="5"></rect><circle cx="12" cy="12" r="4.2"></circle><circle cx="17.6" cy="6.4" r="1.1" fill="currentColor" stroke="none"></circle></svg>
+                    <span class="contact-name">Instagram</span>
+                    <span class="contact-detail">@yosoy222 · Novedades y promos</span>
+                </a>
+                <a class="contact-link" href="https://www.tiktok.com/@yosoy222" target="_blank" rel="noopener">
+                    <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor" aria-hidden="true"><path d="M16.6 5.82A4.28 4.28 0 0 1 15.54 3h-3.09v12.4a2.59 2.59 0 1 1-2.59-2.59c.27 0 .53.04.78.12V9.77a5.76 5.76 0 0 0-.78-.05 5.68 5.68 0 1 0 5.68 5.68V9.01a7.35 7.35 0 0 0 4.3 1.38V7.3a4.3 4.3 0 0 1-3.24-1.48"/></svg>
+                    <span class="contact-name">TikTok</span>
+                    <span class="contact-detail">@yosoy222 · Detrás de cámara</span>
+                </a>
+                <a class="contact-link" href="https://www.facebook.com/yosoy222" target="_blank" rel="noopener">
+                    <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor" aria-hidden="true"><path d="M13.5 21v-8h2.7l.4-3.2h-3.1V7.7c0-.92.26-1.55 1.58-1.55h1.7V3.27c-.3-.04-1.3-.13-2.48-.13-2.45 0-4.13 1.5-4.13 4.25v2.41H7.4V13h2.77v8h3.33Z"/></svg>
+                    <span class="contact-name">Facebook</span>
+                    <span class="contact-detail">YoSoy222 Velas Artesanales</span>
+                </a>
             </div>
         </div>
     </section>
 
-    <!-- ABOUT -->
-    <section class="section about" id="nosotros">
-        <div class="about-grid">
-            <div class="about-text">
-                <h3>Hechas con <span style="color: var(--accent)">amor</span> y dedicación</h3>
-                <p>
-                    En YoSoy222 cada vela es una pieza única, elaborada artesanalmente con cera de primera calidad 
-                    y decorada con strass, piedras naturales y detalles que las hacen especiales.
-                </p>
-                <p>
-                    Nuestra misión es crear productos que no solo iluminen tu hogar, sino que también 
-                    eleven tu energía y connecten con tu espiritualidad.
-                </p>
-                <div class="about-features">
-                    <div class="feature">
-                        <span class="feature-icon">🎨</span>
-                        <div>
-                            <h4>100% Artesanal</h4>
-                            <p>Cada pieza hecha a mano</p>
-                        </div>
-                    </div>
-                    <div class="feature">
-                        <span class="feature-icon">✨</span>
-                        <div>
-                            <h4>Materiales Premium</h4>
-                            <p>Cera y strass de alta calidad</p>
-                        </div>
-                    </div>
-                    <div class="feature">
-                        <span class="feature-icon">🚚</span>
-                        <div>
-                            <h4>Envíos a México</h4>
-                            <p>Recibe en tu puerta</p>
-                        </div>
-                    </div>
-                    <div class="feature">
-                        <span class="feature-icon">💬</span>
-                        <div>
-                            <h4>Atención Personal</h4>
-                            <p>Pedidos personalizados</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="about-image">
-                <img src="images/catalog/Aura Rosa.jpg" alt="Vela artesanal Aura Rosa">
-                <div class="about-badge">
-                    <div class="number">97+</div>
-                    <div class="label">Productos</div>
-                </div>
+    <!-- ======================= CARRITO ======================= -->
+    <div class="cart-overlay" id="cartOverlay"></div>
+    <aside class="cart-drawer" id="cartDrawer" role="dialog" aria-label="Carrito de compras">
+        <div class="cart-header">
+            <h3>Tu pedido</h3>
+            <button class="cart-close" id="cartClose" aria-label="Cerrar carrito">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+            </button>
+        </div>
+        <div class="cart-items" id="cartItems">
+            <div class="cart-empty" id="cartEmpty">
+                <span class="cart-empty-icon" aria-hidden="true">🕯️</span>
+                <p>Tu carrito está vacío</p>
+                <a href="#catalogo" class="btn btn-primary" id="cartBrowse">Ver catálogo</a>
             </div>
         </div>
-    </section>
-
-    <!-- FEATURED PRODUCTS -->
-    <section class="section" id="destacados">
-        <div class="section-header">
-            <h2>Productos <span>Destacados</span></h2>
-            <div class="section-divider"></div>
-            <p>Nuestras velas y joyas más populares</p>
-        </div>
-        <div class="featured">
-            <div class="products-grid" id="featured-grid"></div>
-        </div>
-        <div style="text-align: center; margin-top: 2.5rem;">
-            <a href="#catalogo" class="btn btn-primary">Ver todo el catálogo →</a>
-        </div>
-    </section>
-
-    <!-- FULL CATALOG -->
-    <section class="section" id="catalogo" style="background: white;">
-        <div class="section-header">
-            <h2>Catálogo <span>Completo</span></h2>
-            <div class="section-divider"></div>
-            <p>Explora todas nuestras creaciones</p>
-        </div>
-        
-        <div style="max-width: 1200px; margin: 0 auto;">
-            <div style="display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap; margin-bottom: 2rem;">
-                <button class="filter-btn active" data-filter="all">Todos</button>
-                <button class="filter-btn" data-filter="vela">🕯️ Velas</button>
-                <button class="filter-btn" data-filter="pulsera">📿 Pulseras</button>
-                <button class="filter-btn" data-filter="collar">🔗 Collares</button>
-                <button class="filter-btn" data-filter="otro">✨ Otros</button>
+        <div class="cart-footer" id="cartFooter" hidden>
+            <div class="cart-subtotal">
+                <span>Subtotal</span>
+                <span id="cartTotal">$0</span>
             </div>
-            <div class="products-grid" id="catalog-grid"></div>
+            <p class="cart-note">Enviamos tu pedido listo por WhatsApp. Confirmamos precio de envío contigo.</p>
+            <a href="#" class="btn btn-whatsapp btn-full" id="cartWhatsapp" target="_blank" rel="noopener">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38a9.9 9.9 0 0 0 4.74 1.21c5.46 0 9.91-4.45 9.91-9.91S17.5 2 12.04 2m0 18.15a8.2 8.2 0 0 1-4.19-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.2 8.2 0 0 1-1.26-4.38c0-4.54 3.7-8.24 8.24-8.24a8.2 8.2 0 0 1 8.24 8.24c0 4.54-3.7 8.24-8.24 8.24m4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.13-.17.25-.64.81-.79.97-.14.17-.29.19-.54.06-.25-.12-1.05-.39-1.99-1.23-.74-.66-1.23-1.47-1.38-1.72-.14-.25-.02-.38.11-.51.11-.11.25-.29.37-.43.12-.14.17-.25.25-.41.08-.17.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.41-.42-.56-.43h-.48c-.17 0-.43.06-.66.31-.22.25-.86.85-.86 2.07 0 1.22.89 2.4 1.01 2.56.12.17 1.75 2.67 4.23 3.74.59.26 1.05.41 1.41.52.59.19 1.13.16 1.56.1.48-.07 1.47-.6 1.67-1.18.21-.58.21-1.07.15-1.18-.06-.1-.23-.16-.48-.29"/></svg>
+                Pedir por WhatsApp
+            </a>
         </div>
-    </section>
+    </aside>
 
-    <!-- CTA -->
-    <section class="cta" id="contacto">
-        <h2>¿Te gustó algo? <span>Hablemos</span></h2>
-        <p>Escríbenos por WhatsApp y te atendemos al instante. También puedes hacer pedidos personalizados.</p>
-        <a href="https://wa.me/521XXXXXXXXXX?text=Hola!%20Me%20interesan%20sus%20productos%20🕯️" 
-           class="btn btn-whatsapp" target="_blank" style="font-size: 1.1rem; padding: 1rem 2.5rem;">
-            💬 Escribir por WhatsApp
-        </a>
-    </section>
-
-    <!-- FOOTER -->
+    <!-- ======================= FOOTER ======================= -->
     <footer class="footer">
-        <div class="footer-grid">
+        <div class="container footer-inner">
             <div class="footer-brand">
-                <h3><span>Yo</span>Soy222</h3>
-                <p>Velas artesanales y joyería espiritual hechas con amor en México. Cada pieza única, cada detalle especial.</p>
+                <span class="logo-mark">🕯️</span>
+                <span class="logo-text">YoSoy<span class="accent">222</span></span>
+                <p>Velas artesanales, pulseras, collares y accesorios hechos a mano con amor.</p>
             </div>
-            <div class="footer-col">
-                <h4>Navegación</h4>
-                <ul>
-                    <li><a href="#inicio">Inicio</a></li>
-                    <li><a href="#nosotros">Nosotros</a></li>
-                    <li><a href="#catalogo">Catálogo</a></li>
-                    <li><a href="#contacto">Contacto</a></li>
-                </ul>
-            </div>
-            <div class="footer-col">
-                <h4>Contacto</h4>
-                <ul>
-                    <li><a href="https://wa.me/521XXXXXXXXXX" target="_blank">💬 WhatsApp</a></li>
-                    <li><a href="https://instagram.com/yosoy222" target="_blank">📸 Instagram</a></li>
-                    <li><a href="https://facebook.com/yosoy222" target="_blank">📘 Facebook</a></li>
-                </ul>
-            </div>
+            <nav class="footer-col" aria-label="Navegación del pie">
+                <h4>Secciones</h4>
+                <a href="#catalogo">Catálogo</a>
+                <a href="#como-comprar">Cómo comprar</a>
+                <a href="#nosotros">Nosotros</a>
+                <a href="#contacto">Contacto</a>
+            </nav>
+            <nav class="footer-col" aria-label="Redes sociales">
+                <h4>Redes</h4>
+                <a href="https://wa.me/521XXXXXXXXXX" target="_blank" rel="noopener">WhatsApp</a>
+                <a href="https://www.instagram.com/yosoy222" target="_blank" rel="noopener">Instagram</a>
+                <a href="https://www.tiktok.com/@yosoy222" target="_blank" rel="noopener">TikTok</a>
+                <a href="https://www.facebook.com/yosoy222" target="_blank" rel="noopener">Facebook</a>
+            </nav>
         </div>
         <div class="footer-bottom">
-            © 2026 YoSoy222 — Velas Artesanales. Todos los derechos reservados.
+            <p>© 2026 YoSoy222 — Velas artesanales. Hecho a mano en México.</p>
         </div>
     </footer>
 
-    <!-- WHATSAPP FLOAT -->
-    <a href="#" class="whatsapp-float" title="Escríbenos por WhatsApp">💬</a>
-
-    <!-- LIGHTBOX -->
-    <div class="lightbox" id="lightbox">
-        <button class="lightbox-close" id="lb-close">✕</button>
-        <button class="lightbox-nav lightbox-prev" id="lb-prev">‹</button>
-        <button class="lightbox-nav lightbox-next" id="lb-next">›</button>
-        <img class="lightbox-img" id="lb-img" src="" alt="">
-        <div class="lightbox-info">
-            <h3 id="lb-name"></h3>
-            <p id="lb-meta"></p>
-        </div>
-        <a class="lightbox-whatsapp" id="lb-whatsapp" href="#" target="_blank">
-            💬 Preguntar por este producto
-        </a>
-        <p id="lb-counter" style="color: rgba(255,255,255,0.5); font-size: 0.8rem; margin-top: 0.5rem;"></p>
-    </div>
+    <!-- WhatsApp flotante -->
+    <a href="https://wa.me/521XXXXXXXXXX?text=Hola%20YoSoy222%2C%20me%20interesa%20sus%20productos" class="whatsapp-float" target="_blank" rel="noopener" aria-label="Escríbenos por WhatsApp">
+        <svg viewBox="0 0 24 24" width="26" height="26" fill="currentColor" aria-hidden="true"><path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38a9.9 9.9 0 0 0 4.74 1.21c5.46 0 9.91-4.45 9.91-9.91S17.5 2 12.04 2m0 18.15a8.2 8.2 0 0 1-4.19-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.2 8.2 0 0 1-1.26-4.38c0-4.54 3.7-8.24 8.24-8.24a8.2 8.2 0 0 1 8.24 8.24c0 4.54-3.7 8.24-8.24 8.24m4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.13-.17.25-.64.81-.79.97-.14.17-.29.19-.54.06-.25-.12-1.05-.39-1.99-1.23-.74-.66-1.23-1.47-1.38-1.72-.14-.25-.02-.38.11-.51.11-.11.25-.29.37-.43.12-.14.17-.25.25-.41.08-.17.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.41-.42-.56-.43h-.48c-.17 0-.43.06-.66.31-.22.25-.86.85-.86 2.07 0 1.22.89 2.4 1.01 2.56.12.17 1.75 2.67 4.23 3.74.59.26 1.05.41 1.41.52.59.19 1.13.16 1.56.1.48-.07 1.47-.6 1.67-1.18.21-.58.21-1.07.15-1.18-.06-.1-.23-.16-.48-.29"/></svg>
+    </a>
 
     <script src="js/app.js"></script>
 </body>
