@@ -78,6 +78,34 @@
   const $ = (s, p) => (p || document).querySelector(s);
   const $$ = (s, p) => [...(p || document).querySelectorAll(s)];
 
+  /* ----- Security: HTML escaping ----- */
+  const escapeHtml = (str) => {
+    if (typeof str !== 'string') return '';
+    const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
+    return str.replace(/[&<>"']/g, (c) => map[c]);
+  };
+
+  /* ----- Security: Validate cart from localStorage ----- */
+  function loadCart() {
+    try {
+      const raw = localStorage.getItem('yosoy222_cart');
+      if (!raw) return [];
+      const parsed = JSON.parse(raw);
+      if (!Array.isArray(parsed)) return [];
+      return parsed.filter(item =>
+        item &&
+        typeof item.name === 'string' &&
+        typeof item.price === 'number' &&
+        typeof item.qty === 'number' &&
+        item.price >= 0 &&
+        item.qty > 0 &&
+        item.qty <= 999
+      );
+    } catch {
+      return [];
+    }
+  }
+
   const header        = $('#header');
   const menuToggle    = $('#menuToggle');
   const nav           = $('#nav');
@@ -101,7 +129,7 @@
   const cartBrowse    = $('#cartBrowse');
 
   /* ----- State ----- */
-  let cart = JSON.parse(localStorage.getItem('yosoy222_cart') || '[]');
+  let cart = loadCart();
   let activeFilter = 'todos';
   let searchTerm = '';
 
@@ -113,19 +141,19 @@
     let html = '';
     products.forEach((p, i) => {
       const cat = catMap[p.cat] || 'accesorios';
-      const priceStr = p.price < 1 ? `$${p.price}` : `$${p.price}`;
+      const priceStr = `$${p.price}`;
       html += `
-        <article class="product-card" data-category="${cat}" data-index="${i}" data-name="${p.name}">
-          <div class="product-image" data-name="${p.name}">
-            <img src="images/thumbs/${p.file}" alt="${p.name} artesanal" loading="lazy">
+        <article class="product-card" data-category="${escapeHtml(cat)}" data-index="${i}" data-name="${escapeHtml(p.name)}">
+          <div class="product-image" data-name="${escapeHtml(p.name)}">
+            <img src="images/thumbs/${escapeHtml(p.file)}" alt="${escapeHtml(p.name)} artesanal" loading="lazy">
           </div>
           <div class="product-info">
-            <h3>${p.name}</h3>
-            <p class="product-category">${catLabels[p.cat] || 'Producto artesanal'}</p>
-            <p class="product-desc">${p.desc}</p>
+            <h3>${escapeHtml(p.name)}</h3>
+            <p class="product-category">${escapeHtml(catLabels[p.cat] || 'Producto artesanal')}</p>
+            <p class="product-desc">${escapeHtml(p.desc)}</p>
             <div class="product-footer">
               <span class="product-price">${priceStr}</span>
-              <button class="add-cart-btn" data-name="${p.name}" data-price="${p.price}" data-index="${i}">Agregar</button>
+              <button class="add-cart-btn" data-name="${escapeHtml(p.name)}" data-price="${p.price}" data-index="${i}">Agregar</button>
             </div>
           </div>
         </article>`;
@@ -323,14 +351,14 @@
       html += `
         <div class="cart-item">
           <div class="cart-item-info">
-            <h4>${item.name}</h4>
+            <h4>${escapeHtml(item.name)}</h4>
             <div class="cart-item-meta">
               <div class="qty-stepper">
                 <button class="qty-btn" data-idx="${i}" data-delta="-1" aria-label="Reducir cantidad">−</button>
                 <span class="qty-value">${item.qty}</span>
                 <button class="qty-btn" data-idx="${i}" data-delta="1" aria-label="Aumentar cantidad">+</button>
               </div>
-              <button class="cart-item-remove" data-idx="${i}" aria-label="Eliminar ${item.name}">Eliminar</button>
+              <button class="cart-item-remove" data-idx="${i}" aria-label="Eliminar ${escapeHtml(item.name)}">Eliminar</button>
             </div>
           </div>
           <span class="cart-item-price">$${(item.price * item.qty).toFixed(2)}</span>
