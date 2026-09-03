@@ -116,7 +116,9 @@
 
 - [x] `escapeHtml()` en todo render dinámico (grid, carrito, atributos) — anti-XSS
 - [x] `loadCart()` valida el contenido de `localStorage` (tipos, rangos, estructura)
-- [x] Meta headers de seguridad: `nosniff`, `X-Frame-Options DENY`, `Referrer-Policy`, `Permissions-Policy`
+- [x] Meta headers de seguridad efectivos: CSP (vía `<meta>`, funcional y verificada en producción) + `Referrer-Policy` (funcional vía `<meta>`)
+- [x] Descartados los `<meta>` inertes (`X-Frame-Options`, `nosniff`, `Permissions-Policy`): Chrome los ignora/warn porque solo tienen efecto como header HTTP
+- [x] Archivo `_headers` creado con el set completo — verificado con curl que **GitHub Pages NO lo aplica** (no soporta headers personalizados); queda para Netlify/Cloudflare Pages o vía Cloudflare Transform Rule
 - [x] Confirmado: sin secretos en el repo · `rel="noopener"` en enlaces externos · sin `eval`/`innerHTML` inseguro · SW solo cachea mismo origen
 
 ---
@@ -145,7 +147,7 @@
 - [ ] Canonical URL
 
 ### Performance / PWA
-- [ ] Headers HTTP reales vía archivo `_headers` de GitHub Pages (CSP, HSTS, X-Frame-Options como header — hoy X-Frame-Options solo está como `<meta>` y el navegador lo ignora/warn)
+- [ ] Headers HTTP reales (X-Frame-Options, nosniff, Permissions-Policy, HSTS) vía **Transform Rule en Cloudflare** — GitHub Pages no los soporta; el `<meta>` de CSP ya protege mientras tanto
 - [ ] Banner/aviso "nueva versión disponible" cuando el service worker detecte update
 - [ ] Minificar CSS/JS
 

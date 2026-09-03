@@ -369,14 +369,17 @@ Revisión y endurecimiento aplicados en `js/app.js` + `index.html`:
 
 ### Headers (meta tags en `index.html`)
 
+GitHub Pages **no puede enviar headers HTTP personalizados** (ignora archivos `_headers`; verificado con `curl -sI` tras el deploy: solo responde headers controlados por GitHub). Por eso los únicos `<meta http-equiv>` incluidos son los que el navegador **sí** honra:
+
 ```html
-<meta http-equiv="X-Content-Type-Options" content="nosniff">
-<meta http-equiv="X-Frame-Options" content="DENY">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; manifest-src 'self'; worker-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
 <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
-<meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=()">
 ```
 
-> 📌 Nota: algunos navegadores muestran un warning porque `X-Frame-Options` solo tiene efecto real como header HTTP, no como `<meta>`. Para aplicar headers HTTP reales en GitHub Pages haría falta un archivo `_headers` (aún no implementado — ver PLAN, tareas futuras).
+- ✅ **CSP activa en producción** (protegida vía `<meta>`, aplicada por el navegador; verificada con curl en yosoy222.com). Sin inline styles/scripts en el sitio, así que `script-src`/`style-src 'self'` no rompen nada.
+- ✅ Referrer-Policy: honrada vía `<meta>` en navegadores modernos.
+- ⚠️ `X-Frame-Options`, `X-Content-Type-Options`, `Permissions-Policy` y `HSTS` **solo funcionan como header HTTP** — no existen como `<meta>` efectivo (Chrome los ignora/warn). No son posibles en GitHub Pages; requieren el borde de Cloudflare (Transform Rule de headers), tarea pendiente en el PLAN.
+- ℹ️ El repo incluye un archivo `_headers` con el set completo (CSP + XFO + nosniff + Referrer-Policy + Permissions-Policy). GitHub Pages no lo lee, pero queda listo por si el sitio se mueve a Netlify o Cloudflare Pages, plataformas que sí lo aplican.
 
 ### Ya seguro por diseño
 - ✅ Sin `eval()`, sin `innerHTML` con datos de usuario sin escapar
