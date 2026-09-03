@@ -16,10 +16,11 @@
     <meta name="mobile-web-app-capable" content="yes">
     
     <!-- Security.
-         GitHub Pages NO puede enviar headers HTTP personalizados (no lee archivos _headers), asi que
-         aqui solo valen los <meta> que el navegador SI honra: CSP y Referrer-Policy funcionan via <meta>.
-         X-Frame-Options / X-Content-Type-Options / Permissions-Policy / HSTS solo tienen efecto como
-         header HTTP real (imposible en GitHub Pages) y requieren un borde tipo Cloudflare (Transform Rule).
+         GitHub Pages NO puede enviar headers HTTP personalizados (no lee archivos _headers). Por eso:
+         - CSP y Referrer-Policy se refuerzan aqui via <meta http-equiv>, que el navegador SI honra.
+         - X-Frame-Options / X-Content-Type-Options / Permissions-Policy / HSTS se sirven desde el edge
+           de Cloudflare mediante una Transform Rule (ruleset http_response_headers_transform),
+           porque solo tienen efecto como header HTTP real (verificado con curl en yosoy222.com).
          El archivo _headers del repo solo surte efecto si el sitio se mueve a Netlify o Cloudflare Pages.
     -->
     <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; manifest-src 'self'; worker-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">

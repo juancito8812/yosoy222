@@ -378,8 +378,18 @@ GitHub Pages **no puede enviar headers HTTP personalizados** (ignora archivos `_
 
 - ✅ **CSP activa en producción** (protegida vía `<meta>`, aplicada por el navegador; verificada con curl en yosoy222.com). Sin inline styles/scripts en el sitio, así que `script-src`/`style-src 'self'` no rompen nada.
 - ✅ Referrer-Policy: honrada vía `<meta>` en navegadores modernos.
-- ⚠️ `X-Frame-Options`, `X-Content-Type-Options`, `Permissions-Policy` y `HSTS` **solo funcionan como header HTTP** — no existen como `<meta>` efectivo (Chrome los ignora/warn). No son posibles en GitHub Pages; requieren el borde de Cloudflare (Transform Rule de headers), tarea pendiente en el PLAN.
-- ℹ️ El repo incluye un archivo `_headers` con el set completo (CSP + XFO + nosniff + Referrer-Policy + Permissions-Policy). GitHub Pages no lo lee, pero queda listo por si el sitio se mueve a Netlify o Cloudflare Pages, plataformas que sí lo aplican.
+- ⚠️ `X-Frame-Options`, `X-Content-Type-Options`, `Permissions-Policy`, `Referrer-Policy` y `HSTS` solo funcionan como header HTTP real — y ahora **se sirven desde el edge de Cloudflare** vía una **Transform Rule** (ruleset `http_response_headers_transform`, creado y verificado con curl en vivo):
+
+```
+x-frame-options: DENY
+x-content-type-options: nosniff
+permissions-policy: camera=(), microphone=(), geolocation=()
+referrer-policy: strict-origin-when-cross-origin
+strict-transport-security: max-age=31536000; includeSubDomains
+```
+
+  Verificado el 3 sep 2026 en `yosoy222.com` (página, CSS, imágenes y www) — el navegador los recibe con el `cf-ray` de Cloudflare.
+- ℹ️ El repo incluye un archivo `_headers` con el mismo set. GitHub Pages no lo lee, pero queda listo por si el sitio se mueve a Netlify o Cloudflare Pages, plataformas que sí lo aplican.
 
 ### Ya seguro por diseño
 - ✅ Sin `eval()`, sin `innerHTML` con datos de usuario sin escapar
@@ -423,18 +433,18 @@ curl -sI https://yosoy222.com | head -5
 ### Estado actual
 
 ✅ **Dominio:** yosoy222.com (registrado en Cloudflare)
-✅ **DNS:** Cloudflare, proxy **desactivado** (requerido por GitHub Pages)
+✅ **DNS + CDN:** Cloudflare con proxy **activado** (naranja) en los 5 registros — el tráfico pasa por el edge de Cloudflare (verificado con `server: cloudflare` + `cf-ray`)
 ✅ **Registros:** 4 A records + 1 CNAME
 
 ### Registros DNS (ya creados vía API de Cloudflare)
 
 | Tipo | Nombre | Valor | Proxy |
 |------|--------|-------|-------|
-| A | @ | 185.199.108.153 | Off |
-| A | @ | 185.199.109.153 | Off |
-| A | @ | 185.199.110.153 | Off |
-| A | @ | 185.199.111.153 | Off |
-| CNAME | www | juancito8812.github.io | Off |
+| A | @ | 185.199.108.153 | On |
+| A | @ | 185.199.109.153 | On |
+| A | @ | 185.199.110.153 | On |
+| A | @ | 185.199.111.153 | On |
+| CNAME | www | juancito8812.github.io | On |
 
 ### CNAME en el repo
 

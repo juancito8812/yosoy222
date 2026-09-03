@@ -118,7 +118,8 @@
 - [x] `loadCart()` valida el contenido de `localStorage` (tipos, rangos, estructura)
 - [x] Meta headers de seguridad efectivos: CSP (vía `<meta>`, funcional y verificada en producción) + `Referrer-Policy` (funcional vía `<meta>`)
 - [x] Descartados los `<meta>` inertes (`X-Frame-Options`, `nosniff`, `Permissions-Policy`): Chrome los ignora/warn porque solo tienen efecto como header HTTP
-- [x] Archivo `_headers` creado con el set completo — verificado con curl que **GitHub Pages NO lo aplica** (no soporta headers personalizados); queda para Netlify/Cloudflare Pages o vía Cloudflare Transform Rule
+- [x] Archivo `_headers` creado con el set completo — verificado con curl que **GitHub Pages NO lo aplica**; el set equivalente se sirve vía **Transform Rule de Cloudflare** (proxy activado en los 5 registros DNS)
+- [x] Proxy de Cloudflare activado en los 5 registros DNS (A + CNAME www) — sitio responde `server: cloudflare` con `cf-ray`
 - [x] Confirmado: sin secretos en el repo · `rel="noopener"` en enlaces externos · sin `eval`/`innerHTML` inseguro · SW solo cachea mismo origen
 
 ---
@@ -147,7 +148,7 @@
 - [ ] Canonical URL
 
 ### Performance / PWA
-- [ ] Headers HTTP reales (X-Frame-Options, nosniff, Permissions-Policy, HSTS) vía **Transform Rule en Cloudflare** — GitHub Pages no los soporta; el `<meta>` de CSP ya protege mientras tanto
+- [x] Headers HTTP reales vía **Transform Rule en Cloudflare** (ruleset `http_response_headers_transform`): X-Frame-Options DENY, nosniff, Permissions-Policy, Referrer-Policy y HSTS (`max-age=31536000; includeSubDomains`) — verificados en vivo con curl (3 sep 2026)
 - [ ] Banner/aviso "nueva versión disponible" cuando el service worker detecte update
 - [ ] Minificar CSS/JS
 
