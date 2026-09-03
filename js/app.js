@@ -9,51 +9,61 @@
   /* ----- Config ----- */
   const WHATSAPP = '521XXXXXXXXXX';
 
-  /* ----- Product data (from original repo) ----- */
+  /* ----- Product data (from catalog Excel) ----- */
   const products = [
-    { file: "Armonia.jpg", name: "Armonía", cat: "vela" },
-    { file: "Aura Corazón.jpg", name: "Aura Corazón", cat: "vela" },
-    { file: "Aura Rosa.jpg", name: "Aura Rosa", cat: "vela" },
-    { file: "Aura Tulipan.jpg", name: "Aura Tulipán", cat: "vela" },
-    { file: "Buda.jpg", name: "Buda", cat: "vela" },
-    { file: "Buquet .jpg", name: "Buquet", cat: "vela" },
-    { file: "Collar Eslabon Medio.jpg", name: "Collar Eslabón Medio", cat: "collar" },
-    { file: "Collar Largo 01.jpg", name: "Collar Largo 01", cat: "collar" },
-    { file: "Collar Medio 02.jpg", name: "Collar Medio 02", cat: "collar" },
-    { file: "Corazon Blanca.jpg", name: "Corazón Blanca", cat: "vela" },
-    { file: "Corazón .jpg", name: "Corazón", cat: "vela" },
-    { file: "Cruz .jpg", name: "Cruz", cat: "vela" },
-    { file: "Cubo .jpg", name: "Cubo", cat: "vela" },
-    { file: "Espiral.jpg", name: "Espiral", cat: "vela" },
-    { file: "Estrella.jpg", name: "Estrella", cat: "vela" },
-    { file: "Gargantilla 2.jpg", name: "Gargantilla 2", cat: "collar" },
-    { file: "Gargantilla Lisa.jpg", name: "Gargantilla Lisa", cat: "collar" },
-    { file: "Hamsa .jpg", name: "Hamsa", cat: "vela" },
-    { file: "Mandala.jpg", name: "Mandala", cat: "vela" },
-    { file: "Margarita.jpg", name: "Margarita", cat: "vela" },
-    { file: "Mini Corazones.jpg", name: "Mini Corazones", cat: "vela" },
-    { file: "Mini Girasol.jpg", name: "Mini Girasol", cat: "vela" },
-    { file: "Mini Margarita.jpg", name: "Mini Margarita", cat: "vela" },
-    { file: "PETIT.jpg", name: "Petit", cat: "vela" },
-    { file: "Piedras Natural.jpg", name: "Piedras Natural", cat: "otro" },
-    { file: "Pulsera Infinito Azul.jpg", name: "Pulsera Infinito Azul", cat: "pulsera" },
-    { file: "Pulsera Infinito Beige.jpg", name: "Pulsera Infinito Beige", cat: "pulsera" },
-    { file: "Pulsera Infinito Roja.jpg", name: "Pulsera Infinito Roja", cat: "pulsera" },
-    { file: "Pulsera Ojito.jpg", name: "Pulsera Ojito", cat: "pulsera" },
-    { file: "Pulsera Perla.jpg", name: "Pulsera Perla", cat: "pulsera" },
-    { file: "Pulsera San Benito.jpg", name: "Pulsera San Benito", cat: "pulsera" },
-    { file: "Rosa .jpg", name: "Rosa", cat: "vela" },
-    { file: "Rosa Pequeña.jpg", name: "Rosa Pequeña", cat: "vela" },
-    { file: "Sagrada Familia.jpg", name: "Sagrada Familia", cat: "vela" },
-    { file: "Sagrada Familia 1.jpg", name: "Sagrada Familia 1", cat: "vela" },
-    { file: "Tulipan.jpg", name: "Tulipán", cat: "vela" },
-    { file: "Vela Canela.jpg", name: "Vela Canela", cat: "vela" },
-    { file: "Vela Estrellas.jpg", name: "Vela Estrellas", cat: "vela" },
-    { file: "Vela Rosa.jpg", name: "Vela Rosa", cat: "vela" },
-    { file: "Vela Tulipan.jpg", name: "Vela Tulipán", cat: "vela" },
-    { file: "Velita Corazoncito.jpg", name: "Velita Corazoncito", cat: "vela" },
-    { file: "Vintage.jpg", name: "Vintage", cat: "vela" },
-    { file: "Virgen del Carmen.jpg", name: "Virgen del Carmen", cat: "vela" },
+    // === VELAS MOLDES ===
+    { file: "Rosa .jpg", name: "Rosa", cat: "vela", price: 7, desc: "Vela artesanal de 79grs. en forma de Rosa" },
+    { file: "Mini Corazones.jpg", name: "Mini Corazones", cat: "vela", price: 0.17, desc: "Wax Melts 1grs. en forma de Mini corazón" },
+    { file: "Rosa Pequeña.jpg", name: "Rosa Pequeña", cat: "vela", price: 4.5, desc: "Vela artesanal de 23grs. en forma de Rosa pequeña" },
+    { file: "Mini Margarita.jpg", name: "Mini Margarita", cat: "vela", price: 1.7, desc: "Wax Melts 6grs. en forma de Mini Margarita" },
+    { file: "Margarita.jpg", name: "Margarita", cat: "vela", price: 3, desc: "Vela artesanal de 16grs. en forma de Margarita pequeña" },
+    { file: "Tulipan.jpg", name: "Tulipán", cat: "vela", price: 5, desc: "Vela artesanal de 33grs. en forma de Tulipan pequeña" },
+    { file: "Buquet .jpg", name: "Buquet Tulipán", cat: "vela", price: 8.5, desc: "Vela artesanal de 83grs. en forma de Buquet Tulipan" },
+    { file: "Espiral.jpg", name: "Espiral", cat: "vela", price: 9.5, desc: "Vela artesanal de 104grs. en forma de Espiral" },
+    { file: "Sagrada Familia.jpg", name: "Sagrada Familia", cat: "vela", price: 7, desc: "Vela artesanal de 75grs. en forma de Sagrada Familia" },
+    { file: "Buda.jpg", name: "Buda", cat: "vela", price: 6.5, desc: "Vela artesanal de 20grs. en forma de Buda" },
+    { file: "Hamsa .jpg", name: "Hamsa", cat: "vela", price: 8, desc: "Vela artesanal de 75grs. en forma de Mano Hamsa" },
+    { file: "Corazón .jpg", name: "Corazón", cat: "vela", price: 13.5, desc: "Vela artesanal de 182grs. en forma de Corazón" },
+    { file: "Cruz .jpg", name: "Cruz con Paloma", cat: "vela", price: 7, desc: "Vela artesanal de 52grs. en forma de Cruz con palomita" },
+    { file: "Cubo .jpg", name: "Cubo", cat: "vela", price: 7, desc: "Vela artesanal de 40grs. en forma de Cubo" },
+    { file: "Virgen del Carmen.jpg", name: "Virgen del Carmen", cat: "vela", price: 7, desc: "Vela artesanal de 42grs. en forma de Virgen del Carmen" },
+    { file: "Mini Girasol.jpg", name: "Mini Girasol", cat: "vela", price: 1.7, desc: "Wax Melts en forma de Mini Girasol" },
+    { file: "Estrella.jpg", name: "Estrella", cat: "vela", price: 7, desc: "Vela artesanal en forma de Estrella" },
+    { file: "Corazon Blanca.jpg", name: "Corazón Blanca", cat: "vela", price: 7, desc: "Vela artesanal en forma de Corazón Blanco" },
+    { file: "Mandala.jpg", name: "Mandala", cat: "vela", price: 9, desc: "Vela artesanal de 98grs. en envase de metal decorativo" },
+    { file: "Vintage.jpg", name: "Vintage", cat: "vela", price: 9.5, desc: "Vela artesanal de 165grs. en envase de vidrio transparente" },
+
+    // === VELAS ENVASES ===
+    { file: "PETIT.jpg", name: "Petit", cat: "vela", price: 11, desc: "Vela artesanal de 171grs. en envase de vidrio transparente" },
+    { file: "Estrella1.jpg", name: "Estrella Envase", cat: "vela", price: 12, desc: "Vela artesanal de 285grs. en envase de vidrio transparente" },
+    { file: "Aura Rosa.jpg", name: "Aura Rosa", cat: "vela", price: 17, desc: "Vela artesanal de 342grs. en envase de vidrio transparente" },
+    { file: "Aura Tulipan.jpg", name: "Aura Tulipán", cat: "vela", price: 17, desc: "Vela artesanal de 335grs. en envase de vidrio transparente" },
+    { file: "Aura Corazón.jpg", name: "Aura Corazón", cat: "vela", price: 20, desc: "Vela artesanal de 418grs. en envase de vidrio transparente" },
+    { file: "Armonia.jpg", name: "Armonía Canela", cat: "vela", price: 22, desc: "Vela artesanal de 508grs. en envase de vidrio opaco" },
+    { file: "Vela Rosa.jpg", name: "Vela Rosa", cat: "vela", price: 85, desc: "Vela artesanal premium en forma de Rosa" },
+    { file: "Vela Canela.jpg", name: "Vela Canela", cat: "vela", price: 85, desc: "Vela artesanal premium de canela" },
+    { file: "Vela Estrellas.jpg", name: "Vela Estrellas", cat: "vela", price: 85, desc: "Vela artesanal premium con forma de estrellas" },
+    { file: "Vela Tulipan.jpg", name: "Vela Tulipán", cat: "vela", price: 85, desc: "Vela artesanal premium en forma de Tulipán" },
+    { file: "Velita Corazoncito.jpg", name: "Velita Corazoncito", cat: "vela", price: 75, desc: "Vela artesanal en forma de corazoncito" },
+    { file: "Sagrada Familia 1.jpg", name: "Sagrada Familia 1", cat: "vela", price: 7, desc: "Vela artesanal en forma de Sagrada Familia" },
+
+    // === PULSERAS ===
+    { file: "Pulsera Infinito Azul.jpg", name: "Pulsera Infinito Azul", cat: "pulsera", price: 8, desc: "Pulsera Infinito simboliza conexión y propósito. Trenzado en hilo" },
+    { file: "Pulsera Infinito Beige.jpg", name: "Pulsera Infinito Beige", cat: "pulsera", price: 8, desc: "Pulsera Infinito simboliza conexión y propósito. Trenzado en hilo" },
+    { file: "Pulsera Infinito Roja.jpg", name: "Pulsera Infinito Roja", cat: "pulsera", price: 8, desc: "Pulsera Infinito simboliza conexión y propósito. Trenzado en hilo" },
+    { file: "Pulsera San Benito.jpg", name: "Pulsera San Benito", cat: "pulsera", price: 8, desc: "Pulsera San Benito conecta intención y protección. Trenzado en hilo" },
+    { file: "Pulsera Perla.jpg", name: "Pulsera Perla", cat: "pulsera", price: 6, desc: "Pulsera Perla irradia calma y claridad. Trenzado sutil" },
+    { file: "Pulsera Ojito.jpg", name: "Pulsera Ojito", cat: "pulsera", price: 6, desc: "Pulsera Ojito protege y equilibra tu energía. Trenzado en hilo" },
+
+    // === COLLARES ===
+    { file: "Gargantilla 2.jpg", name: "Gargantilla", cat: "collar", price: 20, desc: "Gargantilla de Gold-Filled bañada en oro. Broche de seguridad" },
+    { file: "Gargantilla Lisa.jpg", name: "Gargantilla Lisa", cat: "collar", price: 25, desc: "Gargantilla de Gold-Filled bañada en oro. Diseño liso" },
+    { file: "Collar Medio 02.jpg", name: "Collar Medio", cat: "collar", price: 25, desc: "Collar Medio de Gold-Filled bañada en oro" },
+    { file: "Collar Eslabon Medio.jpg", name: "Collar Eslabón Medio", cat: "collar", price: 30, desc: "Collar Medio de Gold-Filled con eslabones" },
+    { file: "Collar Largo 01.jpg", name: "Collar Largo", cat: "collar", price: 32, desc: "Collar Largo de Gold-Filled bañada en oro" },
+
+    // === ACCESORIOS ===
+    { file: "Piedras Natural.jpg", name: "Piedras Naturales", cat: "otro", price: 7, desc: "Dijes Piedras Naturales. Cada una vibra con intención" },
   ];
 
   /* Category mapping for display */
@@ -99,6 +109,7 @@
     let html = '';
     products.forEach((p, i) => {
       const cat = catMap[p.cat] || 'accesorios';
+      const priceStr = p.price < 1 ? `$${p.price}` : `$${p.price}`;
       html += `
         <article class="product-card" data-category="${cat}" data-index="${i}" data-name="${p.name}">
           <div class="product-image">
@@ -107,8 +118,10 @@
           <div class="product-info">
             <h3>${p.name}</h3>
             <p class="product-category">${catLabels[p.cat] || 'Producto artesanal'}</p>
+            <p class="product-desc">${p.desc}</p>
             <div class="product-footer">
-              <button class="add-cart-btn" data-name="${p.name}" data-price="85" data-index="${i}">Agregar</button>
+              <span class="product-price">${priceStr}</span>
+              <button class="add-cart-btn" data-name="${p.name}" data-price="${p.price}" data-index="${i}">Agregar</button>
             </div>
           </div>
         </article>`;
@@ -119,7 +132,7 @@
     $$('.add-cart-btn', grid).forEach(btn => {
       btn.addEventListener('click', () => {
         const name = btn.dataset.name;
-        const price = parseInt(btn.dataset.price, 10);
+        const price = parseFloat(btn.dataset.price);
         const existing = cart.find(item => item.name === name);
         if (existing) {
           existing.qty += 1;
@@ -298,7 +311,7 @@
     }
 
     cartFooter.hidden = false;
-    cartTotal.textContent = `$${total} MXN`;
+    cartTotal.textContent = `$${total.toFixed(2)} USD`;
 
     // Build items HTML
     let html = '';
@@ -316,7 +329,7 @@
               <button class="cart-item-remove" data-idx="${i}" aria-label="Eliminar ${item.name}">Eliminar</button>
             </div>
           </div>
-          <span class="cart-item-price">$${item.price * item.qty}</span>
+          <span class="cart-item-price">$${(item.price * item.qty).toFixed(2)}</span>
         </div>`;
     });
     cartItems.innerHTML = html;
@@ -336,9 +349,9 @@
     });
 
     // WhatsApp link
-    const lines = cart.map(i => `• ${i.name} x${i.qty} — $${i.price * i.qty} MXN`);
+    const lines = cart.map(i => `• ${i.name} x${i.qty} — $${(i.price * i.qty).toFixed(2)}`);
     const msg = encodeURIComponent(
-      `Hola YoSoy222 👋\n\nMe gustaría hacer este pedido:\n\n${lines.join('\n')}\n\n*Total: $${total} MXN*\n\n¡Gracias! 🕯️`
+      `Hola YoSoy222 👋\n\nMe gustaría hacer este pedido:\n\n${lines.join('\n')}\n\n*Total: $${total.toFixed(2)} USD*\n\n¡Gracias! 🕯️`
     );
     cartWhatsapp.href = `https://wa.me/${WHATSAPP}?text=${msg}`;
   }
