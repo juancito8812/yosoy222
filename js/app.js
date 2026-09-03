@@ -64,11 +64,20 @@
 
     // === ACCESORIOS ===
     { file: "Piedras Natural.jpg", name: "Piedras Naturales", cat: "otro", price: 7, desc: "Dijes Piedras Naturales. Cada una vibra con intención" },
+
+    // === FRANELAS ===
+    { file: "image_1779928174716.jpg", name: "F-01 Loto Sagrado", cat: "franela", price: 16, desc: "Franela Loto Sagrado — diseño sagrado en tela de algodón" },
+    { file: "image_1779972568224.jpg", name: "F-02 Loto Sagrado", cat: "franela", price: 16, desc: "Franela Loto Sagrado — variante de color" },
+    { file: "image_1779972935496.jpg", name: "F-03 Loto Sagrado", cat: "franela", price: 16, desc: "Franela Loto Sagrado — tonos tierra" },
+    { file: "image_1779973394660.jpg", name: "F-04 Ser Feliz", cat: "franela", price: 14, desc: "Franela Ser Feliz — mensaje positivo en tela" },
+    { file: "image_1779974294919.jpg", name: "F-05 Hazte Caso", cat: "franela", price: 14, desc: "Franela Hazte Caso — diseño llamativo" },
+    { file: "image_1779992865576.jpg", name: "F-06 Cool", cat: "franela", price: 14, desc: "Franela Cool — estilo casual" },
+    { file: "image_1779993230752.jpg", name: "F-07 El Amor", cat: "franela", price: 14, desc: "Franela El Amor — diseño romántico" },
   ];
 
   /* Category mapping for display */
-  const catMap = { vela: 'velas', pulsera: 'pulseras', collar: 'collares', otro: 'accesorios' };
-  const catLabels = { vela: 'Vela artesanal', pulsera: 'Pulsera artesanal', collar: 'Collar artesanal', otro: 'Accesorio artesanal' };
+  const catMap = { vela: 'velas', pulsera: 'pulseras', collar: 'collares', franela: 'franelas', otro: 'accesorios' };
+  const catLabels = { vela: 'Vela artesanal', pulsera: 'Pulsera artesanal', collar: 'Collar artesanal', franela: 'Franela artesanal', otro: 'Accesorio artesanal' };
 
   /* ----- DOM refs ----- */
   const $ = (s, p) => (p || document).querySelector(s);
@@ -112,7 +121,7 @@
       const priceStr = p.price < 1 ? `$${p.price}` : `$${p.price}`;
       html += `
         <article class="product-card" data-category="${cat}" data-index="${i}" data-name="${p.name}">
-          <div class="product-image">
+          <div class="product-image" data-name="${p.name}">
             <img src="images/thumbs/${p.file}" alt="${p.name} artesanal" loading="lazy">
           </div>
           <div class="product-info">
