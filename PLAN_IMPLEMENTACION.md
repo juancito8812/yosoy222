@@ -135,7 +135,6 @@
 
 ### Contenido / Producto
 - [ ] Fotos reales de las 7 franelas mapeadas correctamente (hoy hay imágenes placeholder asignadas)
-- [ ] Fotos de Mini Petit y Armonía Coco (hoy muestran placeholder de nombre)
 - [ ] Verificar que las cuentas @yosoy222 (IG/TikTok/FB) enlazadas sean las definitivas
 
 ### SEO y Analytics

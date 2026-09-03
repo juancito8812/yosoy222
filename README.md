@@ -63,7 +63,7 @@
 | Accesorios (dijes) | `otro` | 1 | $7.00 |
 | **Total** | | **44** | **$0.17 – $32.00** |
 
-> ⚠️ **2 productos aún sin foto** (muestran el placeholder de nombre): **Mini Petit** y **Armonía Coco**.
+> ✅ **Los 44 productos tienen foto** (los dos que antes mostraban placeholder — Mini Petit y Armonía Coco — ya tienen imagen real extraída del catálogo en PDF).
 
 ---
 
@@ -480,7 +480,7 @@ curl -sI https://yosoy222.com | head -5
 
 | # | Nombre | Archivo | Precio | Resumen |
 |---|--------|---------|--------|---------|
-| 16 | Mini Petit ⚠️ sin foto | `Mini Petit.jpg` | $7.50 | Vela 123g, vidrio, tapa dorada |
+| 16 | Mini Petit | `Mini Petit.jpg` | $7.50 | Vela 123g, vidrio, tapa dorada |
 | 17 | Mandala | `Mandala.jpg` | $9.00 | Vela 98g, envase metal decorativo |
 | 18 | Vintage | `Vintage.jpg` | $9.50 | Vela 165g, vidrio, tapa corcho, detalle floral |
 | 19 | Petit | `PETIT.jpg` | $11.00 | Vela 171g, vidrio, tapa dorada, corazones rojos |
@@ -489,7 +489,7 @@ curl -sI https://yosoy222.com | head -5
 | 22 | Aura Tulipán | `Aura Tulipan.jpg` | $17.00 | Vela 335g, tapa de madera, tulipán en superficie |
 | 23 | Aura Corazones | `Aura Corazón.jpg` | $20.00 | Vela 418g, marmoleada blanco/rosa |
 | 24 | Armonía Canela | `Armonia.jpg` | $22.00 | Vela 508g, vidrio opaco, mecha de madera |
-| 25 | Armonía Coco ⚠️ sin foto | `Armonia Coco.jpg` | $23.00 | Vela 516g, vidrio opaco |
+| 25 | Armonía Coco | `Armonia Coco.jpg` | $23.00 | Vela 516g, vidrio opaco |
 
 ### Gargantillas y Collares (5) — filtro "Collares" · *Gold-Filled bañada en oro, dije de piedra natural a elección*
 
@@ -669,7 +669,7 @@ git checkout -- index.html
 
 ### Las imágenes no cargan
 - **Causa 1:** abrir el HTML con `file://` → usar siempre `python3 -m http.server`
-- **Causa 2:** el archivo no existe → la tarjeta muestra el placeholder con el nombre (productos actuales sin foto: Mini Petit, Armonía Coco). Agregar el JPG a `images/thumbs/` y `images/catalog/`
+- **Causa 2:** el archivo no existe → la tarjeta muestra el placeholder con el nombre del producto. Agregar el JPG a `images/thumbs/` y `images/catalog/` con el nombre exacto que usa `js/app.js`
 
 ### El botón de WhatsApp no funciona o abre número equivocado
 - Verificar `js/app.js`: `const WHATSAPP = '584126481628';` y los 3 enlaces fijos en `index.html`
