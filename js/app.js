@@ -482,4 +482,30 @@
   renderCart();
   updateActiveNav();
 
+  /* ============================================
+     PWA — Register Service Worker
+     ============================================ */
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/sw.js')
+        .then((reg) => {
+          console.log('[PWA] Service Worker registered:', reg.scope);
+          
+          // Check for updates
+          reg.addEventListener('updatefound', () => {
+            const newWorker = reg.installing;
+            newWorker.addEventListener('statechange', () => {
+              if (newWorker.state === 'activated') {
+                console.log('[PWA] New version available!');
+                // Could show an update banner here
+              }
+            });
+          });
+        })
+        .catch((err) => {
+          console.log('[PWA] Service Worker registration failed:', err);
+        });
+    });
+  }
+
 })();
