@@ -1,29 +1,59 @@
-# 🕯️ YoSoy222 — Landing Page de Velas Artesanales
+# 🕯️ YoSoy222 — Velas Artesanales y Accesorios
 
-> Landing page con catálogo de productos e integración WhatsApp.  
-> Desplegada en **GitHub Pages** con dominio personalizado.
+> Tienda online de velas artesanales, pulseras, collares y accesorios.
+> Desplegada en **GitHub Pages** con dominio personalizado **yosoy222.com**.
 
-**Repositorio:** https://github.com/juancito8812/yosoy222  
-**URL de producción:** https://juancito8812.github.io/yosoy222/ (o dominio personalizado)
+**Repositorio:** https://github.com/juancito8812/yosoy222
+**URL de producción:** https://yosoy222.com
 
 ---
 
-## 📋 ÍNDICE PARA AGENTES
+## 📋 ÍNDICE
 
-Si eres un agente de IA leyendo esto, aquí tienes todo lo que necesitas:
+1. [Vista general](#vista-general)
+2. [Arquitectura del proyecto](#arquitectura-del-proyecto)
+3. [Stack tecnológico](#stack-tecnológico)
+4. [Cómo ejecutar localmente](#cómo-ejecutar-localmente)
+5. [Configuración obligatoria](#configuración-obligatoria)
+6. [Cómo agregar un producto](#cómo-agregar-un-producto)
+7. [Cómo eliminar un producto](#cómo-eliminar-un-producto)
+8. [Procesamiento de imágenes](#procesamiento-de-imágenes)
+9. [Deploy a GitHub Pages](#deploy-a-github-pages)
+10. [Configurar dominio personalizado](#configurar-dominio-personalizado)
+11. [Tabla de productos completa](#tabla-de-productos)
+12. [Guía de estilos CSS](#guía-de-estilos-css)
+13. [Estructura de archivos](#estructura-de-archivos)
+14. [Troubleshooting](#troubleshooting)
 
-1. [Arquitectura del proyecto](#arquitectura-del-proyecto)
-2. [Stack tecnológico](#stack-tecnológico)
-3. [Cómo ejecutar localmente](#cómo-ejecutar-localmente)
-4. [Configuración obligatoria (WhatsApp)](#configuración-obligatoria)
-5. [Cómo agregar un producto](#cómo-agregar-un-producto)
-6. [Cómo eliminar un producto](#cómo-eliminar-un-producto)
-7. [Cómo cambiar el diseño visual](#cómo-cambiar-el-diseño-visual)
-8. [Deploy a GitHub Pages](#deploy-a-github-pages)
-9. [Configurar dominio personalizado](#configurar-dominio-personalizado)
-10. [Tabla de productos completa](#tabla-de-productos)
-11. [Guía de estilos CSS](#guía-de-estilos-css)
-12. [Estructura de archivos](#estructura-de-archivos)
+---
+
+## VISTA GENERAL
+
+### Características del sitio
+
+- **Hero asimétrico** con fotos reales de productos
+- **Búsqueda en tiempo real** en el catálogo
+- **Filtros por categoría** (Velas, Pulseras, Collares, Accesorios)
+- **Carrito de compras** con steppers de cantidad (+/−)
+- **Checkout por WhatsApp** con mensaje itemizado
+- **Sección "Cómo comprar"** con pasos claros
+- **Iconos SVG profesionales** (sin emojis en UI)
+- **Paleta cálida de velas** (carbón + ámbar)
+- **Responsive completo** (mobile-first)
+- **Accesibilidad** (focus-visible, aria-labels, reduced-motion)
+- **47 productos** con precios y descripciones reales
+
+### Categorías de productos
+
+| Categoría | Cantidad | Rango de precios |
+|-----------|----------|------------------|
+| Velas Moldes | 15 | $0.17 - $13.50 |
+| Velas Envases | 12 | $9 - $23 |
+| Velas Premium | 6 | $75 - $85 |
+| Pulseras | 6 | $6 - $8 |
+| Collares | 5 | $20 - $32 |
+| Accesorios | 1 | $7 |
+| **Total** | **47** | **$0.17 - $85** |
 
 ---
 
@@ -33,44 +63,54 @@ Si eres un agente de IA leyendo esto, aquí tienes todo lo que necesitas:
 yosoy222/                          ← RAÍZ del repositorio
 │
 ├── index.html                     ← LANDING PAGE principal (única página)
-│   ├── Navbar fija con enlaces y botón WhatsApp
-│   ├── Hero section (fullscreen, fondo degradado)
-│   ├── Sección "Sobre nosotros" (2 columnas)
-│   ├── Sección "Productos destacados" (8 productos, grid)
-│   ├── Sección "Catálogo completo" (todos los productos, con filtros)
-│   ├── Sección CTA WhatsApp
+│   ├── Header fijo con logo, nav, carrito y menú mobile
+│   ├── Hero asimétrico (texto + fotos de productos)
+│   ├── Catálogo con búsqueda y filtros
+│   ├── Sección "Cómo comprar" (3 pasos)
+│   ├── Sección "Nosotros" (2 columnas)
+│   ├── Contacto con iconos SVG (WhatsApp, Instagram, TikTok, Facebook)
+│   ├── Carrito drawer con steppers de cantidad
 │   ├── Footer con navegación y redes
-│   ├── Botón flotante de WhatsApp
-│   └── Lightbox modal para vista de producto
+│   └── Botón flotante de WhatsApp
 │
 ├── css/
-│   └── style.css                  ← Estilos completos (~500 líneas)
-│       ├── Variables CSS (colores, sombras, radios)
-│       ├── Navbar fija + mobile menu
-│       ├── Hero con animación
+│   └── style.css                  ← Estilos completos (~730 líneas)
+│       ├── Variables CSS (paleta cálida de velas)
+│       ├── Header fijo + mobile menu
+│       ├── Hero asimétrico
 │       ├── Grid de productos responsive
 │       ├── Tarjetas de producto con hover
-│       ├── Lightbox modal
-│       ├── Filtros de categoría
-│       ├── Botón WhatsApp flotante
-│       └── Media queries (768px, 480px)
+│       ├── Búsqueda y filtros
+│       ├── Carrito drawer
+│       ├── Secciones (Cómo comprar, Nosotros, Contacto)
+│       ├── Footer
+│       ├── WhatsApp flotante
+│       ├── Accesibilidad (focus-visible)
+│       ├── Reduced-motion
+│       └── Media queries (900px, 600px, 380px)
 │
 ├── js/
-│   └── app.js                     ← Toda la lógica JavaScript (~250 líneas)
+│   └── app.js                     ← Toda la lógica JavaScript (~390 líneas)
 │       ├── Configuración WhatsApp (NÚMERO)
-│       ├── Array de productos (NOMBRE, ARCHIVO, CATEGORÍA)
+│       ├── Array de productos (NOMBRE, ARCHIVO, CATEGORÍA, PRECIO, DESCRIPCIÓN)
 │       ├── Renderizado dinámico de grid
+│       ├── Búsqueda en tiempo real
 │       ├── Sistema de filtros
-│       ├── Lightbox con navegación
+│       ├── Carrito con persistencia (localStorage)
+│       ├── Steppers de cantidad
+│       ├── Checkout por WhatsApp
 │       ├── Menú mobile
-│       └── Animaciones scroll (IntersectionObserver)
+│       ├── Scroll spy (nav activa)
+│       └── Smooth scroll
 │
 ├── images/
 │   ├── thumbs/                    ← 97 thumbnails (400×400px, ~16KB c/u)
 │   │   └── *.jpg                  ← Para el grid de la landing
 │   └── catalog/                   ← 97 imágenes completas (800×800px, ~58KB c/u)
-│       └── *.jpg                  ← Para el lightbox al hacer click
+│       └── *.jpg                  ← Para vista ampliada
 │
+├── process_images.py              ← Script para remover bordes blancos
+├── CNAME                          ← Dominio personalizado (yosoy222.com)
 ├── .gitignore                     ← Archivos ignorados por git
 ├── README.md                      ← Este archivo
 └── PLAN_IMPLEMENTACION.md         ← Plan de fases de implementación
@@ -85,13 +125,15 @@ index.html
     │
     └── carga js/app.js
             │
-            ├── Lee array `products[]`
-            ├── Renderiza featured-grid (primeros 8)
-            ├── Renderiza catalog-grid (todos)
+            ├── Lee array `products[]` (47 productos)
+            ├── Renderiza products-grid (todos)
             ├── Cada card → imagen de images/thumbs/
-            ├── Click en card → lightbox con imagen de images/catalog/
-            ├── Click en 💬 → enlace wa.me con mensaje predefinido
-            └── Botón flotante → WhatsApp con mensaje general
+            ├── Búsqueda filtra por nombre
+            ├── Filtros filtran por categoría
+            ├── Click "Agregar" → añade al carrito
+            ├── Carrito → localStorage persistence
+            ├── Steppers → cambian cantidad
+            └── "Pedir por WhatsApp" → wa.me con mensaje itemizado
 ```
 
 ---
@@ -100,12 +142,14 @@ index.html
 
 | Componente | Tecnología | Notas |
 |-----------|-----------|-------|
-| HTML | HTML5 semántico | Sin frameworks |
+| HTML | HTML5 semántico | Sin frameworks, ARIA labels |
 | CSS | CSS3 vanilla | Variables, Grid, Flexbox, animations |
 | JavaScript | ES6+ vanilla | Sin dependencias, sin build tools |
-| Imágenes | JPEG | Thumbs 400px + Catalog 800px |
+| Imágenes | JPEG | Thumbs 400px + Catalog 800px, bordes removidos |
 | Hosting | GitHub Pages | Static site, HTTPS automático |
+| DNS | Cloudflare | Dominio yosoy222.com |
 | WhatsApp | wa.me links | Sin API, solo enlaces directos |
+| Fonts | Google Fonts | Playfair Display + Inter |
 
 **NO se usa:** React, Vue, Angular, jQuery, npm, webpack, build tools, ni ninguna dependencia externa.
 
@@ -144,43 +188,40 @@ php -S localhost:8080
 
 Esto es LO PRIMERO que debe hacerse. El sitio actual tiene un número placeholder.
 
-**Archivo:** `js/app.js` — Líneas 2-3
+**Archivo:** `js/app.js` — Línea 6
 
 ```javascript
 // ANTES (placeholder — NO funciona):
-const WHATSAPP_NUMBER = '521XXXXXXXXXX';
+const WHATSAPP = '521XXXXXXXXXX';
 
 // DESPUÉS (tu número real):
-const WHATSAPP_NUMBER = '5215512345678';  // Formato: 521 + 10 dígitos
+const WHATSAPP = '5215512345678';  // Formato: 521 + 10 dígitos
 ```
 
 **También cambiar en:** `index.html` — Buscar y reemplazar TODAS las ocurrencias de `521XXXXXXXXXX`:
 
-| Ubicación en index.html | Línea aproximada | Contexto |
-|------------------------|-------------------|----------|
-| Navbar WhatsApp button | ~30 | `href="https://wa.me/521XXXXXXXXXX?text=..."` |
-| Hero WhatsApp button | ~48 | `href="https://wa.me/521XXXXXXXXXX?text=..."` |
-| CTA WhatsApp button | ~85 | `href="https://wa.me/521XXXXXXXXXX?text=..."` |
-| Footer WhatsApp link | ~107 | `href="https://wa.me/521XXXXXXXXXX"` |
+| Ubicación en index.html | Contexto |
+|------------------------|----------|
+| Contacto WhatsApp | `href="https://wa.me/521XXXXXXXXXX?text=..."` |
+| Footer WhatsApp | `href="https://wa.me/521XXXXXXXXXX"` |
+| WhatsApp flotante | `href="https://wa.me/521XXXXXXXXXX?text=..."` |
 
 **Formato del número WhatsApp:**
 ```
-521 + Código de área (2 dígitos) + Número (8 dígitos)
+521 + Código de país (2 dígitos) + Número (8 dígitos)
 Ejemplo: 521 55 1234 5678 → 5215512345678
 ```
 
 ### Cambiar redes sociales
 
-**Archivo:** `index.html` — Sección footer (~línea 108-109)
+**Archivo:** `index.html` — Secciones contacto y footer
 
 ```html
 <!-- ANTES: -->
-<a href="https://instagram.com/yosoy222" target="_blank">📸 Instagram</a>
-<a href="https://facebook.com/yosoy222" target="_blank">📘 Facebook</a>
+<a href="https://instagram.com/yosoy222" target="_blank">Instagram</a>
 
 <!-- DESPUÉS: -->
-<a href="https://instagram.com/TU_USUARIO" target="_blank">📸 Instagram</a>
-<a href="https://facebook.com/TU_PAGINA" target="_blank">📘 Facebook</a>
+<a href="https://instagram.com/TU_USUARIO" target="_blank">Instagram</a>
 ```
 
 ---
@@ -197,26 +238,13 @@ images/catalog/NOMBRE.jpg      ← Redimensionada a 800×800px
 
 **Requisitos de imagen:**
 - Formato: `.jpg` o `.jpeg`
-- Fondo blanco (para consistencia visual)
-- Cuadrada (1:1) o con padding blanco si es retrato/paisaje
+- Cuadrada (1:1) o recortada al contenido
 - Thumbs: máx 400×400px, calidad 80%
 - Catalog: máx 800×800px, calidad 85%
 
-**Para generar las versiones desde una imagen original de 2048×2048:**
-```python
-from PIL import Image
-
-img = Image.open('imagen_original.jpg')
-
-# Thumbnail
-thumb = img.copy()
-thumb.thumbnail((400, 400), Image.LANCZOS)
-thumb.save('images/thumbs/NOMBRE.jpg', 'JPEG', quality=80, optimize=True)
-
-# Catálogo
-catalog = img.copy()
-catalog.thumbnail((800, 800), Image.LANCZOS)
-catalog.save('images/catalog/NOMBRE.jpg', 'JPEG', quality=85, optimize=True)
+**Para remover bordes blancos:**
+```bash
+python3 process_images.py
 ```
 
 ### Paso 2: Agregar al array de productos
@@ -225,7 +253,7 @@ catalog.save('images/catalog/NOMBRE.jpg', 'JPEG', quality=85, optimize=True)
 
 Agregar una línea al array:
 ```javascript
-{ file: "NOMBRE.jpg", name: "Nombre Bonito", cat: "vela" },
+{ file: "NOMBRE.jpg", name: "Nombre Bonito", cat: "vela", price: 15, desc: "Descripción del producto" },
 ```
 
 **Campos:**
@@ -234,11 +262,12 @@ Agregar una línea al array:
 | `file` | string | Nombre exacto del archivo JPG (con extensión) |
 | `name` | string | Nombre que se muestra al usuario |
 | `cat` | string | Categoría: `"vela"`, `"pulsera"`, `"collar"`, `"otro"` |
+| `price` | number | Precio en USD |
+| `desc` | string | Descripción corta del producto |
 
 **Ejemplo completo:**
 ```javascript
-// Agregar después de la última línea del array:
-{ file: "Nueva Vela Azul.jpg", name: "Vela Azul Celestial", cat: "vela" },
+{ file: "Nueva Vela Azul.jpg", name: "Vela Azul Celestial", cat: "vela", price: 25, desc: "Vela artesanal de 150grs. en envase de vidrio" },
 ```
 
 ### Paso 3: Commit y push
@@ -276,80 +305,41 @@ git push
 
 ---
 
-## CÓMO CAMBIAR EL DISEÑO VISUAL
+## PROCESAMIENTO DE IMÁGENES
 
-### Cambiar colores
+### Remover bordes blancos
 
-**Archivo:** `css/style.css` — Variables CSS al inicio del archivo:
+El script `process_images.py` detecta y recorta bordes blancos/near-white de todas las imágenes:
 
-```css
-:root {
-    --primary: #2c1810;        /* Color principal (marrón oscuro) */
-    --primary-light: #5a3825;  /* Color secundario */
-    --accent: #e8a87c;         /* Color de acento (durazno) */
-    --bg: #f8f5f0;             /* Fondo general */
-    --bg-card: #ffffff;        /* Fondo de tarjetas */
-    --text: #3d2c1e;           /* Color de texto */
-    --text-light: #8b7355;     /* Texto secundario */
-    --whatsapp: #25D366;       /* Verde WhatsApp */
-}
+```bash
+python3 process_images.py
 ```
 
-### Cambiar fuentes
+**Configuración:**
+- `THRESHOLD = 240` — Píxeles por encima de este valor se consideran "blancos"
+- `CROP_MARGIN = 2` — Mantener 2px de margen para no cortar el contenido
 
-**Archivo:** `css/style.css` — Línea del `body`:
-```css
-body {
-    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-    /* Cambiar por Google Fonts: */
-    /* font-family: 'Playfair Display', serif; */
-}
-```
-
-Para usar Google Fonts, agregar en `<head>` de `index.html`:
-```html
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet">
-```
-
-### Cambiar texto del hero
-
-**Archivo:** `index.html` — Sección `<section class="hero">`:
-```html
-<h1><span>Yo</span>Soy222</h1>
-<p class="subtitle">Velas Artesanales & Joyería Espiritual</p>
-<p class="tagline">Tu texto personalizado aquí...</p>
-```
-
-### Cambiar imagen del about
-
-**Archivo:** `index.html` — Línea ~58:
-```html
-<img src="images/catalog/Aura Rosa.jpg" alt="Vela artesanal Aura Rosa">
-```
-
-### Cambiar cantidad de productos destacados
-
-**Archivo:** `js/app.js` — Línea ~82:
-```javascript
-// Mostrar primeros 8 productos destacados:
-initProductsGrid('featured-grid', products.slice(0, 8));
-
-// Cambiar a los primeros 12:
-initProductsGrid('featured-grid', products.slice(0, 12));
-```
+**Resultados típicos:**
+- 10-15 imágenes recortadas por lote
+- 85-90 imágenes sin cambios (ya sin bordes)
 
 ---
 
 ## DEPLOY A GITHUB PAGES
 
-### Activar por primera vez
+### Estado actual
+
+✅ **GitHub Pages:** Activado
+✅ **Dominio:** yosoy222.com (via Cloudflare)
+✅ **HTTPS:** Habilitado
+✅ **Deploy automático:** Cada push a `main`
+
+### Configuración inicial (ya completada)
 
 1. Ir a https://github.com/juancito8812/yosoy222/settings/pages
 2. **Source:** Deploy from a branch
 3. **Branch:** main | **Folder:** / (root)
 4. Click **Save**
-5. Esperar 2-3 minutos
-6. URL: https://juancito8812.github.io/yosoy222/
 
 ### Deploy automático
 
@@ -359,7 +349,7 @@ Cada `git push` a la rama `main` activa un deploy automático. No hay nada que h
 
 ```bash
 # Ver el último deploy:
-gh api repos/juancito8812/yosoy222/pages 2>/dev/null
+curl -s https://api.github.com/repos/juancito8812/yosoy222/pages | python3 -m json.tool
 
 # O simplemente abrir la URL y verificar que carga
 ```
@@ -368,83 +358,117 @@ gh api repos/juancito8812/yosoy222/pages 2>/dev/null
 
 ## CONFIGURAR DOMINIO PERSONALIZADO
 
-### Paso 1: En GitHub Pages
+### Estado actual
 
-1. Settings → Pages → Custom domain
-2. Escribir el dominio (ej: `yosoy222.com`)
-3. Guardar (crea archivo `CNAME` automáticamente)
-4. Marcar "Enforce HTTPS"
+✅ **Dominio:** yosoy222.com
+✅ **DNS:** Cloudflare
+✅ **Registros:** 4 A records + 1 CNAME
 
-### Paso 2: En el proveedor de DNS
+### Configuración DNS (ya completada)
 
-Agregar estos registros:
+| Tipo | Nombre | Valor | Proxy |
+|------|--------|-------|-------|
+| A | @ | 185.199.108.153 | Off |
+| A | @ | 185.199.109.153 | Off |
+| A | @ | 185.199.110.153 | Off |
+| A | @ | 185.199.111.153 | Off |
+| CNAME | www | juancito8812.github.io | Off |
 
+### CNAME en GitHub
+
+Archivo `CNAME` en la raíz del repositorio:
 ```
-Tipo    Nombre    Valor                    TTL
-─────   ──────    ─────────────────────    ────
-A       @         185.199.108.153          600
-A       @         185.199.109.153          600
-A       @         185.199.110.153          600
-A       @         185.199.111.153          600
-CNAME   www       juancito8812.github.io   600
+yosoy222.com
 ```
 
-### Paso 3: Esperar propagación
+### Verificar DNS
 
-- DNS: 15 minutos - 48 horas
-- SSL automático: ~15 minutos después de que DNS resuelva
+```bash
+# Verificar resolución
+dig yosoy222.com +short
+
+# Verificar HTTPS
+curl -sI https://yosoy222.com | head -5
+```
 
 ---
 
 ## TABLA DE PRODUCTOS
 
-| # | Archivo | Nombre | Categoría |
-|---|---------|--------|-----------|
-| 1 | Armonia.jpg | Armonía | vela |
-| 2 | Aura Corazón.jpg | Aura Corazón | vela |
-| 3 | Aura Rosa.jpg | Aura Rosa | vela |
-| 4 | Aura Tulipan.jpg | Aura Tulipán | vela |
-| 5 | Buda.jpg | Buda | vela |
-| 6 | Buquet .jpg | Buquet | vela |
-| 7 | Collar Eslabon Medio.jpg | Collar Eslabón Medio | collar |
-| 8 | Collar Largo 01.jpg | Collar Largo 01 | collar |
-| 9 | Collar Medio 02.jpg | Collar Medio 02 | collar |
-| 10 | Corazon Blanca.jpg | Corazón Blanca | vela |
-| 11 | Corazón .jpg | Corazón | vela |
-| 12 | Cruz .jpg | Cruz | vela |
-| 13 | Cubo .jpg | Cubo | vela |
-| 14 | Espiral.jpg | Espiral | vela |
-| 15 | Estrella.jpg | Estrella | vela |
-| 16 | Gargantilla 2.jpg | Gargantilla 2 | collar |
-| 17 | Gargantilla Lisa.jpg | Gargantilla Lisa | collar |
-| 18 | Hamsa .jpg | Hamsa | vela |
-| 19 | Mandala.jpg | Mandala | vela |
-| 20 | Margarita.jpg | Margarita | vela |
-| 21 | Mini Corazones.jpg | Mini Corazones | vela |
-| 22 | Mini Girasol.jpg | Mini Girasol | vela |
-| 23 | Mini Margarita.jpg | Mini Margarita | vela |
-| 24 | PETIT.jpg | Petit | vela |
-| 25 | Piedras Natural.jpg | Piedras Natural | otro |
-| 26 | Pulsera Infinito Azul.jpg | Pulsera Infinito Azul | pulsera |
-| 27 | Pulsera Infinito Beige.jpg | Pulsera Infinito Beige | pulsera |
-| 28 | Pulsera Infinito Roja.jpg | Pulsera Infinito Roja | pulsera |
-| 29 | Pulsera Ojito.jpg | Pulsera Ojito | pulsera |
-| 30 | Pulsera Perla.jpg | Pulsera Perla | pulsera |
-| 31 | Pulsera San Benito.jpg | Pulsera San Benito | pulsera |
-| 32 | Rosa .jpg | Rosa | vela |
-| 33 | Rosa Pequeña.jpg | Rosa Pequeña | vela |
-| 34 | Sagrada Familia.jpg | Sagrada Familia | vela |
-| 35 | Sagrada Familia 1.jpg | Sagrada Familia 1 | vela |
-| 36 | Tulipan.jpg | Tulipán | vela |
-| 37 | Vela Canela.jpg | Vela Canela | vela |
-| 38 | Vela Estrellas.jpg | Vela Estrellas | vela |
-| 39 | Vela Rosa.jpg | Vela Rosa | vela |
-| 40 | Vela Tulipan.jpg | Vela Tulipán | vela |
-| 41 | Velita Corazoncito.jpg | Velita Corazoncito | vela |
-| 42 | Vintage.jpg | Vintage | vela |
-| 43 | Virgen del Carmen.jpg | Virgen del Carmen | vela |
+### Velas Moldes (15 productos)
 
-**Total:** 43 productos con nombre + 54 productos sin nombre (archivos numéricos/IMG) = **97 productos**
+| # | Archivo | Nombre | Precio | Descripción |
+|---|---------|--------|--------|-------------|
+| 1 | Rosa .jpg | Rosa | $7.00 | Vela artesanal de 79grs. en forma de Rosa |
+| 2 | Mini Corazones.jpg | Mini Corazones | $0.17 | Wax Melts 1grs. en forma de Mini corazón |
+| 3 | Rosa Pequeña.jpg | Rosa Pequeña | $4.50 | Vela artesanal de 23grs. en forma de Rosa pequeña |
+| 4 | Mini Margarita.jpg | Mini Margarita | $1.70 | Wax Melts 6grs. en forma de Mini Margarita |
+| 5 | Margarita.jpg | Margarita | $3.00 | Vela artesanal de 16grs. en forma de Margarita pequeña |
+| 6 | Tulipan.jpg | Tulipán | $5.00 | Vela artesanal de 33grs. en forma de Tulipan pequeña |
+| 7 | Buquet .jpg | Buquet Tulipán | $8.50 | Vela artesanal de 83grs. en forma de Buquet Tulipan |
+| 8 | Espiral.jpg | Espiral | $9.50 | Vela artesanal de 104grs. en forma de Espiral |
+| 9 | Sagrada Familia.jpg | Sagrada Familia | $7.00 | Vela artesanal de 75grs. en forma de Sagrada Familia |
+| 10 | Buda.jpg | Buda | $6.50 | Vela artesanal de 20grs. en forma de Buda |
+| 11 | Hamsa .jpg | Hamsa | $8.00 | Vela artesanal de 75grs. en forma de Mano Hamsa |
+| 12 | Corazón .jpg | Corazón | $13.50 | Vela artesanal de 182grs. en forma de Corazón |
+| 13 | Cruz .jpg | Cruz con Paloma | $7.00 | Vela artesanal de 52grs. en forma de Cruz con palomita |
+| 14 | Cubo .jpg | Cubo | $7.00 | Vela artesanal de 40grs. en forma de Cubo |
+| 15 | Virgen del Carmen.jpg | Virgen del Carmen | $7.00 | Vela artesanal de 42grs. en forma de Virgen del Carmen |
+
+### Velas Envases (12 productos)
+
+| # | Archivo | Nombre | Precio | Descripción |
+|---|---------|--------|--------|-------------|
+| 16 | Mandala.jpg | Mandala | $9.00 | Vela artesanal de 98grs. en envase de metal decorativo |
+| 17 | Vintage.jpg | Vintage | $9.50 | Vela artesanal de 165grs. en envase de vidrio transparente |
+| 18 | PETIT.jpg | Petit | $11.00 | Vela artesanal de 171grs. en envase de vidrio transparente |
+| 19 | Estrella1.jpg | Estrella Envase | $12.00 | Vela artesanal de 285grs. en envase de vidrio transparente |
+| 20 | Aura Rosa.jpg | Aura Rosa | $17.00 | Vela artesanal de 342grs. en envase de vidrio transparente |
+| 21 | Aura Tulipan.jpg | Aura Tulipán | $17.00 | Vela artesanal de 335grs. en envase de vidrio transparente |
+| 22 | Aura Corazón.jpg | Aura Corazón | $20.00 | Vela artesanal de 418grs. en envase de vidrio transparente |
+| 23 | Armonia.jpg | Armonía Canela | $22.00 | Vela artesanal de 508grs. en envase de vidrio opaco |
+| 24 | Mini Girasol.jpg | Mini Girasol | $1.70 | Wax Melts en forma de Mini Girasol |
+| 25 | Estrella.jpg | Estrella | $7.00 | Vela artesanal en forma de Estrella |
+| 26 | Corazon Blanca.jpg | Corazón Blanca | $7.00 | Vela artesanal en forma de Corazón Blanco |
+| 27 | Sagrada Familia 1.jpg | Sagrada Familia 1 | $7.00 | Vela artesanal en forma de Sagrada Familia |
+
+### Velas Premium (6 productos)
+
+| # | Archivo | Nombre | Precio | Descripción |
+|---|---------|--------|--------|-------------|
+| 28 | Vela Rosa.jpg | Vela Rosa | $85.00 | Vela artesanal premium en forma de Rosa |
+| 29 | Vela Canela.jpg | Vela Canela | $85.00 | Vela artesanal premium de canela |
+| 30 | Vela Estrellas.jpg | Vela Estrellas | $85.00 | Vela artesanal premium con forma de estrellas |
+| 31 | Vela Tulipan.jpg | Vela Tulipán | $85.00 | Vela artesanal premium en forma de Tulipán |
+| 32 | Velita Corazoncito.jpg | Velita Corazoncito | $75.00 | Vela artesanal en forma de corazoncito |
+| 33 | Mini Girasol.jpg | Mini Girasol | $1.70 | Wax Melts en forma de Mini Girasol |
+
+### Pulseras (6 productos)
+
+| # | Archivo | Nombre | Precio | Descripción |
+|---|---------|--------|--------|-------------|
+| 34 | Pulsera Infinito Azul.jpg | Pulsera Infinito Azul | $8.00 | Pulsera Infinito simboliza conexión y propósito |
+| 35 | Pulsera Infinito Beige.jpg | Pulsera Infinito Beige | $8.00 | Pulsera Infinito simboliza conexión y propósito |
+| 36 | Pulsera Infinito Roja.jpg | Pulsera Infinito Roja | $8.00 | Pulsera Infinito simboliza conexión y propósito |
+| 37 | Pulsera San Benito.jpg | Pulsera San Benito | $8.00 | Pulsera San Benito conecta intención y protección |
+| 38 | Pulsera Perla.jpg | Pulsera Perla | $6.00 | Pulsera Perla irradia calma y claridad |
+| 39 | Pulsera Ojito.jpg | Pulsera Ojito | $6.00 | Pulsera Ojito protege y equilibra tu energía |
+
+### Collares (5 productos)
+
+| # | Archivo | Nombre | Precio | Descripción |
+|---|---------|--------|--------|-------------|
+| 40 | Gargantilla 2.jpg | Gargantilla | $20.00 | Gargantilla de Gold-Filled bañada en oro |
+| 41 | Gargantilla Lisa.jpg | Gargantilla Lisa | $25.00 | Gargantilla de Gold-Filled bañada en oro. Diseño liso |
+| 42 | Collar Medio 02.jpg | Collar Medio | $25.00 | Collar Medio de Gold-Filled bañada en oro |
+| 43 | Collar Eslabon Medio.jpg | Collar Eslabón Medio | $30.00 | Collar Medio de Gold-Filled con eslabones |
+| 44 | Collar Largo 01.jpg | Collar Largo | $32.00 | Collar Largo de Gold-Filled bañada en oro |
+
+### Accesorios (1 producto)
+
+| # | Archivo | Nombre | Precio | Descripción |
+|---|---------|--------|--------|-------------|
+| 45 | Piedras Natural.jpg | Piedras Naturales | $7.00 | Dijes Piedras Naturales. Cada una vibra con intención |
 
 ---
 
@@ -453,34 +477,49 @@ CNAME   www       juancito8812.github.io   600
 ### Variables de colores (modificar en `:root`)
 
 ```css
---primary: #2c1810;       /* Marrón oscuro - navbar, footer, textos principales */
---primary-light: #5a3825; /* Marrón claro - botones activos, badges */
---accent: #e8a87c;        /* Durazno - acentos, títulos, hover */
---bg: #f8f5f0;            /* Beige claro - fondo general */
---bg-card: #ffffff;       /* Blanco - tarjetas de producto */
---text: #3d2c1e;          /* Marrón - texto principal */
---text-light: #8b7355;    /* Marrón suave - texto secundario */
---whatsapp: #25D366;      /* Verde WhatsApp */
+:root {
+  /* Paleta cálida de velas */
+  --bg: #100e0c;              /* Fondo principal (carbón oscuro) */
+  --bg-raised: #1a1612;       /* Fondo elevado */
+  --bg-card: #1e1915;         /* Fondo de tarjetas */
+  --surface: #141110;         /* Fondo de secciones alternas */
+  --border: rgba(232,168,124,0.10); /* Bordes sutiles */
+  
+  /* Texto */
+  --text: #f4ede3;            /* Texto principal (crema) */
+  --text-muted: #a89b8b;      /* Texto secundario */
+  --text-faint: #6d6359;      /* Texto tenue */
+  
+  /* Acento (miel/ámbar) */
+  --accent: #e8a87c;          /* Color de acento principal */
+  --accent-hover: #d99a6c;    /* Acento hover */
+  
+  /* Funcional */
+  --whatsapp: #25d366;        /* Verde WhatsApp */
+  --danger: #c0392b;          /* Rojo peligro */
+}
 ```
 
 ### Clases principales
 
 | Clase | Uso |
 |-------|-----|
-| `.btn-primary` | Botón dorado/acentado |
+| `.btn-primary` | Botón ámbar/acentado |
+| `.btn-ghost` | Botón transparente con borde |
 | `.btn-whatsapp` | Botón verde WhatsApp |
-| `.btn-outline` | Botón transparente con borde |
 | `.product-card` | Tarjeta de producto en grid |
 | `.filter-btn` | Botón de filtro de categoría |
-| `.section-header` | Encabezado de sección (título + divisor) |
-| `.hero` | Sección hero fullscreen |
-| `.lightbox` | Modal de vista completa |
+| `.search` | Campo de búsqueda |
+| `.cart-drawer` | Panel lateral del carrito |
+| `.qty-stepper` | Stepper de cantidad (+/−) |
+| `.contact-link` | Tarjeta de contacto con icono SVG |
 
 ### Breakpoints responsive
 
 ```css
-@media (max-width: 768px)  { /* Tablet y móvil */ }
-@media (max-width: 480px)  { /* Móvil pequeño */ }
+@media (max-width: 900px)  { /* Tablet — menú mobile, layout vertical */ }
+@media (max-width: 600px)  { /* Móvil — grid 2 columnas, botones full-width */ }
+@media (max-width: 380px)  { /* Móvil pequeño — grid 1 columna */ }
 ```
 
 ---
@@ -491,16 +530,18 @@ CNAME   www       juancito8812.github.io   600
 
 | Archivo | Propósito | Líneas aprox. |
 |---------|-----------|---------------|
-| `index.html` | Landing page | ~120 |
-| `css/style.css` | Todos los estilos | ~500 |
-| `js/app.js` | Toda la lógica JS | ~250 |
+| `index.html` | Landing page | ~250 |
+| `css/style.css` | Todos los estilos | ~730 |
+| `js/app.js` | Toda la lógica JS | ~390 |
 | `images/thumbs/*.jpg` | Thumbnails del grid | 97 archivos |
-| `images/catalog/*.jpg` | Imágenes del lightbox | 97 archivos |
+| `images/catalog/*.jpg` | Imágenes del catálogo | 97 archivos |
+| `CNAME` | Dominio personalizado | 1 línea |
 
 ### Opcionales
 
 | Archivo | Propósito |
 |---------|-----------|
+| `process_images.py` | Script para remover bordes blancos |
 | `PLAN_IMPLEMENTACION.md` | Plan de fases del proyecto |
 | `.gitignore` | Archivos ignorados por git |
 
@@ -513,7 +554,7 @@ CNAME   www       juancito8812.github.io   600
 git status
 
 # Agregar y commitear
-git add index.html js/app.js
+git add index.html js/app.js css/style.css
 git commit -m "feat: descripción del cambio"
 
 # Subir a GitHub (deploy automático)
@@ -550,13 +591,18 @@ git checkout -- index.html
 - **Causa:** Producto sin categoría válida
 - **Solución:** Verificar que `cat` sea `"vela"`, `"pulsera"`, `"collar"`, o `"otro"`
 
+### El sitio no carga en yosoy222.com
+- **Causa:** DNS no propagado o GitHub Pages no activado
+- **Solución:** Verificar DNS con `dig yosoy222.com +short` y revisar settings de GitHub Pages
+
 ---
 
 ## CONTACTO DEL PROYECTO
 
 - **GitHub:** https://github.com/juancito8812
 - **Repositorio:** https://github.com/juancito8812/yosoy222
+- **Sitio web:** https://yosoy222.com
 
 ---
 
-*Documentación generada para que cualquier agente de IA pueda entender y modificar este proyecto.*
+*Documentación actualizada: 3 de septiembre 2026*

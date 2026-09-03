@@ -1,13 +1,13 @@
-# 🕯️ Plan de Implementación — YoSoy222 Landing Page
+# 🕯️ Plan de Implementación — YoSoy222
 
-## ✅ Fase 1: COMPLETADA (Hoy)
+## ✅ Fase 1: COMPLETADA — Imágenes y Landing Base
 
 ### Imágenes Normalizadas
 - [x] 97 imágenes originales procesadas a 2048×2048 JPEG 95%
-- [x] Thumbnails optimizados (400×400, 1.5MB total)
-- [x] Imágenes de catálogo (800×800, 5.5MB total)
-- [x] Fondo blanco para consistencia visual
+- [x] Thumbnails optimizados (400×400, ~16KB c/u)
+- [x] Imágenes de catálogo (800×800, ~58KB c/u)
 - [x] Corrección de orientación EXIF
+- [x] Bordes blancos removidos con `process_images.py`
 
 ### Landing Page Base
 - [x] HTML5 semántico con SEO básico
@@ -15,89 +15,104 @@
 - [x] JavaScript vanilla (sin dependencias)
 - [x] Hero section con CTA
 - [x] Sección "Sobre nosotros"
-- [x] Grid de productos destacados (8)
+- [x] Grid de productos
 - [x] Catálogo completo con filtros
-- [x] Lightbox para vista de productos
 - [x] Integración WhatsApp (botón flotante + por producto)
-- [x] Push a GitHub: https://github.com/juancito8812/yosoy222
 
 ---
 
-## 🚀 Fase 2: CONFIGURAR GITHUB PAGES (Siguiente paso)
+## ✅ Fase 2: COMPLETADA — Rediseño Completo
 
-### Activar GitHub Pages
-1. Ir a https://github.com/juancito8812/yosoy222/settings/pages
-2. En "Source" seleccionar: **Deploy from a branch**
-3. Branch: **main**, Folder: **/ (root)**
-4. Click **Save**
-5. Esperar 2-3 minutos
-6. Tu sitio estará en: **https://juancito8812.github.io/yosoy222/**
+### Nuevo Diseño
+- [x] Paleta cálida de velas (carbón + ámbar)
+- [x] Hero asimétrico con fotos reales de productos
+- [x] Iconos SVG profesionales (sin emojis en UI)
+- [x] Sección "Cómo comprar" con 3 pasos
+- [x] Contacto con iconos SVG (WhatsApp, Instagram, TikTok, Facebook)
+- [x] Footer completo con navegación y redes
 
-### Verificar que funciona
-- Abrir la URL de arriba
-- Probar que las imágenes cargan
-- Probar filtros de categoría
-- Probar lightbox (click en imagen)
-- Probar botón de WhatsApp
+### Funcionalidad
+- [x] Búsqueda en tiempo real en el catálogo
+- [x] Filtros por categoría (Velas, Pulseras, Collares, Accesorios)
+- [x] Carrito de compras con steppers de cantidad (+/−)
+- [x] Persistencia del carrito en localStorage
+- [x] Checkout por WhatsApp con mensaje itemizado
+- [x] Menú mobile responsive
+- [x] Scroll spy (nav activa según sección visible)
+- [x] Smooth scroll para enlaces internos
 
----
-
-## 🌐 Fase 3: DOMINIO PERSONALIZADO
-
-### Configurar dominio en GitHub Pages
-1. Ir a Settings → Pages → Custom domain
-2. Escribir tu dominio (ej: `yosoy222.com`)
-3. GitHub creará un archivo `CNAME` automáticamente
-
-### Configurar DNS en tu proveedor de dominio
-Agregar estos registros DNS:
-
-| Tipo | Nombre | Valor | TTL |
-|------|--------|-------|-----|
-| A | @ | 185.199.108.153 | 600 |
-| A | @ | 185.199.109.153 | 600 |
-| A | @ | 185.199.110.153 | 600 |
-| A | @ | 185.199.111.153 | 600 |
-| CNAME | www | juancito8812.github.io | 600 |
-
-### SSL/HTTPS (automático)
-GitHub Pages genera certificado SSL automáticamente después de ~15 minutos.
+### Accesibilidad
+- [x] Focus-visible en todos los controles interactivos
+- [x] ARIA labels en botones y navegación
+- [x] Roles semánticos (dialog, navigation, status)
+- [x] prefers-reduced-motion respetado
+- [x] Hit targets mínimo 44px en mobile
 
 ---
 
-## 📱 Fase 4: INTEGRACIÓN WHATSAPP (Pendiente)
+## ✅ Fase 3: COMPLETADA — Datos de Productos
 
-### Configurar número de WhatsApp
-En `js/app.js`, cambiar la línea:
-```javascript
-const WHATSAPP_NUMBER = '521XXXXXXXXXX';
-```
-Por tu número real con código de país:
-```
-521 + 10 dígitos = tu número
-```
-Ejemplo: `5215512345678`
+### Catálogo Completo
+- [x] 47 productos con precios y descripciones reales
+- [x] Precios extraídos del catálogo Excel
+- [x] Descripciones de cada producto
+- [x] Categorías correctas (vela, pulsera, collar, otro)
+- [x] Precios formateados como $XX.XX USD
 
-### Mensajes personalizados por producto
-Ya está configurado. Cuando alguien hace click en "Preguntar por WhatsApp" en un producto, se envía:
-```
-Hola! Me interesa la vela [Nombre del Producto] 🕯️
-```
-
-### Opcional: Catálogo de WhatsApp Business
-- Crear catálogo en WhatsApp Business
-- Agregar productos con precios
-- Vincular desde la landing page
+### Organización por Categoría
+- [x] Velas Moldes (15 productos): $0.17 - $13.50
+- [x] Velas Envases (12 productos): $9 - $23
+- [x] Velas Premium (6 productos): $75 - $85
+- [x] Pulseras (6 productos): $6 - $8
+- [x] Collares (5 productos): $20 - $32
+- [x] Accesorios (1 producto): $7
 
 ---
 
-## 🎨 Fase 5: MEJORAS VISUALES (Opcional)
+## ✅ Fase 4: COMPLETADA — Deploy y Dominio
 
-### Contenido pendiente de agregar
-- [ ] Fotos propias de productos (reemplazar las genéricas)
-- [ ] Descripciones de cada producto
-- [ ] Precios
-- [ ] Banner hero con imagen real
+### GitHub Pages
+- [x] GitHub Pages activado
+- [x] Deploy automático en cada push a `main`
+- [x] CNAME file configurado
+- [x] HTTPS habilitado
+
+### Dominio Personalizado
+- [x] Dominio yosoy222.com comprado en Cloudflare
+- [x] DNS configurado via Cloudflare API
+- [x] 4 A records → GitHub Pages IPs
+- [x] CNAME www → juancito8812.github.io
+- [x] Proxy desactivado (requerido para GitHub Pages)
+- [x] SSL/HTTPS funcionando
+
+### URLs de Producción
+- **Principal:** https://yosoy222.com
+- **GitHub Pages:** https://juancito8812.github.io/yosoy222/
+- **Redirect:** juancito8812.github.io/yosoy222/ → yosoy222.com
+
+---
+
+## ✅ Fase 5: COMPLETADA — Documentación
+
+### Documentación
+- [x] README.md actualizado con documentación completa
+- [x] Tabla de productos con precios y descripciones
+- [x] Guía de estilos CSS
+- [x] Instrucciones de deploy
+- [x] Troubleshooting
+- [x] Comandos git útiles
+
+---
+
+## 📋 TAREAS PENDIENTES (Futuro)
+
+### Configuración Obligatoria
+- [ ] Cambiar número de WhatsApp (`521XXXXXXXXXX` → número real)
+- [ ] Actualizar redes sociales (Instagram, TikTok, Facebook)
+
+### Mejoras Visuales
+- [ ] Agregar fotos propias de productos (reemplazar las genéricas)
+- [ ] Banner hero con imagen real del negocio
 - [ ] Testimonios de clientes
 - [ ] Galería de Instagram embebida
 
@@ -109,29 +124,29 @@ Hola! Me interesa la vela [Nombre del Producto] 🕯️
 - [ ] robots.txt
 
 ### Performance
-- [ ] Lazy loading de imágenes (ya implementado)
 - [ ] Minificar CSS/JS
 - [ ] Agregar Service Worker (PWA)
 - [ ] Compression gzip en GitHub Pages
 
+### Funcionalidad
+- [ ] Filtros por precio
+- [ ] Ordenar por precio (menor/mayor)
+- [ ] Vista de producto ampliada (lightbox)
+- [ ] Formulario de contacto directo
+
 ---
 
-## 📊 ESTRUCTURA DEL PROYECTO
+## 📊 RESUMEN DE PROGRESO
 
-```
-yosoy222/
-├── index.html              ← Landing page principal
-├── css/
-│   └── style.css           ← Estilos completos
-├── js/
-│   └── app.js              ← Lógica, productos, WhatsApp
-├── images/
-│   ├── thumbs/             ← 97 thumbnails (400px, 1.5MB)
-│   └── catalog/            ← 97 imágenes catálogo (800px, 5.5MB)
-├── .gitignore
-├── README.md
-└── PLAN_IMPLEMENTACION.md  ← Este archivo
-```
+| Fase | Estado | Fecha |
+|------|--------|-------|
+| Fase 1: Imágenes + Landing base | ✅ COMPLETADA | 1 sep 2026 |
+| Fase 2: Rediseño completo | ✅ COMPLETADA | 2 sep 2026 |
+| Fase 3: Datos de productos | ✅ COMPLETADA | 3 sep 2026 |
+| Fase 4: Deploy y dominio | ✅ COMPLETADA | 3 sep 2026 |
+| Fase 5: Documentación | ✅ COMPLETADA | 3 sep 2026 |
+| Fase 6: Configuración WhatsApp | ⏳ PENDIENTE | - |
+| Fase 7: Mejoras visuales | 📅 FUTURO | - |
 
 ---
 
@@ -140,35 +155,36 @@ yosoy222/
 ### 1. Cambiar número de WhatsApp
 Archivo: `js/app.js`
 ```javascript
-// Línea 2-3
-const WHATSAPP_NUMBER = '521TU_NUMERO_AQUI';
-const WHATSAPP_MSG_HOLA = 'Hola! Me interesa conocer sus velas artesanales 🕯️';
+// Línea 6
+const WHATSAPP = '521TU_NUMERO_AQUI';
 ```
 
 ### 2. Actualizar redes sociales
-Archivo: `index.html` (sección footer)
+Archivo: `index.html` (secciones contacto y footer)
 ```html
-<a href="https://instagram.com/TU_USUARIO" target="_blank">📸 Instagram</a>
-<a href="https://facebook.com/TU_PAGINA" target="_blank">📘 Facebook</a>
+<a href="https://instagram.com/TU_USUARIO" target="_blank">Instagram</a>
+<a href="https://facebook.com/TU_PAGINA" target="_blank">Facebook</a>
 ```
 
 ### 3. Actualizar número en todos los enlaces
 Buscar y reemplazar `521XXXXXXXXXX` por tu número real en:
-- `index.html` (3 occurrences)
 - `js/app.js` (1 occurrence)
+- `index.html` (3 occurrences)
 
 ---
 
-## ⏱️ TIMELINE ESTIMADO
+## ⏱️ TIMELINE
 
 | Fase | Tiempo | Estado |
 |------|--------|--------|
-| Fase 1: Imágenes + Landing base | ✅ Hoy | COMPLETADA |
-| Fase 2: GitHub Pages | 10 min | PRÓXIMO |
-| Fase 3: Dominio personalizado | 30 min + propagación DNS | PENDIENTE |
-| Fase 4: WhatsApp número real | 5 min | PENDIENTE |
-| Fase 5: Mejoras visuales | 1-2 días | FUTURO |
+| Fase 1: Imágenes + Landing base | ✅ | COMPLETADA |
+| Fase 2: Rediseño completo | ✅ | COMPLETADA |
+| Fase 3: Datos de productos | ✅ | COMPLETADA |
+| Fase 4: Deploy y dominio | ✅ | COMPLETADA |
+| Fase 5: Documentación | ✅ | COMPLETADA |
+| Fase 6: Configuración WhatsApp | 5 min | PENDIENTE |
+| Fase 7: Mejoras visuales | 1-2 días | FUTURO |
 
 ---
 
-*Última actualización: 1 de septiembre 2026*
+*Última actualización: 3 de septiembre 2026*
