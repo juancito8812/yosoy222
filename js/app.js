@@ -7,7 +7,7 @@
   'use strict';
 
   /* ----- Config ----- */
-  const WHATSAPP = '521XXXXXXXXXX';
+  const WHATSAPP = '584126481628';
 
   /* ----- Product data (from catalog Excel) ----- */
   const products = [
