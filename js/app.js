@@ -375,6 +375,102 @@
   });
 
   /* ============================================
+     LIGHTBOX
+     ============================================ */
+  const lightbox = document.getElementById('lightbox');
+  const lightboxImg = document.getElementById('lightboxImg');
+  const lightboxName = document.getElementById('lightboxName');
+  const lightboxDesc = document.getElementById('lightboxDesc');
+  const lightboxPrice = document.getElementById('lightboxPrice');
+  const lightboxCounter = document.getElementById('lightboxCounter');
+  const lightboxWhatsapp = document.getElementById('lightboxWhatsapp');
+  const lightboxClose = document.getElementById('lightboxClose');
+  const lightboxPrev = document.getElementById('lightboxPrev');
+  const lightboxNext = document.getElementById('lightboxNext');
+
+  let currentLightboxIndex = 0;
+  let visibleProducts = [];
+
+  function openLightbox(index) {
+    visibleProducts = products.filter((p, i) => {
+      const card = grid.querySelector(`[data-index="${i}"]`);
+      return card && !card.classList.contains('hidden');
+    });
+    
+    // Find the index in visibleProducts
+    const targetProduct = products[index];
+    currentLightboxIndex = visibleProducts.findIndex(p => p.name === targetProduct.name);
+    if (currentLightboxIndex === -1) currentLightboxIndex = 0;
+    
+    updateLightboxContent();
+    lightbox.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeLightboxFn() {
+    lightbox.classList.remove('active');
+    document.body.style.overflow = '';
+  }
+
+  function updateLightboxContent() {
+    const p = visibleProducts[currentLightboxIndex];
+    if (!p) return;
+    
+    lightboxImg.src = `images/catalog/${p.file}`;
+    lightboxImg.alt = `${p.name} artesanal`;
+    lightboxName.textContent = p.name;
+    lightboxDesc.textContent = p.desc;
+    lightboxPrice.textContent = `$${p.price.toFixed(2)}`;
+    lightboxCounter.textContent = `${currentLightboxIndex + 1} / ${visibleProducts.length}`;
+    
+    lightboxWhatsapp.href = `https://wa.me/${WHATSAPP}?text=${encodeURIComponent('Hola! Me interesa la vela ' + p.name + ' 🕯️')}`;
+  }
+
+  function lightboxPrevFn() {
+    currentLightboxIndex = (currentLightboxIndex - 1 + visibleProducts.length) % visibleProducts.length;
+    updateLightboxContent();
+  }
+
+  function lightboxNextFn() {
+    currentLightboxIndex = (currentLightboxIndex + 1) % visibleProducts.length;
+    updateLightboxContent();
+  }
+
+  // Event delegation for product cards
+  if (grid) {
+    grid.addEventListener('click', (e) => {
+      const card = e.target.closest('.product-card');
+      if (!card) return;
+      
+      // Don't open lightbox if clicking add-to-cart button
+      if (e.target.closest('.add-cart-btn')) return;
+      
+      const index = parseInt(card.dataset.index, 10);
+      openLightbox(index);
+    });
+  }
+
+  // Lightbox controls
+  if (lightboxClose) lightboxClose.addEventListener('click', closeLightboxFn);
+  if (lightboxPrev) lightboxPrev.addEventListener('click', lightboxPrevFn);
+  if (lightboxNext) lightboxNext.addEventListener('click', lightboxNextFn);
+
+  // Close on overlay click
+  if (lightbox) {
+    lightbox.addEventListener('click', (e) => {
+      if (e.target === lightbox) closeLightboxFn();
+    });
+  }
+
+  // Keyboard navigation
+  document.addEventListener('keydown', (e) => {
+    if (!lightbox || !lightbox.classList.contains('active')) return;
+    if (e.key === 'Escape') closeLightboxFn();
+    if (e.key === 'ArrowLeft') lightboxPrevFn();
+    if (e.key === 'ArrowRight') lightboxNextFn();
+  });
+
+  /* ============================================
      INIT
      ============================================ */
   renderProducts();
