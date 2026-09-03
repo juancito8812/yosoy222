@@ -142,8 +142,7 @@
     products.forEach((p, i) => {
       const cat = catMap[p.cat] || 'accesorios';
       const priceStr = `$${p.price}`;
-      html += `
-        <article class="product-card" data-category="${escapeHtml(cat)}" data-index="${i}" data-name="${escapeHtml(p.name)}">
+      html += `          <article class="product-card" data-category="${escapeHtml(cat)}" data-index="${i}" data-name="${escapeHtml(p.name)}" data-desc="${escapeHtml(p.desc)}">
           <div class="product-image" data-name="${escapeHtml(p.name)}">
             <img src="images/thumbs/${escapeHtml(p.file)}" alt="${escapeHtml(p.name)} artesanal" loading="lazy">
           </div>
@@ -261,7 +260,8 @@
       const cat = card.dataset.category;
       const name = (card.dataset.name || '').toLowerCase();
       const matchesCat = activeFilter === 'todos' || cat === activeFilter;
-      const matchesSearch = !searchTerm || name.includes(searchTerm);
+      const desc = (card.dataset.desc || '').toLowerCase();
+      const matchesSearch = !searchTerm || name.includes(searchTerm) || desc.includes(searchTerm);
       const show = matchesCat && matchesSearch;
       card.classList.toggle('hidden', !show);
       if (show) count++;
