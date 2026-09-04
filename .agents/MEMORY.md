@@ -8,8 +8,8 @@
 - **URL producción:** https://yosoy222.com (Cloudflare anycast)
 - **URL Pages:** https://juancito8812.github.io/yosoy222/
 - **WhatsApp pedidos:** +58 412 648 1628 (`584126481628`)
-- **Última sesión:** 2026-09-03
-- **Versión de memoria:** 1
+- **Última sesión:** 2026-09-03 (noche)
+- **Versión de memoria:** 2
 
 ## Arquitectura
 
@@ -30,6 +30,8 @@
 - **[2026-09-03]** — **Proxy de Cloudflare activado en los 5 registros DNS**: resolvió el problema de DNS en la WiFi de la casa (antes DNS_PROBE_FINISHED_NXDOMAIN); ahora el sitio responde `server: cloudflare` + `cf-ray` desde IPs anycast.
 - **[2026-09-03]** — **Cache Rule HTML en Cloudflare** (ruleset `http_request_cache_settings`, id `23c65e9259154365b5dcee888249444c`): HTML cacheado en el edge con TTL 5 min (`edge_ttl override_origin 300` + `browser_ttl override_origin 300`). Verificado: `/` pasó de `DYNAMIC` a `cf-cache-status: HIT`, ciclo REVALIDATED→HIT cada ~300s → deploys se propagan en ~5 min. Nota: el navegador recibe `max-age=600` (10 min, mismo valor que mandaba el origin de GitHub/Fastly y mínimo del plan), el edge revalida cada 300s.
 - **[2026-09-03]** — **CSP estricto vía meta tag** (sin `unsafe-inline`): el sitio no usa estilos/scripts inline, verificado en navegador sin violaciones.
+- **[2026-09-03]** — **Paleta tierra (blanco cálido → crema)**: el sitio pasó de tema oscuro a claro. Fondo `#faf6ef`, tarjetas `#fffdf8`, texto café oscuro `#3b3125`, acento ámbar tierra `#a96f2d`; header translúcido crema, lightbox se mantiene oscuro a propósito. También actualizados `manifest.json` y meta `theme-color` a `#faf6ef`. (`6773efb`)
+- **[2026-09-03]** — **Fotos reales de las 7 franelas (F-01…F-07)**: antes mostraban imágenes de velas. Mapeadas las fotos reales encontradas en `fotos de calidad/` (los 3 Loto Sagrado en `1779977763582/8623208/9652259.png` + 2 `copilot_image_*.jpeg`) y las 2 adjuntadas por el usuario (F-06 Cool y F-07 El Amor). Archivos `F-01.jpg`…`F-07.jpg` en thumbs/catalog. (`9b5891e`, `b346ced`, `fc0eca2`)
 - **[2026-09-03]** — **Excel como única fuente de verdad**: 42 filas del Excel mapeadas al 100% (precios, descripciones verbatim, categorías); 2 variantes extra de Pulsera Infinito (Azul/Beige/Roja — 3 tarjetas, decisión del usuario, datos de fila P-01).
 - **[2026-08-30 aprox.]** — WhatsApp `584126481628` configurado en 6 puntos (constante app.js + 3 enlaces index.html + carrito + lightbox); reemplazó el placeholder `521XXXXXXXXXX`.
 - **[2026-08-30 aprox.]** — Lightbox + eliminación de bordes blancos de imágenes; fotos de Mini Petit y Armonía Coco extraídas de `Velas Envases.pdf`.
@@ -37,7 +39,7 @@
 ## Estado Actual
 
 - **Branch:** main
-- **Último commit desplegado:** `5bc2011` (docs: security headers live via Cloudflare) — deploy `success` verificado; README.md servido byte-idéntico al local.
+- **Último commit desplegado:** `fc0eca2` (fix: foto real de F-06 Cool) — push a main hecho, deploy en curso.
 - **Cache Rule HTML:** CREADA y verificada en producción (3 sep 2026) — HTML cacheado en edge, TTL 5 min, deploys frescos en ~5 min.
 - **WAF Managed Ruleset:** aún NO creado — el token `…9fb0cb` (reactivado, con `#waf:edit`) accede a las fases `http_response_headers_transform` y `http_request_cache_settings` pero **no** a `http_request_firewall_managed` ("request is not authorized").
 - **Sitio en producción:** funcional (44 productos, imágenes, búsqueda, filtros, carrito, WhatsApp, lightbox — auditado).
@@ -45,6 +47,9 @@
 
 ## Cambios Recientes
 
+- **[2026-09-03]** — Fotos reales de las 7 franelas publicadas: F-01…F-05 desde `fotos de calidad/`, F-06 y F-07 adjuntadas por el usuario (`9b5891e`, `b346ced`, `fc0eca2`).
+- **[2026-09-03]** — Paleta tierra crema en todo el sitio + manifest/theme-color (`6773efb`).
+- **[2026-09-03]** — Verificación Excel ↔ sitio: 42/42 productos presentes, precios 0 diferencias; único hallazgo: typo "MANO HANSA" en el título del Excel (el sitio usa "Mano Hamsa", correcto). Script de verificación conservado en `/home/jr/Documentos/Catalogo velas/_verify_sync.py`.
 - **[2026-09-03]** — Headers de seguridad vía Cloudflare Transform Rule creados y verificados (`5bc2011`, `3b4b69c`, `fd9452f`).
 - **[2026-09-03]** — Cache Rule HTML en Cloudflare creada y verificada (edge HIT, TTL 5 min).
 - **[2026-09-03]** — Sincronización total con Catalogo.xlsx: 44 productos, 0 diferencias (`8bf9f15`).
@@ -56,7 +61,7 @@
 ## Próximos Pasos / TODOs
 
 - [ ] **WAF Managed Ruleset** — Cloudflare Managed Ruleset con acción `managed_challenge` (decisión del usuario: challenge, no block) en la fase `http_request_firewall_managed`. El token `…9fb0cb` (con `#waf:edit`) NO accede a esa fase ("request is not authorized" — verificado 3 sep 2026); requiere token con permiso específico de esa fase o probar con el mismo esquema que funcionó para headers (`POST /rulesets` directo).
-- [ ] **Fotos reales de franelas F-01…F-07** — el usuario tiene las fotos, aún no las ha adjuntado; mapearlas en orden y reemplazar las actuales (`image_1779*.jpg`).
+- [ ] ~~Fotos reales de franelas F-01…F-07~~ **COMPLETADO** — las 7 franelas muestran sus fotos reales (`F-01.jpg`…`F-07.jpg`). Nota: F-06 y F-07 son baja resolución (~213×320) — si el usuario consigue versiones más grandes, reemplazarlas.
 - [ ] **Rotar tokens** — 4+ tokens de Cloudflare aparecieron en texto plano en el chat; el usuario fue advertido de revocarlos. (Uno ya fue revocado.)
 - [ ] HSTS preload (opcional, cuando el sitio esté 100% estable).
 - [ ] GA4 / SEO (pendientes en PLAN_IMPLEMENTACION.md).
@@ -66,5 +71,7 @@
 - **Errores de WhatsApp `@521XXXXXXXXX`:** código enlaces viejos cacheados/reenviados; el sitio usa `584126481628`. Solución: borrar chat viejo + recarga forzada (Ctrl+Shift+R o incógnito).
 - **403 con Python-urllib:** Cloudflare bloquea el User-Agent `Python-urllib` (anti-bots) — falso positivo al verificar con scripts; usar curl o UA de navegador.
 - **Caché PWA:** después de cada deploy, recargar 2 veces en el celular para ver la versión nueva.
-- **Deploy:** push a main → GitHub Pages ~2 min; verificar con deployments API si hace falta.
+- **Deploy:** push a main → GitHub Pages ~2 min + Cache Rule edge ~5 min; verificar con deployments API si hace falta.
+- **Fotos adjuntadas por el usuario** aparecen en `/tmp/freebuff-desktop-pastes/` (ya copiadas al repo como `F-06.jpg` / `F-07.jpg`).
+- **Imágenes de franelas en `fotos de calidad/`:** los archivos `1779977763582.png` (oliva), `1779978623208.png` (negra), `1779979652259.png` (celeste) y los 2 `copilot_image_*.jpeg` son las fotos reales — NO borrarlos.
 - **check-host.net** funciona para verificar el sitio desde redes externas (probes mundiales).
