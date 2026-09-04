@@ -24,7 +24,7 @@
 ## ✅ Fase 2: COMPLETADA — Rediseño Completo
 
 ### Nuevo Diseño
-- [x] Paleta cálida de velas (carbón + ámbar, tokens en `:root`)
+- [x] Paleta tierra (blanco cálido → crema, tokens en `:root`) — antes tema oscuro carbón + ámbar
 - [x] Hero asimétrico con fotos reales de productos
 - [x] Iconos SVG profesionales (sin emojis en la UI)
 - [x] Sección "Cómo comprar" (3 pasos) · Contacto · Footer completo
@@ -138,7 +138,8 @@
 ## 📋 TAREAS PENDIENTES (Futuro)
 
 ### Contenido / Producto
-- [ ] Fotos reales de las 7 franelas mapeadas correctamente (hoy hay imágenes placeholder asignadas)
+- [x] Fotos reales de las 7 franelas mapeadas correctamente (F-01…F-07, commits `9b5891e`/`b346ced`/`fc0eca2`)
+- [ ] Conseguir versiones de mayor resolución de F-06 Cool y F-07 El Amor (~213×320 actuales)
 - [ ] Verificar que las cuentas @yosoy222 (IG/TikTok/FB) enlazadas sean las definitivas
 
 ### SEO y Analytics

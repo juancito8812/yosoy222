@@ -9,7 +9,7 @@
 - **URL Pages:** https://juancito8812.github.io/yosoy222/
 - **WhatsApp pedidos:** +58 412 648 1628 (`584126481628`)
 - **Última sesión:** 2026-09-03 (noche)
-- **Versión de memoria:** 2
+- **Versión de memoria:** 3
 
 ## Arquitectura
 
@@ -39,7 +39,8 @@
 ## Estado Actual
 
 - **Branch:** main
-- **Último commit desplegado:** `fc0eca2` (fix: foto real de F-06 Cool) — push a main hecho, deploy en curso.
+- **Último commit desplegado:** `d74b60e` (docs: memoria v2) — deploy `success` verificado.
+- **Excel corregido (typo MANO HANSA → MANO HAMSA):** editado directamente en `sharedStrings.xml` del xlsx para no perder las 56 imágenes embebidas; backup en `Catalogo.xlsx.bak`. Verificación `_verify_sync.py`: **42/42, 0 diferencias reales**.
 - **Cache Rule HTML:** CREADA y verificada en producción (3 sep 2026) — HTML cacheado en edge, TTL 5 min, deploys frescos en ~5 min.
 - **WAF Managed Ruleset:** aún NO creado — el token `…9fb0cb` (reactivado, con `#waf:edit`) accede a las fases `http_response_headers_transform` y `http_request_cache_settings` pero **no** a `http_request_firewall_managed` ("request is not authorized").
 - **Sitio en producción:** funcional (44 productos, imágenes, búsqueda, filtros, carrito, WhatsApp, lightbox — auditado).
@@ -47,6 +48,9 @@
 
 ## Cambios Recientes
 
+- **[2026-09-03]** — Paleta crema + franelas verificadas en producción: app.js/css/fotos byte-idénticos al repo, 88 URLs de imágenes responden 200, 7/7 franelas con foto real en navegador.
+- **[2026-09-03]** — Typo corregido en `Catalogo.xlsx`: MANO HANSA → MANO HAMSA (coincide con la descripción y con el sitio "Mano Hamsa"). Backup `Catalogo.xlsx.bak`.
+- **[2026-09-03]** — Docs actualizadas (README + PLAN + memoria v2): paleta tierra, fotos franelas, script `_verify_sync.py` documentado.
 - **[2026-09-03]** — Fotos reales de las 7 franelas publicadas: F-01…F-05 desde `fotos de calidad/`, F-06 y F-07 adjuntadas por el usuario (`9b5891e`, `b346ced`, `fc0eca2`).
 - **[2026-09-03]** — Paleta tierra crema en todo el sitio + manifest/theme-color (`6773efb`).
 - **[2026-09-03]** — Verificación Excel ↔ sitio: 42/42 productos presentes, precios 0 diferencias; único hallazgo: typo "MANO HANSA" en el título del Excel (el sitio usa "Mano Hamsa", correcto). Script de verificación conservado en `/home/jr/Documentos/Catalogo velas/_verify_sync.py`.

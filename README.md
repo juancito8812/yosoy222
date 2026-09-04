@@ -84,7 +84,7 @@ yosoy222/                          ← RAÍZ del repositorio
 │
 ├── css/
 │   └── style.css                   ← Estilos completos (~830 líneas)
-│       ├── Tokens CSS (:root — paleta cálida de velas)
+│       ├── Tokens CSS (:root — paleta tierra crema)
 │       ├── Header, hero, catálogo, tarjetas, buscador, filtros
 │       ├── Cómo comprar, Nosotros, Contacto, Footer
 │       ├── Carrito drawer + steppers
@@ -198,6 +198,18 @@ El **Excel es la base de datos principal del negocio** y la fuente de verdad de 
 2. Pedirle al agente: *"sincroniza el sitio con Catalogo.xlsx"* — se vuelca cada fila a `js/app.js`.
 3. Para un producto nuevo: la columna de imagen debe referenciar el archivo JPG en `images/thumbs/` y `images/catalog/`.
 4. Commit + push → deploy automático en ~2 minutos.
+
+### Verificación automática Excel ↔ sitio
+
+Existe un script de verificación en `/home/jr/Documentos/Catalogo velas/_verify_sync.py`:
+
+```bash
+cd "/home/jr/Documentos/Catalogo velas" && python3 _verify_sync.py
+```
+
+Compara los **42 productos del Excel** (4 hojas) contra el sitio: presencia, **precio** y **descripción** (con y sin colapso de espacios). Reporta diferencias reales, diferencias cosméticas (espacios dobles, invisibles en el navegador) y los productos extra del sitio.
+
+> Estado 3-sep-2026: **0 diferencias reales** (42/42 con precio y descripción idénticos). Las únicas tarjetas extra del sitio son las 2 variantes de color de Pulsera Infinito (Beige y Roja, decisión del usuario con datos de la fila P-01).
 
 > Cada entrada del array `products[]` en `js/app.js` equivale a una fila del Excel:
 
@@ -548,15 +560,15 @@ curl -sI https://yosoy222.com | head -5
 
 | # | Nombre | Archivo | Precio | Resumen |
 |---|--------|---------|--------|---------|
-| 38 | F-01 Loto Sagrado | `image_1779928174716.jpg` | $16.00 | Loto + Om, tela suave |
-| 39 | F-02 Loto Sagrado | `image_1779972568224.jpg` | $16.00 | Loto + Om, tela suave |
-| 40 | F-03 Loto Sagrado | `image_1779972935496.jpg` | $16.00 | Loto + Om, tela suave |
-| 41 | F-04 Ser Feliz | `image_1779973394660.jpg` | $14.00 | Diseño minimalista |
-| 42 | F-05 Hazte Caso | `image_1779974294919.jpg` | $14.00 | Diseño minimalista |
-| 43 | F-06 Cool | `image_1779992865576.jpg` | $14.00 | Diseño minimalista |
-| 44 | F-07 El Amor | `image_1779993230752.jpg` | $14.00 | Diseño minimalista |
+| 38 | F-01 Loto Sagrado | `F-01.jpg` | $16.00 | Franela oliva, Loto + Om |
+| 39 | F-02 Loto Sagrado | `F-02.jpg` | $16.00 | Franela negra, Loto + Om |
+| 40 | F-03 Loto Sagrado | `F-03.jpg` | $16.00 | Franela celeste, Loto + Om |
+| 41 | F-04 Ser Feliz | `F-04.jpg` | $14.00 | "Mi plan es ser Feliz / No perfecta" |
+| 42 | F-05 Hazte Caso | `F-05.jpg` | $14.00 | "La energía no miente / Hazte caso" |
+| 43 | F-06 Cool | `F-06.jpg` | $14.00 | Franela lavanda, diseño "Cool" |
+| 44 | F-07 El Amor | `F-07.jpg` | $14.00 | "El Amor / Un sentido - nuestras vidas" |
 
-> ⚠️ Las fotos de las franelas se asignaron a archivos sin usar de la carpeta como placeholder visual. **Si alguna no corresponde a su producto, avísame con la foto correcta y corrijo el mapeo.**
+> ✅ Las 7 franelas (F-01…F-07) muestran sus **fotos reales** (antes usaban imágenes de velas como placeholder). Nota: F-06 y F-07 vienen de fotos adjuntadas a baja resolución (~213×320); si llegan versiones de mayor resolución se reemplazan.
 
 ---
 
@@ -726,4 +738,4 @@ git checkout -- index.html
 
 ---
 
-*Documentación actualizada: 3 de septiembre de 2026 — sincronizada con el estado real del código (44 productos, PWA, lightbox, seguridad, número de WhatsApp real).*
+*Documentación actualizada: 3 de septiembre de 2026 (noche) — sincronizada con el estado real del código: 44 productos con fotos reales (incluidas las 7 franelas), paleta tierra crema, Excel verificado 42/42 sin diferencias, PWA, lightbox, seguridad vía Cloudflare, número de WhatsApp real.*
