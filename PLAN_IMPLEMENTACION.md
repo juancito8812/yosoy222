@@ -104,7 +104,7 @@
 
 ## ✅ Fase 7: COMPLETADA — PWA (Instalable + Offline)
 
-- [x] `manifest.json` (nombre, tema `#d4a24e`, fondo `#1a1210`, `display: standalone`)
+- [x] `manifest.json` (nombre, tema `#faf6ef`, fondo `#faf6ef`, `display: standalone`)
 - [x] `sw.js` — service worker con caché offline (precache + *stale-while-revalidate*)
 - [x] `icons/` — 10 iconos (72–512px + maskable) generados
 - [x] Meta tags PWA y registro del service worker en `index.html` / `app.js`

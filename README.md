@@ -332,7 +332,7 @@ El sitio es una **PWA instalable** con caché offline.
 
 | Archivo | Función |
 |---------|---------|
-| `manifest.json` | Nombre "YoSoy222", `display: standalone`, tema `#d4a24e`, fondo `#1a1210`, iconos |
+| `manifest.json` | Nombre "YoSoy222", `display: standalone`, tema `#faf6ef`, fondo `#faf6ef`, iconos |
 | `sw.js` | Service worker: precache de HTML/CSS/JS/manifest e **imágenes** (estrategia *stale-while-revalidate*) |
 | `icons/` | 10 iconos: 72, 96, 128, 144, 152, 192, 384, 512 + maskable 192/512 |
 
@@ -566,23 +566,24 @@ curl -sI https://yosoy222.com | head -5
 
 ```css
 :root {
-  /* Paleta cálida de velas */
-  --bg: #100e0c;              /* Fondo principal (carbón oscuro) */
-  --bg-raised: #1a1612;       /* Fondo elevado */
-  --bg-card: #1e1915;         /* Fondo de tarjetas */
-  --surface: #141110;         /* Secciones alternas */
-  --border: rgba(232,168,124,0.10);  /* Bordes sutiles */
-  --border-strong: rgba(232,168,124,0.18);
+  /* Paleta tierra: blanco cálido → crema */
+  --bg: #faf6ef;              /* Fondo principal (crema claro) */
+  --bg-raised: #f1eadb;       /* Fondo elevado / placeholders */
+  --bg-card: #fffdf8;         /* Fondo de tarjetas (blanco cálido) */
+  --bg-card-hover: #f7f0e3;
+  --surface: #f3ebdd;         /* Secciones alternas */
+  --border: rgba(120,90,55,0.14);  /* Bordes sutiles (tierra) */
+  --border-strong: rgba(120,90,55,0.26);
 
   /* Texto */
-  --text: #f4ede3;            /* Texto principal (crema) */
-  --text-muted: #a89b8b;      /* Texto secundario */
-  --text-faint: #6d6359;      /* Texto tenue */
+  --text: #3b3125;            /* Texto principal (café oscuro) */
+  --text-muted: #7b6a50;      /* Texto secundario */
+  --text-faint: #8f7a5e;      /* Texto tenue */
 
-  /* Acento (miel/ámbar, llama de vela) */
-  --accent: #e8a87c;
-  --accent-hover: #d99a6c;
-  --accent-glow: rgba(232,168,124,0.25);
+  /* Acento (ámbar tierra, llama de vela) */
+  --accent: #a96f2d;
+  --accent-hover: #8f5c22;
+  --accent-glow: rgba(169,111,45,0.22);
 
   /* Funcional */
   --whatsapp: #25d366;
@@ -591,7 +592,8 @@ curl -sI https://yosoy222.com | head -5
 
   /* Layout */
   --radius: 14px; --radius-sm: 8px; --radius-full: 999px;
-  --shadow: 0 6px 24px rgba(0,0,0,0.35);
+  --shadow: 0 6px 24px rgba(101,71,35,0.10);
+  --shadow-lg: 0 12px 40px rgba(101,71,35,0.15);
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
   --duration: 0.28s;
 }
