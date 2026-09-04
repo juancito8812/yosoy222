@@ -57,7 +57,7 @@
   { file: "F-03.jpg", name: "F-03 Loto Sagrado", cat: "franela", price: 16, desc: "Franela que une intención y estilo. El Loto renace, el Om eleva. Tela suave y resistente para acompañar tus días con calma y proposito." },
   { file: "F-04.jpg", name: "F-04 Ser Feliz", cat: "franela", price: 14, desc: "Franela para mujeres que eligen calma sobre exigencia. Tela suave y diseño minimalista que acompaña tu bienestar. La felicidad es un plan que se viste." },
   { file: "F-05.jpg", name: "F-05 Hazte Caso", cat: "franela", price: 14, desc: "Franela que honra tu intuición. Tela suave y diseño minimalista para acompañar tu energia." },
-  { file: "image_1779992865576.jpg", name: "F-06 Cool", cat: "franela", price: 14, desc: "Franela que afirma tu valor. Diseño limpio, tela suave y diseño minimalista que eleva tu energia." },
+  { file: "F-06.jpg", name: "F-06 Cool", cat: "franela", price: 14, desc: "Franela que afirma tu valor. Diseño limpio, tela suave y diseño minimalista que eleva tu energia." },
   { file: "F-07.jpg", name: "F-07 El Amor", cat: "franela", price: 14, desc: "Franela que honra el poder del amor. Tela suave, diseño minimalista y un mensaje que ilumina tu energia. El amor da sentido y se siente." },
 ];
 
