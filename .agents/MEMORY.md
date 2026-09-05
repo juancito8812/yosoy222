@@ -3,7 +3,7 @@
 ## Información General
 
 - **Propósito:** Tienda online de velas artesanales, collares, pulseras, accesorios y franelas con checkout por WhatsApp.
-- **Stack:** HTML5 + CSS3 + JavaScript vanilla (sin frameworks ni dependencias), PWA (manifest.json + sw.js), GitHub Pages, Cloudflare (DNS proxy + reglas edge).
+- **Stack:** HTML5 + CSS3 + JavaScript vanilla (sin frameworks ni dependencias), PWA (manifest.json + sw.js), GitHub Pages, Cloudflare (DNS proxy + reglas edge), GitHub Actions (purge automático de caché).
 - **Repositorio:** https://github.com/juancito8812/yosoy222
 - **URL producción:** https://yosoy222.com (Cloudflare anycast)
 - **URL Pages:** https://juancito8812.github.io/yosoy222/
@@ -11,8 +11,9 @@
 - **Instagram:** https://www.instagram.com/yo_soy222
 - **TikTok:** https://www.tiktok.com/@yo_soy222
 - **Facebook:** https://www.facebook.com/share/1C5X2yKscG/
+- **Cloudflare Zone ID:** `f959322eed862ae75a79f46e8f780d65`
 - **Última sesión:** 2026-09-05
-- **Versión de memoria:** 4
+- **Versión de memoria:** 5
 
 ## Arquitectura
 
@@ -31,7 +32,7 @@
 
 - **[2026-09-03]** — Headers de seguridad vía **Cloudflare Transform Rule** (no `_headers`): GitHub Pages no puede enviar headers HTTP custom; la regla edge inyecta X-Frame-Options DENY, X-Content-Type-Options nosniff, Permissions-Policy, Referrer-Policy y Strict-Transport-Security. Verificado en vivo con curl.
 - **[2026-09-03]** — **Proxy de Cloudflare activado en los 5 registros DNS**: resolvió el problema de DNS en la WiFi de la casa (antes DNS_PROBE_FINISHED_NXDOMAIN); ahora el sitio responde `server: cloudflare` + `cf-ray` desde IPs anycast.
-- **[2026-09-03]** — **Cache Rule HTML en Cloudflare** (ruleset `http_request_cache_settings`, id `23c65e9259154365b5dcee888249444c`): HTML cacheado en el edge con TTL 5 min (`edge_ttl override_origin 300` + `browser_ttl override_origin 300`). Verificado: `/` pasó de `DYNAMIC` a `cf-cache-status: HIT`, ciclo REVALIDATED→HIT cada ~300s → deploys se propagan en ~5 min. Nota: el navegador recibe `max-age=600` (10 min, mismo valor que mandaba el origin de GitHub/Fastly y mínimo del plan), el edge revalida cada 300s.
+- **[2026-09-03]** — **Cache Rule HTML en Cloudflare** (ruleset `http_request_cache_settings`, id `23c65e9259154365b5dcee888249444c`): HTML cacheado en el edge con TTL 5 min (`edge_ttl override_origin 300` + `browser_ttl override_origin 300`). Verificado: `/` pasó de `DYNAMIC` a `cf-cache-status: HIT`, ciclo REVALIDATED→HIT cada ~300s → deploys se propagan en ~5 min. Nota: el navegador recibe `max-age=600` (10 min, mismo valor que mandaba el origin de GitHub/Fastly y mínimo del plan), el edge revalida cada 300s. **NOTA (5 sep 2026):** Se creó workflow de GitHub Actions para purgar automáticamente después de cada deploy, eliminando la necesidad de purge manual.
 - **[2026-09-03]** — **CSP estricto vía meta tag** (sin `unsafe-inline`): el sitio no usa estilos/scripts inline, verificado en navegador sin violaciones.
 - **[2026-09-03]** — **Paleta tierra (blanco cálido → crema)**: el sitio pasó de tema oscuro a claro. Fondo `#faf6ef`, tarjetas `#fffdf8`, texto café oscuro `#3b3125`, acento ámbar tierra `#a96f2d`; header translúcido crema, lightbox se mantiene oscuro a propósito. También actualizados `manifest.json` y meta `theme-color` a `#faf6ef`. (`6773efb`)
 - **[2026-09-05]** — **Set de imágenes `imagenes_web` adoptado (híbrido)**: el usuario pidió usar el set 1000×1000 de `/home/jr/Documentos/gemini velas/imagenes_web/` (97 JPG + manifest `_catalogo_web.json`, preparado por una sesión paralela). Al revisar el set en preview se detectó que las entradas F-01…F-07 **muestran velas/escenas IA, no las franelas reales** — decisión: híbrido. Se actualizaron **36 productos** (15 velas moldes, 9 velas envases, 12 collares/pulseras/accesorios) a las imágenes web (`VM-ROSA_vela_rosa_79g.jpg`, `G-01_gargantilla_gold-filled_lisa.jpg`, etc.), las **7 franelas conservan sus fotos reales** `F-01.jpg`…`F-07.jpg`, y **Armonía Coco** mantiene su imagen anterior (no existe en el set). (`d6d4b53`, deploy verificado: 88 URLs → 200)
@@ -43,18 +44,21 @@
 ## Estado Actual
 
 - **Branch:** main
-- **Último commit desplegado:** `d6d4b53` (imágenes web 1000×1000, híbrido) — deploy `success` verificado: app.js actualizado y 88 URLs de imágenes (44 productos × thumbs/catalog) responden 200.
+- **Último commit desplegado:** `5839051` (GitHub Actions purge workflow) — deploy `success` verificado.
+- **Redes sociales:** Instagram `@yo_soy222`, TikTok `@yo_soy222`, Facebook `share/1C5X2yKscG/` — links actualizados en index.html (contacto + footer).
+- **GitHub Actions:** Workflow `purge-cache.yml` configurado — purge automático de Cloudflare después de cada deploy exitoso de GitHub Pages. Requiere secrets `CLOUDFLARE_ZONE_ID` y `CLOUDFLARE_API_TOKEN` en el repo.
 - **Excel corregido (typo MANO HANSA → MANO HAMSA):** editado directamente en `sharedStrings.xml` del xlsx para no perder las 56 imágenes embebidas; backup en `Catalogo.xlsx.bak`. Verificación `_verify_sync.py`: **42/42, 0 diferencias reales**.
-- **Cache Rule HTML:** CREADA y verificada en producción (3 sep 2026) — HTML cacheado en edge, TTL 5 min, deploys frescos en ~5 min.
+- **Cache Rule HTML:** CREADA y verificada en producción (3 sep 2026) — HTML cacheado en edge, TTL 5 min, deploys frescos en ~5 min. Ahora complementada con purge automático vía GitHub Actions.
 - **WAF Managed Ruleset:** aún NO creado — el token `…9fb0cb` (reactivado, con `#waf:edit`) accede a las fases `http_response_headers_transform` y `http_request_cache_settings` pero **no** a `http_request_firewall_managed` ("request is not authorized").
 - **Sitio en producción:** funcional y auditado (44 productos, imágenes, búsqueda, filtros, carrito, WhatsApp, lightbox, teclado, PWA, iconos cuadrados, footer Venezuela, mensaje por categoría).
 - **Headers de seguridad:** activos y verificados (incluidos en respuestas cacheadas HIT y en www redirect).
+- **Deploy:** push a main → GitHub Pages (~2 min) → purge automático de Cloudflare (~30 seg después).
 
 ## Cambios Recientes
 
-- **[2026-09-05]** — **Iconos PWA regenerados a cuadrados** (`600227c`): los 8 iconos `any` (72,96,128,144,152,192,384,512) se regeneraron desde `images/catalog/VM-ROSA_vela_rosa_79g.jpg` con detección de bbox de la vela (crop 176,40 → 824,960) + fondo oscuro #1a1a1a; los 2 iconos maskable se mantuvieron intactos; `icon-180x180.png` no exists en manifest ni en disco. Verificado localmente y contra github.io/yosoy222.com: cada ruta devuelve 200 image/png con tamaño cuadrado == tamaño declarado.
-- **[2026-09-05]** — **Redes sociales actualizadas** (`2562be3`): Instagram `@yo_soy222`, TikTok `@yo_soy222`, Facebook `share/1C5X2yKscG/`. Actualizados en index.html (contacto + footer), README.md y PLAN_IMPLEMENTACION.md. Deploy propagado con Cache Rule edge ~5 min.
-- **[2026-09-05]** — **GitHub Actions: Purge automático de Cloudflare** (`.github/workflows/purge-cache.yml`): después de cada deploy exitoso de GitHub Pages, se ejecuta un job que purga toda la caché de Cloudflare vía API. Requiere secrets `CLOUDFLARE_ZONE_ID` y `CLOUDFLARE_API_TOKEN` configurados en el repo.
+- **[2026-09-05]** — **Redes sociales actualizadas** (`d77e007`, `2562be3`): Instagram `@yo_soy222`, TikTok `@yo_soy222`, Facebook `share/1C5X2yKscG/`. Actualizados en index.html (contacto + footer), README.md y PLAN_IMPLEMENTACION.md.
+- **[2026-09-05]** — **GitHub Actions: Purge automático de Cloudflare** (`5839051`, `.github/workflows/purge-cache.yml`): después de cada deploy exitoso de GitHub Pages, se ejecuta un job que purga toda la caché de Cloudflare vía API. Requiere secrets `CLOUDFLARE_ZONE_ID` y `CLOUDFLARE_API_TOKEN` configurados en el repo. **Pendiente:** configurar los secrets en GitHub (Zone ID: `f959322eed862ae75a79f46e8f780d65`).
+- **[2026-09-05]** — **Documentación actualizada** (`10bb8d5`): redes sociales, deploy workflow, memoria del proyecto actualizada a v5.
 - **[2026-09-05]** — **Documentación actualizada al 100%** (`README.md`, `.agents/MEMORY.md`, `PLAN_IMPLEMENTACION.md`): refleja imágenes híbridas (36 productos del set `imagenes_web`, 7 franelas reales, Armonía Coco anterior), correcciones v5 sep 2026 (footer Venezuela, mensaje lightbox por categoría, apertura con teclado, delegación de listeners), y estado de la PWA. Commit de docs y push a main.
 - **[2026-09-05]** — **Correcciones v5 sep 2026** (JS+HTML, aplicadas y verificadas): pie de página `Hecho a mano en Venezuela`; lightbox prefills el mensaje WhatsApp según categoría (`vela`/`collar`/`pulsera`/`franela`); tarjetas de producto ahora abren el lightbox con Enter/Espacio (`<button>` real con `aria-label`) en vez de `<div>`; listeners delegados (no se re-vinculan en cada render); `visibleProducts` en estado desde `applyFilters`.
 - **[2026-09-05]** — Set `imagenes_web` 1000×1000 adoptado para 36 productos de velas y joyería (`d6d4b53`); franelas F-01…F-07 conservan fotos reales; Armonía Coco sin imagen en el set (conserva la suya). Verificado en producción: 88/88 URLs 200, franela F-01 intacta; el set F-01…F-07 NO se usa porque en esa carpeta muestran velas IA.
@@ -74,6 +78,7 @@
 
 ## Próximos Pasos / TODOs
 
+- [ ] **Configurar secrets de Cloudflare en GitHub** — `CLOUDFLARE_ZONE_ID` (`f959322eed862ae75a79f46e8f780d65`) y `CLOUDFLARE_API_TOKEN` (crear token con permisos `Zone:Cache Purse` en https://dash.cloudflare.com/profile/api-tokens). Una vez configurados, el workflow purgeará automáticamente después de cada deploy.
 - [ ] **WAF Managed Ruleset** — Cloudflare Managed Ruleset con acción `managed_challenge` (decisión del usuario: challenge, no block) en la fase `http_request_firewall_managed`. El token `…9fb0cb` (con `#waf:edit`) NO accede a esa fase ("request is not authorized" — verificado 3 sep 2026); requiere token con permiso específico de esa fase o probar con el mismo esquema que funcionó para headers (`POST /rulesets` directo).
 - [ ] ~~Fotos reales de franelas F-01…F-07~~ **COMPLETADO** — las 7 franelas muestran sus fotos reales (`F-01.jpg`…`F-07.jpg`). Nota: F-06 y F-07 son baja resolución (~213×320) — si el usuario consigue versiones más grandes, reemplazarlas.
 - [ ] **Rotar tokens** — varios tokens de Cloudflare aparecieron en texto plano en el chat; el usuario fue advertido de revocarlos. (Al menos uno ya fue revocado.)
@@ -87,7 +92,7 @@
 - **Errores de WhatsApp `@521XXXXXXXXX`:** código enlaces viejos cacheados/reenviados; el sitio usa `584126481628`. Solución: borrar chat viejo + recarga forzada (Ctrl+Shift+R o incógnito).
 - **403 con Python-urllib:** Cloudflare bloquea el User-Agent `Python-urllib` (anti-bots) — falso positivo al verificar con scripts; usar curl o UA de navegador.
 - **Caché PWA:** después de cada deploy, recargar 2 veces en el celular para ver la versión nueva.
-- **Deploy:** push a main → GitHub Pages ~2 min + purge automático de Cloudflare (~30 seg después); verificar con deployments API si hace falta.
+- **Deploy:** push a main → GitHub Pages ~2 min + purge automático de Cloudflare (~30 seg después); verificar con deployments API si hace falta. **NOTA:** Los secrets de Cloudflare aún no están configurados en GitHub — el workflow corre pero no purgea hasta que se configuren.
 - **Fotos adjuntadas por el usuario** aparecen en `/tmp/freebuff-desktop-pastes/` (ya copiadas al repo como `F-06.jpg` / `F-07.jpg`).
 - **Imágenes de franelas en `fotos de calidad/`:** los archivos `1779977763582.png` (oliva), `1779978623208.png` (negra), `1779979652259.png` (celeste) y los 2 `copilot_image_*.jpeg` son las fotos reales — NO borrarlos.
 - **check-host.net** funciona para verificar el sitio desde redes externas (probes mundiales).

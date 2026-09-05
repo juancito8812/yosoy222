@@ -416,7 +416,11 @@ GitHub Pages sirve el HTML con `cache-control: max-age=600` y Cloudflare **no ca
 
 Verificado en producción: `cf-cache-status` pasó de `DYNAMIC` a `HIT`/`REVALIDATED` con `age` creciente, ciclo de revalidación ~300s confirmado. El `cache-control` que ve el navegador queda en `max-age=600` (10 min, el mínimo que permite el plan y el mismo valor que ya mandaba el origin) — el edge es el que revalida cada 5 min.
 
-Si algún día quieres invalidar la caché al desplegar, la forma más simple es purgar desde el dashboard de Cloudflare (Caching → Purge → Custom purge → `https://yosoy222.com/`) o bajar el TTL a 60s y subirlo de nuevo.
+#### Purge automático vía GitHub Actions
+
+Después de cada deploy exitoso de GitHub Pages, un workflow de GitHub Actions purga automáticamente la caché de Cloudflare vía API. Esto garantiza que los cambios estén disponibles inmediatamente después del deploy (~2-3 min después del push).
+
+**Requisitos:** Configurar los secrets `CLOUDFLARE_ZONE_ID` y `CLOUDFLARE_API_TOKEN` en el repo (Settings → Secrets and variables → Actions).
 
 ### Ya seguro por diseño
 - ✅ Sin `eval()`, sin `innerHTML` con datos de usuario sin escapar
@@ -435,7 +439,8 @@ Si algún día quieres invalidar la caché al desplegar, la forma más simple es
 ✅ **Dominio:** yosoy222.com (Cloudflare)
 ✅ **HTTPS:** Habilitado
 ✅ **CDN:** Cloudflare proxy activado en los 5 registros + **Cache Rule HTML** (edge TTL 5 min)
-✅ **Deploy automático:** cada push a `main` (~2 min; el edge revalida cada ~5 min)
+✅ **Deploy automático:** cada push a `main` (~2 min)
+✅ **Purge automático:** GitHub Actions purga Cloudflare después de cada deploy (~30 seg después)
 
 ### Cómo se publica
 
@@ -445,7 +450,13 @@ git commit -m "feat: descripción del cambio"
 git push origin main
 ```
 
-Nada más: GitHub Pages compila y publica solo.
+Nada más: GitHub Pages compila y publica solo, y el workflow de GitHub Actions purga la caché automáticamente.
+
+### Flujo completo del deploy
+
+```
+push a main → GitHub Pages deploy (~2 min) → purge automático Cloudflare (~30 seg) → sitio actualizado
+```
 
 ### Verificar el deploy
 
@@ -453,6 +464,12 @@ Nada más: GitHub Pages compila y publica solo.
 curl -s https://api.github.com/repos/juancito8812/yosoy222/pages | python3 -m json.tool
 curl -sI https://yosoy222.com | head -5
 ```
+
+### Configurar purge automático
+
+1. Crear token en Cloudflare: https://dash.cloudflare.com/profile/api-tokens → **Create Token** → permisos `Zone:Cache Purge`
+2. En GitHub: Settings → Secrets and variables → Actions → **New repository secret**
+3. Agregar `CLOUDFLARE_ZONE_ID` (Zone ID de Cloudflare) y `CLOUDFLARE_API_TOKEN` (el token creado)
 
 ---
 
