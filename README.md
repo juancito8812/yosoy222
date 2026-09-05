@@ -109,8 +109,8 @@ yosoy222/                          ← RAÍZ del repositorio
 ├── icons/                          ← 10 iconos PWA (72px → 512px + maskable)
 │
 ├── images/
-│   ├── thumbs/                     ← Miniaturas del grid (97 archivos en carpeta; 42 usados por el catálogo actual)
-│   └── catalog/                    ← Imágenes para el lightbox (mismo nombre de archivo; 97 en carpeta)
+│   ├── thumbs/                     ← Miniaturas del grid (142 archivos en carpeta; el catálogo usa 44)
+│   └── catalog/                    ← Imágenes para el lightbox (mismo nombre de archivo; 142 en carpeta)
 │
 ├── process_images.py               ← Remoción de bordes blancos (v1, básica)
 ├── process_images_v2.py            ← Remoción de bordes blancos (v2, detección adaptativa agresiva)
@@ -316,6 +316,8 @@ git push
 
 ## PROCESAMIENTO DE IMÁGENES (BORDES BLANCOS)
 
+> **Estado actual (5-sep-2026):** el catálogo referencia 36 imágenes del set **`imagenes_web`** (1000×1000, prefijos `VM-*`/`VE-*`/`G-*`/`C.M-*`/`C.L-*`/`P-*`/`D-01_*`, origen `/home/jr/Documentos/gemini velas/imagenes_web/`), 7 franelas con fotos reales (`F-01.jpg`…`F-07.jpg`) y 1 (Armonía Coco) con su imagen anterior. Los scripts de abajo se usan para fotos nuevas o recortes.
+
 El sitio muestra las fotos de producto sin los bordes blancos del original. Hay dos scripts en la raíz del repo:
 
 ### Script v1 — `process_images.py`
@@ -498,63 +500,63 @@ curl -sI https://yosoy222.com | head -5
 
 | # | Nombre | Archivo | Precio | Resumen |
 |---|--------|---------|--------|---------|
-| 1 | Rosa | `Rosa .jpg` | $7.00 | Vela 79g en forma de rosa |
-| 2 | Mini Corazones | `Mini Corazones.jpg` | $0.17 | Wax melt 1g, mini corazón |
-| 3 | Rosa Pequeña | `Rosa Pequeña.jpg` | $4.50 | Vela 23g, palito decorativo |
-| 4 | Mini Margarita | `Mini Margarita.jpg` | $1.70 | Wax melt 6g, mini margarita |
-| 5 | Margarita Pequeña | `Margarita.jpg` | $3.00 | Vela 16g, palito decorativo |
-| 6 | Tulipán Pequeña | `Tulipan.jpg` | $5.00 | Vela 33g, palito decorativo |
-| 7 | Bouquet Tulipán | `Buquet .jpg` | $8.50 | Vela 83g, bouquet de tulipanes |
-| 8 | Espiral | `Espiral.jpg` | $9.50 | Vela 104g en espiral |
-| 9 | Sagrada Familia | `Sagrada Familia.jpg` | $7.00 | Vela 75g |
-| 10 | Buda | `Buda.jpg` | $6.50 | Vela 20g |
-| 11 | Mano Hamsa | `Hamsa .jpg` | $8.00 | Vela 75g |
-| 12 | Corazón | `Corazón .jpg` | $13.50 | Vela 182g |
-| 13 | Cruz con Paloma | `Cruz .jpg` | $7.00 | Vela 52g |
-| 14 | Cubo | `Cubo .jpg` | $7.00 | Vela 40g |
-| 15 | Virgen del Carmen | `Virgen del Carmen.jpg` | $7.00 | Vela 42g |
+| 1 | Rosa | `VM-ROSA_vela_rosa_79g.jpg` | $7.00 | Vela 79g en forma de rosa |
+| 2 | Mini Corazones | `VM-MINICORAZON_vela_mini_corazones.jpg` | $0.17 | Wax melt 1g, mini corazón |
+| 3 | Rosa Pequeña | `VM-ROSAPEQ_vela_rosa_pequena_23g.jpg` | $4.50 | Vela 23g, palito decorativo |
+| 4 | Mini Margarita | `VM-MINIMARGARITA_wax_melts_mini_margarita.jpg` | $1.70 | Wax melt 6g, mini margarita |
+| 5 | Margarita Pequeña | `VM-MARGARITA_vela_margarita_pequena_16g.jpg` | $3.00 | Vela 16g, palito decorativo |
+| 6 | Tulipán Pequeña | `VM-TULIPAN_vela_tulipan_pequena_33g.jpg` | $5.00 | Vela 33g, palito decorativo |
+| 7 | Bouquet Tulipán | `VM-BOUQUET_vela_bouquet_tulipan_83g.jpg` | $8.50 | Vela 83g, bouquet de tulipanes |
+| 8 | Espiral | `VM-ESPIRAL_vela_espiral_104g.jpg` | $9.50 | Vela 104g en espiral |
+| 9 | Sagrada Familia | `VM-SAGRADA_vela_sagrada_familia_75g.jpg` | $7.00 | Vela 75g |
+| 10 | Buda | `VM-BUDA_vela_buda_20g.jpg` | $6.50 | Vela 20g |
+| 11 | Mano Hamsa | `VM-HAMSA_vela_mano_hamsa_75g.jpg` | $8.00 | Vela 75g |
+| 12 | Corazón | `VM-CORAZON_vela_corazon_182g.jpg` | $13.50 | Vela 182g |
+| 13 | Cruz con Paloma | `VM-CRUZ_vela_cruz_con_paloma_52g.jpg` | $7.00 | Vela 52g |
+| 14 | Cubo | `VM-CUBO_vela_cubo_40g.jpg` | $7.00 | Vela 40g |
+| 15 | Virgen del Carmen | `VM-VIRGEN_vela_virgen_del_carmen_42g.jpg` | $7.00 | Vela 42g |
 
 ### Velas Envases (10) — filtro "Velas"
 
 | # | Nombre | Archivo | Precio | Resumen |
 |---|--------|---------|--------|---------|
-| 16 | Mini Petit | `Mini Petit.jpg` | $7.50 | Vela 123g, vidrio, tapa dorada |
-| 17 | Mandala | `Mandala.jpg` | $9.00 | Vela 98g, envase metal decorativo |
-| 18 | Vintage | `Vintage.jpg` | $9.50 | Vela 165g, vidrio, tapa corcho, detalle floral |
-| 19 | Petit | `PETIT.jpg` | $11.00 | Vela 171g, vidrio, tapa dorada, corazones rojos |
-| 20 | Estrella | `Estrella1.jpg` | $12.00 | Vela 285g, vidrio, forma de estrella |
-| 21 | Aura Rosa | `Aura Rosa.jpg` | $17.00 | Vela 342g, tapa de madera, rosa en superficie |
-| 22 | Aura Tulipán | `Aura Tulipan.jpg` | $17.00 | Vela 335g, tapa de madera, tulipán en superficie |
-| 23 | Aura Corazones | `Aura Corazón.jpg` | $20.00 | Vela 418g, marmoleada blanco/rosa |
-| 24 | Armonía Canela | `Armonia.jpg` | $22.00 | Vela 508g, vidrio opaco, mecha de madera |
-| 25 | Armonía Coco | `Armonia Coco.jpg` | $23.00 | Vela 516g, vidrio opaco |
+| 16 | Mini Petit | `VE-MINIPETIT_vela_mini_petit_123g.jpg` | $7.50 | Vela 123g, vidrio, tapa dorada |
+| 17 | Mandala | `VE-MANDALA_vela_mandala_98g.jpg` | $9.00 | Vela 98g, envase metal decorativo |
+| 18 | Vintage | `VE-VINTAGE_vela_vintage_165g.jpg` | $9.50 | Vela 165g, vidrio, tapa corcho, detalle floral |
+| 19 | Petit | `VE-PETIT_vela_petit_171g.jpg` | $11.00 | Vela 171g, vidrio, tapa dorada, corazones rojos |
+| 20 | Estrella | `VE-ESTRELLA_vela_estrella_285g.jpg` | $12.00 | Vela 285g, vidrio, forma de estrella |
+| 21 | Aura Rosa | `VE-AURA-ROSA_vela_aura_rosa_342g.jpg` | $17.00 | Vela 342g, tapa de madera, rosa en superficie |
+| 22 | Aura Tulipán | `VE-AURA-TULIPAN_vela_aura_tulipan_335g.jpg` | $17.00 | Vela 335g, tapa de madera, tulipán en superficie |
+| 23 | Aura Corazones | `VE-AURA-CORAZON_vela_aura_corazones_418g.jpg` | $20.00 | Vela 418g, marmoleada blanco/rosa |
+| 24 | Armonía Canela | `VE-ARMONIA-CANELA_vela_armonia_canela_508g.jpg` | $22.00 | Vela 508g, vidrio opaco, mecha de madera |
+| 25 | Armonía Coco | `Armonia Coco.jpg` | $23.00 | Vela 516g, vidrio opaco (sin imagen en el set web) |
 
 ### Gargantillas y Collares (5) — filtro "Collares" · *Gold-Filled bañada en oro, dije de piedra natural a elección*
 
 | # | Nombre | Archivo | Precio | Medidas |
 |---|--------|---------|--------|---------|
-| 26 | Gargantilla G-01 | `Gargantilla 2.jpg` | $20.00 | 25cm · 1,5mm · broche langosta |
-| 27 | Gargantilla G-02 | `Gargantilla Lisa.jpg` | $25.00 | 25cm · 3mm · broche ancla |
-| 28 | Collar Medio C.M-01 | `Collar Medio 02.jpg` | $25.00 | 29cm · 3mm · broche ancla |
-| 29 | Collar Medio C.M-02 | `Collar Eslabon Medio.jpg` | $30.00 | 34cm · 4mm sólido |
-| 30 | Collar Largo C.L-01 | `Collar Largo 01.jpg` | $32.00 | 40cm · 4mm sólido |
+| 26 | Gargantilla G-01 | `G-01_gargantilla_gold-filled_lisa.jpg` | $20.00 | 25cm · 1,5mm · broche langosta |
+| 27 | Gargantilla G-02 | `G-02_gargantilla_gold-filled_con_dije.jpg` | $25.00 | 25cm · 3mm · broche ancla |
+| 28 | Collar Medio C.M-01 | `C.M-01_collar_medio_eslabon_29cm.jpg` | $25.00 | 29cm · 3mm · broche ancla |
+| 29 | Collar Medio C.M-02 | `C.M-02_collar_medio_solido_34cm.jpg` | $30.00 | 34cm · 4mm sólido |
+| 30 | Collar Largo C.L-01 | `C.L-01_collar_largo_40cm.jpg` | $32.00 | 40cm · 4mm sólido |
 
 ### Pulseras (6) — filtro "Pulseras"
 
 | # | Nombre | Archivo | Precio | Resumen |
 |---|--------|---------|--------|---------|
-| 31 | Pulsera Infinito | `Pulsera Infinito Azul.jpg` | $8.00 | Símbolo infinito, trenzado azul |
-| 32 | Pulsera Infinito Beige | `Pulsera Infinito Beige.jpg` | $8.00 | Símbolo infinito, trenzado beige |
-| 33 | Pulsera Infinito Roja | `Pulsera Infinito Roja.jpg` | $8.00 | Símbolo infinito, trenzado rojo |
-| 34 | Pulsera San Benito | `Pulsera San Benito.jpg` | $8.00 | San Benito, hilo rojo |
-| 35 | Pulsera Perla | `Pulsera Perla.jpg` | $6.00 | Perla, calma y claridad |
-| 36 | Pulsera Ojito | `Pulsera Ojito.jpg` | $6.00 | Ojito protector, hilo rojo |
+| 31 | Pulsera Infinito | `P-01b_pulsera_infinito_azul.jpg` | $8.00 | Símbolo infinito, trenzado azul |
+| 32 | Pulsera Infinito Beige | `P-01c_pulsera_infinito_beige.jpg` | $8.00 | Símbolo infinito, trenzado beige |
+| 33 | Pulsera Infinito Roja | `P-01a_pulsera_infinito_roja.jpg` | $8.00 | Símbolo infinito, trenzado rojo |
+| 34 | Pulsera San Benito | `P-02_pulsera_san_benito.jpg` | $8.00 | San Benito, hilo rojo |
+| 35 | Pulsera Perla | `P-03_pulsera_perla.jpg` | $6.00 | Perla, calma y claridad |
+| 36 | Pulsera Ojito | `P-04_pulsera_ojito.jpg` | $6.00 | Ojito protector, hilo rojo |
 
 ### Accesorios (1) — filtro "Accesorios"
 
 | # | Nombre | Archivo | Precio | Resumen |
 |---|--------|---------|--------|---------|
-| 37 | Piedras Naturales | `Piedras Natural.jpg` | $7.00 | Dijes de piedras naturales |
+| 37 | Piedras Naturales | `D-01_dijes_piedras_naturales.jpg` | $7.00 | Dijes de piedras naturales |
 
 ### Franelas (7) — filtro "Franelas"
 
@@ -569,6 +571,7 @@ curl -sI https://yosoy222.com | head -5
 | 44 | F-07 El Amor | `F-07.jpg` | $14.00 | "El Amor / Un sentido - nuestras vidas" |
 
 > ✅ Las 7 franelas (F-01…F-07) muestran sus **fotos reales** (antes usaban imágenes de velas como placeholder). Nota: F-06 y F-07 vienen de fotos adjuntadas a baja resolución (~213×320); si llegan versiones de mayor resolución se reemplazan.
+> 🖼️ **Imágenes web 1000×1000 (set `imagenes_web`):** desde el 5-sep-2026, los **36 productos de velas y joyería** usan el set de imágenes normalizado 1000×1000 (`VM-*`, `VE-*`, `G-*`, `C.M-*`, `C.L-*`, `P-*`, `D-01_*`) proveniente de `/home/jr/Documentos/gemini velas/imagenes_web/`. Las franelas **NO** usan ese set (sus entradas F-* mostraban velas generadas por IA, no las camisetas) — por eso conservan `F-01.jpg`…`F-07.jpg`. `Armonia Coco` tampoco existe en el set y conserva su imagen anterior.
 
 ---
 
@@ -658,8 +661,8 @@ curl -sI https://yosoy222.com | head -5
 
 | Carpeta | Contenido | Uso |
 |---------|-----------|-----|
-| `images/thumbs/` | Miniaturas del grid (97 archivos en disco; el catálogo actual usa 42) | Tarjetas de producto |
-| `images/catalog/` | Imágenes grandes (mismo esquema de nombres) | Lightbox |
+| `images/thumbs/` | Miniaturas del grid (142 archivos en disco; el catálogo actual usa 44) | Tarjetas de producto |
+| `images/catalog/` | Imágenes grandes (mismo esquema de nombres; 142 en disco) | Lightbox |
 
 ### Opcionales / herramientas
 
@@ -738,4 +741,4 @@ git checkout -- index.html
 
 ---
 
-*Documentación actualizada: 3 de septiembre de 2026 (noche) — sincronizada con el estado real del código: 44 productos con fotos reales (incluidas las 7 franelas), paleta tierra crema, Excel verificado 42/42 sin diferencias, PWA, lightbox, seguridad vía Cloudflare, número de WhatsApp real.*
+*Documentación actualizada: 5 de septiembre de 2026 — sincronizada con el estado real del código: 44 productos con fotos (36 con el set web 1000×1000 `imagenes_web` + 7 franelas con fotos reales + Armonía Coco con su imagen anterior), paleta tierra crema, Excel verificado 42/42 sin diferencias, PWA, lightbox, seguridad vía Cloudflare, número de WhatsApp real.*

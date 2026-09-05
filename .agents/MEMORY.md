@@ -8,8 +8,8 @@
 - **URL producción:** https://yosoy222.com (Cloudflare anycast)
 - **URL Pages:** https://juancito8812.github.io/yosoy222/
 - **WhatsApp pedidos:** +58 412 648 1628 (`584126481628`)
-- **Última sesión:** 2026-09-03 (noche)
-- **Versión de memoria:** 3
+- **Última sesión:** 2026-09-05
+- **Versión de memoria:** 4
 
 ## Arquitectura
 
@@ -31,6 +31,7 @@
 - **[2026-09-03]** — **Cache Rule HTML en Cloudflare** (ruleset `http_request_cache_settings`, id `23c65e9259154365b5dcee888249444c`): HTML cacheado en el edge con TTL 5 min (`edge_ttl override_origin 300` + `browser_ttl override_origin 300`). Verificado: `/` pasó de `DYNAMIC` a `cf-cache-status: HIT`, ciclo REVALIDATED→HIT cada ~300s → deploys se propagan en ~5 min. Nota: el navegador recibe `max-age=600` (10 min, mismo valor que mandaba el origin de GitHub/Fastly y mínimo del plan), el edge revalida cada 300s.
 - **[2026-09-03]** — **CSP estricto vía meta tag** (sin `unsafe-inline`): el sitio no usa estilos/scripts inline, verificado en navegador sin violaciones.
 - **[2026-09-03]** — **Paleta tierra (blanco cálido → crema)**: el sitio pasó de tema oscuro a claro. Fondo `#faf6ef`, tarjetas `#fffdf8`, texto café oscuro `#3b3125`, acento ámbar tierra `#a96f2d`; header translúcido crema, lightbox se mantiene oscuro a propósito. También actualizados `manifest.json` y meta `theme-color` a `#faf6ef`. (`6773efb`)
+- **[2026-09-05]** — **Set de imágenes `imagenes_web` adoptado (híbrido)**: el usuario pidió usar el set 1000×1000 de `/home/jr/Documentos/gemini velas/imagenes_web/` (97 JPG + manifest `_catalogo_web.json`, preparado por una sesión paralela). Al revisar el set en preview se detectó que las entradas F-01…F-07 **muestran velas/escenas IA, no las franelas reales** — decisión: híbrido. Se actualizaron **36 productos** (15 velas moldes, 9 velas envases, 12 collares/pulseras/accesorios) a las imágenes web (`VM-ROSA_vela_rosa_79g.jpg`, `G-01_gargantilla_gold-filled_lisa.jpg`, etc.), las **7 franelas conservan sus fotos reales** `F-01.jpg`…`F-07.jpg`, y **Armonía Coco** mantiene su imagen anterior (no existe en el set). (`d6d4b53`, deploy verificado: 88 URLs → 200)
 - **[2026-09-03]** — **Fotos reales de las 7 franelas (F-01…F-07)**: antes mostraban imágenes de velas. Mapeadas las fotos reales encontradas en `fotos de calidad/` (los 3 Loto Sagrado en `1779977763582/8623208/9652259.png` + 2 `copilot_image_*.jpeg`) y las 2 adjuntadas por el usuario (F-06 Cool y F-07 El Amor). Archivos `F-01.jpg`…`F-07.jpg` en thumbs/catalog. (`9b5891e`, `b346ced`, `fc0eca2`)
 - **[2026-09-03]** — **Excel como única fuente de verdad**: 42 filas del Excel mapeadas al 100% (precios, descripciones verbatim, categorías); 2 variantes extra de Pulsera Infinito (Azul/Beige/Roja — 3 tarjetas, decisión del usuario, datos de fila P-01).
 - **[2026-08-30 aprox.]** — WhatsApp `584126481628` configurado en 6 puntos (constante app.js + 3 enlaces index.html + carrito + lightbox); reemplazó el placeholder `521XXXXXXXXXX`.
@@ -39,7 +40,7 @@
 ## Estado Actual
 
 - **Branch:** main
-- **Último commit desplegado:** `d74b60e` (docs: memoria v2) — deploy `success` verificado.
+- **Último commit desplegado:** `d6d4b53` (imágenes web 1000×1000, híbrido) — deploy `success` verificado: app.js actualizado y 88 URLs de imágenes (44 productos × thumbs/catalog) responden 200.
 - **Excel corregido (typo MANO HANSA → MANO HAMSA):** editado directamente en `sharedStrings.xml` del xlsx para no perder las 56 imágenes embebidas; backup en `Catalogo.xlsx.bak`. Verificación `_verify_sync.py`: **42/42, 0 diferencias reales**.
 - **Cache Rule HTML:** CREADA y verificada en producción (3 sep 2026) — HTML cacheado en edge, TTL 5 min, deploys frescos en ~5 min.
 - **WAF Managed Ruleset:** aún NO creado — el token `…9fb0cb` (reactivado, con `#waf:edit`) accede a las fases `http_response_headers_transform` y `http_request_cache_settings` pero **no** a `http_request_firewall_managed` ("request is not authorized").
@@ -48,6 +49,8 @@
 
 ## Cambios Recientes
 
+- **[2026-09-05]** — Set `imagenes_web` 1000×1000 adoptado para 36 productos de velas y joyería (`d6d4b53`); franelas F-01…F-07 conservan fotos reales; Armonía Coco sin imagen en el set (conserva la suya). Verificado en producción: 88/88 URLs 200, franela F-01 intacta.
+- **[2026-09-05]** — Preview del set `imagenes_web` generada y revisada en navegador (`_preview.html` temporal en `/home/jr/Documentos/gemini velas/`): 44 productos mapeados, 43 con imagen nueva; franelas del set mostraban velas IA → decisión híbrida.
 - **[2026-09-03]** — Paleta crema + franelas verificadas en producción: app.js/css/fotos byte-idénticos al repo, 88 URLs de imágenes responden 200, 7/7 franelas con foto real en navegador.
 - **[2026-09-03]** — Typo corregido en `Catalogo.xlsx`: MANO HANSA → MANO HAMSA (coincide con la descripción y con el sitio "Mano Hamsa"). Backup `Catalogo.xlsx.bak`.
 - **[2026-09-03]** — Docs actualizadas (README + PLAN + memoria v2): paleta tierra, fotos franelas, script `_verify_sync.py` documentado.
@@ -72,6 +75,8 @@
 
 ## Notas / Problemas Conocidos
 
+- **Imágenes `imagenes_web` con marco interior:** algunas (Mini Petit, Mini Corazones, Mandala) traen marco/padding blanco o difuminado heredado del original — pendiente de recorte si el usuario lo pide. El set F-01…F-07 del set NO se usa (velas IA, no franelas).
+- **Set `imagenes_web`:** carpeta `/home/jr/Documentos/gemini velas/imagenes_web/` (97 JPG 1000×1000 + `_catalogo_web.json` con códigos/precios). Se copiaron 36 archivos al repo; el resto (variantes b, IA-*) no se usan.
 - **Errores de WhatsApp `@521XXXXXXXXX`:** código enlaces viejos cacheados/reenviados; el sitio usa `584126481628`. Solución: borrar chat viejo + recarga forzada (Ctrl+Shift+R o incógnito).
 - **403 con Python-urllib:** Cloudflare bloquea el User-Agent `Python-urllib` (anti-bots) — falso positivo al verificar con scripts; usar curl o UA de navegador.
 - **Caché PWA:** después de cada deploy, recargar 2 veces en el celular para ver la versión nueva.
