@@ -71,7 +71,7 @@
 ## ARQUITECTURA DEL PROYECTO
 
 ```
-yosoy222/                          ← RAÍZ del repositorio│   ├── index.html                     ← Landing page (única página, ~293 líneas)
+yosoy222/                          ← RAÍZ del repositorio│   ├── index.html                     ← Landing page (única página, ~298 líneas)
 │   ├── Meta tags: SEO, Open Graph, PWA, seguridad (CSP + Referrer-Policy)
 │   ├── Header fijo: logo, nav, carrito, menú mobile
 │   ├── Hero asimétrico (texto + fotos)
@@ -82,7 +82,7 @@ yosoy222/                          ← RAÍZ del repositorio│   ├── inde
 │   └── Lightbox (vista ampliada de producto, role="dialog")
 │
 ├── css/
-│   └── style.css                   ← Estilos completos (~830 líneas)
+│   └── style.css                   ← Estilos completos (~834 líneas)
 │       ├── Tokens CSS (:root — paleta tierra crema)
 │       ├── Header, hero, catálogo, tarjetas, buscador, filtros
 │       ├── Cómo comprar, Nosotros, Contacto, Footer
@@ -93,7 +93,7 @@ yosoy222/                          ← RAÍZ del repositorio│   ├── inde
 │       └── Media queries (900px, 600px, 380px)
 │
 ├── js/
-│   └── app.js                      ← Toda la lógica JS (~540 líneas)
+│   └── app.js                      ← Toda la lógica JS (~512 líneas)
 │       ├── Config WhatsApp: const WHATSAPP = '584126481628'
 │       ├── Array products[] — 44 productos (file, name, cat, price, desc)
 │       ├── Seguridad: escapeHtml() + loadCart() validado
@@ -105,17 +105,18 @@ yosoy222/                          ← RAÍZ del repositorio│   ├── inde
 │       └── Registro del Service Worker (PWA)
 │
 ├── manifest.json                   ← PWA: nombre, iconos, tema (~66 líneas)
-├── sw.js                           ← Service worker: caché offline (~110 líneas)
+├── sw.js                           ← Service worker: caché offline (cache v3, ~110 líneas)
 ├── icons/                          ← 10 iconos PWA — 8 'any' (72,96,128,144,152,192,384,512px) + 2 maskable
 │
 ├── images/
-│   ├── thumbs/                     ← Miniaturas del grid (142 archivos en disco; el catálogo usa 44)
-│   └── catalog/                    ← Imágenes para el lightbox (mismo nombre de archivo; 142 en disco)
+│   ├── thumbs/                     ← Miniaturas del grid (60 archivos)
+│   └── catalog/                    ← Imágenes para el lightbox (60 archivos)
 │
 ├── process_images.py               ← Remoción de bordes blancos (v1, básica)
 ├── process_images_v2.py            ← Remoción de bordes blancos (v2, detección adaptativa agresiva)
 ├── CNAME                          ← Dominio personalizado (yosoy222.com)
 ├── .gitignore                     ← Archivos ignorados (incluye server.js de pruebas)
+├── AGENTS.md                      ← Instrucciones para agentes AI
 ├── README.md                      ← Este archivo
 └── PLAN_IMPLEMENTACION.md         ← Plan de fases del proyecto
 ```
@@ -348,7 +349,7 @@ El sitio es una **PWA instalable** con caché offline.
 | Archivo | Función |
 |---------|---------|
 | `manifest.json` | Nombre "YoSoy222", `display: standalone`, tema `#faf6ef`, fondo `#faf6ef`, iconos |
-| `sw.js` | Service worker: precache de HTML/CSS/JS/manifest e **imágenes** (estrategia *stale-while-revalidate*) |
+| `sw.js` | Service worker: precache de HTML/CSS/JS/manifest e **imágenes** (estrategia *stale-while-revalidate*, cache v3) |
 | `icons/` | 10 iconos: 72, 96, 128, 144, 152, 192, 384, 512 + maskable 192/512 |
 
 ### Instalar en el celular
@@ -420,7 +421,7 @@ Verificado en producción: `cf-cache-status` pasó de `DYNAMIC` a `HIT`/`REVALID
 
 Después de cada deploy exitoso de GitHub Pages, un workflow de GitHub Actions purga automáticamente la caché de Cloudflare vía API. Esto garantiza que los cambios estén disponibles inmediatamente después del deploy (~2-3 min después del push).
 
-**Requisitos:** Configurar los secrets `CLOUDFLARE_ZONE_ID` y `CLOUDFLARE_API_TOKEN` en el repo (Settings → Secrets and variables → Actions).
+**Requisitos:** Configurar los secrets `CLOUDFLARE_ZONE_ID`, `CLOUDFLARE_API_TOKEN` y `CLOUDFLARE_EMAIL` en el repo (Settings → Secrets and variables → Actions).
 
 ### Ya seguro por diseño
 - ✅ Sin `eval()`, sin `innerHTML` con datos de usuario sin escapar
@@ -469,7 +470,7 @@ curl -sI https://yosoy222.com | head -5
 
 1. Crear token en Cloudflare: https://dash.cloudflare.com/profile/api-tokens → **Create Token** → permisos `Zone:Cache Purge`
 2. En GitHub: Settings → Secrets and variables → Actions → **New repository secret**
-3. Agregar `CLOUDFLARE_ZONE_ID` (Zone ID de Cloudflare) y `CLOUDFLARE_API_TOKEN` (el token creado)
+3. Agregar `CLOUDFLARE_ZONE_ID` (Zone ID de Cloudflare), `CLOUDFLARE_API_TOKEN` (el token creado) y `CLOUDFLARE_EMAIL` (tu email de Cloudflare)
 
 ---
 
@@ -679,8 +680,8 @@ curl -sI https://yosoy222.com | head -5
 
 | Carpeta | Contenido | Uso |
 |---------|-----------|-----|
-| `images/thumbs/` | Miniaturas del grid (142 archivos en disco; el catálogo actual usa 44) | Tarjetas de producto |
-| `images/catalog/` | Imágenes grandes (mismo esquema de nombres; 142 en disco) | Lightbox |
+| `images/thumbs/` | Miniaturas del grid (60 archivos) | Tarjetas de producto |
+| `images/catalog/` | Imágenes grandes (60 archivos) | Lightbox |
 
 ### Opcionales / herramientas
 
@@ -689,6 +690,7 @@ curl -sI https://yosoy222.com | head -5
 | `process_images.py` | Remoción básica de bordes blancos |
 | `process_images_v2.py` | Remoción adaptativa/agresiva de bordes blancos (recomendado) |
 | `PLAN_IMPLEMENTACION.md` | Plan de fases del proyecto |
+| `AGENTS.md` | Instrucciones para agentes AI |
 | `.gitignore` | Archivos ignorados (`server.js` de pruebas, etc.) |
 
 ---
@@ -781,8 +783,8 @@ git log --oneline -1   # último commit
 # estado del repo: git status --short
 ```
 
-Último cambio publicado: actualización de documentación README con imágenes híbridas, correcciones de footer/mensaje/lightbox, apertura con teclado; documentación sincronizada al 100% con el sitio real desplegado.
+Último cambio publicado: documentación completa actualizada con AGENTS.md, MEMORY.md v6, README.md con datos correctos (imágenes hero corregidas, cache v3, 60 imágenes por carpeta).
 
 ---
 
-*Documentación actualizada: 5 de septiembre de 2026 — sincronizada con el estado real del código: 44 productos, híbrido `imagenes_web` (36 productos actualizados, 7 franelas reales conservadas, Armonía Coco con su imagen anterior), paleta tierra crema, Excel verificado 42/42 sin diferencias, PWA instalable con iconos regenerados (8 'any' cuadrados + 2 maskable), lightbox con apertura por teclado, footer + mensaje de WhatsApp corregidos, seguridad vía Cloudflare, número de WhatsApp real.*
+*Documentación actualizada: 5 de septiembre de 2026 — sincronizada con el estado real del código: 44 productos, cache v3, imágenes hero corregidas (VM-ROSA, VE-ARMONIA-CANELA), 60 imágenes por carpeta, híbrido `imagenes_web` (36 productos, 7 franelas reales, Armonía Coco), paleta tierra crema, Excel verificado 42/42 sin diferencias, PWA instalable con 10 iconos, lightbox con apertura por teclado, footer + mensaje WhatsApp corregidos, seguridad vía Cloudflare, GitHub Actions purge automático, secrets configurados.*

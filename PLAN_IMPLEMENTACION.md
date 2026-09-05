@@ -134,6 +134,7 @@
 - [x] `.agents/MEMORY.md` actualizado con la sesión v5 sep 2026 (iconos regenerados, correcciones, documentación 100%)
 - [x] `PLAN_IMPLEMENTACION.md` actualizado con el estado actual y pendientes
 - [x] PLAN_IMPLEMENTACION.md sincronizado con fases completadas
+- [x] `AGENTS.md` creado con instrucciones completas para agentes AI
 
 ---
 
@@ -154,7 +155,7 @@
 ### Performance / PWA
 - [x] Headers HTTP reales vía **Transform Rule en Cloudflare** (ruleset `http_response_headers_transform`): X-Frame-Options DENY, nosniff, Permissions-Policy, Referrer-Policy y HSTS (`max-age=31536000; includeSubDomains`) — verificados en vivo con curl (3 sep 2026)
 - [x] **Cache Rule HTML** en Cloudflare (ruleset `http_request_cache_settings`, TTL edge 5 min) — HTML cacheado en edge, deploys frescos en ~5 min
-- [x] **GitHub Actions: Purge automático de Cloudflare** — workflow `purge-cache.yml` restaurado (se había perdido). Se dispara tras cada deploy exitoso de GitHub Pages. Requiere secrets `CLOUDFLARE_ZONE_ID` y `CLOUDFLARE_API_TOKEN` en Settings → Secrets del repo.
+- [x] **GitHub Actions: Purge automático de Cloudflare** — workflow `purge-cache.yml` restaurado (se había perdido). Se dispara tras cada deploy exitoso de GitHub Pages. Requiere secrets `CLOUDFLARE_ZONE_ID`, `CLOUDFLARE_API_TOKEN` y `CLOUDFLARE_EMAIL` configurados en Settings → Secrets del repo. **Estado: secrets configurados.**
 - [x] **Fix imágenes hero rotas** — rutas `Vela Rosa.jpg` / `Vela Canela.jpg` (no existían) reemplazadas por archivos reales (`VM-ROSA_vela_rosa_79g.jpg` / `VE-ARMONIA-CANELA_vela_armonia_canela_508g.jpg`). Cache bump v2→v3 para forzar limpieza en dispositivos con PWA instalada (commit `d1fe806`, 5 sep 2026).
 - [ ] Banner/aviso "nueva versión disponible" cuando el service worker detecte update
 - [ ] Minificar CSS/JS
