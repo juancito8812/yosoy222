@@ -64,6 +64,7 @@
   /* Category mapping for display */
   const catMap = { vela: 'velas', pulsera: 'pulseras', collar: 'collares', franela: 'franelas', otro: 'accesorios' };
   const catLabels = { vela: 'Vela artesanal', pulsera: 'Pulsera artesanal', collar: 'Collar artesanal', franela: 'Franela artesanal', otro: 'Accesorio artesanal' };
+  const catNouns = { vela: 'la vela', collar: 'el collar', pulsera: 'la pulsera', franela: 'la franela', otro: 'el accesorio' };
 
   /* ----- DOM refs ----- */
   const $ = (s, p) => (p || document).querySelector(s);
@@ -427,7 +428,8 @@
     lightboxPrice.textContent = `$${p.price.toFixed(2)}`;
     lightboxCounter.textContent = `${currentLightboxIndex + 1} / ${visibleProducts.length}`;
     
-    lightboxWhatsapp.href = `https://wa.me/${WHATSAPP}?text=${encodeURIComponent('Hola! Me interesa la vela ' + p.name + ' 🕯️')}`;
+    const noun = catNouns[p.cat] || 'este producto';
+    lightboxWhatsapp.href = `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(`Hola! Me interesa ${noun} ${p.name}`)}`;
   }
 
   function lightboxPrevFn() {
