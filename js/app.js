@@ -72,6 +72,7 @@
 
   /* ----- Security: HTML escaping ----- */
   const escapeHtml = (str) => {
+    if (typeof str === 'number') return String(str);
     if (typeof str !== 'string') return '';
     const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
     return str.replace(/[&<>"']/g, (c) => map[c]);
@@ -142,8 +143,8 @@
             <p class="product-category">${escapeHtml(catLabels[p.cat] || 'Producto artesanal')}</p>
             <p class="product-desc">${escapeHtml(p.desc)}</p>
             <div class="product-footer">
-              <span class="product-price">$${p.price}</span>
-              <button class="add-cart-btn" data-name="${escapeHtml(p.name)}" data-price="${p.price}">Agregar</button>
+              <span class="product-price">$${escapeHtml(p.price)}</span>
+              <button class="add-cart-btn" data-name="${escapeHtml(p.name)}" data-price="${escapeHtml(p.price)}">Agregar</button>
             </div>
           </div>
         </article>`).join('');
@@ -351,14 +352,14 @@
             <h4>${escapeHtml(item.name)}</h4>
             <div class="cart-item-meta">
               <div class="qty-stepper">
-                <button class="qty-btn" data-idx="${i}" data-delta="-1" aria-label="Reducir cantidad">−</button>
-                <span class="qty-value">${item.qty}</span>
-                <button class="qty-btn" data-idx="${i}" data-delta="1" aria-label="Aumentar cantidad">+</button>
+                <button class="qty-btn" data-idx="${escapeHtml(i)}" data-delta="-1" aria-label="Reducir cantidad">−</button>
+                <span class="qty-value">${escapeHtml(item.qty)}</span>
+                <button class="qty-btn" data-idx="${escapeHtml(i)}" data-delta="1" aria-label="Aumentar cantidad">+</button>
               </div>
-              <button class="cart-item-remove" data-idx="${i}" aria-label="Eliminar ${escapeHtml(item.name)}">Eliminar</button>
+              <button class="cart-item-remove" data-idx="${escapeHtml(i)}" aria-label="Eliminar ${escapeHtml(item.name)}">Eliminar</button>
             </div>
           </div>
-          <span class="cart-item-price">$${(item.price * item.qty).toFixed(2)}</span>
+          <span class="cart-item-price">$${escapeHtml((item.price * item.qty).toFixed(2))}</span>
         </div>`).join('');
 
     // WhatsApp link
@@ -490,22 +491,16 @@
     window.addEventListener('load', () => {
       navigator.serviceWorker.register('/sw.js')
         .then((reg) => {
-          console.log('[PWA] Service Worker registered:', reg.scope);
-          
-          // Check for updates
           reg.addEventListener('updatefound', () => {
             const newWorker = reg.installing;
             newWorker.addEventListener('statechange', () => {
               if (newWorker.state === 'activated') {
-                console.log('[PWA] New version available!');
-                // Could show an update banner here
+                // New version available — could show an update banner here
               }
             });
           });
         })
-        .catch((err) => {
-          console.log('[PWA] Service Worker registration failed:', err);
-        });
+        .catch(() => {});
     });
   }
 
