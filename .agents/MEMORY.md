@@ -77,7 +77,7 @@
 ## Próximos Pasos / TODOs
 
 - [x] **Configurar secrets de Cloudflare en GitHub** — COMPLETADO (usuario configuró ZONE_ID y API_TOKEN).
-- [ ] **REGENERAR token Cloudflare con permiso `Zone → Cache Purge → Edit`** — el token actual (`cfut_…`) devuelve `Authentication error (10000)` al purgar (verificado 5 sep 2026). Sin esto el workflow `purge-cache.yml` falla en cada deploy. Pasos: dashboard Cloudflare → My Profile → API Tokens → template "Cloudflare Purge Cache" (o custom: `Zone:Cache Purge:Edit` + `Zone:Zone:Read`) → Zone Resources: yosoy222.com → copiar → actualizar secret `CLOUDFLARE_API_TOKEN` en GitHub. Verificar con el curl del README (debe responder `"success": true`).
+- [x] **REGENERAR token Cloudflare con permiso `Zone → Cache Purge → Edit`** — COMPLETADO 5 sep 2026: nuevo token verificado con purge directo (`success: true`, ya no da error 10000) y actualizado en el secret `CLOUDFLARE_API_TOKEN` de GitHub.
 - [ ] **Focus trap en carrito/lightbox** — COMPLETADO (5 sep 2026, code review F8: `aria-modal`, trap Tab, ESC, foco restaurado).
 - [ ] **WAF Managed Ruleset** — Cloudflare Managed Ruleset con acción `managed_challenge`. El token actual NO accede a esa fase; requiere token con permiso específico.
 - [ ] **SEO:** Google Analytics (GA4), Google Search Console, Open Graph completo, Sitemap.xml, robots.txt, Canonical URL.
