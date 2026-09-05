@@ -98,7 +98,7 @@
 - [x] **Número real configurado:** `+58 412 648 1628` → `584126481628`
 - [x] Reemplazado en `js/app.js` (constante `WHATSAPP`) y en los 3 enlaces fijos de `index.html` (contacto, footer, botón flotante); carrito y lightbox usan la constante
 - [x] Verificado que no queda ningún `521XXXXXXXXXX` en el código (solo persistía en la documentación antigua)
-- [x] Redes sociales @yosoy222 (Instagram, TikTok, Facebook) enlazadas
+- [x] Redes sociales @yo_soy222 (Instagram, TikTok, Facebook) enlazadas
 
 ---
 
@@ -142,7 +142,7 @@
 ### Contenido / Producto
 - [x] Fotos reales de las 7 franelas mapeadas correctamente (F-01…F-07, commits `9b5891e`/`b346ced`/`fc0eca2`)
 - [x] Franelas F-01…F-07 con sus fotos reales (no el set `imagenes_web`, que para esas entradas genera velas IA); el set `imagenes_web` se usa para 36 productos de velas y joyería; Armonía Coco conserva su imagen anterior.
-- [ ] Verificar que las cuentas @yosoy222 (IG/TikTok/FB) enlazadas sean las definitivas
+- [x] Verificar que las cuentas @yo_soy222 (IG/TikTok/FB) enlazadas sean las definitivas
 
 ### SEO y Analytics
 - [ ] Google Analytics (tag GA4)

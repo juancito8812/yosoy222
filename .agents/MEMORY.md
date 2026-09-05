@@ -8,6 +8,9 @@
 - **URL producción:** https://yosoy222.com (Cloudflare anycast)
 - **URL Pages:** https://juancito8812.github.io/yosoy222/
 - **WhatsApp pedidos:** +58 412 648 1628 (`584126481628`)
+- **Instagram:** https://www.instagram.com/yo_soy222
+- **TikTok:** https://www.tiktok.com/@yo_soy222
+- **Facebook:** https://www.facebook.com/share/1C5X2yKscG/
 - **Última sesión:** 2026-09-05
 - **Versión de memoria:** 4
 
@@ -50,6 +53,7 @@
 ## Cambios Recientes
 
 - **[2026-09-05]** — **Iconos PWA regenerados a cuadrados** (`600227c`): los 8 iconos `any` (72,96,128,144,152,192,384,512) se regeneraron desde `images/catalog/VM-ROSA_vela_rosa_79g.jpg` con detección de bbox de la vela (crop 176,40 → 824,960) + fondo oscuro #1a1a1a; los 2 iconos maskable se mantuvieron intactos; `icon-180x180.png` no exists en manifest ni en disco. Verificado localmente y contra github.io/yosoy222.com: cada ruta devuelve 200 image/png con tamaño cuadrado == tamaño declarado.
+- **[2026-09-05]** — **Redes sociales actualizadas** (`2562be3`): Instagram `@yo_soy222`, TikTok `@yo_soy222`, Facebook `share/1C5X2yKscG/`. Actualizados en index.html (contacto + footer), README.md y PLAN_IMPLEMENTACION.md. Deploy propagado con Cache Rule edge ~5 min.
 - **[2026-09-05]** — **Documentación actualizada al 100%** (`README.md`, `.agents/MEMORY.md`, `PLAN_IMPLEMENTACION.md`): refleja imágenes híbridas (36 productos del set `imagenes_web`, 7 franelas reales, Armonía Coco anterior), correcciones v5 sep 2026 (footer Venezuela, mensaje lightbox por categoría, apertura con teclado, delegación de listeners), y estado de la PWA. Commit de docs y push a main.
 - **[2026-09-05]** — **Correcciones v5 sep 2026** (JS+HTML, aplicadas y verificadas): pie de página `Hecho a mano en Venezuela`; lightbox prefills el mensaje WhatsApp según categoría (`vela`/`collar`/`pulsera`/`franela`); tarjetas de producto ahora abren el lightbox con Enter/Espacio (`<button>` real con `aria-label`) en vez de `<div>`; listeners delegados (no se re-vinculan en cada render); `visibleProducts` en estado desde `applyFilters`.
 - **[2026-09-05]** — Set `imagenes_web` 1000×1000 adoptado para 36 productos de velas y joyería (`d6d4b53`); franelas F-01…F-07 conservan fotos reales; Armonía Coco sin imagen en el set (conserva la suya). Verificado en producción: 88/88 URLs 200, franela F-01 intacta; el set F-01…F-07 NO se usa porque en esa carpeta muestran velas IA.

@@ -48,7 +48,7 @@
 - **PWA**: instalable en Android/iOS/desktop, funciona offline (service worker + manifest)
 - **Fallback de imagen**: si falta el archivo de un producto, se muestra el nombre como placeholder en vez de un ícono roto
 - **Seguridad**: escape de HTML en todo render dinámico (anti-XSS), validación de `localStorage`, headers de seguridad
-- **Sección "Cómo comprar"**, "Nosotros" y Contacto con redes @yosoy222
+- **Sección "Cómo comprar"**, "Nosotros" y Contacto con redes @yo_soy222
 - **Accesibilidad** (focus-visible, aria-labels, reduced-motion) y **responsive mobile-first**
 - **44 productos** con precios y descripciones reales sincronizados desde `Catalogo.xlsx`
 
@@ -244,7 +244,7 @@ Los enlaces fijos de `index.html` (3 lugares: contacto, footer, flotante) tambi�
 grep -rn "521XXX\|5215512345678" index.html js/ css/ || echo "OK: sin placeholders"
 ```
 
-### Redes sociales — @yosoy222
+### Redes sociales — @yo_soy222
 
 | Red | URL | Estado |
 |-----|-----|--------|
