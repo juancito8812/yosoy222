@@ -123,18 +123,17 @@
   let cart = loadCart();
   let activeFilter = 'todos';
   let searchTerm = '';
+  let visibleProducts = [];   // products shown by current search + filter (drives the lightbox)
+  let currentLightboxIndex = 0;
 
   /* ============================================
      RENDER PRODUCT GRID from data array
      ============================================ */
   function renderProducts() {
     if (!grid) return;
-    let html = '';
-    products.forEach((p, i) => {
-      const cat = catMap[p.cat] || 'accesorios';
-      const priceStr = `$${p.price}`;
-      html += `          <article class="product-card" data-category="${escapeHtml(cat)}" data-index="${i}" data-name="${escapeHtml(p.name)}" data-desc="${escapeHtml(p.desc)}">
-          <div class="product-image" data-name="${escapeHtml(p.name)}">
+    grid.innerHTML = products.map((p, i) => `
+          <article class="product-card" data-index="${i}">
+          <div class="product-image">
             <img src="images/thumbs/${escapeHtml(p.file)}" alt="${escapeHtml(p.name)} artesanal" loading="lazy">
           </div>
           <div class="product-info">
@@ -142,35 +141,11 @@
             <p class="product-category">${escapeHtml(catLabels[p.cat] || 'Producto artesanal')}</p>
             <p class="product-desc">${escapeHtml(p.desc)}</p>
             <div class="product-footer">
-              <span class="product-price">${priceStr}</span>
-              <button class="add-cart-btn" data-name="${escapeHtml(p.name)}" data-price="${p.price}" data-index="${i}">Agregar</button>
+              <span class="product-price">$${p.price}</span>
+              <button class="add-cart-btn" data-name="${escapeHtml(p.name)}" data-price="${p.price}">Agregar</button>
             </div>
           </div>
-        </article>`;
-    });
-    grid.innerHTML = html;
-
-    // Attach add-to-cart handlers
-    $$('.add-cart-btn', grid).forEach(btn => {
-      btn.addEventListener('click', () => {
-        const name = btn.dataset.name;
-        const price = parseFloat(btn.dataset.price);
-        const existing = cart.find(item => item.name === name);
-        if (existing) {
-          existing.qty += 1;
-        } else {
-          cart.push({ name, price, qty: 1 });
-        }
-        btn.classList.add('added');
-        const orig = btn.textContent;
-        btn.textContent = '✓ Agregado';
-        setTimeout(() => { btn.classList.remove('added'); btn.textContent = orig; }, 900);
-        saveCart();
-        renderCart();
-        bumpCount();
-        openCart();
-      });
-    });
+        </article>`).join('');
   }
 
   /* ============================================
@@ -245,27 +220,29 @@
 
   function applyFilters() {
     if (!grid) return;
-    const cards = $$('.product-card', grid);
+    visibleProducts = [];
     let count = 0;
-    cards.forEach(card => {
-      const cat = card.dataset.category;
-      const name = (card.dataset.name || '').toLowerCase();
-      const matchesCat = activeFilter === 'todos' || cat === activeFilter;
-      const desc = (card.dataset.desc || '').toLowerCase();
-      const matchesSearch = !searchTerm || name.includes(searchTerm) || desc.includes(searchTerm);
-      const show = matchesCat && matchesSearch;
+
+    // Cards keep the same order as `products`, so grid.children[i] is product i.
+    products.forEach((p, i) => {
+      const card = grid.children[i];
+      const matchesCat = activeFilter === 'todos' || catMap[p.cat] === activeFilter;
+      const name = p.name.toLowerCase();
+      const desc = p.desc.toLowerCase();
+      const show = matchesCat && (!searchTerm || name.includes(searchTerm) || desc.includes(searchTerm));
       card.classList.toggle('hidden', !show);
-      if (show) count++;
+      if (show) {
+        count++;
+        visibleProducts.push(p);
+      }
     });
+
     if (resultsCount) {
-      resultsCount.textContent = count < cards.length
-        ? `${count} de ${cards.length} productos`
-        : '';
+      resultsCount.textContent = count < products.length ? `${count} de ${products.length} productos` : '';
     }
-    if (emptyState) emptyState.hidden = count > 0;
-    if (grid) {
-      grid.style.display = emptyState && !emptyState.hidden ? 'none' : '';
-    }
+    const showEmpty = !!emptyState && count === 0;
+    if (emptyState) emptyState.hidden = !showEmpty;
+    grid.style.display = showEmpty ? 'none' : '';
   }
 
   /* ============================================
@@ -286,6 +263,17 @@
   cartClose.addEventListener('click', closeCart);
   cartOverlay.addEventListener('click', closeCart);
 
+  // Delegated clicks survive re-renders: qty steppers and remove buttons
+  cartItems.addEventListener('click', (e) => {
+    const qtyBtn = e.target.closest('.qty-btn');
+    if (qtyBtn) {
+      changeQty(parseInt(qtyBtn.dataset.idx, 10), parseInt(qtyBtn.dataset.delta, 10));
+      return;
+    }
+    const removeBtn = e.target.closest('.cart-item-remove');
+    if (removeBtn) removeItem(parseInt(removeBtn.dataset.idx, 10));
+  });
+
   if (cartBrowse) {
     cartBrowse.addEventListener('click', (e) => {
       e.preventDefault();
@@ -295,6 +283,27 @@
         window.scrollTo({ top: target.offsetTop - 80, behavior: 'smooth' });
       }
     });
+  }
+
+  function addToCart(btn) {
+    const name = btn.dataset.name;
+    const price = parseFloat(btn.dataset.price);
+    const existing = cart.find(item => item.name === name);
+    if (existing) {
+      existing.qty += 1;
+    } else {
+      cart.push({ name, price, qty: 1 });
+    }
+
+    btn.classList.add('added');
+    const orig = btn.textContent;
+    btn.textContent = '✓ Agregado';
+    setTimeout(() => { btn.classList.remove('added'); btn.textContent = orig; }, 900);
+
+    saveCart();
+    renderCart();
+    bumpCount();
+    openCart();
   }
 
   function bumpCount() {
@@ -326,9 +335,8 @@
     cartCount.textContent = count;
 
     if (cart.length === 0) {
-      cartItems.innerHTML = '';
+      cartItems.replaceChildren(cartEmpty);
       cartEmpty.hidden = false;
-      cartItems.appendChild(cartEmpty);
       cartFooter.hidden = true;
       return;
     }
@@ -336,10 +344,7 @@
     cartFooter.hidden = false;
     cartTotal.textContent = `$${total.toFixed(2)} USD`;
 
-    // Build items HTML
-    let html = '';
-    cart.forEach((item, i) => {
-      html += `
+    cartItems.innerHTML = cart.map((item, i) => `
         <div class="cart-item">
           <div class="cart-item-info">
             <h4>${escapeHtml(item.name)}</h4>
@@ -353,23 +358,7 @@
             </div>
           </div>
           <span class="cart-item-price">$${(item.price * item.qty).toFixed(2)}</span>
-        </div>`;
-    });
-    cartItems.innerHTML = html;
-
-    // Stepper handlers
-    $$('.qty-btn', cartItems).forEach(btn => {
-      btn.addEventListener('click', () => {
-        changeQty(parseInt(btn.dataset.idx, 10), parseInt(btn.dataset.delta, 10));
-      });
-    });
-
-    // Remove handlers
-    $$('.cart-item-remove', cartItems).forEach(btn => {
-      btn.addEventListener('click', () => {
-        removeItem(parseInt(btn.dataset.idx, 10));
-      });
-    });
+        </div>`).join('');
 
     // WhatsApp link
     const lines = cart.map(i => `• ${i.name} x${i.qty} — $${(i.price * i.qty).toFixed(2)}`);
@@ -400,31 +389,23 @@
   /* ============================================
      LIGHTBOX
      ============================================ */
-  const lightbox = document.getElementById('lightbox');
-  const lightboxImg = document.getElementById('lightboxImg');
-  const lightboxName = document.getElementById('lightboxName');
-  const lightboxDesc = document.getElementById('lightboxDesc');
-  const lightboxPrice = document.getElementById('lightboxPrice');
-  const lightboxCounter = document.getElementById('lightboxCounter');
-  const lightboxWhatsapp = document.getElementById('lightboxWhatsapp');
-  const lightboxClose = document.getElementById('lightboxClose');
-  const lightboxPrev = document.getElementById('lightboxPrev');
-  const lightboxNext = document.getElementById('lightboxNext');
-
-  let currentLightboxIndex = 0;
-  let visibleProducts = [];
+  const lightbox = $('#lightbox');
+  const lightboxImg = $('#lightboxImg');
+  const lightboxName = $('#lightboxName');
+  const lightboxDesc = $('#lightboxDesc');
+  const lightboxPrice = $('#lightboxPrice');
+  const lightboxCounter = $('#lightboxCounter');
+  const lightboxWhatsapp = $('#lightboxWhatsapp');
+  const lightboxClose = $('#lightboxClose');
+  const lightboxPrev = $('#lightboxPrev');
+  const lightboxNext = $('#lightboxNext');
 
   function openLightbox(index) {
-    visibleProducts = products.filter((p, i) => {
-      const card = grid.querySelector(`[data-index="${i}"]`);
-      return card && !card.classList.contains('hidden');
-    });
-    
-    // Find the index in visibleProducts
+    // `index` points into `products`; map it to its position among the visible products
     const targetProduct = products[index];
     currentLightboxIndex = visibleProducts.findIndex(p => p.name === targetProduct.name);
     if (currentLightboxIndex === -1) currentLightboxIndex = 0;
-    
+
     updateLightboxContent();
     lightbox.classList.add('active');
     document.body.style.overflow = 'hidden';
@@ -459,17 +440,16 @@
     updateLightboxContent();
   }
 
-  // Event delegation for product cards
+  // Event delegation for product cards: "Agregar" adds to cart, clicking elsewhere opens the lightbox
   if (grid) {
     grid.addEventListener('click', (e) => {
+      const addBtn = e.target.closest('.add-cart-btn');
+      if (addBtn) {
+        addToCart(addBtn);
+        return;
+      }
       const card = e.target.closest('.product-card');
-      if (!card) return;
-      
-      // Don't open lightbox if clicking add-to-cart button
-      if (e.target.closest('.add-cart-btn')) return;
-      
-      const index = parseInt(card.dataset.index, 10);
-      openLightbox(index);
+      if (card) openLightbox(parseInt(card.dataset.index, 10));
     });
   }
 
