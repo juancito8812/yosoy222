@@ -110,10 +110,11 @@ git push origin main
 
 1. **NUNCA** meter API keys, tokens ni secretos en el código
 2. **NUNCA** hacer commit de credenciales
-3. Los secrets van en GitHub → Settings → Secrets (CLOUDFLARE_ZONE_ID y CLOUDFLARE_API_TOKEN)
+3. Los secrets van en GitHub → Settings → Secrets (CLOUDFLARE_ZONE_ID y CLOUDFLARE_API_TOKEN). El `CLOUDFLARE_API_TOKEN` DEBE tener permiso `Zone → Cache Purge → Edit` — sin eso el workflow `purge-cache.yml` falla con `Authentication error (10000)`
 4. El sitio usa CSP estricto via meta tag (sin `unsafe-inline`)
 5. `escapeHtml()` en todo render dinámico (anti-XSS)
 6. `loadCart()` valida localStorage al cargar
+7. PWA: al cambiar `sw.js`, bump de `CACHE_NAME` (`yosoy222-vN`); la versión nueva precachea el catálogo offline completo vía mensaje `PRECACHE_IMAGES` desde `app.js`
 
 ---
 

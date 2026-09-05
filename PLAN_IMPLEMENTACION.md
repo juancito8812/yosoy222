@@ -157,11 +157,17 @@
 - [x] **Cache Rule HTML** en Cloudflare (ruleset `http_request_cache_settings`, TTL edge 5 min) — HTML cacheado en edge, deploys frescos en ~5 min
 - [x] **GitHub Actions: Purge automático de Cloudflare** — workflow `purge-cache.yml` restaurado (se había perdido). Se dispara tras cada deploy exitoso de GitHub Pages. Requiere secrets `CLOUDFLARE_ZONE_ID` y `CLOUDFLARE_API_TOKEN` (autenticación Bearer) en Settings → Secrets del repo. **Estado: secrets configurados.**
 - [x] **Fix imágenes hero rotas** — rutas `Vela Rosa.jpg` / `Vela Canela.jpg` (no existían) reemplazadas por archivos reales (`VM-ROSA_vela_rosa_79g.jpg` / `VE-ARMONIA-CANELA_vela_armonia_canela_508g.jpg`). Cache bump v2→v3 para forzar limpieza en dispositivos con PWA instalada (commit `d1fe806`, 5 sep 2026).
+- [x] **Optimización de imágenes (perf, 5 sep 2026)** — thumbs máx 480px JPEG q78 (~20 KB c/u, 6.1→1.4 MB) y catalog máx 900px JPEG q80 (6.1→3.5 MB). Total ~12 MB → ~4.9 MB. + `fetchpriority="high"` hero, `decoding="async"`, fuentes recortadas a pesos usados.
+- [x] **PWA offline total (cache v4, 5 sep 2026)** — `sw.js` v4 con `PRECACHE_IMAGES`: la app envía thumbs+catalog de los 44 productos al SW tras activarse, que los cachea en segundo plano (idempotente). Catálogo completo offline incluido el lightbox.
+- [ ] **Actualizar token Cloudflare con permiso `Zone → Cache Purge → Edit`** — el token actual en el secret `CLOUDFLARE_API_TOKEN` falla con `Authentication error (10000)` al purgar (verificado 5 sep 2026); el workflow queda en rojo hasta actualizarlo.
 - [ ] Banner/aviso "nueva versión disponible" cuando el service worker detecte update
 - [ ] Minificar CSS/JS
 
 ### Seguridad (Cloudflare WAF)
 - [ ] **WAF Managed Ruleset** con acción `managed_challenge` (decisión del usuario: challenge, no block) en la fase `http_request_firewall_managed` — requiere token Cloudflare con permiso para esa fase (el actual con `#waf:edit` no accede; verificado 3 sep 2026)
+
+### Performance futura (edge)
+- [ ] **Cloudflare Polish (WebP automático)** — NO disponible en plan Free (docs oficiales: solo Pro+). Alternativa gratis: convertir el catálogo a WebP local en el repo (~35-40% menos que JPEG actual).
 
 ### Funcionalidad / UX
 - [ ] Focus trap y gestión de foco al abrir el carrito y el lightbox (accesibilidad total)
@@ -191,4 +197,4 @@
 ---
 
 *Última actualización: 5 de septiembre de 2026*
-*Commits recientes: `d1fe806` (fix hero images + cache v3), `5839051` (GitHub Actions purge), `10bb8d5` (docs)*
+*Commits recientes: `250d298` (memoria v9), `85a09db` (PWA offline total v4), `2c5b842` (perf imágenes), `42b4c0c` (fix 10 hallazgos code review)*

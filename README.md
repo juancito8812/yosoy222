@@ -363,6 +363,7 @@ El sitio es una **PWA instalable** con caché offline.
 
 - La primera visita descarga y guarda los recursos
 - Con el teléfono en modo avión, el sitio sigue abriendo y mostrando el catálogo (los pedidos por WhatsApp requieren conexión, obviamente)
+- **Catálogo offline total (cache v4):** tras activarse el service worker, la app envía las imágenes de los 44 productos (thumbs + catalog) y el SW las precachea en segundo plano (`PRECACHE_IMAGES`). Una vez completado, el catálogo completo —incluido el lightbox— funciona sin conexión.
 
 ### Importante sobre la caché (PWA)
 
@@ -422,7 +423,7 @@ Verificado en producción: `cf-cache-status` pasó de `DYNAMIC` a `HIT`/`REVALID
 
 Después de cada deploy exitoso de GitHub Pages, un workflow de GitHub Actions purga automáticamente la caché de Cloudflare vía API. Esto garantiza que los cambios estén disponibles inmediatamente después del deploy (~2-3 min después del push).
 
-**Requisitos:** Configurar los secrets `CLOUDFLARE_ZONE_ID` y `CLOUDFLARE_API_TOKEN` en el repo (Settings → Secrets and variables → Actions). El workflow usa autenticación Bearer (API Token); `CLOUDFLARE_EMAIL` no se necesita.
+**Requisitos:** Configurar los secrets `CLOUDFLARE_ZONE_ID` y `CLOUDFLARE_API_TOKEN` en el repo (Settings → Secrets and variables → Actions). El workflow usa autenticación Bearer (API Token); `CLOUDFLARE_EMAIL` no se necesita. **IMPORTANTE:** el token debe tener permiso `Zone → Cache Purge → Edit` — el token actual devuelve `Authentication error (10000)` al purgar (verificado 5 sep 2026), así que el workflow falla hasta actualizar el secret.
 
 ### Ya seguro por diseño
 - ✅ Sin `eval()`, sin `innerHTML` con datos de usuario sin escapar
@@ -469,9 +470,10 @@ curl -sI https://yosoy222.com | head -5
 
 ### Configurar purge automático
 
-1. Crear token en Cloudflare: https://dash.cloudflare.com/profile/api-tokens → **Create Token** → permisos `Zone:Cache Purge`
+1. Crear token en Cloudflare: https://dash.cloudflare.com/profile/api-tokens → **Create Token** → usar el template **"Cloudflare Purge Cache"** o custom con permisos `Zone → Cache Purge → Edit` + `Zone → Zone → Read`
 2. En GitHub: Settings → Secrets and variables → Actions → **New repository secret**
 3. Agregar `CLOUDFLARE_ZONE_ID` (Zone ID de Cloudflare) y `CLOUDFLARE_API_TOKEN` (el token creado). Con autenticación Bearer no se necesita `CLOUDFLARE_EMAIL`.
+4. Verificar permisos con: `curl -s -X POST "https://api.cloudflare.com/client/v4/zones/{ZONE_ID}/purge_cache" -H "Authorization: Bearer {TOKEN}" -H "Content-Type: application/json" --data '{"purge_everything":true}'` → debe responder `"success": true` (error `10000` = el token no tiene permiso de purge).
 
 ---
 
@@ -784,7 +786,7 @@ git log --oneline -1   # último commit
 # estado del repo: git status --short
 ```
 
-Último cambio publicado: documentación completa actualizada con AGENTS.md, MEMORY.md v6, README.md con datos correctos (imágenes hero corregidas, cache v3, 60 imágenes por carpeta).
+Último cambio publicado: PWA con **offline total** (precache del catálogo completo, cache v4), optimización de imágenes (thumbs 480px / catalog 900px, -58% peso), y correcciones de seguridad/a11y del code review. **Pendiente:** token de Cloudflare con permiso `Cache Purge` para el workflow de purge automático.
 
 ---
 
