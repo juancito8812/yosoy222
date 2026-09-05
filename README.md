@@ -248,9 +248,9 @@ grep -rn "521XXX\|5215512345678" index.html js/ css/ || echo "OK: sin placeholde
 
 | Red | URL | Estado |
 |-----|-----|--------|
-| Instagram | https://www.instagram.com/yosoy222 | ✅ Configurado |
-| TikTok | https://www.tiktok.com/@yosoy222 | ✅ Configurado |
-| Facebook | https://www.facebook.com/yosoy222 | ✅ Configurado |
+| Instagram | https://www.instagram.com/yo_soy222 | ✅ Configurado |
+| TikTok | https://www.tiktok.com/@yo_soy222 | ✅ Configurado |
+| Facebook | https://www.facebook.com/share/1C5X2yKscG/ | ✅ Configurado |
 
 Si las cuentas reales tienen otro usuario, editar `index.html` (secciones contacto y footer) y el `manifest.json` no hace falta.
 
