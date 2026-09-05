@@ -3,8 +3,8 @@
    Offline caching for PWA
    ============================================ */
 
-const CACHE_NAME = 'yosoy222-v1';
-const CACHE_VERSION = '1.0.0';
+const CACHE_NAME = 'yosoy222-v2';
+const CACHE_VERSION = '2.0.0';
 
 // Assets to precache on install
 const PRECACHE_ASSETS = [
