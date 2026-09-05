@@ -1,6 +1,6 @@
 # 🕯️ Plan de Implementación — YoSoy222
 
-> Plan por fases del sitio **yosoy222.com**. Última actualización sincronizada con el estado real del código: 3 de septiembre de 2026.
+> Plan por fases del sitio **yosoy222.com**. Última actualización sincronizada con el estado real del código: 5 de septiembre de 2026.
 
 ---
 
@@ -139,7 +139,7 @@
 
 ### Contenido / Producto
 - [x] Fotos reales de las 7 franelas mapeadas correctamente (F-01…F-07, commits `9b5891e`/`b346ced`/`fc0eca2`)
-- [ ] Conseguir versiones de mayor resolución de F-06 Cool y F-07 El Amor (~213×320 actuales)
+- [x] Todas las franelas (F-01…F-07) ahora usan imágenes 1000×1000 del set `imagenes_web`
 - [ ] Verificar que las cuentas @yosoy222 (IG/TikTok/FB) enlazadas sean las definitivas
 
 ### SEO y Analytics
@@ -185,4 +185,4 @@
 
 ---
 
-*Última actualización: 3 de septiembre de 2026*
+*Última actualización: 5 de septiembre de 2026*

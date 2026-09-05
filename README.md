@@ -316,7 +316,7 @@ git push
 
 ## PROCESAMIENTO DE IMÁGENES (BORDES BLANCOS)
 
-> **Estado actual (5-sep-2026):** el catálogo referencia 36 imágenes del set **`imagenes_web`** (1000×1000, prefijos `VM-*`/`VE-*`/`G-*`/`C.M-*`/`C.L-*`/`P-*`/`D-01_*`, origen `/home/jr/Documentos/gemini velas/imagenes_web/`), 7 franelas con fotos reales (`F-01.jpg`…`F-07.jpg`) y 1 (Armonía Coco) con su imagen anterior. Los scripts de abajo se usan para fotos nuevas o recortes.
+> **Estado actual (5-sep-2026):** el catálogo usa **todas las imágenes** del set **`imagenes_web`** (1000×1000, origen `/home/jr/Documentos/gemini velas/imagenes_web/`). Los 44 productos tienen fotos reales: velas (`VM-*`/`VE-*`), joyería (`G-*`/`C.M-*`/`C.L-*`/`P-*`/`D-01_*`) y franelas (`F-01`…`F-07`). Solo Armonía Coco conserva su imagen anterior. Los scripts de abajo se usan para fotos nuevas o recortes.
 
 El sitio muestra las fotos de producto sin los bordes blancos del original. Hay dos scripts en la raíz del repo:
 
@@ -570,8 +570,8 @@ curl -sI https://yosoy222.com | head -5
 | 43 | F-06 Cool | `F-06.jpg` | $14.00 | Franela lavanda, diseño "Cool" |
 | 44 | F-07 El Amor | `F-07.jpg` | $14.00 | "El Amor / Un sentido - nuestras vidas" |
 
-> ✅ Las 7 franelas (F-01…F-07) muestran sus **fotos reales** (antes usaban imágenes de velas como placeholder). Nota: F-06 y F-07 vienen de fotos adjuntadas a baja resolución (~213×320); si llegan versiones de mayor resolución se reemplazan.
-> 🖼️ **Imágenes web 1000×1000 (set `imagenes_web`):** desde el 5-sep-2026, los **36 productos de velas y joyería** usan el set de imágenes normalizado 1000×1000 (`VM-*`, `VE-*`, `G-*`, `C.M-*`, `C.L-*`, `P-*`, `D-01_*`) proveniente de `/home/jr/Documentos/gemini velas/imagenes_web/`. Las franelas **NO** usan ese set (sus entradas F-* mostraban velas generadas por IA, no las camisetas) — por eso conservan `F-01.jpg`…`F-07.jpg`. `Armonia Coco` tampoco existe en el set y conserva su imagen anterior.
+> ✅ Las 7 franelas (F-01…F-07) usan sus **fotos reales** del set `imagenes_web` (1000×1000).
+> 🖼️ **Imágenes web 1000×1000 (set `imagenes_web`):** todos los **44 productos** usan el set de imágenes normalizado 1000×1000 proveniente de `/home/jr/Documentos/gemini velas/imagenes_web/`. Solo `Armonia Coco` no existe en el set y conserva su imagen anterior.
 
 ---
 
@@ -713,6 +713,7 @@ git checkout -- index.html
 ### Las imágenes no cargan
 - **Causa 1:** abrir el HTML con `file://` → usar siempre `python3 -m http.server`
 - **Causa 2:** el archivo no existe → la tarjeta muestra el placeholder con el nombre del producto. Agregar el JPG a `images/thumbs/` y `images/catalog/` con el nombre exacto que usa `js/app.js`
+- **Causa 3:** la imagen parece ser otra cosa (ej: vela en vez de franela) → **caché del service worker**. Limpiar: DevTools → Application → Storage → Clear site data, o borrar caché del navegador
 
 ### El botón de WhatsApp no funciona o abre número equivocado
 - Verificar `js/app.js`: `const WHATSAPP = '584126481628';` y los 3 enlaces fijos en `index.html`
@@ -741,4 +742,4 @@ git checkout -- index.html
 
 ---
 
-*Documentación actualizada: 5 de septiembre de 2026 — sincronizada con el estado real del código: 44 productos con fotos (36 con el set web 1000×1000 `imagenes_web` + 7 franelas con fotos reales + Armonía Coco con su imagen anterior), paleta tierra crema, Excel verificado 42/42 sin diferencias, PWA, lightbox, seguridad vía Cloudflare, número de WhatsApp real.*
+*Documentación actualizada: 5 de septiembre de 2026 — sincronizada con el estado real del código: 44 productos con fotos del set `imagenes_web` (43 con imágenes 1000×1000 + Armonía Coco con su imagen anterior), paleta tierra crema, Excel verificado 42/42 sin diferencias, PWA (cache v2), lightbox, seguridad vía Cloudflare, número de WhatsApp real.*
