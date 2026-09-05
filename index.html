@@ -33,7 +33,7 @@
     <link rel="stylesheet" href="css/style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
 
@@ -82,10 +82,10 @@
             </div>
             <div class="hero-visual" aria-hidden="true">
                 <figure class="hero-img hero-img-main">
-                    <img src="images/thumbs/VM-ROSA_vela_rosa_79g.jpg" alt="Vela artesanal rosa de YoSoy222" loading="eager">
+                    <img src="images/thumbs/VM-ROSA_vela_rosa_79g.jpg" alt="Vela artesanal rosa de YoSoy222" loading="eager" fetchpriority="high" decoding="async">
                 </figure>
                 <figure class="hero-img hero-img-float">
-                    <img src="images/thumbs/VE-ARMONIA-CANELA_vela_armonia_canela_508g.jpg" alt="Vela artesanal de canela" loading="eager">
+                    <img src="images/thumbs/VE-ARMONIA-CANELA_vela_armonia_canela_508g.jpg" alt="Vela artesanal de canela" loading="lazy" fetchpriority="low" decoding="async">
                 </figure>
             </div>
         </div>
@@ -279,7 +279,7 @@
             <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg>
         </button>
         <div class="lightbox-content">
-            <img class="lightbox-img" id="lightboxImg" src="" alt="">
+            <img class="lightbox-img" id="lightboxImg" src="" alt="" decoding="async">
             <div class="lightbox-info">
                 <h3 id="lightboxName"></h3>
                 <p class="lightbox-desc" id="lightboxDesc"></p>

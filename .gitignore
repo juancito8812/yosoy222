@@ -12,3 +12,6 @@ Thumbs.db
 *.tmp
 *.log
 server.js
+
+# Playwright MCP snapshots
+.playwright-mcp/

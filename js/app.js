@@ -138,7 +138,7 @@
     grid.innerHTML = products.map((p, i) => `
           <article class="product-card" data-index="${i}">
           <button type="button" class="product-image" data-name="${escapeHtml(p.name)}" aria-label="Ampliar imagen de ${escapeHtml(p.name)}">
-            <img src="images/thumbs/${escapeHtml(p.file)}" alt="${escapeHtml(p.name)} artesanal" loading="lazy">
+            <img src="images/thumbs/${escapeHtml(p.file)}" alt="${escapeHtml(p.name)} artesanal" loading="lazy" decoding="async">
           </button>
           <div class="product-info">
             <h3>${escapeHtml(p.name)}</h3>

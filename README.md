@@ -318,7 +318,8 @@ git push
 
 ## PROCESAMIENTO DE IMÁGENES (BORDES BLANCOS)
 
-> **Estado actual (5-sep-2026):** el catálogo usa el set **`imagenes_web`** (1000×1000, origen `/home/jr/Documentos/gemini velas/imagenes_web/`) para 36 productos de velas y joyería; las 7 franelas conservan sus fotos reales (`F-01`…`F-07.jpg`); Armonía Coco conserva su imagen anterior (no existe en el set). Los scripts de abajo se usan para fotos nuevas o recortes.
+> **Estado actual (5-sep-2026):** el catálogo usa el set **`imagenes_web`** (1000×1000, origen `/home/jr/Documentos/gemini velas/imagenes_web/`) para 36 productos de velas y joyería; las 7 franelas conservan sus fotos reales (`F-01`…`F-07.jpg`); Armonía Coco conserva su imagen anterior. Los scripts de abajo se usan para fotos nuevas o recortes.
+> **Optimización (5-sep-2026):** las imágenes del repo están redimensionadas para rendimiento — `images/thumbs/` a máx. 480px (JPEG q78, promedio ~20 KB) y `images/catalog/` a máx. 900px (JPEG q80, promedio ~57 KB). Peso total bajó de ~12 MB a ~4.9 MB. Las franelas de baja resolución no se escalan hacia arriba.
 
 El sitio muestra las fotos de producto sin los bordes blancos del original. Hay dos scripts en la raíz del repo:
 
