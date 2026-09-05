@@ -64,16 +64,15 @@
 | **Total** | | **44** | **$0.17 – $32.00** |
 
 > ✅ **Los 44 productos tienen foto** (los dos que antes mostraban placeholder — Mini Petit y Armonía Coco — ya tienen imagen real extraída del catálogo en PDF).
+> ✅ **Imágenes del set `imagenes_web` (híbrido)**: 36 productos (velas + joyería) usan las fotos 1000×1000 de `/home/jr/Documentos/gemini velas/imagenes_web/`; las 7 franelas (F-01…F-07) conservan sus fotos reales; Armonía Coco conserva su imagen anterior (no existe en el set).
 
 ---
 
 ## ARQUITECTURA DEL PROYECTO
 
 ```
-yosoy222/                          ← RAÍZ del repositorio
-│
-├── index.html                     ← Landing page (única página, ~293 líneas)
-│   ├── Meta tags: SEO, Open Graph, PWA, seguridad
+yosoy222/                          ← RAÍZ del repositorio│   ├── index.html                     ← Landing page (única página, ~293 líneas)
+│   ├── Meta tags: SEO, Open Graph, PWA, seguridad (CSP + Referrer-Policy)
 │   ├── Header fijo: logo, nav, carrito, menú mobile
 │   ├── Hero asimétrico (texto + fotos)
 │   ├── Catálogo: búsqueda + filtros + grid de productos
@@ -94,23 +93,24 @@ yosoy222/                          ← RAÍZ del repositorio
 │       └── Media queries (900px, 600px, 380px)
 │
 ├── js/
-│   └── app.js                      ← Toda la lógica JS (~539 líneas)
+│   └── app.js                      ← Toda la lógica JS (~540 líneas)
 │       ├── Config WhatsApp: const WHATSAPP = '584126481628'
 │       ├── Array products[] — 44 productos (file, name, cat, price, desc)
 │       ├── Seguridad: escapeHtml() + loadCart() validado
 │       ├── Render del grid · búsqueda (nombre + descripción) · filtros
 │       ├── Carrito (localStorage) · steppers · checkout WhatsApp
 │       ├── Menú mobile · scroll spy · smooth scroll
-│       ├── Lightbox (abrir, navegar, teclado)
+│       ├── Lightbox (abrir, navegar, teclado, cerrar con Esc)
+│       ├── Clic en tarjeta con teclado (Enter/Espacio → lightbox)
 │       └── Registro del Service Worker (PWA)
 │
 ├── manifest.json                   ← PWA: nombre, iconos, tema (~66 líneas)
 ├── sw.js                           ← Service worker: caché offline (~110 líneas)
-├── icons/                          ← 10 iconos PWA (72px → 512px + maskable)
+├── icons/                          ← 10 iconos PWA — 8 'any' (72,96,128,144,152,192,384,512px) + 2 maskable
 │
 ├── images/
-│   ├── thumbs/                     ← Miniaturas del grid (142 archivos en carpeta; el catálogo usa 44)
-│   └── catalog/                    ← Imágenes para el lightbox (mismo nombre de archivo; 142 en carpeta)
+│   ├── thumbs/                     ← Miniaturas del grid (142 archivos en disco; el catálogo usa 44)
+│   └── catalog/                    ← Imágenes para el lightbox (mismo nombre de archivo; 142 en disco)
 │
 ├── process_images.py               ← Remoción de bordes blancos (v1, básica)
 ├── process_images_v2.py            ← Remoción de bordes blancos (v2, detección adaptativa agresiva)
@@ -289,6 +289,7 @@ images/catalog/NOMBRE.jpg      ← imagen grande del lightbox
 | `desc` | string | Descripción (visible en tarjeta, lightbox y búsqueda) |
 
 > 🔁 Si el producto viene del Excel, lo normal es sincronizar desde `Catalogo.xlsx` y no editar a mano (ver sección 5).
+> 💡 **Mensaje de WhatsApp por categoría en el lightbox**: el lightbox ya no redacta `"Me interesa la vela …"` para todo producto; el texto se adapta según categoría (`vela`/`collar`/`pulsera`/`franela`) para que el prefilled quede natural al copiar.
 
 ### Paso 3: Commit y push
 
@@ -316,7 +317,7 @@ git push
 
 ## PROCESAMIENTO DE IMÁGENES (BORDES BLANCOS)
 
-> **Estado actual (5-sep-2026):** el catálogo usa **todas las imágenes** del set **`imagenes_web`** (1000×1000, origen `/home/jr/Documentos/gemini velas/imagenes_web/`). Los 44 productos tienen fotos reales: velas (`VM-*`/`VE-*`), joyería (`G-*`/`C.M-*`/`C.L-*`/`P-*`/`D-01_*`) y franelas (`F-01`…`F-07`). Solo Armonía Coco conserva su imagen anterior. Los scripts de abajo se usan para fotos nuevas o recortes.
+> **Estado actual (5-sep-2026):** el catálogo usa el set **`imagenes_web`** (1000×1000, origen `/home/jr/Documentos/gemini velas/imagenes_web/`) para 36 productos de velas y joyería; las 7 franelas conservan sus fotos reales (`F-01`…`F-07.jpg`); Armonía Coco conserva su imagen anterior (no existe en el set). Los scripts de abajo se usan para fotos nuevas o recortes.
 
 El sitio muestra las fotos de producto sin los bordes blancos del original. Hay dos scripts en la raíz del repo:
 
@@ -570,8 +571,8 @@ curl -sI https://yosoy222.com | head -5
 | 43 | F-06 Cool | `F-06.jpg` | $14.00 | Franela lavanda, diseño "Cool" |
 | 44 | F-07 El Amor | `F-07.jpg` | $14.00 | "El Amor / Un sentido - nuestras vidas" |
 
-> ✅ Las 7 franelas (F-01…F-07) usan sus **fotos reales** del set `imagenes_web` (1000×1000).
-> 🖼️ **Imágenes web 1000×1000 (set `imagenes_web`):** todos los **44 productos** usan el set de imágenes normalizado 1000×1000 proveniente de `/home/jr/Documentos/gemini velas/imagenes_web/`. Solo `Armonia Coco` no existe en el set y conserva su imagen anterior.
+> ✅ Las 7 franelas (F-01…F-07) usan sus **fotos reales** (no se tocaron y siguen siendo `F-01.jpg`…`F-07.jpg`).
+> 🖼️ **Imágenes web 1000×1000 (set `imagenes_web`):** 36 productos de velas y joyería usan ese set (1000×1000, origen `/home/jr/Documentos/gemini velas/imagenes_web/`). Solo `Armonia Coco` no existe en el set y conserva su imagen anterior.
 
 ---
 
@@ -731,6 +732,9 @@ git checkout -- index.html
 - **Causa:** caché DNS del router/ISP
 - **Solución:** reiniciar router; o en el dispositivo cambiar DNS a `1.1.1.1` / `8.8.8.8`; o verificar con `dig yosoy222.com +short` (debe listar las 4 IPs de GitHub Pages)
 
+### No veo las franelas o veo velas en sus tarjetas
+- **Si ves velas donde deberían estar las franelas**, es **caché del service worker**. Limpiar: DevTools → Application → Storage → Clear site data (o borrar caché del navegador) y recargar.
+
 ---
 
 ## CONTACTO DEL PROYECTO
@@ -742,4 +746,26 @@ git checkout -- index.html
 
 ---
 
-*Documentación actualizada: 5 de septiembre de 2026 — sincronizada con el estado real del código: 44 productos con fotos del set `imagenes_web` (43 con imágenes 1000×1000 + Armonía Coco con su imagen anterior), paleta tierra crema, Excel verificado 42/42 sin diferencias, PWA (cache v2), lightbox, seguridad vía Cloudflare, número de WhatsApp real.*
+### Pie de página y lightbox (correcciones v5 sep 2026)
+
+- **País del footer:** `Hecho a mano en Venezuela.` (antes decía México). Confirmado por número WhatsApp +58, USD como moneda y el README del sitio.
+- **Mensaje del lightbox por categoría:** se usó un mapa de sustantivos (`vela`·`collar`·`pulsera`·`franela`) para que el prefilled de WhatsApp sea correcto en todos los productos.
+
+### Accesibilidad del lightbox (v5 sep 2026)
+
+- **Apertura con teclado:** cada tarjeta de producto tiene su zona de imagen como `<button>` real (`type="button"`, `aria-label="Ampliar imagen de …"`) que responde a **Enter** y **Espacio**. El clic de ratón sigue igual.
+- **No se re-vinculan listeners** en cada render: la apertura del lightbox, los steppers y el botón "Agregar" están delegados en contenedores únicos.
+- **`visibleProducts`** se mantiene en estado desde `applyFilters()` para que el lightbox no escanee el DOM en cada apertura.
+
+### Estado del commit más reciente
+
+```
+git log --oneline -1   # último commit
+# estado del repo: git status --short
+```
+
+Último cambio publicado: actualización de documentación README con imágenes híbridas, correcciones de footer/mensaje/lightbox, apertura con teclado; documentación sincronizada al 100% con el sitio real desplegado.
+
+---
+
+*Documentación actualizada: 5 de septiembre de 2026 — sincronizada con el estado real del código: 44 productos, híbrido `imagenes_web` (36 productos actualizados, 7 franelas reales conservadas, Armonía Coco con su imagen anterior), paleta tierra crema, Excel verificado 42/42 sin diferencias, PWA instalable con iconos regenerados (8 'any' cuadrados + 2 maskable), lightbox con apertura por teclado, footer + mensaje de WhatsApp corregidos, seguridad vía Cloudflare, número de WhatsApp real.*

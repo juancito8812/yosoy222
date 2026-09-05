@@ -44,13 +44,15 @@
 - **Excel corregido (typo MANO HANSA → MANO HAMSA):** editado directamente en `sharedStrings.xml` del xlsx para no perder las 56 imágenes embebidas; backup en `Catalogo.xlsx.bak`. Verificación `_verify_sync.py`: **42/42, 0 diferencias reales**.
 - **Cache Rule HTML:** CREADA y verificada en producción (3 sep 2026) — HTML cacheado en edge, TTL 5 min, deploys frescos en ~5 min.
 - **WAF Managed Ruleset:** aún NO creado — el token `…9fb0cb` (reactivado, con `#waf:edit`) accede a las fases `http_response_headers_transform` y `http_request_cache_settings` pero **no** a `http_request_firewall_managed` ("request is not authorized").
-- **Sitio en producción:** funcional (44 productos, imágenes, búsqueda, filtros, carrito, WhatsApp, lightbox — auditado).
+- **Sitio en producción:** funcional y auditado (44 productos, imágenes, búsqueda, filtros, carrito, WhatsApp, lightbox, teclado, PWA, iconos cuadrados, footer Venezuela, mensaje por categoría).
 - **Headers de seguridad:** activos y verificados (incluidos en respuestas cacheadas HIT y en www redirect).
 
 ## Cambios Recientes
 
-- **[2026-09-05]** — Set `imagenes_web` 1000×1000 adoptado para 36 productos de velas y joyería (`d6d4b53`); franelas F-01…F-07 conservan fotos reales; Armonía Coco sin imagen en el set (conserva la suya). Verificado en producción: 88/88 URLs 200, franela F-01 intacta.
-- **[2026-09-05]** — Preview del set `imagenes_web` generada y revisada en navegador (`_preview.html` temporal en `/home/jr/Documentos/gemini velas/`): 44 productos mapeados, 43 con imagen nueva; franelas del set mostraban velas IA → decisión híbrida.
+- **[2026-09-05]** — **Iconos PWA regenerados a cuadrados** (`600227c`): los 8 iconos `any` (72,96,128,144,152,192,384,512) se regeneraron desde `images/catalog/VM-ROSA_vela_rosa_79g.jpg` con detección de bbox de la vela (crop 176,40 → 824,960) + fondo oscuro #1a1a1a; los 2 iconos maskable se mantuvieron intactos; `icon-180x180.png` no exists en manifest ni en disco. Verificado localmente y contra github.io/yosoy222.com: cada ruta devuelve 200 image/png con tamaño cuadrado == tamaño declarado.
+- **[2026-09-05]** — **Documentación actualizada al 100%** (`README.md`, `.agents/MEMORY.md`, `PLAN_IMPLEMENTACION.md`): refleja imágenes híbridas (36 productos del set `imagenes_web`, 7 franelas reales, Armonía Coco anterior), correcciones v5 sep 2026 (footer Venezuela, mensaje lightbox por categoría, apertura con teclado, delegación de listeners), y estado de la PWA. Commit de docs y push a main.
+- **[2026-09-05]** — **Correcciones v5 sep 2026** (JS+HTML, aplicadas y verificadas): pie de página `Hecho a mano en Venezuela`; lightbox prefills el mensaje WhatsApp según categoría (`vela`/`collar`/`pulsera`/`franela`); tarjetas de producto ahora abren el lightbox con Enter/Espacio (`<button>` real con `aria-label`) en vez de `<div>`; listeners delegados (no se re-vinculan en cada render); `visibleProducts` en estado desde `applyFilters`.
+- **[2026-09-05]** — Set `imagenes_web` 1000×1000 adoptado para 36 productos de velas y joyería (`d6d4b53`); franelas F-01…F-07 conservan fotos reales; Armonía Coco sin imagen en el set (conserva la suya). Verificado en producción: 88/88 URLs 200, franela F-01 intacta; el set F-01…F-07 NO se usa porque en esa carpeta muestran velas IA.
 - **[2026-09-03]** — Paleta crema + franelas verificadas en producción: app.js/css/fotos byte-idénticos al repo, 88 URLs de imágenes responden 200, 7/7 franelas con foto real en navegador.
 - **[2026-09-03]** — Typo corregido en `Catalogo.xlsx`: MANO HANSA → MANO HAMSA (coincide con la descripción y con el sitio "Mano Hamsa"). Backup `Catalogo.xlsx.bak`.
 - **[2026-09-03]** — Docs actualizadas (README + PLAN + memoria v2): paleta tierra, fotos franelas, script `_verify_sync.py` documentado.
@@ -69,7 +71,7 @@
 
 - [ ] **WAF Managed Ruleset** — Cloudflare Managed Ruleset con acción `managed_challenge` (decisión del usuario: challenge, no block) en la fase `http_request_firewall_managed`. El token `…9fb0cb` (con `#waf:edit`) NO accede a esa fase ("request is not authorized" — verificado 3 sep 2026); requiere token con permiso específico de esa fase o probar con el mismo esquema que funcionó para headers (`POST /rulesets` directo).
 - [ ] ~~Fotos reales de franelas F-01…F-07~~ **COMPLETADO** — las 7 franelas muestran sus fotos reales (`F-01.jpg`…`F-07.jpg`). Nota: F-06 y F-07 son baja resolución (~213×320) — si el usuario consigue versiones más grandes, reemplazarlas.
-- [ ] **Rotar tokens** — 4+ tokens de Cloudflare aparecieron en texto plano en el chat; el usuario fue advertido de revocarlos. (Uno ya fue revocado.)
+- [ ] **Rotar tokens** — varios tokens de Cloudflare aparecieron en texto plano en el chat; el usuario fue advertido de revocarlos. (Al menos uno ya fue revocado.)
 - [ ] HSTS preload (opcional, cuando el sitio esté 100% estable).
 - [ ] GA4 / SEO (pendientes en PLAN_IMPLEMENTACION.md).
 

@@ -130,7 +130,9 @@
 - [x] Búsqueda ahora cubre **descripciones** (`data-desc`) además del nombre
 - [x] Escape XSS confirmado en el render del carrito
 - [x] Limpieza de artefacto de prueba (`server.js`) + `.gitignore`
-- [x] README.md reescrito al 100% del estado real (44 productos, PWA, lightbox, seguridad, Excel)
+- [x] README.md reescrito al 100% del estado real (44 productos, PWA, lightbox, seguridad, Excel, iconos PWA cuadrados, correcciones footer/mensaje/lightbox, teclado lightbox)
+- [x] `.agents/MEMORY.md` actualizado con la sesión v5 sep 2026 (iconos regenerados, correcciones, documentación 100%)
+- [x] `PLAN_IMPLEMENTACION.md` actualizado con el estado actual y pendientes
 - [x] PLAN_IMPLEMENTACION.md sincronizado con fases completadas
 
 ---
@@ -139,7 +141,7 @@
 
 ### Contenido / Producto
 - [x] Fotos reales de las 7 franelas mapeadas correctamente (F-01…F-07, commits `9b5891e`/`b346ced`/`fc0eca2`)
-- [x] Todas las franelas (F-01…F-07) ahora usan imágenes 1000×1000 del set `imagenes_web`
+- [x] Franelas F-01…F-07 con sus fotos reales (no el set `imagenes_web`, que para esas entradas genera velas IA); el set `imagenes_web` se usa para 36 productos de velas y joyería; Armonía Coco conserva su imagen anterior.
 - [ ] Verificar que las cuentas @yosoy222 (IG/TikTok/FB) enlazadas sean las definitivas
 
 ### SEO y Analytics
