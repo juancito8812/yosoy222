@@ -191,10 +191,11 @@
 | Fase 8: Seguridad | ✅ COMPLETADA | 3 sep 2026 |
 | Fase 10: Caché edge (Cloudflare) | ✅ COMPLETADA | 3 sep 2026 |
 | Fase 9: Correcciones + documentación | ✅ COMPLETADA | 3 sep 2026 |
+| Fase 11: Hardening (code review) + Performance + PWA offline total | ✅ COMPLETADA | 5 sep 2026 |
 
-**El sitio está en producción y funcional.** Las tareas pendientes de arriba son mejoras incrementales, ninguna bloquea el lanzamiento.
+**El sitio está en producción y funcional.** El pipeline de deploy funciona al 100% (purge automático verificado en verde). Las tareas pendientes de arriba son mejoras incrementales, ninguna bloquea el lanzamiento.
 
 ---
 
 *Última actualización: 5 de septiembre de 2026*
-*Commits recientes: `250d298` (memoria v9), `85a09db` (PWA offline total v4), `2c5b842` (perf imágenes), `42b4c0c` (fix 10 hallazgos code review)*
+*Commits recientes: `2f79b0e` (token purge verificado), `a04b3a1` (docs), `250d298` (memoria v9), `85a09db` (PWA offline total v4), `2c5b842` (perf imágenes), `42b4c0c` (fix 10 hallazgos code review)*

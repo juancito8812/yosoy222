@@ -40,15 +40,23 @@ python3 -m http.server 8080
 
 ```
 index.html          ← Página única (nav, hero, catálogo, lightbox, carrito, footer)
-css/style.css       ← Estilos completos (~834 líneas, paleta tierra crema)
-js/app.js           ← Toda la lógica (~512 líneas, 44 productos, búsqueda, filtros, carrito, WhatsApp)
-manifest.json       ← PWA metadata
-sw.js               ← Service worker (cache v4)
+css/style.css       ← Estilos completos (~832 líneas, paleta tierra crema)
+js/app.js           ← Toda la lógica (~564 líneas, 44 productos, búsqueda, filtros, carrito, WhatsApp, a11y focus trap, precache PWA)
+manifest.json       ← PWA metadata (id + scope)
+sw.js               ← Service worker (cache v4, precache catálogo offline)
 icons/              ← 10 iconos PWA (72-512px + maskable)
-images/thumbs/      ← Miniaturas del grid (60 archivos)
-images/catalog/     ← Imágenes grandes para lightbox (60 archivos)
-.github/workflows/  ← purge-cache.yml (purge automático Cloudflare tras deploy)
+images/thumbs/      ← Miniaturas del grid (60 archivos, máx 480px)
+images/catalog/     ← Imágenes grandes para lightbox (60 archivos, máx 900px)
+.github/workflows/  ← purge-cache.yml (purge automático Cloudflare tras deploy, valida con jq)
 ```
+
+---
+
+## PWA y caché
+
+- `CACHE_NAME` en `sw.js` = `yosoy222-v4`. **Al cambiar `sw.js`, bump a `yosoy222-v5`** para forzar limpieza.
+- El catálogo offline completo se precachea solo: `app.js` envía al SW la lista de imágenes (`PRECACHE_IMAGES`) cuando se activa una versión nueva del SW; el SW las cachea en segundo plano (idempotente). No agregar imágenes a mano en `PRECACHE_ASSETS` (ahí solo van el shell y el hero).
+- El workflow `purge-cache.yml` purga Cloudflare tras cada deploy y **falla en rojo** (validación `jq`) si el token no tiene permiso `Zone → Cache Purge → Edit`.
 
 ---
 

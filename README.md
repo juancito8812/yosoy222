@@ -82,7 +82,7 @@ yosoy222/                          ← RAÍZ del repositorio│   ├── inde
 │   └── Lightbox (vista ampliada de producto, role="dialog")
 │
 ├── css/
-│   └── style.css                   ← Estilos completos (~834 líneas)
+│   └── style.css                   ← Estilos completos (~832 líneas)
 │       ├── Tokens CSS (:root — paleta tierra crema)
 │       ├── Header, hero, catálogo, tarjetas, buscador, filtros
 │       ├── Cómo comprar, Nosotros, Contacto, Footer
@@ -93,24 +93,24 @@ yosoy222/                          ← RAÍZ del repositorio│   ├── inde
 │       └── Media queries (900px, 600px, 380px)
 │
 ├── js/
-│   └── app.js                      ← Toda la lógica JS (~512 líneas)
+│   └── app.js                      ← Toda la lógica JS (~564 líneas)
 │       ├── Config WhatsApp: const WHATSAPP = '584126481628'
 │       ├── Array products[] — 44 productos (file, name, cat, price, desc)
-│       ├── Seguridad: escapeHtml() + loadCart() validado
+│       ├── Seguridad: escapeHtml() + loadCart() validado (rechaza NaN/Infinity/qty no-entero)
 │       ├── Render del grid · búsqueda (nombre + descripción) · filtros
-│       ├── Carrito (localStorage) · steppers · checkout WhatsApp
+│       ├── Carrito (localStorage) · steppers (tope 999) · checkout WhatsApp
 │       ├── Menú mobile · scroll spy · smooth scroll
-│       ├── Lightbox (abrir, navegar, teclado, cerrar con Esc)
+│       ├── Lightbox con focus trap + teclado (Esc, ←, →)
 │       ├── Clic en tarjeta con teclado (Enter/Espacio → lightbox)
-│       └── Registro del Service Worker (PWA)
+│       └── PWA: registro SW + precache del catálogo offline (mensaje PRECACHE_IMAGES)
 │
-├── manifest.json                   ← PWA: nombre, iconos, tema (~66 líneas)
-├── sw.js                           ← Service worker: caché offline (cache v4, ~130 líneas)
+├── manifest.json                   ← PWA: nombre, iconos, tema, id + scope (~68 líneas)
+├── sw.js                           ← Service worker: caché offline (cache v4, ~127 líneas)
 ├── icons/                          ← 10 iconos PWA — 8 'any' (72,96,128,144,152,192,384,512px) + 2 maskable
 │
 ├── images/
-│   ├── thumbs/                     ← Miniaturas del grid (60 archivos)
-│   └── catalog/                    ← Imágenes para el lightbox (60 archivos)
+│   ├── thumbs/                     ← Miniaturas del grid (60 archivos, máx 480px JPEG q78)
+│   └── catalog/                    ← Imágenes para el lightbox (60 archivos, máx 900px JPEG q80)
 │
 ├── process_images.py               ← Remoción de bordes blancos (v1, básica)
 ├── process_images_v2.py            ← Remoción de bordes blancos (v2, detección adaptativa agresiva)
@@ -423,7 +423,7 @@ Verificado en producción: `cf-cache-status` pasó de `DYNAMIC` a `HIT`/`REVALID
 
 Después de cada deploy exitoso de GitHub Pages, un workflow de GitHub Actions purga automáticamente la caché de Cloudflare vía API. Esto garantiza que los cambios estén disponibles inmediatamente después del deploy (~2-3 min después del push).
 
-**Requisitos:** Configurar los secrets `CLOUDFLARE_ZONE_ID` y `CLOUDFLARE_API_TOKEN` en el repo (Settings → Secrets and variables → Actions). El workflow usa autenticación Bearer (API Token); `CLOUDFLARE_EMAIL` no se necesita. **IMPORTANTE:** el token debe tener permiso `Zone → Cache Purge → Edit` — el token actual devuelve `Authentication error (10000)` al purgar (verificado 5 sep 2026), así que el workflow falla hasta actualizar el secret.
+**Requisitos:** Configurar los secrets `CLOUDFLARE_ZONE_ID` y `CLOUDFLARE_API_TOKEN` en el repo (Settings → Secrets and variables → Actions). El workflow usa autenticación Bearer (API Token); `CLOUDFLARE_EMAIL` no se necesita. **IMPORTANTE:** el token debe tener permiso `Zone → Cache Purge → Edit` — sin eso falla con `Authentication error (10000)`. Verificado funcionando (5 sep 2026).
 
 ### Ya seguro por diseño
 - ✅ Sin `eval()`, sin `innerHTML` con datos de usuario sin escapar
@@ -443,7 +443,7 @@ Después de cada deploy exitoso de GitHub Pages, un workflow de GitHub Actions p
 ✅ **HTTPS:** Habilitado
 ✅ **CDN:** Cloudflare proxy activado en los 5 registros + **Cache Rule HTML** (edge TTL 5 min)
 ✅ **Deploy automático:** cada push a `main` (~2 min)
-✅ **Purge automático:** GitHub Actions purga Cloudflare después de cada deploy (~30 seg después)
+✅ **Purge automático:** GitHub Actions purga Cloudflare después de cada deploy (~30 seg) — verificado en verde (5 sep 2026, workflow con validación `jq`)
 
 ### Cómo se publica
 
@@ -671,11 +671,11 @@ curl -sI https://yosoy222.com | head -5
 
 | Archivo | Propósito | Líneas aprox. |
 |---------|-----------|---------------|
-| `index.html` | Landing page | ~293 |
-| `css/style.css` | Todos los estilos | ~830 |
-| `js/app.js` | Toda la lógica JS | ~539 |
-| `manifest.json` | Metadata PWA | ~66 |
-| `sw.js` | Service worker (offline) | ~110 |
+| `index.html` | Landing page | ~298 |
+| `css/style.css` | Todos los estilos | ~832 |
+| `js/app.js` | Toda la lógica JS | ~564 |
+| `manifest.json` | Metadata PWA (id + scope) | ~68 |
+| `sw.js` | Service worker (offline, cache v4) | ~127 |
 | `icons/` | Iconos PWA (10 PNG) | — |
 | `CNAME` | Dominio personalizado | 1 |
 
@@ -786,8 +786,8 @@ git log --oneline -1   # último commit
 # estado del repo: git status --short
 ```
 
-Último cambio publicado: PWA con **offline total** (precache del catálogo completo, cache v4), optimización de imágenes (thumbs 480px / catalog 900px, -58% peso), y correcciones de seguridad/a11y del code review. **Pendiente:** token de Cloudflare con permiso `Cache Purge` para el workflow de purge automático.
+Último cambio publicado (5 sep 2026): PWA con **offline total** (precache del catálogo completo vía `PRECACHE_IMAGES`, cache v4), optimización de imágenes (thumbs 480px / catalog 900px, -58% peso, fetchpriority + decoding), correcciones de seguridad/a11y del code review (escape XSS, focus trap, ESC en carrito, tope qty 999, manifest id/scope) y **purge automático verificado en verde** (token con permiso `Cache Purge`).
 
 ---
 
-*Documentación actualizada: 5 de septiembre de 2026 — sincronizada con el estado real del código: 44 productos, cache v3, imágenes hero corregidas (VM-ROSA, VE-ARMONIA-CANELA), 60 imágenes por carpeta, híbrido `imagenes_web` (36 productos, 7 franelas reales, Armonía Coco), paleta tierra crema, Excel verificado 42/42 sin diferencias, PWA instalable con 10 iconos, lightbox con apertura por teclado, footer + mensaje WhatsApp corregidos, seguridad vía Cloudflare, GitHub Actions purge automático, secrets configurados.*
+*Documentación actualizada: 5 de septiembre de 2026 — sincronizada con el estado real del código: 44 productos, cache v4 con offline total, imágenes optimizadas (thumbs 480px / catalog 900px), imágenes hero corregidas (VM-ROSA, VE-ARMONIA-CANELA), híbrido `imagenes_web` (36 productos, 7 franelas reales, Armonía Coco), paleta tierra crema, Excel verificado 42/42 sin diferencias, PWA instalable con 10 iconos (manifest con id/scope), lightbox + carrito con focus trap y teclado, footer Venezuela, seguridad vía Cloudflare (CSP + headers), GitHub Actions purge automático verificado en verde, a11y y hardening aplicados.*

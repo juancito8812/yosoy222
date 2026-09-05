@@ -13,7 +13,7 @@
 - **Facebook:** https://www.facebook.com/share/1C5X2yKscG/
 - **Cloudflare Zone ID:** `f959322eed862ae75a79f46e8f780d65`
 - **Última sesión:** 2026-09-05
-- **Versión de memoria:** 10
+- **Versión de memoria:** 11
 
 ## Arquitectura
 
@@ -47,7 +47,7 @@
 ## Estado Actual
 
 - **Branch:** main
-- **Último commit desplegado:** `250d298` (memoria v9) — deploy exitoso. Deploy actual verificado en producción (imágenes optimizadas servidas: thumb hero 23.5 KB).
+- **Último commit desplegado:** `2f79b0e` (docs token) — deploy exitoso y **purge automático verificado en verde** (workflow `Purge Cloudflare Cache` → success). Imagen hero optimizada servida en producción (23.5 KB).
 - **Redes sociales:** Instagram `@yo_soy222`, TikTok `@yo_soy222`, Facebook `share/1C5X2yKscG/`.
 - **GitHub Actions:** Workflow `purge-cache.yml` configurado y funcionando (valida respuesta de Cloudflare con `jq`). Secrets: `CLOUDFLARE_ZONE_ID` y `CLOUDFLARE_API_TOKEN` (autenticación Bearer) — configurados.
 - **Cache version:** `yosoy222-v4` (sw.js línea 6) — precache del catálogo offline completo via mensaje del SW.
@@ -58,6 +58,8 @@
 
 ## Cambios Recientes
 
+- **[2026-09-05]** — **Documentación final sincronizada al 100%** (memoria v11, Fase 11 agregada al plan): README con conteos reales (index 298 / css 832 / js 564 / manifest 68 / sw 127 líneas), PWA offline total, imágenes optimizadas (thumbs 480 / catalog 900), purge verificado en verde; AGENTS.md con sección "PWA y caché" (bump a v5 + PRECACHE_IMAGES + validación jq del workflow); PLAN con Fase 11: Hardening + Performance + PWA offline total; MEMORY con estado real (token con permiso Cache Purge ✓).
+- **[2026-09-05]** — **Token Cloudflare regenerado con permiso `Cache Purge`** — verificado con purge directo (`success: true`, sin error 10000) y actualizado en el secret `CLOUDFLARE_API_TOKEN` de GitHub. Workflow `purge-cache.yml` confirmado en verde en el último deploy (run 23:14).
 - **[2026-09-05]** — **Documentación sincronizada al 100%** (memoria v10): README (offline total v4, requisito permiso `Cache Purge`, verificación curl del token), PLAN (pending: token a regenerar, Polish no disponible en Free, WebP local como alternativa), AGENTS (regla del permiso del token + regla PWA bump/PRECACHE_IMAGES), MEMORY (TODOs y notas actualizados). Estado real: cache v4, imagen hero 23.5 KB en producción.
 - **[2026-09-05]** — **PWA offline total**: `sw.js` bump v3→v4 con mensaje `PRECACHE_IMAGES` (la página envía thumbs+catalog de los 44 productos y el SW los cachea en segundo plano, idempotente con marcador `CATALOG_MARKER`); `app.js` lo dispara en `updatefound`/`controllerchange`. **Cloudflare Polish NO aplica en plan Free** (docs oficiales: solo Pro+; el PATCH se acepta pero no transforma — probado y revertido a `off`). Alternativa gratis: WebP local en repo. **Pendiente usuario:** token cfut_… NO tiene permiso `Zone:Cache Purge` (error 10000 al purgar) → el workflow `purge-cache.yml` va a fallar; crear token con `Cache Purge:Edit` y actualizar el secret en GitHub.
 - **[2026-09-05]** — **Optimización de rendimiento (perf audit)**: imágenes redimensionadas en repo — `images/thumbs/` máx 480px (JPEG q78) y `images/catalog/` máx 900px (JPEG q80), progresivas. Peso total ~12 MB → ~4.9 MB (thumbs 6.1→1.4 MB, catalog 6.1→3.5 MB). Sin upscaling de imágenes pequeñas. HTML: `fetchpriority="high"` en hero principal, `fetchpriority="low"` + `loading="lazy"` en hero flotante, `decoding="async"` en grid/lightbox, fuentes recortadas a pesos usados (Inter 400-700, Playfair 400-700+italic). Verificado: LCP ~408 ms, 0 errores CSP. Script temporal en `/tmp/opencode/optimize_images.py`.
@@ -78,7 +80,7 @@
 
 - [x] **Configurar secrets de Cloudflare en GitHub** — COMPLETADO (usuario configuró ZONE_ID y API_TOKEN).
 - [x] **REGENERAR token Cloudflare con permiso `Zone → Cache Purge → Edit`** — COMPLETADO 5 sep 2026: nuevo token verificado con purge directo (`success: true`, ya no da error 10000) y actualizado en el secret `CLOUDFLARE_API_TOKEN` de GitHub.
-- [ ] **Focus trap en carrito/lightbox** — COMPLETADO (5 sep 2026, code review F8: `aria-modal`, trap Tab, ESC, foco restaurado).
+- [x] **Focus trap en carrito/lightbox** — COMPLETADO (5 sep 2026, code review F8: `aria-modal`, trap Tab, ESC, foco restaurado).
 - [ ] **WAF Managed Ruleset** — Cloudflare Managed Ruleset con acción `managed_challenge`. El token actual NO accede a esa fase; requiere token con permiso específico.
 - [ ] **SEO:** Google Analytics (GA4), Google Search Console, Open Graph completo, Sitemap.xml, robots.txt, Canonical URL.
 - [ ] **PWA:** Banner "nueva versión disponible" cuando SW detecte update, minificar CSS/JS.
