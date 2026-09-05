@@ -525,22 +525,39 @@
   updateActiveNav();
 
   /* ============================================
-     PWA — Register Service Worker
+     PWA — Register Service Worker + offline catalog precache
      ============================================ */
+  function catalogUrls() {
+    const urls = products.flatMap(p => [`images/thumbs/${p.file}`, `images/catalog/${p.file}`]);
+    // Static images in index.html not present in products[]
+    urls.push('images/thumbs/VM-MINICORAZON-2_velita_corazoncito.jpg');
+    return [...new Set(urls)];
+  }
+
+  function requestCatalogPrecache(reg) {
+    const urls = catalogUrls();
+    const worker = (navigator.serviceWorker.controller || reg.active);
+    if (worker) worker.postMessage({ type: 'PRECACHE_IMAGES', urls });
+  }
+
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
       navigator.serviceWorker.register('/sw.js')
         .then((reg) => {
           reg.addEventListener('updatefound', () => {
             const newWorker = reg.installing;
+            if (!newWorker) return;
             newWorker.addEventListener('statechange', () => {
-              if (newWorker.state === 'activated') {
-                // New version available — could show an update banner here
-              }
+              if (newWorker.state === 'activated') requestCatalogPrecache(reg);
             });
           });
         })
         .catch(() => {});
+    });
+
+    // First activation (skipWaiting + clients.claim) also triggers precache
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      navigator.serviceWorker.ready.then(requestCatalogPrecache);
     });
   }
 

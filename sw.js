@@ -3,10 +3,10 @@
    Offline caching for PWA
    ============================================ */
 
-const CACHE_NAME = 'yosoy222-v3';
-const CACHE_VERSION = '3.0.0';
+const CACHE_NAME = 'yosoy222-v4';
+const CACHE_VERSION = '4.0.0';
 
-// Assets to precache on install
+// Assets to precache on install (offline shell + LCP images)
 const PRECACHE_ASSETS = [
   '/',
   '/index.html',
@@ -20,6 +20,9 @@ const PRECACHE_ASSETS = [
   '/images/thumbs/VM-ROSA_vela_rosa_79g.jpg',
   '/images/thumbs/VE-ARMONIA-CANELA_vela_armonia_canela_508g.jpg'
 ];
+
+// Marker used to know the full catalog is already cached
+const CATALOG_MARKER = '/images/catalog/VM-ROSA_vela_rosa_79g.jpg';
 
 // Install event — precache critical assets
 self.addEventListener('install', (event) => {
@@ -100,7 +103,25 @@ self.addEventListener('fetch', (event) => {
 
 // Handle messages from main thread
 self.addEventListener('message', (event) => {
-  if (event.data && event.data.type === 'SKIP_WAITING') {
+  const data = event.data || {};
+  if (data.type === 'SKIP_WAITING') {
     self.skipWaiting();
+    return;
+  }
+  if (data.type === 'PRECACHE_IMAGES' && Array.isArray(data.urls)) {
+    event.waitUntil(
+      caches.open(CACHE_NAME)
+        .then(async (cache) => {
+          // Idempotent: skip if the catalog was already precached in this cache
+          if (await cache.match(CATALOG_MARKER)) return;
+          await Promise.all(data.urls.map(async (url) => {
+            try {
+              const abs = new URL(url, self.location.origin).href;
+              const res = await fetch(abs);
+              if (res && res.ok) await cache.put(abs, res);
+            } catch (err) { /* keep going with the rest */ }
+          }));
+        })
+    );
   }
 });

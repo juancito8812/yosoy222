@@ -13,7 +13,7 @@
 - **Facebook:** https://www.facebook.com/share/1C5X2yKscG/
 - **Cloudflare Zone ID:** `f959322eed862ae75a79f46e8f780d65`
 - **Última sesión:** 2026-09-05
-- **Versión de memoria:** 8
+- **Versión de memoria:** 9
 
 ## Arquitectura
 
@@ -50,7 +50,7 @@
 - **Último commit desplegado:** `fdd9770` (fix XSS escape + imágenes nosotros) — deploy exitoso.
 - **Redes sociales:** Instagram `@yo_soy222`, TikTok `@yo_soy222`, Facebook `share/1C5X2yKscG/`.
 - **GitHub Actions:** Workflow `purge-cache.yml` configurado y funcionando (valida respuesta de Cloudflare con `jq`). Secrets: `CLOUDFLARE_ZONE_ID` y `CLOUDFLARE_API_TOKEN` (autenticación Bearer) — configurados.
-- **Cache version:** `yosoy222-v3` (sw.js línea 6).
+- **Cache version:** `yosoy222-v4` (sw.js línea 6) — precache del catálogo offline completo via mensaje del SW.
 - **Imágenes hero:** corregidas — `VM-ROSA_vela_rosa_79g.jpg` y `VE-ARMONIA-CANELA_vela_armonia_canela_508g.jpg`.
 - **Sitio en producción:** funcional y auditado (44 productos, imágenes, búsqueda, filtros, carrito, WhatsApp, lightbox, teclado, PWA, footer Venezuela, mensaje por categoría).
 - **Headers de seguridad:** activos y verificados (Cloudflare Transform Rule).
@@ -58,6 +58,7 @@
 
 ## Cambios Recientes
 
+- **[2026-09-05]** — **PWA offline total + Cloudflare Polish**: `sw.js` bump v3→v4 con mensaje `PRECACHE_IMAGES` (la página envía thumbs+catalog de los 44 productos y el SW los cachea en segundo plano, idempotente con marcador `CATALOG_MARKER`); `app.js` lo dispara en `updatefound`/`controllerchange`. Cloudflare Polish habilitado (WebP automático en el edge).
 - **[2026-09-05]** — **Optimización de rendimiento (perf audit)**: imágenes redimensionadas en repo — `images/thumbs/` máx 480px (JPEG q78) y `images/catalog/` máx 900px (JPEG q80), progresivas. Peso total ~12 MB → ~4.9 MB (thumbs 6.1→1.4 MB, catalog 6.1→3.5 MB). Sin upscaling de imágenes pequeñas. HTML: `fetchpriority="high"` en hero principal, `fetchpriority="low"` + `loading="lazy"` en hero flotante, `decoding="async"` en grid/lightbox, fuentes recortadas a pesos usados (Inter 400-700, Playfair 400-700+italic). Verificado: LCP ~408 ms, 0 errores CSP. Script temporal en `/tmp/opencode/optimize_images.py`.
 - **[2026-09-05]** — **Code review completo + 10 hallazgos corregidos** (`js/app.js`, `css/style.css`, `sw.js`, `index.html`, `manifest.json`, `.github/workflows/purge-cache.yml`, docs): (1) workflow ahora valida respuesta de Cloudflare con `jq` y falla si el purge no fue exitoso; (2) drift documental corregido — `CLOUDFLARE_EMAIL` NO es necesario (Bearer); (3) `console.log` removidos de `sw.js`; (4)+(5) CSS `.product-image` fusionado y fallback `::after` con stacking context correcto (`z-index: 0`); (6) cantidad tope 999 durante sesión (`addToCart`/`changeQty`); (7) ya no se auto-abre el carrito al agregar (feedback "✓ Agregado" + contador); (8) a11y: `aria-modal`, focus trap con Tab, ESC cierra el carrito, foco se mueve al abrir/cerrar y regresa al elemento previo; (9) `manifest.json` con `id` y `scope`; (10) precache SW incluye las 2 imágenes del hero. (Commit posterior a `fdd9770`.)
 - **[2026-09-05]** — **Documentación completa actualizada** (`AGENTS.md`, `MEMORY.md`, `README.md`, `PLAN_IMPLEMENTACION.md`): nuevo archivo AGENTS.md con instrucciones para agentes AI; README.md con datos correctos (imágenes hero, cache v3, 60 imágenes por carpeta).

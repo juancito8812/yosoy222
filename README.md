@@ -105,7 +105,7 @@ yosoy222/                          ← RAÍZ del repositorio│   ├── inde
 │       └── Registro del Service Worker (PWA)
 │
 ├── manifest.json                   ← PWA: nombre, iconos, tema (~66 líneas)
-├── sw.js                           ← Service worker: caché offline (cache v3, ~110 líneas)
+├── sw.js                           ← Service worker: caché offline (cache v4, ~130 líneas)
 ├── icons/                          ← 10 iconos PWA — 8 'any' (72,96,128,144,152,192,384,512px) + 2 maskable
 │
 ├── images/
@@ -350,7 +350,7 @@ El sitio es una **PWA instalable** con caché offline.
 | Archivo | Función |
 |---------|---------|
 | `manifest.json` | Nombre "YoSoy222", `display: standalone`, tema `#faf6ef`, fondo `#faf6ef`, iconos |
-| `sw.js` | Service worker: precache de HTML/CSS/JS/manifest e **imágenes** (estrategia *stale-while-revalidate*, cache v3) |
+| `sw.js` | Service worker: precache de HTML/CSS/JS/manifest e **imágenes** (estrategia *stale-while-revalidate*, cache v4) |
 | `icons/` | 10 iconos: 72, 96, 128, 144, 152, 192, 384, 512 + maskable 192/512 |
 
 ### Instalar en el celular

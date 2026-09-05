@@ -17,7 +17,7 @@ Tienda online de velas artesanales, pulseras, collares, franelas y accesorios. *
 ## Stack
 
 - **HTML5 + CSS3 + JavaScript vanilla** — sin frameworks, sin npm, sin build tools
-- **PWA:** manifest.json + sw.js (service worker con cache v3, stale-while-revalidate)
+- **PWA:** manifest.json + sw.js (service worker con cache v4, stale-while-revalidate)
 - **Hosting:** GitHub Pages (deploy automático al hacer push a `main`)
 - **DNS/CDN:** Cloudflare (proxy activado, Cache Rule HTML TTL 5 min, purge automático vía GitHub Actions)
 - **Base de datos:** `Catalogo.xlsx` en `/home/jr/Documentos/Catalogo velas/Catalogo.xlsx`
@@ -43,7 +43,7 @@ index.html          ← Página única (nav, hero, catálogo, lightbox, carrito,
 css/style.css       ← Estilos completos (~834 líneas, paleta tierra crema)
 js/app.js           ← Toda la lógica (~512 líneas, 44 productos, búsqueda, filtros, carrito, WhatsApp)
 manifest.json       ← PWA metadata
-sw.js               ← Service worker (cache v3)
+sw.js               ← Service worker (cache v4)
 icons/              ← 10 iconos PWA (72-512px + maskable)
 images/thumbs/      ← Miniaturas del grid (60 archivos)
 images/catalog/     ← Imágenes grandes para lightbox (60 archivos)
@@ -123,7 +123,7 @@ git push origin main
 |-----|-------|-------|
 | WhatsApp | `js/app.js` línea 10 | `const WHATSAPP = '584126481628'` |
 | WhatsApp | `index.html` (3 lugares) | `584126481628` |
-| Cache version | `sw.js` línea 6 | `yosoy222-v3` |
+| Cache version | `sw.js` línea 6 | `yosoy222-v4` |
 | Redes sociales | `index.html` contacto + footer | @yo_soy222 (IG, TikTok, FB) |
 | Tema | `css/style.css` `:root` | Paleta tierra crema (#faf6ef) |
 
