@@ -90,6 +90,8 @@
         typeof item.name === 'string' &&
         typeof item.price === 'number' &&
         typeof item.qty === 'number' &&
+        Number.isFinite(item.price) &&
+        Number.isInteger(item.qty) &&
         item.price >= 0 &&
         item.qty > 0 &&
         item.qty <= 999
@@ -250,15 +252,20 @@
   /* ============================================
      CART
      ============================================ */
+  let lastFocused = null;
+
   function openCart() {
+    lastFocused = document.activeElement;
     cartOverlay.classList.add('open');
     cartDrawer.classList.add('open');
     document.body.style.overflow = 'hidden';
+    if (cartClose) cartClose.focus();
   }
   function closeCart() {
     cartOverlay.classList.remove('open');
     cartDrawer.classList.remove('open');
     document.body.style.overflow = '';
+    if (lastFocused && document.contains(lastFocused)) lastFocused.focus();
   }
 
   cartBtn.addEventListener('click', openCart);
@@ -292,7 +299,7 @@
     const price = parseFloat(btn.dataset.price);
     const existing = cart.find(item => item.name === name);
     if (existing) {
-      existing.qty += 1;
+      existing.qty = Math.min(existing.qty + 1, 999);
     } else {
       cart.push({ name, price, qty: 1 });
     }
@@ -305,7 +312,6 @@
     saveCart();
     renderCart();
     bumpCount();
-    openCart();
   }
 
   function bumpCount() {
@@ -314,8 +320,14 @@
   }
 
   function changeQty(index, delta) {
-    cart[index].qty += delta;
-    if (cart[index].qty <= 0) cart.splice(index, 1);
+    const item = cart[index];
+    if (!item) return;
+    const newQty = item.qty + delta;
+    if (newQty <= 0) {
+      cart.splice(index, 1);
+    } else {
+      item.qty = Math.min(newQty, 999);
+    }
     saveCart();
     renderCart();
   }
@@ -408,14 +420,17 @@
     currentLightboxIndex = visibleProducts.findIndex(p => p.name === targetProduct.name);
     if (currentLightboxIndex === -1) currentLightboxIndex = 0;
 
+    lastFocused = document.activeElement;
     updateLightboxContent();
     lightbox.classList.add('active');
     document.body.style.overflow = 'hidden';
+    if (lightboxClose) lightboxClose.focus();
   }
 
   function closeLightboxFn() {
     lightbox.classList.remove('active');
     document.body.style.overflow = '';
+    if (lastFocused && document.contains(lastFocused)) lastFocused.focus();
   }
 
   function updateLightboxContent() {
@@ -468,12 +483,37 @@
     });
   }
 
-  // Keyboard navigation
+  // Keyboard navigation + focus trap (cart and lightbox)
+  const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])';
   document.addEventListener('keydown', (e) => {
-    if (!lightbox || !lightbox.classList.contains('active')) return;
-    if (e.key === 'Escape') closeLightboxFn();
-    if (e.key === 'ArrowLeft') lightboxPrevFn();
-    if (e.key === 'ArrowRight') lightboxNextFn();
+    const lightboxActive = lightbox && lightbox.classList.contains('active');
+    const cartActive = cartDrawer && cartDrawer.classList.contains('open');
+
+    if (e.key === 'Escape') {
+      if (lightboxActive) { closeLightboxFn(); return; }
+      if (cartActive) { closeCart(); return; }
+    }
+
+    if (lightboxActive) {
+      if (e.key === 'ArrowLeft') lightboxPrevFn();
+      if (e.key === 'ArrowRight') lightboxNextFn();
+    }
+
+    if (e.key !== 'Tab') return;
+    const container = lightboxActive ? lightbox : (cartActive ? cartDrawer : null);
+    if (!container) return;
+    const focusables = [...container.querySelectorAll(FOCUSABLE)]
+      .filter(el => el.offsetParent !== null && !el.hasAttribute('hidden'));
+    if (focusables.length === 0) return;
+    const first = focusables[0];
+    const last = focusables[focusables.length - 1];
+    if (e.shiftKey && document.activeElement === first) {
+      e.preventDefault();
+      last.focus();
+    } else if (!e.shiftKey && document.activeElement === last) {
+      e.preventDefault();
+      first.focus();
+    }
   });
 
   /* ============================================

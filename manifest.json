@@ -3,6 +3,8 @@
   "short_name": "YoSoy222",
   "description": "Velas artesanales, pulseras, collares y accesorios hechos a mano. Pide directo por WhatsApp.",
   "start_url": "/",
+  "id": "/",
+  "scope": "/",
   "display": "standalone",
   "background_color": "#faf6ef",
   "theme_color": "#faf6ef",

@@ -421,7 +421,7 @@ Verificado en producción: `cf-cache-status` pasó de `DYNAMIC` a `HIT`/`REVALID
 
 Después de cada deploy exitoso de GitHub Pages, un workflow de GitHub Actions purga automáticamente la caché de Cloudflare vía API. Esto garantiza que los cambios estén disponibles inmediatamente después del deploy (~2-3 min después del push).
 
-**Requisitos:** Configurar los secrets `CLOUDFLARE_ZONE_ID`, `CLOUDFLARE_API_TOKEN` y `CLOUDFLARE_EMAIL` en el repo (Settings → Secrets and variables → Actions).
+**Requisitos:** Configurar los secrets `CLOUDFLARE_ZONE_ID` y `CLOUDFLARE_API_TOKEN` en el repo (Settings → Secrets and variables → Actions). El workflow usa autenticación Bearer (API Token); `CLOUDFLARE_EMAIL` no se necesita.
 
 ### Ya seguro por diseño
 - ✅ Sin `eval()`, sin `innerHTML` con datos de usuario sin escapar
@@ -470,7 +470,7 @@ curl -sI https://yosoy222.com | head -5
 
 1. Crear token en Cloudflare: https://dash.cloudflare.com/profile/api-tokens → **Create Token** → permisos `Zone:Cache Purge`
 2. En GitHub: Settings → Secrets and variables → Actions → **New repository secret**
-3. Agregar `CLOUDFLARE_ZONE_ID` (Zone ID de Cloudflare), `CLOUDFLARE_API_TOKEN` (el token creado) y `CLOUDFLARE_EMAIL` (tu email de Cloudflare)
+3. Agregar `CLOUDFLARE_ZONE_ID` (Zone ID de Cloudflare) y `CLOUDFLARE_API_TOKEN` (el token creado). Con autenticación Bearer no se necesita `CLOUDFLARE_EMAIL`.
 
 ---
 

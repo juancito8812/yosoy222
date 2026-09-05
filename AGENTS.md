@@ -110,7 +110,7 @@ git push origin main
 
 1. **NUNCA** meter API keys, tokens ni secretos en el código
 2. **NUNCA** hacer commit de credenciales
-3. Los secrets van en GitHub → Settings → Secrets (CLOUDFLARE_ZONE_ID, CLOUDFLARE_API_TOKEN, CLOUDFLARE_EMAIL)
+3. Los secrets van en GitHub → Settings → Secrets (CLOUDFLARE_ZONE_ID y CLOUDFLARE_API_TOKEN)
 4. El sitio usa CSP estricto via meta tag (sin `unsafe-inline`)
 5. `escapeHtml()` en todo render dinámico (anti-XSS)
 6. `loadCart()` valida localStorage al cargar
