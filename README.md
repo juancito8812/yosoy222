@@ -352,8 +352,16 @@ El sitio es una **PWA instalable** con caché offline.
 | `manifest.json` | Nombre "YoSoy222", `display: standalone`, tema `#faf6ef`, fondo `#faf6ef`, iconos (8 any + 2 maskable) |
 | `sw.js` | Service worker: precache de HTML/CSS/JS/manifest e **imágenes** (estrategia *stale-while-revalidate*, cache v5) |
 | `icons/` | 10 iconos PWA: 72, 96, 128, 144, 152, 192, 384, 512 (any, RGB plano) + maskable 192/512 (RGBA) |
-| `scripts/generate_icons.py` | Genera los 10 iconos PWA desde la imagen WhatsApp adjunta |
-| `scripts/verify_icons.py` | Verifica que los iconos coinciden con `manifest.json` (existencia, tamaño, formato) |
+| `scripts/generate_icons.py` | Genera los 10 iconos PWA desde la imagen WhatsApp adjunta. Ejecutar siempre junto con `verify_icons.py` |
+| `scripts/verify_icons.py` | Verifica que los iconos coinciden con `manifest.json` (existencia, tamaño real vs `sizes`, formato: any=RGB plano, maskable=RGBA) |
+
+#### Comando rápido de iconos
+
+```bash
+python3 scripts/generate_icons.py && python3 scripts/verify_icons.py
+```
+
+Si `verify_icons.py` falla, no se considera cambio de iconos listo.
 
 ### Instalar en el celular
 

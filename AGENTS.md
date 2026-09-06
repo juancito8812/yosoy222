@@ -46,6 +46,8 @@ manifest.json       ← PWA metadata (id + scope)
 sw.js               ← Service worker (cache v5, precache catálogo offline)
 icons/              ← 10 iconos PWA (72-512px + maskable):
                       8 any (RGB plano) + 2 maskable (RGBA)
+scripts/generate_icons.py  ← regenera los 10 iconos PWA desde la imagen WhatsApp
+scripts/verify_icons.py    ← valida iconos contra manifest.json (existencia, tamaño, formato)
 images/thumbs/      ← Miniaturas del grid (60 archivos, máx 480px)
 images/catalog/     ← Imágenes grandes para lightbox (60 archivos, máx 900px)
 .github/workflows/  ← purge-cache.yml (purge automático Cloudflare tras deploy, valida con jq)
@@ -56,11 +58,11 @@ images/catalog/     ← Imágenes grandes para lightbox (60 archivos, máx 900px
 ## PWA y caché
 
 - `CACHE_NAME` en `sw.js` = `yosoy222-v5` (bump de `v4→v5` cuando se regeneran iconos o el SW).
-- A partir de ahora, los iconos PWA se generan con:
-  - `python3 scripts/generate_icons.py` — regenera los 10 iconos desde la imagen WhatsApp.
+- A partir de ahora, los iconos PWA se regeneran y validan como un paso repetible:
+  - `python3 scripts/generate_icons.py` — regenera los 10 iconos desde la imagen WhatsApp adjunta.
   - `python3 scripts/verify_icons.py` — verifica que los iconos coinciden con `manifest.json` (existencia, tamaño real vs `sizes`, formato: any=RGB plano, maskable=RGBA).
-  - La imagen fuente actual es la adjunta de WhatsApp (`images/catalog/...?`. No hardcodear otra ruta en el repo sin avisar).
-- El catálogo offline completo se precachea solo: `app.js` envía al SW la lista de imágenes (`PRECACHE_IMAGES`) cuando se activa una versión nueva del SW; el SW las cachea en segundo plano (idempotente). No agregar imágenes a mano en `PRECACHE_ASSETS` (ahí solo van el shell y el hero).
+  - Siempre ejecutar `verify_icons.py` después de regenerar; si falla, no se considera cambio listo.
+  - La imagen fuente actual es la adjunta de WhatsApp (ruta de Telegram temporal). Si se usa otra fuente, avisar y actualizar `generate_icons.py`.
 - El catálogo offline completo se precachea solo: `app.js` envía al SW la lista de imágenes (`PRECACHE_IMAGES`) cuando se activa una versión nueva del SW; el SW las cachea en segundo plano (idempotente). No agregar imágenes a mano en `PRECACHE_ASSETS` (ahí solo van el shell y el hero).
 - El workflow `purge-cache.yml` purga Cloudflare tras cada deploy y **falla en rojo** (validación `jq`) si el token no tiene permiso `Zone → Cache Purge → Edit`.
 
