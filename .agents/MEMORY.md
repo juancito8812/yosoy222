@@ -51,7 +51,7 @@
 ## Estado Actual
 
 - **Branch:** main
-- **Último commit desplegado:** `2f79b0e` (docs token) — deploy exitoso y **purge automático verificado en verde** (workflow `Purge Cloudflare Cache` → success). Imagen hero optimizada servida en producción (23.5 KB).
+- **Último commit desplegado:** `d88e913` (fix quality/a11y/pwa v6) — deploy a GitHub Pages en curso con purge automático Cloudflare programado.
 - **Redes sociales:** Instagram `@yo_soy222`, TikTok `@yo_soy222`, Facebook `share/1C5X2yKscG/`.
 - **GitHub Actions:** Workflow `purge-cache.yml` configurado y funcionando (valida respuesta de Cloudflare con `jq`). Secrets: `CLOUDFLARE_ZONE_ID` y `CLOUDFLARE_API_TOKEN` (autenticación Bearer) — configurados.
 - **Cache version:** `yosoy222-v6` (sw.js línea 6) — precache del catálogo offline por lotes de 6 con marcador atómico.
