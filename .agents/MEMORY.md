@@ -12,8 +12,8 @@
 - **TikTok:** https://www.tiktok.com/@yo_soy222
 - **Facebook:** https://www.facebook.com/share/1C5X2yKscG/
 - **Cloudflare Zone ID:** `f959322eed862ae75a79f46e8f780d65`
-- **Última sesión:** 2026-09-05
-- **Versión de memoria:** 11
+- **Última sesión:** 2026-09-06
+- **Versión de memoria:** 12
 
 ## Arquitectura
 
@@ -24,7 +24,11 @@
   - `css/style.css` — tema completo (834 líneas), responsivo, grid de productos, paleta tierra crema.
   - `js/app.js` — datos de productos (44, array generado desde el Excel), búsqueda (nombre + descripción), filtros por categoría, carrito con steppers, checkout WhatsApp, lightbox (512 líneas).
   - `images/thumbs/` (60 archivos) y `images/catalog/` (60 archivos) — imágenes de producto sin bordes blancos.
-  - `manifest.json`, `sw.js` (cache v3), `icons/` (10 iconos) — PWA instalable con soporte offline.
+  - `manifest.json` — PWA metadata con `id`, `scope`, 10 iconos declarados (8 any RGB plano + 2 maskable RGBA).
+  - `sw.js` (cache v5) — service worker con precache offline + mensaje `PRECACHE_IMAGES` para catálogo completo.
+  - `icons/` (10 iconos) — PWA instalable con soporte offline. Los iconos se regeneran con `scripts/generate_icons.py` y se validan con `scripts/verify_icons.py`.
+  - `scripts/generate_icons.py` — script repetible para regenerar los 10 iconos PWA desde la imagen WhatsApp.
+  - `scripts/verify_icons.py` — script de validación que comprueba existencia, tamaños reales vs declarados en `manifest.json`, y formato (any=RGB plano / maskable=RGBA).
   - `_headers` — existe pero GitHub Pages **lo ignora** (es convención Netlify/Cloudflare Pages).
   - `.github/workflows/purge-cache.yml` — purge automático de Cloudflare después de cada deploy.
   - `AGENTS.md` — instrucciones para agentes AI que trabajen en el repo.
@@ -50,7 +54,9 @@
 - **Último commit desplegado:** `2f79b0e` (docs token) — deploy exitoso y **purge automático verificado en verde** (workflow `Purge Cloudflare Cache` → success). Imagen hero optimizada servida en producción (23.5 KB).
 - **Redes sociales:** Instagram `@yo_soy222`, TikTok `@yo_soy222`, Facebook `share/1C5X2yKscG/`.
 - **GitHub Actions:** Workflow `purge-cache.yml` configurado y funcionando (valida respuesta de Cloudflare con `jq`). Secrets: `CLOUDFLARE_ZONE_ID` y `CLOUDFLARE_API_TOKEN` (autenticación Bearer) — configurados.
-- **Cache version:** `yosoy222-v4` (sw.js línea 6) — precache del catálogo offline completo via mensaje del SW.
+- **Cache version:** `yosoy222-v5` (sw.js línea 6) — precache del catálogo offline completo via mensaje del SW.
+- **Iconos PWA:** regenerados desde imagen WhatsApp; any = RGB plano, maskable = RGBA. Validados con `scripts/verify_icons.py` (8/8 any OK, 2/2 maskable OK, manifest coincide).
+- **Scripts de iconos:** `scripts/generate_icons.py` y `scripts/verify_icons.py` añadidos al repo.
 - **Imágenes hero:** corregidas — `VM-ROSA_vela_rosa_79g.jpg` y `VE-ARMONIA-CANELA_vela_armonia_canela_508g.jpg`.
 - **Sitio en producción:** funcional y auditado (44 productos, imágenes, búsqueda, filtros, carrito, WhatsApp, lightbox, teclado, PWA, footer Venezuela, mensaje por categoría).
 - **Headers de seguridad:** activos y verificados (Cloudflare Transform Rule).
@@ -58,12 +64,13 @@
 
 ## Cambios Recientes
 
-- **[2026-09-05]** — **Documentación final sincronizada al 100%** (memoria v11, Fase 11 agregada al plan): README con conteos reales (index 298 / css 832 / js 564 / manifest 68 / sw 127 líneas), PWA offline total, imágenes optimizadas (thumbs 480 / catalog 900), purge verificado en verde; AGENTS.md con sección "PWA y caché" (bump a v5 + PRECACHE_IMAGES + validación jq del workflow); PLAN con Fase 11: Hardening + Performance + PWA offline total; MEMORY con estado real (token con permiso Cache Purge ✓).
+- **[2026-09-06]** — **Iconos PWA actualizados desde imagen WhatsApp** (commits `b629dca`, `7c36957`, `188fa32`, `efa5bdb`, `059e49c`): los 10 iconos regenerados con `scripts/generate_icons.py` (any aplanados sobre blanco sin alpha, maskable RGBA con padding suave). `sw.js` bump `v4→v5` para forzar limpieza de caché PWA. Añadido `scripts/verify_icons.py` (valida existencia, tamaño real vs manifest y formato). AGENTS.md, README.md y MEMORY.md actualizados (memoria v12).
 - **[2026-09-05]** — **Token Cloudflare regenerado con permiso `Cache Purge`** — verificado con purge directo (`success: true`, sin error 10000) y actualizado en el secret `CLOUDFLARE_API_TOKEN` de GitHub. Workflow `purge-cache.yml` confirmado en verde en el último deploy (run 23:14).
 - **[2026-09-05]** — **Documentación sincronizada al 100%** (memoria v10): README (offline total v4, requisito permiso `Cache Purge`, verificación curl del token), PLAN (pending: token a regenerar, Polish no disponible en Free, WebP local como alternativa), AGENTS (regla del permiso del token + regla PWA bump/PRECACHE_IMAGES), MEMORY (TODOs y notas actualizados). Estado real: cache v4, imagen hero 23.5 KB en producción.
 - **[2026-09-05]** — **PWA offline total**: `sw.js` bump v3→v4 con mensaje `PRECACHE_IMAGES` (la página envía thumbs+catalog de los 44 productos y el SW los cachea en segundo plano, idempotente con marcador `CATALOG_MARKER`); `app.js` lo dispara en `updatefound`/`controllerchange`. **Cloudflare Polish NO aplica en plan Free** (docs oficiales: solo Pro+; el PATCH se acepta pero no transforma — probado y revertido a `off`). Alternativa gratis: WebP local en repo. **Pendiente usuario:** token cfut_… NO tiene permiso `Zone:Cache Purge` (error 10000 al purgar) → el workflow `purge-cache.yml` va a fallar; crear token con `Cache Purge:Edit` y actualizar el secret en GitHub.
 - **[2026-09-05]** — **Optimización de rendimiento (perf audit)**: imágenes redimensionadas en repo — `images/thumbs/` máx 480px (JPEG q78) y `images/catalog/` máx 900px (JPEG q80), progresivas. Peso total ~12 MB → ~4.9 MB (thumbs 6.1→1.4 MB, catalog 6.1→3.5 MB). Sin upscaling de imágenes pequeñas. HTML: `fetchpriority="high"` en hero principal, `fetchpriority="low"` + `loading="lazy"` en hero flotante, `decoding="async"` en grid/lightbox, fuentes recortadas a pesos usados (Inter 400-700, Playfair 400-700+italic). Verificado: LCP ~408 ms, 0 errores CSP. Script temporal en `/tmp/opencode/optimize_images.py`.
 - **[2026-09-05]** — **Code review completo + 10 hallazgos corregidos** (`js/app.js`, `css/style.css`, `sw.js`, `index.html`, `manifest.json`, `.github/workflows/purge-cache.yml`, docs): (1) workflow ahora valida respuesta de Cloudflare con `jq` y falla si el purge no fue exitoso; (2) drift documental corregido — `CLOUDFLARE_EMAIL` NO es necesario (Bearer); (3) `console.log` removidos de `sw.js`; (4)+(5) CSS `.product-image` fusionado y fallback `::after` con stacking context correcto (`z-index: 0`); (6) cantidad tope 999 durante sesión (`addToCart`/`changeQty`); (7) ya no se auto-abre el carrito al agregar (feedback "✓ Agregado" + contador); (8) a11y: `aria-modal`, focus trap con Tab, ESC cierra el carrito, foco se mueve al abrir/cerrar y regresa al elemento previo; (9) `manifest.json` con `id` y `scope`; (10) precache SW incluye las 2 imágenes del hero. (Commit posterior a `fdd9770`.)
+- **[2026-09-06]** — **Code review aplicado a los iconos PWA** con la skill `code-review-and-quality`: hallazgo principal era que los iconos “any” podían tener alpha residual; se corrigió generándolos como RGB planos y validándolos automáticamente. Se documentó el flujo en `scripts/generate_icons.py` + `scripts/verify_icons.py` y en la documentación del repo.
 - **[2026-09-05]** — **Documentación completa actualizada** (`AGENTS.md`, `MEMORY.md`, `README.md`, `PLAN_IMPLEMENTACION.md`): nuevo archivo AGENTS.md con instrucciones para agentes AI; README.md con datos correctos (imágenes hero, cache v3, 60 imágenes por carpeta).
 - **[2026-09-05]** — **Fix imágenes hero rotas** (`d1fe806`): `Vela Rosa.jpg` → `VM-ROSA_vela_rosa_79g.jpg`, `Vela Canela.jpg` → `VE-ARMONIA-CANELA_vela_armonia_canela_508g.jpg`. Cache bump v2→v3.
 - **[2026-09-05]** — **GitHub Actions workflow restaurado** (`5839051`): purge automático de Cloudflare después de cada deploy. Secrets configurados por el usuario.

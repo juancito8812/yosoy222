@@ -45,7 +45,7 @@
 - **Carrito de compras** con steppers de cantidad (+/−), persistente en `localStorage` y validado al cargar
 - **Checkout por WhatsApp** con mensaje itemizado (producto × cantidad — subtotal, y total final)
 - **Número real de WhatsApp configurado** (+58 412 648 1628) en todos los botones
-- **PWA**: instalable en Android/iOS/desktop, funciona offline (service worker + manifest)
+- **PWA**: instalable en Android/iOS/desktop, funciona offline (service worker + manifest). Iconos generados con `scripts/generate_icons.py` y validados con `scripts/verify_icons.py`
 - **Fallback de imagen**: si falta el archivo de un producto, se muestra el nombre como placeholder en vez de un ícono roto
 - **Seguridad**: escape de HTML en todo render dinámico (anti-XSS), validación de `localStorage`, headers de seguridad
 - **Sección "Cómo comprar"**, "Nosotros" y Contacto con redes @yo_soy222
@@ -349,9 +349,11 @@ El sitio es una **PWA instalable** con caché offline.
 
 | Archivo | Función |
 |---------|---------|
-| `manifest.json` | Nombre "YoSoy222", `display: standalone`, tema `#faf6ef`, fondo `#faf6ef`, iconos |
-| `sw.js` | Service worker: precache de HTML/CSS/JS/manifest e **imágenes** (estrategia *stale-while-revalidate*, cache v4) |
-| `icons/` | 10 iconos: 72, 96, 128, 144, 152, 192, 384, 512 + maskable 192/512 |
+| `manifest.json` | Nombre "YoSoy222", `display: standalone`, tema `#faf6ef`, fondo `#faf6ef`, iconos (8 any + 2 maskable) |
+| `sw.js` | Service worker: precache de HTML/CSS/JS/manifest e **imágenes** (estrategia *stale-while-revalidate*, cache v5) |
+| `icons/` | 10 iconos PWA: 72, 96, 128, 144, 152, 192, 384, 512 (any, RGB plano) + maskable 192/512 (RGBA) |
+| `scripts/generate_icons.py` | Genera los 10 iconos PWA desde la imagen WhatsApp adjunta |
+| `scripts/verify_icons.py` | Verifica que los iconos coinciden con `manifest.json` (existencia, tamaño, formato) |
 
 ### Instalar en el celular
 
@@ -363,7 +365,7 @@ El sitio es una **PWA instalable** con caché offline.
 
 - La primera visita descarga y guarda los recursos
 - Con el teléfono en modo avión, el sitio sigue abriendo y mostrando el catálogo (los pedidos por WhatsApp requieren conexión, obviamente)
-- **Catálogo offline total (cache v4):** tras activarse el service worker, la app envía las imágenes de los 44 productos (thumbs + catalog) y el SW las precachea en segundo plano (`PRECACHE_IMAGES`). Una vez completado, el catálogo completo —incluido el lightbox— funciona sin conexión.
+- **Catálogo offline total (cache v5):** tras activarse el service worker, la app envía las imágenes de los 44 productos (thumbs + catalog) y el SW las precachea en segundo plano (`PRECACHE_IMAGES`). Una vez completado, el catálogo completo —incluido el lightbox— funciona sin conexión.
 
 ### Importante sobre la caché (PWA)
 
