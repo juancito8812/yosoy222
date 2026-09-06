@@ -19,7 +19,7 @@
   /* Text */
   --text: #3b3125;
   --text-muted: #7b6a50;
-  --text-faint: #8f7a5e;
+  --text-faint: #726048;
 
   /* Accent (earth amber, candle flame) */
   --accent: #a96f2d;
@@ -368,8 +368,8 @@ em { font-style: italic; color: var(--accent); }
   padding: 0.4rem 0.85rem;
   border-radius: var(--radius-full);
   background: rgba(169,111,45,0.1);
-  color: var(--accent);
-  font-size: 0.75rem; font-weight: 500;
+  color: var(--accent-hover);
+  font-size: 0.75rem; font-weight: 600;
   border: 1px solid rgba(169,111,45,0.25);
   transition: all var(--duration) var(--ease);
 }
@@ -511,10 +511,11 @@ em { font-style: italic; color: var(--accent); }
   z-index: 201;
   display: flex; flex-direction: column;
   transform: translateX(100%);
-  transition: transform 0.32s var(--ease);
+  visibility: hidden;
+  transition: transform 0.32s var(--ease), visibility 0.32s var(--ease);
   box-shadow: -6px 0 30px rgba(0,0,0,0.4);
 }
-.cart-drawer.open { transform: translateX(0); }
+.cart-drawer.open { transform: translateX(0); visibility: visible; }
 
 .cart-header {
   display: flex; align-items: center; justify-content: space-between;

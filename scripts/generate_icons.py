@@ -27,7 +27,9 @@ from PIL import Image
 # Configuración del proyecto
 REPO_ROOT = Path(__file__).resolve().parent.parent
 ICONS_DIR = REPO_ROOT / "icons"
-SOURCE_IMAGE = "/home/jr/.var/app/org.telegram.desktop/data/TelegramDesktop/tdata/temp_data/photo_2026-09-05_22-43-50.jpg"
+LOCAL_SOURCE = ICONS_DIR / "source_logo.jpg"
+FALLBACK_SOURCE = Path("/home/jr/.var/app/org.telegram.desktop/data/TelegramDesktop/tdata/temp_data/photo_2026-09-05_22-43-50.jpg")
+SOURCE_IMAGE = LOCAL_SOURCE if LOCAL_SOURCE.exists() else FALLBACK_SOURCE
 
 ANY_SIZES = {
     "icon-72x72.png": 72,

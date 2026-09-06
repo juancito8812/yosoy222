@@ -55,8 +55,9 @@ def main() -> int:
             problems.append(f"{src}: no puedo parsear sizes -> {declared}")
             continue
 
-        # Ajustar ruta si el manifest la escribe sin prefijo
-        path = ICONS_DIR / src if not str(src).startswith("icons/") else Path(src)
+        # Ajustar ruta para que siempre sea absoluta respecto a REPO_ROOT
+        clean_src = str(src).lstrip("/")
+        path = REPO_ROOT / clean_src
         if not path.exists():
             problems.append(f"{src}: archivo no existe")
             continue

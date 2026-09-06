@@ -13,7 +13,7 @@
 - **Facebook:** https://www.facebook.com/share/1C5X2yKscG/
 - **Cloudflare Zone ID:** `f959322eed862ae75a79f46e8f780d65`
 - **Última sesión:** 2026-09-06
-- **Versión de memoria:** 12
+- **Versión de memoria:** 13
 
 ## Arquitectura
 
@@ -54,8 +54,8 @@
 - **Último commit desplegado:** `2f79b0e` (docs token) — deploy exitoso y **purge automático verificado en verde** (workflow `Purge Cloudflare Cache` → success). Imagen hero optimizada servida en producción (23.5 KB).
 - **Redes sociales:** Instagram `@yo_soy222`, TikTok `@yo_soy222`, Facebook `share/1C5X2yKscG/`.
 - **GitHub Actions:** Workflow `purge-cache.yml` configurado y funcionando (valida respuesta de Cloudflare con `jq`). Secrets: `CLOUDFLARE_ZONE_ID` y `CLOUDFLARE_API_TOKEN` (autenticación Bearer) — configurados.
-- **Cache version:** `yosoy222-v5` (sw.js línea 6) — precache del catálogo offline completo via mensaje del SW.
-- **Iconos PWA:** regenerados desde imagen WhatsApp; any = RGB plano, maskable = RGBA. Validados con `scripts/verify_icons.py` (8/8 any OK, 2/2 maskable OK, manifest coincide).
+- **Cache version:** `yosoy222-v6` (sw.js línea 6) — precache del catálogo offline por lotes de 6 con marcador atómico.
+- **Iconos PWA:** regenerados desde `icons/source_logo.jpg` local en el repo; any = RGB plano, maskable = RGBA. Validados con `scripts/verify_icons.py` (8/8 any OK, 2/2 maskable OK, manifest coincide).
 - **Scripts de iconos:** `scripts/generate_icons.py` y `scripts/verify_icons.py` añadidos al repo. Flujo documentado: regenerar con `generate_icons.py` y validar con `verify_icons.py`; sin validación no se considera cambio listo.
 - **Imágenes hero:** corregidas — `VM-ROSA_vela_rosa_79g.jpg` y `VE-ARMONIA-CANELA_vela_armonia_canela_508g.jpg`.
 - **Sitio en producción:** funcional y auditado (44 productos, imágenes, búsqueda, filtros, carrito, WhatsApp, lightbox, teclado, PWA, footer Venezuela, mensaje por categoría).
@@ -64,6 +64,15 @@
 
 ## Cambios Recientes
 
+- **[2026-09-06]** — **Code review & quality audit completado**:
+  1. `sw.js`: Bump a cache `yosoy222-v6`. Removido `CACHE_VERSION` huérfano. Descargas de precaché en lotes de 6 concurrentes con chequeo previo y marcador atómico `/__catalog_precached__` para garantizar catálogo offline completo sin saturar redes móviles.
+  2. `scripts/verify_icons.py`: Resuelto bug de ruta relativa anclando siempre a `REPO_ROOT / clean_src`.
+  3. `scripts/generate_icons.py`: Respaldada imagen fuente original de forma permanente en `icons/source_logo.jpg`.
+  4. `scripts/`: Movidos `process_images.py` y `process_images_v2.py` a la carpeta `scripts/` con rutas absolutas a `REPO_ROOT`.
+  5. `css/style.css`: `.cart-drawer` ahora tiene `visibility: hidden` cuando está cerrado para evitar que el teclado `Tab` enfoque elementos fuera de pantalla. Ajustado `--text-faint` (#726048) y texto de `.add-cart-btn` (`--accent-hover`) cumpliendo WCAG 2.1 AA (contraste > 5.5:1).
+  6. `index.html`: Accesibilidad en buscador con `aria-label="Buscar productos"` y corrección gramatical en botón flotante de WhatsApp.
+  7. `js/app.js`: Sincronización en tiempo real de `loadCart()` con `products` del catálogo oficial. Menú móvil ahora se cierra con tecla `Escape`. Reforzado el trap de foco en modales.
+  8. `.github/workflows/purge-cache.yml`: `curl -s` (sin `-f`) para capturar y mostrar el cuerpo del error JSON devuelto por Cloudflare en caso de fallos.
 - **[2026-09-06]** — **Iconos PWA actualizados desde imagen WhatsApp** (commits `b629dca`, `7c36957`, `188fa32`, `efa5bdb`, `059e49c`): los 10 iconos regenerados con `scripts/generate_icons.py` (any aplanados sobre blanco sin alpha, maskable RGBA con padding suave). `sw.js` bump `v4→v5` para forzar limpieza de caché PWA. Añadido `scripts/verify_icons.py` (valida existencia, tamaño real vs manifest y formato). AGENTS.md, README.md y MEMORY.md actualizados (memoria v12).
 - **[2026-09-05]** — **Token Cloudflare regenerado con permiso `Cache Purge`** — verificado con purge directo (`success: true`, sin error 10000) y actualizado en el secret `CLOUDFLARE_API_TOKEN` de GitHub. Workflow `purge-cache.yml` confirmado en verde en el último deploy (run 23:14).
 - **[2026-09-05]** — **Documentación sincronizada al 100%** (memoria v10): README (offline total v4, requisito permiso `Cache Purge`, verificación curl del token), PLAN (pending: token a regenerar, Polish no disponible en Free, WebP local como alternativa), AGENTS (regla del permiso del token + regla PWA bump/PRECACHE_IMAGES), MEMORY (TODOs y notas actualizados). Estado real: cache v4, imagen hero 23.5 KB en producción.

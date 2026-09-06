@@ -350,9 +350,9 @@ El sitio es una **PWA instalable** con caché offline.
 | Archivo | Función |
 |---------|---------|
 | `manifest.json` | Nombre "YoSoy222", `display: standalone`, tema `#faf6ef`, fondo `#faf6ef`, iconos (8 any + 2 maskable) |
-| `sw.js` | Service worker: precache de HTML/CSS/JS/manifest e **imágenes** (estrategia *stale-while-revalidate*, cache v5) |
-| `icons/` | 10 iconos PWA: 72, 96, 128, 144, 152, 192, 384, 512 (any, RGB plano) + maskable 192/512 (RGBA) |
-| `scripts/generate_icons.py` | Genera los 10 iconos PWA desde la imagen WhatsApp adjunta. Ejecutar siempre junto con `verify_icons.py` |
+| `sw.js` | Service worker: precache de HTML/CSS/JS/manifest e **imágenes** (estrategia *stale-while-revalidate*, cache v6) |
+| `icons/` | 10 iconos PWA: 72, 96, 128, 144, 152, 192, 384, 512 (any, RGB plano) + maskable 192/512 (RGBA) + `source_logo.jpg` original |
+| `scripts/generate_icons.py` | Genera los 10 iconos PWA desde `icons/source_logo.jpg`. Ejecutar siempre junto con `verify_icons.py` |
 | `scripts/verify_icons.py` | Verifica que los iconos coinciden con `manifest.json` (existencia, tamaño real vs `sizes`, formato: any=RGB plano, maskable=RGBA) |
 
 #### Comando rápido de iconos
@@ -373,7 +373,7 @@ Si `verify_icons.py` falla, no se considera cambio de iconos listo.
 
 - La primera visita descarga y guarda los recursos
 - Con el teléfono en modo avión, el sitio sigue abriendo y mostrando el catálogo (los pedidos por WhatsApp requieren conexión, obviamente)
-- **Catálogo offline total (cache v5):** tras activarse el service worker, la app envía las imágenes de los 44 productos (thumbs + catalog) y el SW las precachea en segundo plano (`PRECACHE_IMAGES`). Una vez completado, el catálogo completo —incluido el lightbox— funciona sin conexión.
+- **Catálogo offline total (cache v6):** tras activarse el service worker, la app envía las imágenes de los 44 productos (thumbs + catalog) y el SW las precachea en segundo plano en lotes controlados (`PRECACHE_IMAGES`). Una vez completado, el catálogo completo —incluido el lightbox— funciona sin conexión.
 
 ### Importante sobre la caché (PWA)
 

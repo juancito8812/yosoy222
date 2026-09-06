@@ -78,24 +78,31 @@
     return str.replace(/[&<>"']/g, (c) => map[c]);
   };
 
-  /* ----- Security: Validate cart from localStorage ----- */
+  /* ----- Security & Sync: Validate cart from localStorage and reconcile with catalog ----- */
   function loadCart() {
     try {
       const raw = localStorage.getItem('yosoy222_cart');
       if (!raw) return [];
       const parsed = JSON.parse(raw);
       if (!Array.isArray(parsed)) return [];
-      return parsed.filter(item =>
-        item &&
-        typeof item.name === 'string' &&
-        typeof item.price === 'number' &&
-        typeof item.qty === 'number' &&
-        Number.isFinite(item.price) &&
-        Number.isInteger(item.qty) &&
-        item.price >= 0 &&
-        item.qty > 0 &&
-        item.qty <= 999
-      );
+      return parsed
+        .filter(item =>
+          item &&
+          typeof item.name === 'string' &&
+          typeof item.price === 'number' &&
+          typeof item.qty === 'number' &&
+          Number.isFinite(item.price) &&
+          Number.isInteger(item.qty) &&
+          item.price >= 0 &&
+          item.qty > 0 &&
+          item.qty <= 999
+        )
+        .map(item => {
+          const product = products.find(p => p.name === item.name);
+          if (!product) return null;
+          return { ...item, price: product.price };
+        })
+        .filter(Boolean);
     } catch {
       return [];
     }
@@ -417,7 +424,7 @@
   function openLightbox(index) {
     // `index` points into `products`; map it to its position among the visible products
     const targetProduct = products[index];
-    currentLightboxIndex = visibleProducts.findIndex(p => p.name === targetProduct.name);
+    currentLightboxIndex = visibleProducts.indexOf(targetProduct);
     if (currentLightboxIndex === -1) currentLightboxIndex = 0;
 
     lastFocused = document.activeElement;
@@ -492,6 +499,13 @@
     if (e.key === 'Escape') {
       if (lightboxActive) { closeLightboxFn(); return; }
       if (cartActive) { closeCart(); return; }
+      if (menuToggle && menuToggle.classList.contains('active')) {
+        menuToggle.classList.remove('active');
+        nav.classList.remove('open');
+        menuToggle.setAttribute('aria-expanded', 'false');
+        menuToggle.focus();
+        return;
+      }
     }
 
     if (lightboxActive) {
@@ -507,6 +521,13 @@
     if (focusables.length === 0) return;
     const first = focusables[0];
     const last = focusables[focusables.length - 1];
+
+    if (!container.contains(document.activeElement)) {
+      e.preventDefault();
+      first.focus();
+      return;
+    }
+
     if (e.shiftKey && document.activeElement === first) {
       e.preventDefault();
       last.focus();

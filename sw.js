@@ -3,8 +3,7 @@
    Offline caching for PWA
    ============================================ */
 
-const CACHE_NAME = 'yosoy222-v5';
-const CACHE_VERSION = '4.0.0';
+const CACHE_NAME = 'yosoy222-v6';
 
 // Assets to precache on install (offline shell + LCP images)
 const PRECACHE_ASSETS = [
@@ -21,8 +20,8 @@ const PRECACHE_ASSETS = [
   '/images/thumbs/VE-ARMONIA-CANELA_vela_armonia_canela_508g.jpg'
 ];
 
-// Marker used to know the full catalog is already cached
-const CATALOG_MARKER = '/images/catalog/VM-ROSA_vela_rosa_79g.jpg';
+// Dedicated marker used to know the full catalog is already cached
+const CATALOG_MARKER = '/__catalog_precached__';
 
 // Install event — precache critical assets
 self.addEventListener('install', (event) => {
@@ -114,13 +113,25 @@ self.addEventListener('message', (event) => {
         .then(async (cache) => {
           // Idempotent: skip if the catalog was already precached in this cache
           if (await cache.match(CATALOG_MARKER)) return;
-          await Promise.all(data.urls.map(async (url) => {
-            try {
-              const abs = new URL(url, self.location.origin).href;
-              const res = await fetch(abs);
-              if (res && res.ok) await cache.put(abs, res);
-            } catch (err) { /* keep going with the rest */ }
-          }));
+
+          // Download in batches of 6 to avoid network saturation on mobile devices
+          const BATCH_SIZE = 6;
+          for (let i = 0; i < data.urls.length; i += BATCH_SIZE) {
+            const batch = data.urls.slice(i, i + BATCH_SIZE);
+            await Promise.all(batch.map(async (url) => {
+              try {
+                const abs = new URL(url, self.location.origin).href;
+                const existing = await cache.match(abs);
+                if (!existing) {
+                  const res = await fetch(abs);
+                  if (res && res.ok) await cache.put(abs, res);
+                }
+              } catch (err) { /* ignore individual network failure */ }
+            }));
+          }
+
+          // Mark catalog precache as completed only AFTER all batches have processed
+          await cache.put(new Request(CATALOG_MARKER), new Response('ok', { status: 200 }));
         })
     );
   }

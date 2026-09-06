@@ -43,11 +43,12 @@ index.html          ← Página única (nav, hero, catálogo, lightbox, carrito,
 css/style.css       ← Estilos completos (~832 líneas, paleta tierra crema)
 js/app.js           ← Toda la lógica (~564 líneas, 44 productos, búsqueda, filtros, carrito, WhatsApp, a11y focus trap, precache PWA)
 manifest.json       ← PWA metadata (id + scope)
-sw.js               ← Service worker (cache v5, precache catálogo offline)
-icons/              ← 10 iconos PWA (72-512px + maskable):
+sw.js               ← Service worker (cache v6, precache catálogo offline por lotes)
+icons/              ← 10 iconos PWA (72-512px + maskable) + source_logo.jpg original:
                       8 any (RGB plano) + 2 maskable (RGBA)
-scripts/generate_icons.py  ← regenera los 10 iconos PWA desde la imagen WhatsApp
+scripts/generate_icons.py  ← regenera los 10 iconos PWA desde icons/source_logo.jpg
 scripts/verify_icons.py    ← valida iconos contra manifest.json (existencia, tamaño, formato)
+scripts/process_images.py  ← recorte y optimización de bordes en imágenes
 images/thumbs/      ← Miniaturas del grid (60 archivos, máx 480px)
 images/catalog/     ← Imágenes grandes para lightbox (60 archivos, máx 900px)
 .github/workflows/  ← purge-cache.yml (purge automático Cloudflare tras deploy, valida con jq)
@@ -57,13 +58,13 @@ images/catalog/     ← Imágenes grandes para lightbox (60 archivos, máx 900px
 
 ## PWA y caché
 
-- `CACHE_NAME` en `sw.js` = `yosoy222-v5` (bump de `v4→v5` cuando se regeneran iconos o el SW).
+- `CACHE_NAME` en `sw.js` = `yosoy222-v6` (bump de versión cuando cambia el SW o assets precacheados).
 - A partir de ahora, los iconos PWA se regeneran y validan como un paso repetible:
-  - `python3 scripts/generate_icons.py` — regenera los 10 iconos desde la imagen WhatsApp adjunta.
+  - `python3 scripts/generate_icons.py` — regenera los 10 iconos desde `icons/source_logo.jpg`.
   - `python3 scripts/verify_icons.py` — verifica que los iconos coinciden con `manifest.json` (existencia, tamaño real vs `sizes`, formato: any=RGB plano, maskable=RGBA).
   - Siempre ejecutar `verify_icons.py` después de regenerar; si falla, no se considera cambio listo.
-  - La imagen fuente actual es la adjunta de WhatsApp (ruta de Telegram temporal). Si se usa otra fuente, avisar y actualizar `generate_icons.py`.
-- El catálogo offline completo se precachea solo: `app.js` envía al SW la lista de imágenes (`PRECACHE_IMAGES`) cuando se activa una versión nueva del SW; el SW las cachea en segundo plano (idempotente). No agregar imágenes a mano en `PRECACHE_ASSETS` (ahí solo van el shell y el hero).
+  - La imagen fuente oficial del logo se almacena de forma persistente en `icons/source_logo.jpg`.
+- El catálogo offline completo se precachea solo: `app.js` envía al SW la lista de imágenes (`PRECACHE_IMAGES`) cuando se activa una versión nueva del SW; el SW las cachea en segundo plano en lotes de 6 (idempotente). No agregar imágenes a mano en `PRECACHE_ASSETS` (ahí solo van el shell y el hero).
 - El workflow `purge-cache.yml` purga Cloudflare tras cada deploy y **falla en rojo** (validación `jq`) si el token no tiene permiso `Zone → Cache Purge → Edit`.
 
 ---
@@ -140,9 +141,9 @@ git push origin main
 |-----|-------|-------|
 | WhatsApp | `js/app.js` línea 10 | `const WHATSAPP = '584126481628'` |
 | WhatsApp | `index.html` (3 lugares) | `584126481628` |
-| Cache version | `sw.js` línea 6 | `yosoy222-v5` |
+| Cache version | `sw.js` línea 6 | `yosoy222-v6` |
 | Iconos PWA | `icons/` + `manifest.json` | 8 any RGB plano (72,96,128,144,152,192,384,512) + 2 maskable RGBA (192,512) |
-| Regenerar iconos | `scripts/generate_icons.py` | Desde imagen WhatsApp; luego `scripts/verify_icons.py` |
+| Regenerar iconos | `scripts/generate_icons.py` | Desde `icons/source_logo.jpg`; luego `scripts/verify_icons.py` |
 | Redes sociales | `index.html` contacto + footer | @yo_soy222 (IG, TikTok, FB) |
 | Tema | `css/style.css` `:root` | Paleta tierra crema (#faf6ef) |
 
@@ -168,4 +169,4 @@ git push origin main
 
 ---
 
-*Última actualización: 2026-09-06 (iconos PWA reemplazados por imagen WhatsApp, cache v5, scripts/generate_icons.py + scripts/verify_icons.py añadidos)*
+*Última actualización: 2026-09-06 (code review & quality audit completado: cache v6, precache en lotes, focus trap accesible, logo local persistente, scripts organizados en scripts/)*

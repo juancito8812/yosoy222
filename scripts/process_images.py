@@ -1,64 +1,23 @@
 #!/usr/bin/env python3
 """
-Remove white/near-white borders from product images - IMPROVED VERSION.
-More aggressive border detection with adaptive threshold.
+Remove white/near-white borders from product images.
+Crops to the content area and saves back to the same location.
 """
 
 from PIL import Image
 import os
 import glob
-import numpy as np
 
-THUMBS_DIR = 'images/thumbs'
-CATALOG_DIR = 'images/catalog'
-THRESHOLD = 230  # More aggressive - detect more "white" pixels
-CROP_MARGIN = 1  # Minimal margin
-EDGE_CHECK = 10  # Check first/last N pixels for border detection
+from pathlib import Path
 
-def get_border_color(img, side='top', check_size=EDGE_CHECK):
-    """Get the dominant color of a border region."""
-    pixels = img.load()
-    width, height = img.size
-    
-    colors = []
-    if side == 'top':
-        for y in range(check_size):
-            for x in range(0, width, max(1, width // 20)):
-                colors.append(pixels[x, y])
-    elif side == 'bottom':
-        for y in range(height - check_size, height):
-            for x in range(0, width, max(1, width // 20)):
-                colors.append(pixels[x, y])
-    elif side == 'left':
-        for x in range(check_size):
-            for y in range(0, height, max(1, height // 20)):
-                colors.append(pixels[x, y])
-    elif side == 'right':
-        for x in range(width - check_size, width):
-            for y in range(0, height, max(1, height // 20)):
-                colors.append(pixels[x, y])
-    
-    if not colors:
-        return None
-    
-    # Get average color
-    avg_r = sum(c[0] for c in colors) // len(colors)
-    avg_g = sum(c[1] for c in colors) // len(colors)
-    avg_b = sum(c[2] for c in colors) // len(colors)
-    
-    return (avg_r, avg_g, avg_b)
+REPO_ROOT = Path(__file__).resolve().parent.parent
+THUMBS_DIR = str(REPO_ROOT / 'images/thumbs')
+CATALOG_DIR = str(REPO_ROOT / 'images/catalog')
+THRESHOLD = 240  # Pixel values above this are considered "white"
+CROP_MARGIN = 2  # Keep 2px margin to avoid cutting into content
 
-def is_pixel_close_to_border(pixel, border_color, tolerance=30):
-    """Check if a pixel is close to the border color."""
-    if border_color is None:
-        return pixel[0] > THRESHOLD and pixel[1] > THRESHOLD and pixel[2] > THRESHOLD
-    
-    return (abs(pixel[0] - border_color[0]) < tolerance and
-            abs(pixel[1] - border_color[1]) < tolerance and
-            abs(pixel[2] - border_color[2]) < tolerance)
-
-def remove_borders_v2(img_path):
-    """Remove borders using adaptive detection."""
+def remove_borders(img_path):
+    """Remove white borders from an image and save it."""
     try:
         img = Image.open(img_path)
         original_size = img.size
@@ -67,16 +26,11 @@ def remove_borders_v2(img_path):
         if img.mode != 'RGB':
             img = img.convert('RGB')
         
+        # Get pixels
         pixels = img.load()
         width, height = img.size
         
-        # Get border colors for each side
-        top_color = get_border_color(img, 'top')
-        bottom_color = get_border_color(img, 'bottom')
-        left_color = get_border_color(img, 'left')
-        right_color = get_border_color(img, 'right')
-        
-        # Find bounding box
+        # Find bounding box of non-white content
         top = 0
         bottom = height - 1
         left = 0
@@ -85,8 +39,9 @@ def remove_borders_v2(img_path):
         # Find top
         for y in range(height):
             found = False
-            for x in range(0, width, max(1, width // 50)):
-                if not is_pixel_close_to_border(pixels[x, y], top_color):
+            for x in range(width):
+                r, g, b = pixels[x, y]
+                if r < THRESHOLD or g < THRESHOLD or b < THRESHOLD:
                     found = True
                     break
             if found:
@@ -96,8 +51,9 @@ def remove_borders_v2(img_path):
         # Find bottom
         for y in range(height - 1, -1, -1):
             found = False
-            for x in range(0, width, max(1, width // 50)):
-                if not is_pixel_close_to_border(pixels[x, y], bottom_color):
+            for x in range(width):
+                r, g, b = pixels[x, y]
+                if r < THRESHOLD or g < THRESHOLD or b < THRESHOLD:
                     found = True
                     break
             if found:
@@ -107,8 +63,9 @@ def remove_borders_v2(img_path):
         # Find left
         for x in range(width):
             found = False
-            for y in range(0, height, max(1, height // 50)):
-                if not is_pixel_close_to_border(pixels[x, y], left_color):
+            for y in range(height):
+                r, g, b = pixels[x, y]
+                if r < THRESHOLD or g < THRESHOLD or b < THRESHOLD:
                     found = True
                     break
             if found:
@@ -118,8 +75,9 @@ def remove_borders_v2(img_path):
         # Find right
         for x in range(width - 1, -1, -1):
             found = False
-            for y in range(0, height, max(1, height // 50)):
-                if not is_pixel_close_to_border(pixels[x, y], right_color):
+            for y in range(height):
+                r, g, b = pixels[x, y]
+                if r < THRESHOLD or g < THRESHOLD or b < THRESHOLD:
                     found = True
                     break
             if found:
@@ -169,7 +127,7 @@ def main():
         
         for f in sorted(files):
             name = os.path.basename(f)
-            changed, old_size, new_size = remove_borders_v2(f)
+            changed, old_size, new_size = remove_borders(f)
             if changed:
                 processed += 1
                 print(f"  ✓ {name}: {old_size} → {new_size}")
@@ -189,7 +147,7 @@ def main():
         
         for f in sorted(files):
             name = os.path.basename(f)
-            changed, old_size, new_size = remove_borders_v2(f)
+            changed, old_size, new_size = remove_borders(f)
             if changed:
                 processed += 1
                 print(f"  ✓ {name}: {old_size} → {new_size}")

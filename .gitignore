@@ -15,3 +15,7 @@ server.js
 
 # Playwright MCP snapshots
 .playwright-mcp/
+
+# Python
+__pycache__/
+*.py[cod]
