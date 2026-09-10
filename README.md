@@ -235,6 +235,8 @@ const WHATSAPP = '584126481628';
 Todos los botones usan esa constante: carrito, lightbox, contacto, footer y botón flotante.
 Los enlaces fijos de `index.html` (3 lugares: contacto, footer, flotante) también usan `584126481628`.
 
+**Regla de mantenimiento:** si alguna vez cambia el número, editar SOLO la constante de `js/app.js` y después verificar que los enlaces de `index.html` coinciden. No duplicar el número en otro lado.
+
 **Formato internacional (sin `+`, sin espacios):**
 ```
 584126481628 = 58 (Venezuela) + 412 648 1628 (número local)
@@ -441,6 +443,11 @@ Después de cada deploy exitoso de GitHub Pages, un workflow de GitHub Actions p
 - ✅ Enlaces externos con `target="_blank" rel="noopener"`
 - ✅ Service worker solo cachea recursos del mismo origen
 - ✅ No hay backend: la única entrada de datos es el navegador del visitante (catálogo estático + carrito local)
+
+### Checklist de seguridad antes del deploy
+1. Secrets de Cloudflare en GitHub: confirmar que `CLOUDFLARE_ZONE_ID` y `CLOUDFLARE_API_TOKEN` existen y que el token tiene permiso `Zone → Cache Purge → Edit`.
+2. Headers reales en producción: ejecutar `curl -sI https://yosoy222.com/` y verificar que llegan `strict-transport-security`, `x-frame-options: DENY`, `x-content-type-options: nosniff`, `referrer-policy: strict-origin-when-cross-origin`, `permissions-policy: camera=(), microphone=(), geolocation=()`.
+3. Si el número de WhatsApp cambia, editar solo `js/app.js` y después confirmar que los enlaces de `index.html` coinciden con la constante.
 
 ---
 
@@ -781,6 +788,8 @@ git checkout -- index.html
 ### Pie de página y lightbox (correcciones v5 sep 2026)
 
 - **País del footer:** `Hecho a mano en Venezuela.` (antes decía México). Confirmado por número WhatsApp +58, USD como moneda y el README del sitio.
+- **WhatsApp centralizado:** única fuente en `js/app.js` → `const WHATSAPP = '584126481628'`. README y docs ya dejan explícito que los enlaces de `index.html` deben seguir la constante.
+- **Security checklist documentado:** antes de cada deploy se revisan (1) secrets de Cloudflare y permisos del token, y (2) cabeceras reales en producción con `curl -sI https://yosoy222.com/`.
 - **Mensaje del lightbox por categoría:** se usó un mapa de sustantivos (`vela`·`collar`·`pulsera`·`franela`) para que el prefilled de WhatsApp sea correcto en todos los productos.
 
 ### Accesibilidad del lightbox (v5 sep 2026)
@@ -800,4 +809,4 @@ git log --oneline -1   # último commit
 
 ---
 
-*Documentación actualizada: 5 de septiembre de 2026 — sincronizada con el estado real del código: 44 productos, cache v4 con offline total, imágenes optimizadas (thumbs 480px / catalog 900px), imágenes hero corregidas (VM-ROSA, VE-ARMONIA-CANELA), híbrido `imagenes_web` (36 productos, 7 franelas reales, Armonía Coco), paleta tierra crema, Excel verificado 42/42 sin diferencias, PWA instalable con 10 iconos (manifest con id/scope), lightbox + carrito con focus trap y teclado, footer Venezuela, seguridad vía Cloudflare (CSP + headers), GitHub Actions purge automático verificado en verde, a11y y hardening aplicados.*
+*Documentación actualizada: 10 de septiembre de 2026 — sincronizada con el estado real del código: 44 productos, cache v6 con offline total, imágenes optimizadas (thumbs 480px / catalog 900px), imágenes hero corregidas (VM-ROSA, VE-ARMONIA-CANELA), híbrido `imagenes_web` (36 productos, 7 franelas reales, Armonía Coco), paleta tierra crema, Excel verificado 42/42 sin diferencias, PWA instalable con 10 iconos (manifest con id/scope), lightbox + carrito con focus trap y teclado, footer Venezuela, seguridad vía Cloudflare (CSP + headers), GitHub Actions purge automático verificado en verde, a11y y hardening aplicados, WhatsApp centralizado en js/app.js y checklist de seguridad documentado.*

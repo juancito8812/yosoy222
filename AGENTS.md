@@ -132,6 +132,8 @@ git push origin main
 5. `escapeHtml()` en todo render dinámico (anti-XSS)
 6. `loadCart()` valida localStorage al cargar
 7. PWA: al cambiar `sw.js`, bump de `CACHE_NAME` (`yosoy222-vN`); la versión nueva precachea el catálogo offline completo vía mensaje `PRECACHE_IMAGES` desde `app.js`
+8. WhatsApp es única configuración en `js/app.js` → `const WHATSAPP`. Los enlaces de `index.html` deben seguir ese valor.
+9. Antes del deploy revisar: (a) secrets de Cloudflare en GitHub y permisos del token, (b) cabeceras reales con `curl -sI https://yosoy222.com/`.
 
 ---
 
@@ -139,13 +141,14 @@ git push origin main
 
 | Qué | Dónde | Valor |
 |-----|-------|-------|
-| WhatsApp | `js/app.js` línea 10 | `const WHATSAPP = '584126481628'` |
-| WhatsApp | `index.html` (3 lugares) | `584126481628` |
+| WhatsApp | `js/app.js` línea 10 | `const WHATSAPP = '584126481628'` (única fuente) |
+| WhatsApp | `index.html` (3 lugares) | debe coincidir con `const WHATSAPP` de `js/app.js` |
 | Cache version | `sw.js` línea 6 | `yosoy222-v6` |
 | Iconos PWA | `icons/` + `manifest.json` | 8 any RGB plano (72,96,128,144,152,192,384,512) + 2 maskable RGBA (192,512) |
 | Regenerar iconos | `scripts/generate_icons.py` | Desde `icons/source_logo.jpg`; luego `scripts/verify_icons.py` |
 | Redes sociales | `index.html` contacto + footer | @yo_soy222 (IG, TikTok, FB) |
 | Tema | `css/style.css` `:root` | Paleta tierra crema (#faf6ef) |
+| Security checklist | antes del deploy | secrets de Cloudflare + cabeceras reales en `curl -sI https://yosoy222.com/` |
 
 ---
 
@@ -169,4 +172,4 @@ git push origin main
 
 ---
 
-*Última actualización: 2026-09-06 (code review & quality audit completado: cache v6, precache en lotes, focus trap accesible, logo local persistente, scripts organizados en scripts/)*
+*Última actualización: 2026-09-10 (whatsapp centralizado en js/app.js, checklist de seguridad antes del deploy, docs sincronizadas: AGENTS/README/MEMORY)*

@@ -7,6 +7,8 @@
   'use strict';
 
   /* ----- Config ----- */
+  // WhatsApp: único punto de configuración del número de pedidos del sitio.
+  // Si cambia el número, editar SOLO esta línea; no copiar el número en index.html.
   const WHATSAPP = '584126481628';
 
   /* ----- Product data (synced from Catalogo.xlsx) ----- */
