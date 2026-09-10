@@ -58,7 +58,9 @@
 - **Iconos PWA:** regenerados desde `icons/source_logo.jpg` local en el repo; any = RGB plano, maskable = RGBA. Validados con `scripts/verify_icons.py` (8/8 any OK, 2/2 maskable OK, manifest coincide).
 - **Scripts de iconos:** `scripts/generate_icons.py` y `scripts/verify_icons.py` añadidos al repo. Flujo documentado: regenerar con `generate_icons.py` y validar con `verify_icons.py`; sin validación no se considera cambio listo.
 - **Imágenes hero:** corregidas — `VM-ROSA_vela_rosa_79g.jpg` y `VE-ARMONIA-CANELA_vela_armonia_canela_508g.jpg`.
-- **WhatsApp:** único punto de configuración en `js/app.js` → `const WHATSAPP = '584126481628'`. Los enlaces de `index.html` deben mantenerse sincronizados con esa constante.
+- **WhatsApp:** única configuración en `js/app.js` → `const WHATSAPP = '584126481628'` (línea 12). Los enlaces de `index.html` deben usar ese mismo valor (`584126481628`).
+
+Nota de mantenimiento: si cambia el número, editar solo esa constante y después revisar que los 3 enlaces de `index.html` sigan el mismo número.
 - **Security checklist documentado:** antes de cualquier deploy se revisa (1) secrets de Cloudflare en GitHub y permisos del token, y (2) cabeceras reales en producción con `curl -sI https://yosoy222.com/`.
 - **Sitio en producción:** funcional y auditado (44 productos, imágenes, búsqueda, filtros, carrito, WhatsApp, lightbox, teclado, PWA, footer Venezuela, mensaje por categoría).
 - **Headers de seguridad:** activos y verificados (Cloudflare Transform Rule).

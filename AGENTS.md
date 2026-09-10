@@ -132,7 +132,7 @@ git push origin main
 5. `escapeHtml()` en todo render dinámico (anti-XSS)
 6. `loadCart()` valida localStorage al cargar
 7. PWA: al cambiar `sw.js`, bump de `CACHE_NAME` (`yosoy222-vN`); la versión nueva precachea el catálogo offline completo vía mensaje `PRECACHE_IMAGES` desde `app.js`
-8. WhatsApp es única configuración en `js/app.js` → `const WHATSAPP`. Los enlaces de `index.html` deben seguir ese valor.
+8. WhatsApp es única configuración en `js/app.js` → `const WHATSAPP = '584126481628'`. Los enlaces de `index.html` deben usar ese mismo valor.
 9. Antes del deploy revisar: (a) secrets de Cloudflare en GitHub y permisos del token, (b) cabeceras reales con `curl -sI https://yosoy222.com/`.
 
 ---
@@ -141,8 +141,8 @@ git push origin main
 
 | Qué | Dónde | Valor |
 |-----|-------|-------|
-| WhatsApp | `js/app.js` línea 10 | `const WHATSAPP = '584126481628'` (única fuente) |
-| WhatsApp | `index.html` (3 lugares) | debe coincidir con `const WHATSAPP` de `js/app.js` |
+| WhatsApp | `js/app.js` línea 12 | `const WHATSAPP = '584126481628'` (única configuración) |
+| WhatsApp | `index.html` (3 lugares) | debe usar `584126481628` igual que `js/app.js` |
 | Cache version | `sw.js` línea 6 | `yosoy222-v6` |
 | Iconos PWA | `icons/` + `manifest.json` | 8 any RGB plano (72,96,128,144,152,192,384,512) + 2 maskable RGBA (192,512) |
 | Regenerar iconos | `scripts/generate_icons.py` | Desde `icons/source_logo.jpg`; luego `scripts/verify_icons.py` |
@@ -158,7 +158,7 @@ git push origin main
 |----------|-------|----------|
 | Imágenes rotas en hero | Rutas incorrectas | Verificar archivos en `images/thumbs/` |
 | PWA muestra versión vieja | Cache del SW + manifest/icones cacheados | Bump `CACHE_NAME` en `sw.js` y regenerar/verificar iconos con `scripts/generate_icons.py` + `scripts/verify_icons.py` |
-| WhatsApp abre número viejo | Caché del navegador | Ctrl+Shift+R o incógnito |
+| WhatsApp abre número viejo | Caché del navegador o enlaces sin actualizar | Verificar que `js/app.js` y `index.html` usan `584126481628` |
 | Imágenes no cargan | Abrir con `file://` | Usar `python3 -m http.server` |
 | Franelas muestran velas | Cache del SW | Clear site data en DevTools |
 

@@ -44,7 +44,7 @@
 - **Lightbox**: clic en cualquier imagen de producto → vista ampliada desde `images/catalog/`, con flechas ◀ ▶, teclado (Esc, ←, →), contador, y botón directo de WhatsApp
 - **Carrito de compras** con steppers de cantidad (+/−), persistente en `localStorage` y validado al cargar
 - **Checkout por WhatsApp** con mensaje itemizado (producto × cantidad — subtotal, y total final)
-- **Número real de WhatsApp configurado** (+58 412 648 1628) en todos los botones
+- **Número real de WhatsApp configurado** (+58 412 648 1628) — única configuración en `js/app.js` → `const WHATSAPP = '584126481628'`; los enlaces de `index.html` usan ese mismo valor
 - **PWA**: instalable en Android/iOS/desktop, funciona offline (service worker + manifest). Iconos generados con `scripts/generate_icons.py` y validados con `scripts/verify_icons.py`
 - **Fallback de imagen**: si falta el archivo de un producto, se muestra el nombre como placeholder en vez de un ícono roto
 - **Seguridad**: escape de HTML en todo render dinámico (anti-XSS), validación de `localStorage`, headers de seguridad
@@ -226,16 +226,12 @@ Compara los **42 productos del Excel** (4 hojas) contra el sitio: presencia, **p
 
 **Número real:** `+58 412 648 1628` → formato wa.me: `584126481628`
 
-**Único punto de configuración en código:** `js/app.js`
-
-```javascript
-const WHATSAPP = '584126481628';
-```
+**Única configuración en código:** `js/app.js` → `const WHATSAPP = '584126481628';
 
 Todos los botones usan esa constante: carrito, lightbox, contacto, footer y botón flotante.
 Los enlaces fijos de `index.html` (3 lugares: contacto, footer, flotante) también usan `584126481628`.
 
-**Regla de mantenimiento:** si alguna vez cambia el número, editar SOLO la constante de `js/app.js` y después verificar que los enlaces de `index.html` coinciden. No duplicar el número en otro lado.
+**Regla de mantenimiento:** si alguna vez cambia el número, editar SOLO la constante de `js/app.js` y después verificar que los enlaces de `index.html` usan `584126481628`. No duplicar el número en otro lado.
 
 **Formato internacional (sin `+`, sin espacios):**
 ```
@@ -743,7 +739,7 @@ git checkout -- index.html
 - **Causa:** el enlace que abriste es **viejo**: un chat/contacto guardado, un mensaje reenviado, o una versión cacheada del sitio de cuando aún estaba el número placeholder. El sitio desplegado ya usa `584126481628` en todos los botones.
 - **Solución:** borra ese chat/contacto antiguo en WhatsApp, o abre la web de nuevo con recarga forzada (`Ctrl+Shift+R`) / incógnito, y usa los botones del sitio. Verificar en el código:
   ```bash
-  grep -c "584126481628" index.html js/app.js   # esperado: 4+ ocurrencias
+  grep -c "584126481628" index.html js/app.js   # js/app.js (const WHATSAPP) + index.html (3 enlaces)
   ```
 
 ### El sitio muestra la versión vieja después de un cambio
