@@ -13,7 +13,7 @@
 - **Facebook:** https://www.facebook.com/share/1C5X2yKscG/
 - **Cloudflare Zone ID:** `f959322eed862ae75a79f46e8f780d65`
 - **Última sesión:** 2026-09-10
-- **Versión de memoria:** 14
+- **Versión de memoria:** 15
 
 ## Arquitectura
 
@@ -51,7 +51,13 @@
 ## Estado Actual
 
 - **Branch:** main
-- **Último commit desplegado:** `bafbbdc` (docs: alinear la regla de WhatsApp en AGENTS.md, README.md y MEMORY.md).
+- **Último commit desplegado:** `0e04f73` (docs: actualizar versión de memoria y último commit desplegado).
+- **Sesión 2026-09-10:** revisión de seguridad y alineación de documentación.
+  - WhatsApp centralizado como única configuración en `js/app.js` (`const WHATSAPP = '584126481628'`); los 3 enlaces de `index.html` deben usar ese mismo valor.
+  - Checklist de seguridad antes del deploy documentado en AGENTS.md, README.md y MEMORY.md.
+  - Documentación cruzada alineada en AGENTS.md, README.md y .agents/MEMORY.md.
+  - Último commit de documentación: `0e04f73` (actualizar versión de memoria y último commit desplegado).
+  - Verificaciones previas al cierre: iconos PWA OK (8/8 any, 2/2 maskable, manifest OK); cabeceras de seguridad en producción OK; WhatsApp centralizado y documentación alineada.
 - **Redes sociales:** Instagram `@yo_soy222`, TikTok `@yo_soy222`, Facebook `share/1C5X2yKscG/`.
 - **GitHub Actions:** Workflow `purge-cache.yml` configurado y funcionando (valida respuesta de Cloudflare con `jq`). Secrets: `CLOUDFLARE_ZONE_ID` y `CLOUDFLARE_API_TOKEN` (autenticación Bearer) — configurados.
 - **Cache version:** `yosoy222-v6` (sw.js línea 6) — precache del catálogo offline por lotes de 6 con marcador atómico.

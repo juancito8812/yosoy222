@@ -172,4 +172,9 @@ git push origin main
 
 ---
 
-*Última actualización: 2026-09-10 (whatsapp centralizado en js/app.js, checklist de seguridad antes del deploy, docs sincronizadas: AGENTS/README/MEMORY)*
+*Última actualización: 2026-09-10 — sesión de revisión de seguridad y alineación de documentación completada:
+- WhatsApp centralizado como única configuración en `js/app.js` (`const WHATSAPP = '584126481628'`); los 3 enlaces de `index.html` deben usar ese mismo valor.
+- Checklist de seguridad antes del deploy documentado en AGENTS.md, README.md y MEMORY.md.
+- Documentación cruzada alineada en AGENTS.md, README.md y .agents/MEMORY.md.
+- Último commit de documentación: `0e04f73` (actualizar versión de memoria y último commit desplegado).*
+
