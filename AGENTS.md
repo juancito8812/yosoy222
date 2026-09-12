@@ -17,7 +17,7 @@ Tienda online de velas artesanales, pulseras, collares, franelas y accesorios. *
 ## Stack
 
 - **HTML5 + CSS3 + JavaScript vanilla** — sin frameworks, sin npm, sin build tools
-- **PWA:** manifest.json + sw.js (service worker con cache v8, stale-while-revalidate, query strings `?v=8` en imágenes/iconos)
+- **PWA:** manifest.json + sw.js (service worker con cache v9, stale-while-revalidate, query strings `?v=9` en imágenes/iconos)
 - **Hosting:** GitHub Pages (deploy automático al hacer push a `main`)
 - **DNS/CDN:** Cloudflare (proxy activado, Cache Rule HTML TTL 5 min, purge automático vía GitHub Actions)
 - **Base de datos:** `Catalogo.xlsx` en `/home/jr/Documentos/Catalogo velas/Catalogo.xlsx`
@@ -43,7 +43,7 @@ index.html          ← Página única (nav, hero, catálogo, lightbox, carrito,
 css/style.css       ← Estilos completos (~833 líneas, paleta tierra crema)
 js/app.js           ← Toda la lógica (~585 líneas, 44 productos, búsqueda, filtros, carrito, WhatsApp, a11y focus trap, precache PWA)
 manifest.json       ← PWA metadata (id + scope)
-sw.js               ← Service worker (cache v8, stale-while-revalidate, query strings `?v=8` en imágenes/iconos)
+sw.js               ← Service worker (cache v9, stale-while-revalidate, query strings `?v=9` en imágenes/iconos)
 icons/              ← 11 archivos: 10 iconos PWA (72-512px + maskable) + source_logo.jpg original:
                       8 any (RGB plano) + 2 maskable (RGBA)
 scripts/
@@ -72,7 +72,7 @@ CNAME                 ← Dominio personalizado (yosoy222.com)
 
 ## PWA y caché
 
-- `CACHE_NAME` en `sw.js` = `yosoy222-v8` (bump de versión cuando cambia el SW o assets precacheados).
+- `CACHE_NAME` en `sw.js` = `yosoy222-v9` (bump de versión cuando cambia el SW o assets precacheados).
 - Iconos PWA se regeneran y validan como un paso repetible:
   - `python3 scripts/generate_icons.py` — regenera los 10 iconos desde `icons/source_logo.jpg`.
   - `python3 scripts/verify_icons.py` — verifica que los iconos coinciden con `manifest.json` (existencia, tamaño real vs `sizes`, formato: any=RGB plano, maskable=RGBA).
@@ -169,7 +169,7 @@ git push origin main
 |-----|-------|-------|
 | WhatsApp | `js/app.js` línea 12 | `const WHATSAPP = '584126481628'` (única configuración) |
 | WhatsApp | `index.html` (3 lugares) | debe usar `584126481628` igual que `js/app.js` |
-| Cache version | `sw.js` línea 6 | `yosoy222-v8` |
+| Cache version | `sw.js` línea 6 | `yosoy222-v9` |
 | Iconos PWA | `icons/` + `manifest.json` | 8 any RGB plano (72,96,128,144,152,192,384,512) + 2 maskable RGBA (192,512) |
 | Regenerar iconos | `scripts/generate_icons.py` | Desde `icons/source_logo.jpg`; luego `scripts/verify_icons.py` |
 | Redes sociales | `index.html` contacto + footer | @yo_soy222 (IG, TikTok, FB) |
@@ -202,9 +202,9 @@ git push origin main
 - Estructura del proyecto actualizada (scripts/ con todos los archivos, imágenes decorativas y variantes documentadas)
 - Conteo de imágenes corregido: 63 thumbs (44 productos + 4 decorativas + 15 variantes), 60 catalog
 - Líneas de código actualizadas: index.html 298, style.css 833, app.js 585, sw.js 138, manifest.json 68
-- Documentación sincronizada con estado real del código (cache v8, 44 productos, WhatsApp centralizado)
+- Documentación sincronizada con estado real del código (cache v9, 44 productos, WhatsApp centralizado)
 - Code review de seguridad: 0 hallazgos críticos, 0 hallazgos altos (escapeHtml, loadCart, CSP, SW bien implementados)
 - Code review de calidad: correctitud ✓, legibilidad ✓, arquitectura ✓, performance ✓ (requestAnimationFrame, lazy loading, stale-while-revalidate)
 - Imagen Armonía Canela actualizada con foto profesional
-- Cache busting implementado: query strings `?v=8` en imágenes/iconos para forzar actualización en PWA instalada*
+- Cache busting implementado: query strings `?v=9` en imágenes/iconos para forzar actualización en PWA instalada*
 

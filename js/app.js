@@ -147,7 +147,7 @@
     grid.innerHTML = products.map((p, i) => `
           <article class="product-card" data-index="${i}">
           <button type="button" class="product-image" data-name="${escapeHtml(p.name)}" aria-label="Ampliar imagen de ${escapeHtml(p.name)}">
-            <img src="images/thumbs/${escapeHtml(p.file)}?v=8" alt="${escapeHtml(p.name)} artesanal" loading="lazy" decoding="async">
+            <img src="images/thumbs/${escapeHtml(p.file)}?v=9" alt="${escapeHtml(p.name)} artesanal" loading="lazy" decoding="async">
           </button>
           <div class="product-info">
             <h3>${escapeHtml(p.name)}</h3>
@@ -447,7 +447,7 @@
     if (!p) return;
     
     // Add cache-busting query string to force image refresh
-    lightboxImg.src = `images/catalog/${p.file}?v=8`;
+    lightboxImg.src = `images/catalog/${p.file}?v=9`;
     lightboxImg.alt = `${p.name} artesanal`;
     lightboxName.textContent = p.name;
     lightboxDesc.textContent = p.desc;
@@ -552,7 +552,7 @@
      PWA — Register Service Worker + offline catalog precache
      ============================================ */
   function catalogUrls() {
-    const urls = products.flatMap(p => [`images/thumbs/${p.file}?v=8`, `images/catalog/${p.file}?v=8`]);
+    const urls = products.flatMap(p => [`images/thumbs/${p.file}?v=9`, `images/catalog/${p.file}?v=9`]);
     return [...new Set(urls)];
   }
 
