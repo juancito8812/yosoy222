@@ -147,7 +147,7 @@
     grid.innerHTML = products.map((p, i) => `
           <article class="product-card" data-index="${i}">
           <button type="button" class="product-image" data-name="${escapeHtml(p.name)}" aria-label="Ampliar imagen de ${escapeHtml(p.name)}">
-            <img src="images/thumbs/${escapeHtml(p.file)}" alt="${escapeHtml(p.name)} artesanal" loading="lazy" decoding="async">
+            <img src="images/thumbs/${escapeHtml(p.file)}?v=8" alt="${escapeHtml(p.name)} artesanal" loading="lazy" decoding="async">
           </button>
           <div class="product-info">
             <h3>${escapeHtml(p.name)}</h3>
@@ -446,7 +446,8 @@
     const p = visibleProducts[currentLightboxIndex];
     if (!p) return;
     
-    lightboxImg.src = `images/catalog/${p.file}`;
+    // Add cache-busting query string to force image refresh
+    lightboxImg.src = `images/catalog/${p.file}?v=8`;
     lightboxImg.alt = `${p.name} artesanal`;
     lightboxName.textContent = p.name;
     lightboxDesc.textContent = p.desc;
@@ -569,7 +570,12 @@
             const newWorker = reg.installing;
             if (!newWorker) return;
             newWorker.addEventListener('statechange', () => {
-              if (newWorker.state === 'activated') requestCatalogPrecache(reg);
+              if (newWorker.state === 'activated') {
+                // Clear old cache versions to force fresh downloads
+                const worker = (navigator.serviceWorker.controller || reg.active);
+                if (worker) worker.postMessage({ type: 'CLEAR_OLD_CACHE' });
+                requestCatalogPrecache(reg);
+              }
             });
           });
         })
