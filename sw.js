@@ -3,7 +3,7 @@
    Offline caching for PWA
    ============================================ */
 
-const CACHE_NAME = 'yosoy222-v6';
+const CACHE_NAME = 'yosoy222-v7';
 
 // Assets to precache on install (offline shell + LCP images)
 const PRECACHE_ASSETS = [
@@ -16,8 +16,8 @@ const PRECACHE_ASSETS = [
   '/icons/icon-512x512.png',
   '/icons/icon-maskable-192x192.png',
   '/icons/icon-maskable-512x512.png',
-  '/images/thumbs/VM-ROSA_vela_rosa_79g.jpg',
-  '/images/thumbs/VE-ARMONIA-CANELA_vela_armonia_canela_508g.jpg'
+  '/images/thumbs/hero-rosas-3.jpg',
+  '/images/thumbs/hero-escaparate.jpg'
 ];
 
 // Dedicated marker used to know the full catalog is already cached

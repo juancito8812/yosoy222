@@ -552,8 +552,6 @@
      ============================================ */
   function catalogUrls() {
     const urls = products.flatMap(p => [`images/thumbs/${p.file}`, `images/catalog/${p.file}`]);
-    // Static images in index.html not present in products[]
-    urls.push('images/thumbs/VM-MINICORAZON-2_velita_corazoncito.jpg');
     return [...new Set(urls)];
   }
 
