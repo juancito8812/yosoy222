@@ -12,8 +12,8 @@
 - **TikTok:** https://www.tiktok.com/@yo_soy222
 - **Facebook:** https://www.facebook.com/share/1C5X2yKscG/
 - **Cloudflare Zone ID:** `f959322eed862ae75a79f46e8f780d65`
-- **Última sesión:** 2026-09-10
-- **Versión de memoria:** 15
+- **Última sesión:** 2026-09-12
+- **Versión de memoria:** 16
 
 ## Arquitectura
 
@@ -51,19 +51,21 @@
 ## Estado Actual
 
 - **Branch:** main
-- **Último commit desplegado:** `0e04f73` (docs: actualizar versión de memoria y último commit desplegado).
-- **Sesión 2026-09-10:** revisión de seguridad y alineación de documentación.
-  - WhatsApp centralizado como única configuración en `js/app.js` (`const WHATSAPP = '584126481628'`); los 3 enlaces de `index.html` deben usar ese mismo valor.
-  - Checklist de seguridad antes del deploy documentado en AGENTS.md, README.md y MEMORY.md.
-  - Documentación cruzada alineada en AGENTS.md, README.md y .agents/MEMORY.md.
-  - Último commit de documentación: `0e04f73` (actualizar versión de memoria y último commit desplegado).
-  - Verificaciones previas al cierre: iconos PWA OK (8/8 any, 2/2 maskable, manifest OK); cabeceras de seguridad en producción OK; WhatsApp centralizado y documentación alineada.
+- **Último commit desplegado:** `7957e27` (fix: eliminar referencia obsoleta a imagen eliminada y bump cache v7).
+- **Sesión 2026-09-12:** code review de seguridad completo y corrección de hallazgos.
+  - Corregida referencia obsoleta a `VM-MINICORAZON-2_velita_corazoncito.jpg` en `sw.js` y `app.js` (imagen eliminada del repo).
+  - Imágenes hero actualizadas a `hero-rosas-3.jpg` y `hero-escaparate.jpg` en `sw.js`.
+  - Cache bump `yosoy222-v6` → `yosoy222-v7` para forzar actualización en PWAs instaladas.
+  - Code review de seguridad: 0 hallazgos críticos, headers verificados en producción (X-Frame-Options DENY, Permissions-Policy, HSTS, nosniff, Referrer-Policy).
+  - Descripciones de productos actualizadas: Sagrada Familia (colores beige/rojo), Virgen del Carmen (blanco/dorado).
+  - Imágenes decorativas actualizadas: hero (rosas 3 + escaparate) y sección Nosotros (2 imágenes nuevas).
+  - Imágenes antiguas eliminadas: `Armonia Coco.jpg`, `VM-MINICORAZON-2_velita_corazoncito.jpg`.
 - **Redes sociales:** Instagram `@yo_soy222`, TikTok `@yo_soy222`, Facebook `share/1C5X2yKscG/`.
 - **GitHub Actions:** Workflow `purge-cache.yml` configurado y funcionando (valida respuesta de Cloudflare con `jq`). Secrets: `CLOUDFLARE_ZONE_ID` y `CLOUDFLARE_API_TOKEN` (autenticación Bearer) — configurados.
-- **Cache version:** `yosoy222-v6` (sw.js línea 6) — precache del catálogo offline por lotes de 6 con marcador atómico.
+- **Cache version:** `yosoy222-v7` (sw.js línea 6) — precache del catálogo offline por lotes de 6 con marcador atómico.
 - **Iconos PWA:** regenerados desde `icons/source_logo.jpg` local en el repo; any = RGB plano, maskable = RGBA. Validados con `scripts/verify_icons.py` (8/8 any OK, 2/2 maskable OK, manifest coincide).
 - **Scripts de iconos:** `scripts/generate_icons.py` y `scripts/verify_icons.py` añadidos al repo. Flujo documentado: regenerar con `generate_icons.py` y validar con `verify_icons.py`; sin validación no se considera cambio listo.
-- **Imágenes hero:** corregidas — `VM-ROSA_vela_rosa_79g.jpg` y `VE-ARMONIA-CANELA_vela_armonia_canela_508g.jpg`.
+- **Imágenes hero:** actualizadas — `hero-rosas-3.jpg` (3 velas rosa, 800×800) y `hero-escaparate.jpg` (escaparate, 338×600).
 - **WhatsApp:** única configuración en `js/app.js` → `const WHATSAPP = '584126481628'` (línea 12). Los enlaces de `index.html` deben usar ese mismo valor (`584126481628`).
 
 Nota de mantenimiento: si cambia el número, editar solo esa constante y después revisar que los 3 enlaces de `index.html` sigan el mismo número.
@@ -73,6 +75,15 @@ Nota de mantenimiento: si cambia el número, editar solo esa constante y despué
 - **Deploy:** push a main → GitHub Pages (~2 min) → purge automático de Cloudflare (~30 seg).
 
 ## Cambios Recientes
+
+- **[2026-09-12]** — **Code review de seguridad completo + correcciones**:
+  1. `sw.js`: Bump a cache `yosoy222-v7`. Eliminada referencia obsoleta a `VM-MINICORAZON-2_velita_corazoncito.jpg`. Imágenes hero actualizadas a `hero-rosas-3.jpg` y `hero-escaparate.jpg`.
+  2. `js/app.js`: Eliminado `urls.push()` de imagen obsoleta en `catalogUrls()`.
+  3. Descripciones actualizadas: Sagrada Familia (colores beige, rojo), Virgen del Carmen (blanco y dorado).
+  4. Imágenes decorativas actualizadas: hero (3 velas rosa + escaparate) y sección Nosotros (2 imágenes nuevas).
+  5. Imágenes antiguas eliminadas del repo.
+  6. Code review de seguridad: 0 hallazgos críticos. Headers verificados: X-Frame-Options DENY, Permissions-Policy, HSTS, nosniff, Referrer-Policy.
+  7. Documentación actualizada (README, MEMORY, PLAN).
 
 - **[2026-09-06]** — **Code review & quality audit completado**:
   1. `sw.js`: Bump a cache `yosoy222-v6`. Removido `CACHE_VERSION` huérfano. Descargas de precaché en lotes de 6 concurrentes con chequeo previo y marcador atómico `/__catalog_precached__` para garantizar catálogo offline completo sin saturar redes móviles.

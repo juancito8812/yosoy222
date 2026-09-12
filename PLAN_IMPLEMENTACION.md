@@ -192,10 +192,11 @@
 | Fase 10: Caché edge (Cloudflare) | ✅ COMPLETADA | 3 sep 2026 |
 | Fase 9: Correcciones + documentación | ✅ COMPLETADA | 3 sep 2026 |
 | Fase 11: Hardening (code review) + Performance + PWA offline total | ✅ COMPLETADA | 5 sep 2026 |
+| Fase 12: Code review de seguridad completo | ✅ COMPLETADA | 12 sep 2026 |
 
 **El sitio está en producción y funcional.** El pipeline de deploy funciona al 100% (purge automático verificado en verde). Las tareas pendientes de arriba son mejoras incrementales, ninguna bloquea el lanzamiento.
 
 ---
 
-*Última actualización: 5 de septiembre de 2026*
-*Commits recientes: `2f79b0e` (token purge verificado), `a04b3a1` (docs), `250d298` (memoria v9), `85a09db` (PWA offline total v4), `2c5b842` (perf imágenes), `42b4c0c` (fix 10 hallazgos code review)*
+*Última actualización: 12 de septiembre de 2026*
+*Commits recientes: `7957e27` (fix imagen obsoleta + cache v7), `9e8efdf` (eliminar imágenes antiguas), `cc228bf` (imágenes Nosotros), `197690a` (imágenes hero), `803a864` (Virgen del Carmen), `fdca502` (Sagrada Familia), `48bee8c` (Mini Petit)*

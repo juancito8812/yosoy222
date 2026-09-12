@@ -105,7 +105,7 @@ yosoy222/                          ← RAÍZ del repositorio│   ├── inde
 │       └── PWA: registro SW + precache del catálogo offline (mensaje PRECACHE_IMAGES)
 │
 ├── manifest.json                   ← PWA: nombre, iconos, tema, id + scope (~68 líneas)
-├── sw.js                           ← Service worker: caché offline (cache v4, ~127 líneas)
+├── sw.js                           ← Service worker: caché offline (cache v7, ~127 líneas)
 ├── icons/                          ← 10 iconos PWA — 8 'any' (72,96,128,144,152,192,384,512px) + 2 maskable
 │
 ├── images/
@@ -348,7 +348,7 @@ El sitio es una **PWA instalable** con caché offline.
 | Archivo | Función |
 |---------|---------|
 | `manifest.json` | Nombre "YoSoy222", `display: standalone`, tema `#faf6ef`, fondo `#faf6ef`, iconos (8 any + 2 maskable) |
-| `sw.js` | Service worker: precache de HTML/CSS/JS/manifest e **imágenes** (estrategia *stale-while-revalidate*, cache v6) |
+| `sw.js` | Service worker: precache de HTML/CSS/JS/manifest e **imágenes** (estrategia *stale-while-revalidate*, cache v7) |
 | `icons/` | 10 iconos PWA: 72, 96, 128, 144, 152, 192, 384, 512 (any, RGB plano) + maskable 192/512 (RGBA) + `source_logo.jpg` original |
 | `scripts/generate_icons.py` | Genera los 10 iconos PWA desde `icons/source_logo.jpg`. Ejecutar siempre junto con `verify_icons.py` |
 | `scripts/verify_icons.py` | Verifica que los iconos coinciden con `manifest.json` (existencia, tamaño real vs `sizes`, formato: any=RGB plano, maskable=RGBA) |
@@ -371,7 +371,7 @@ Si `verify_icons.py` falla, no se considera cambio de iconos listo.
 
 - La primera visita descarga y guarda los recursos
 - Con el teléfono en modo avión, el sitio sigue abriendo y mostrando el catálogo (los pedidos por WhatsApp requieren conexión, obviamente)
-- **Catálogo offline total (cache v6):** tras activarse el service worker, la app envía las imágenes de los 44 productos (thumbs + catalog) y el SW las precachea en segundo plano en lotes controlados (`PRECACHE_IMAGES`). Una vez completado, el catálogo completo —incluido el lightbox— funciona sin conexión.
+- **Catálogo offline total (cache v7):** tras activarse el service worker, la app envía las imágenes de los 44 productos (thumbs + catalog) y el SW las precachea en segundo plano en lotes controlados (`PRECACHE_IMAGES`). Una vez completado, el catálogo completo —incluido el lightbox— funciona sin conexión.
 
 ### Importante sobre la caché (PWA)
 
@@ -688,7 +688,7 @@ curl -sI https://yosoy222.com | head -5
 | `css/style.css` | Todos los estilos | ~832 |
 | `js/app.js` | Toda la lógica JS | ~564 |
 | `manifest.json` | Metadata PWA (id + scope) | ~68 |
-| `sw.js` | Service worker (offline, cache v4) | ~127 |
+| `sw.js` | Service worker (offline, cache v7) | ~127 |
 | `icons/` | Iconos PWA (10 PNG) | — |
 | `CNAME` | Dominio personalizado | 1 |
 
@@ -801,8 +801,8 @@ git log --oneline -1   # último commit
 # estado del repo: git status --short
 ```
 
-Último cambio publicado (5 sep 2026): PWA con **offline total** (precache del catálogo completo vía `PRECACHE_IMAGES`, cache v4), optimización de imágenes (thumbs 480px / catalog 900px, -58% peso, fetchpriority + decoding), correcciones de seguridad/a11y del code review (escape XSS, focus trap, ESC en carrito, tope qty 999, manifest id/scope) y **purge automático verificado en verde** (token con permiso `Cache Purge`).
+Último cambio publicado (12 sep 2026): PWA con **offline total** (precache del catálogo completo vía `PRECACHE_IMAGES`, cache v7), optimización de imágenes (thumbs 480px / catalog 900px, -58% peso, fetchpriority + decoding), correcciones de seguridad/a11y del code review (escape XSS, focus trap, ESC en carrito, tope qty 999, manifest id/scope), **purge automático verificado en verde** (token con permiso `Cache Purge`), code review de seguridad completo (0 hallazgos críticos), imágenes hero decorativas actualizadas (`hero-rosas-3.jpg`, `hero-escaparate.jpg`), descripciones de productos actualizadas.
 
 ---
 
-*Documentación actualizada: 10 de septiembre de 2026 — sincronizada con el estado real del código: 44 productos, cache v6 con offline total, imágenes optimizadas (thumbs 480px / catalog 900px), imágenes hero corregidas (VM-ROSA, VE-ARMONIA-CANELA), híbrido `imagenes_web` (36 productos, 7 franelas reales, Armonía Coco), paleta tierra crema, Excel verificado 42/42 sin diferencias, PWA instalable con 10 iconos (manifest con id/scope), lightbox + carrito con focus trap y teclado, footer Venezuela, seguridad vía Cloudflare (CSP + headers), GitHub Actions purge automático verificado en verde, a11y y hardening aplicados, WhatsApp centralizado en js/app.js y checklist de seguridad documentado.*
+*Documentación actualizada: 12 de septiembre de 2026 — sincronizada con el estado real del código: 44 productos, cache v7 con offline total, imágenes optimizadas (thumbs 480px / catalog 900px), imágenes hero decorativas actualizadas (hero-rosas-3.jpg, hero-escaparate.jpg), sección Nosotros con imágenes nuevas, híbrido `imagenes_web` (36 productos, 7 franelas reales, Armonía Coco), paleta tierra crema, Excel verificado 42/42 sin diferencias, PWA instalable con 10 iconos (manifest con id/scope), lightbox + carrito con focus trap y teclado, footer Venezuela, seguridad vía Cloudflare (CSP + headers: X-Frame-Options DENY, Permissions-Policy, HSTS, nosniff, Referrer-Policy), GitHub Actions purge automático verificado en verde, code review de seguridad completo (0 hallazgos críticos), a11y y hardening aplicados, WhatsApp centralizado en js/app.js y checklist de seguridad documentado.*
