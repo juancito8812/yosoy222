@@ -316,7 +316,9 @@ git push
 
 ## PROCESAMIENTO DE IMÁGENES (BORDES BLANCOS)
 
-> **Estado actual (5-sep-2026):** el catálogo usa el set **`imagenes_web`** (1000×1000, origen `/home/jr/Documentos/gemini velas/imagenes_web/`) para 36 productos de velas y joyería; las 7 franelas conservan sus fotos reales (`F-01`…`F-07.jpg`); Armonía Coco conserva su imagen anterior. Los scripts de abajo se usan para fotos nuevas o recortes.
+> **Guía completa:** Ver `scripts/IMAGE_GUIDE.md` para el estándar visual, tamaños, proceso paso a paso, checklist de calidad y script de referencia.
+> 
+> **Estado actual (12-sep-2026):** el catálogo usa el set **`imagenes_web`** (1000×1000, origen `/home/jr/Documentos/gemini velas/imagenes_web/`) para 36 productos de velas y joyería; las 7 franelas conservan sus fotos reales (`F-01`…`F-07.jpg`); Armonía Coco procesada el 12 sep 2026 (bordes eliminados, producto agrandado). Los scripts de abajo se usan para fotos nuevas o recortes.
 > **Optimización (5-sep-2026):** las imágenes del repo están redimensionadas para rendimiento — `images/thumbs/` a máx. 480px (JPEG q78, promedio ~20 KB) y `images/catalog/` a máx. 900px (JPEG q80, promedio ~57 KB). Peso total bajó de ~12 MB a ~4.9 MB. Las franelas de baja resolución no se escalan hacia arriba.
 
 El sitio muestra las fotos de producto sin los bordes blancos del original. Hay dos scripts en la raíz del repo:
@@ -801,7 +803,7 @@ git log --oneline -1   # último commit
 # estado del repo: git status --short
 ```
 
-Último cambio publicado (12 sep 2026): PWA con **offline total** (precache del catálogo completo vía `PRECACHE_IMAGES`, cache v7), optimización de imágenes (thumbs 480px / catalog 900px, -58% peso, fetchpriority + decoding), correcciones de seguridad/a11y del code review (escape XSS, focus trap, ESC en carrito, tope qty 999, manifest id/scope), **purge automático verificado en verde** (token con permiso `Cache Purge`), code review de seguridad completo (0 hallazgos críticos), imágenes hero decorativas actualizadas (`hero-rosas-3.jpg`, `hero-escaparate.jpg`), descripciones de productos actualizadas.
+Último cambio publicado (12 sep 2026): PWA con **offline total** (precache del catálogo completo vía `PRECACHE_IMAGES`, cache v7), optimización de imágenes (thumbs 480px / catalog 900px, -58% peso, fetchpriority + decoding), correcciones de seguridad/a11y del code review (escape XSS, focus trap, ESC en carrito, tope qty 999, manifest id/scope), **purge automático verificado en verde** (token con permiso `Cache Purge`), code review de seguridad completo (0 hallazgos críticos), imágenes hero decorativas actualizadas (`hero-rosas-3.jpg`, `hero-escaparate.jpg`), descripciones de productos actualizadas, imagen Armonía Coco reprocesada (bordes eliminados, producto agrandado), guía de imágenes creada (`scripts/IMAGE_GUIDE.md`).
 
 ---
 

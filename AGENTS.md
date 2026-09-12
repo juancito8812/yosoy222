@@ -49,6 +49,7 @@ icons/              ← 10 iconos PWA (72-512px + maskable) + source_logo.jpg or
 scripts/generate_icons.py  ← regenera los 10 iconos PWA desde icons/source_logo.jpg
 scripts/verify_icons.py    ← valida iconos contra manifest.json (existencia, tamaño, formato)
 scripts/process_images.py  ← recorte y optimización de bordes en imágenes
+scripts/IMAGE_GUIDE.md     ← guía de cómo deben quedar las imágenes (estándar visual, tamaños, proceso, checklist)
 images/thumbs/      ← Miniaturas del grid (60 archivos, máx 480px)
 images/catalog/     ← Imágenes grandes para lightbox (60 archivos, máx 900px)
 .github/workflows/  ← purge-cache.yml (purge automático Cloudflare tras deploy, valida con jq)

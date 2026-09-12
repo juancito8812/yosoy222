@@ -199,4 +199,4 @@
 ---
 
 *Última actualización: 12 de septiembre de 2026*
-*Commits recientes: `7957e27` (fix imagen obsoleta + cache v7), `9e8efdf` (eliminar imágenes antiguas), `cc228bf` (imágenes Nosotros), `197690a` (imágenes hero), `803a864` (Virgen del Carmen), `fdca502` (Sagrada Familia), `48bee8c` (Mini Petit)*
+*Commits recientes: `0f39335` (mejora imagen Armonía Coco + guía de imágenes), `7957e27` (fix imagen obsoleta + cache v7), `9e8efdf` (eliminar imágenes antiguas), `cc228bf` (imágenes Nosotros), `197690a` (imágenes hero), `803a864` (Virgen del Carmen), `fdca502` (Sagrada Familia), `48bee8c` (Mini Petit)*

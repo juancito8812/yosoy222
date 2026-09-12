@@ -13,7 +13,7 @@
 - **Facebook:** https://www.facebook.com/share/1C5X2yKscG/
 - **Cloudflare Zone ID:** `f959322eed862ae75a79f46e8f780d65`
 - **Última sesión:** 2026-09-12
-- **Versión de memoria:** 16
+- **Versión de memoria:** 17
 
 ## Arquitectura
 
@@ -29,6 +29,7 @@
   - `icons/` (10 iconos) — PWA instalable con soporte offline. Los iconos se regeneran con `scripts/generate_icons.py` y se validan con `scripts/verify_icons.py`.
   - `scripts/generate_icons.py` — script repetible para regenerar los 10 iconos PWA desde la imagen WhatsApp.
   - `scripts/verify_icons.py` — script de validación que comprueba existencia, tamaños reales vs declarados en `manifest.json`, y formato (any=RGB plano / maskable=RGBA).
+  - `scripts/IMAGE_GUIDE.md` — guía de cómo deben quedar las imágenes al procesarlas para la web (estándar visual, tamaños, proceso, checklist de calidad).
   - `_headers` — existe pero GitHub Pages **lo ignora** (es convención Netlify/Cloudflare Pages).
   - `.github/workflows/purge-cache.yml` — purge automático de Cloudflare después de cada deploy.
   - `AGENTS.md` — instrucciones para agentes AI que trabajen en el repo.
@@ -51,8 +52,8 @@
 ## Estado Actual
 
 - **Branch:** main
-- **Último commit desplegado:** `7957e27` (fix: eliminar referencia obsoleta a imagen eliminada y bump cache v7).
-- **Sesión 2026-09-12:** code review de seguridad completo y corrección de hallazgos.
+- **Último commit desplegado:** `0f39335` (fix: mejorar Armonía Coco - bordes blancos eliminados y producto agrandado).
+- **Sesión 2026-09-12:** code review de seguridad completo y corrección de hallazgos + mejora de imagen Armonía Coco.
   - Corregida referencia obsoleta a `VM-MINICORAZON-2_velita_corazoncito.jpg` en `sw.js` y `app.js` (imagen eliminada del repo).
   - Imágenes hero actualizadas a `hero-rosas-3.jpg` y `hero-escaparate.jpg` en `sw.js`.
   - Cache bump `yosoy222-v6` → `yosoy222-v7` para forzar actualización en PWAs instaladas.
@@ -75,6 +76,11 @@ Nota de mantenimiento: si cambia el número, editar solo esa constante y despué
 - **Deploy:** push a main → GitHub Pages (~2 min) → purge automático de Cloudflare (~30 seg).
 
 ## Cambios Recientes
+
+- **[2026-09-12]** — **Mejora de imagen Armonía Coco + Guía de imágenes**:
+  1. `images/thumbs/Armonia Coco.jpg` y `images/catalog/Armonia Coco.jpg` reprocesados: bordes blancos eliminados y producto agrandado sobre fondo difuminado.
+  2. Creado `scripts/IMAGE_GUIDE.md`: guía completa de cómo procesar imágenes para el sitio (estándar visual, tamaños, proceso paso a paso, checklist de calidad, script de referencia).
+  3. Documentación actualizada (MEMORY, AGENTS, README).
 
 - **[2026-09-12]** — **Code review de seguridad completo + correcciones**:
   1. `sw.js`: Bump a cache `yosoy222-v7`. Eliminada referencia obsoleta a `VM-MINICORAZON-2_velita_corazoncito.jpg`. Imágenes hero actualizadas a `hero-rosas-3.jpg` y `hero-escaparate.jpg`.
@@ -102,6 +108,7 @@ Nota de mantenimiento: si cambia el número, editar solo esa constante y despué
 - **[2026-09-05]** — **Code review completo + 10 hallazgos corregidos** (`js/app.js`, `css/style.css`, `sw.js`, `index.html`, `manifest.json`, `.github/workflows/purge-cache.yml`, docs): (1) workflow ahora valida respuesta de Cloudflare con `jq` y falla si el purge no fue exitoso; (2) drift documental corregido — `CLOUDFLARE_EMAIL` NO es necesario (Bearer); (3) `console.log` removidos de `sw.js`; (4)+(5) CSS `.product-image` fusionado y fallback `::after` con stacking context correcto (`z-index: 0`); (6) cantidad tope 999 durante sesión (`addToCart`/`changeQty`); (7) ya no se auto-abre el carrito al agregar (feedback "✓ Agregado" + contador); (8) a11y: `aria-modal`, focus trap con Tab, ESC cierra el carrito, foco se mueve al abrir/cerrar y regresa al elemento previo; (9) `manifest.json` con `id` y `scope`; (10) precache SW incluye las 2 imágenes del hero. (Commit posterior a `fdd9770`.)
 - **[2026-09-06]** — **Code review aplicado a los iconos PWA** con la skill `code-review-and-quality`: hallazgo principal era que los iconos “any” podían tener alpha residual; se corrigió generándolos como RGB planos y validándolos automáticamente. Se documentó el flujo en `scripts/generate_icons.py` + `scripts/verify_icons.py` y en la documentación del repo.
 - **[2026-09-10]** — **Regla de WhatsApp centralizada y doc de seguridad checklist** (AGENTS.md, README.md, MEMORY.md): WhatsApp queda como única fuente en `js/app.js`; README y AGENTS dejan explícito que los enlaces de `index.html` deben seguir la constante; se añade un checklist de seguridad de 2 pasos (secrets de Cloudflare + cabeceras reales en producción) para aplicar antes del deploy.
+- **[2026-09-12]** — **Mejora de imagen Armonía Coco + Guía de imágenes** (memoria v17): imagen reprocesada (bordes eliminados, producto agrandado sobre fondo difuminado), guía de imágenes creada (`scripts/IMAGE_GUIDE.md` con estándar visual, tamaños, proceso, checklist y script de referencia).
 - **[2026-09-05]** — **Documentación completa actualizada** (`AGENTS.md`, `MEMORY.md`, `README.md`, `PLAN_IMPLEMENTACION.md`): nuevo archivo AGENTS.md con instrucciones para agentes AI; README.md con datos correctos (imágenes hero, cache v3, 60 imágenes por carpeta).
 - **[2026-09-05]** — **Fix imágenes hero rotas** (`d1fe806`): `Vela Rosa.jpg` → `VM-ROSA_vela_rosa_79g.jpg`, `Vela Canela.jpg` → `VE-ARMONIA-CANELA_vela_armonia_canela_508g.jpg`. Cache bump v2→v3.
 - **[2026-09-05]** — **GitHub Actions workflow restaurado** (`5839051`): purge automático de Cloudflare después de cada deploy. Secrets configurados por el usuario.
@@ -128,7 +135,7 @@ Nota de mantenimiento: si cambia el número, editar solo esa constante y despué
 
 ## Notas / Problemas Conocidos
 
-- **Imágenes `imagenes_web` con marco interior:** algunas traen marco/padding blanco heredado del original — pendiente de recorte si el usuario lo pide.
+- **Imágenes `imagenes_web` con marco interior:** algunas traen marco/padding blanco heredado del original — procesadas con `process_images_v2.py` o manualmente cuando el usuario lo pide. Armonía Coco fue procesada el 12 sep 2026.
 - **Set `imagenes_web`:** carpeta `/home/jr/Documentos/gemini velas/imagenes_web/` (97 JPG 1000×1000). Se copiaron 36 archivos al repo.
 - **Errores de WhatsApp `@521XXXXXXXXX`:** enlaces viejos cacheados/reenviados; el sitio usa `584126481628`.
 - **Caché PWA:** después de cada deploy, recargar 2 veces o hacer bump de versión del SW.
