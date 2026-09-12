@@ -211,4 +211,4 @@
 ---
 
 *Última actualización: 12 de septiembre de 2026*
-*Commits recientes: `b912d75` (docs: agregar guía de imágenes y actualizar documentación), `0f39335` (fix: mejorar Armonía Coco - quitar bordes y agrandar producto), `45438a3` (fix: mejorar imagen Armonía Coco), `a079b92` (fix: quitar bordes laterales de Armonía Coco), `53203a0` (fix: quitar borde blanco de Armonía Coco)*
+*Commits recientes: `0e7d276` (fix: actualizar imagen Armonía Canela con foto profesional), `76a2959` (docs: actualizar documentación — sincronizar con estado real del repo), `b912d75` (docs: agregar guía de imágenes y actualizar documentación), `0f39335` (fix: mejorar Armonía Coco - quitar bordes y agrandar producto)*

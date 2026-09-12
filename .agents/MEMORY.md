@@ -4,8 +4,8 @@
 
 - **Propósito:** Tienda online de velas artesanales, pulseras, collares, franelas y accesorios con PWA offline y checkout por WhatsApp
 - **Stack:** HTML5 + CSS3 + JavaScript vanilla (sin frameworks), PWA (manifest.json + sw.js), GitHub Pages, Cloudflare CDN
-- **Última sesión:** 12 de septiembre de 2026, 16:00
-- **Versión de memoria:** 1
+- **Última sesión:** 12 de septiembre de 2026, 17:00
+- **Versión de memoria:** 2
 
 ## Arquitectura
 
@@ -19,20 +19,20 @@
 
 ## Decisiones Clave
 
-- **12 sep 2026** — Revisión completa de documentación: AGENTS.md, PLAN_IMPLEMENTACION.md y .agents/MEMORY.md actualizados con estado real del repo
-- **12 sep 2026** — Imagen Armonía Coco reprocesada (bordes eliminados, producto agrandado)
+- **12 sep 2026** — Code review de seguridad completo: 0 hallazgos críticos, 0 altos (escapeHtml, loadCart, CSP, SW bien implementados)
+- **12 sep 2026** — Code review de calidad: correctitud ✓, legibilidad ✓, arquitectura ✓, performance ✓ (requestAnimationFrame, lazy loading, stale-while-revalidate)
+- **12 sep 2026** — Imagen Armonía Canela actualizada con foto profesional
+- **12 sep 2026** — Revisión completa de documentación: AGENTS.md, PLAN_IMPLEMENTACION.md, README.md, .agents/MEMORY.md actualizados
 - **12 sep 2026** — Guía de imágenes creada (scripts/IMAGE_GUIDE.md)
 - **5 sep 2026** — PWA offline total (cache v7): precache del catálogo completo vía PRECACHE_IMAGES
 - **5 sep 2026** — Optimización de imágenes: thumbs 480px q78, catalog 900px q80, peso total ~4.9 MB
-- **5 sep 2026** — Imágenes hero decorativas actualizadas (hero-rosas-3.jpg, hero-escaparate.jpg)
 - **3 sep 2026** — Seguridad: CSP vía meta tag, headers vía Cloudflare Transform Rule, Cache Rule HTML TTL 5 min
 - **3 sep 2026** — WhatsApp centralizado: const WHATSAPP = '584126481628' en js/app.js
-- **3 sep 2026** — GitHub Actions purge automático de Cloudflare tras cada deploy
 
 ## Estado Actual
 
 - **Branch:** main
-- **Último commit:** `b912d75` (docs: agregar guía de imágenes y actualizar documentación)
+- **Último commit:** `0e7d276` (fix: actualizar imagen Armonía Canela con foto profesional)
 - **Cache version:** yosoy222-v7
 - **Productos:** 44 (25 velas, 5 collares, 6 pulseras, 7 franelas, 1 accesorio)
 - **Imágenes:** 63 thumbs, 60 catalog (incluye 4 decorativas y 15 variantes adicionales)
@@ -40,27 +40,39 @@
 - **Dominio:** yosoy222.com (Cloudflare proxy activado)
 - **Deploy:** GitHub Pages automático (~2 min) + purge Cloudflare (~30 seg)
 
+## Code Review (12 sep 2026)
+
+### Seguridad — 0 hallazgos críticos
+- ✅ `escapeHtml()` escapa correctamente &, <, >, ", ' (anti-XSS)
+- ✅ `loadCart()` valida tipos, rangos, y reconcilia precios con catálogo actual
+- ✅ CSP configurado correctamente: `default-src 'none'` con allows mínimos
+- ✅ No hay secrets en el código
+- ✅ Enlaces externos usan `rel="noopener"` (prevenir tab-nabbing)
+- ✅ Service Worker valida origen: solo procesa requests del mismo origen
+
+### Calidad — 4/5 ejes aprobados
+- ✅ **Correctitud:** código funciona correctamente, edge cases manejados
+- ✅ **Legibilidad:** código limpio, funciones específicas, nombres descriptivos
+- ✅ **Arquitectura:** estructura simple y funcional, sin sobre-ingeniería
+- ✅ **Performance:** requestAnimationFrame, lazy loading, stale-while-revalidate, precache en lotes
+
 ## Cambios Recientes
 
-- **12 sep 2026** — AGENTS.md actualizado: estructura corregida (scripts/), conteo de imágenes (63 thumbs, 60 catalog), imágenes decorativas y variantes documentadas
-- **12 sep 2026** — PLAN_IMPLEMENTACION.md actualizado: Fase 12 completada, tabla de imágenes agregada, commits recientes
-- **12 sep 2026** — .agents/MEMORY.md inicializado con estado completo del proyecto
-- **12 sep 2026** — README.md verificado: 810 líneas, inconsistencias corregidas
-- **12 sep 2026** — 2 archivos PNG no rastreados en raíz: "Armonía Canela.png", "Armonía Coco.png" (candidatos a .gitignore o eliminación)
+- **12 sep 2026** — `0e7d276` fix: actualizar imagen Armonía Canela con foto profesional
+- **12 sep 2026** — `76a2959` docs: actualizar documentación — sincronizar con estado real del repo
+- **12 sep 2026** — `b912d75` docs: agregar guía de imágenes y actualizar documentación
+- **12 sep 2026** — README.md, AGENTS.md, PLAN_IMPLEMENTACION.md, .agents/MEMORY.md actualizados
 
 ## Próximos Pasos / TODOs
 
 - [ ] SEO: Google Analytics (GA4), Search Console, Open Graph, sitemap.xml, robots.txt, canonical URL
 - [ ] Performance: minificar CSS/JS, banner "nueva versión disponible" para PWA
 - [ ] Seguridad: WAF Managed Ruleset en Cloudflare (requiere token con permiso waf:edit)
-- [ ] UX: focus trap en carrito/lightbox, filtros por precio, rutas hash, indicador offline
+- [ ] UX: filtros por precio, rutas hash, indicador offline
 - [ ] Cloudflare Polish (WebP automático) — no disponible en plan Free
-- [ ] Verificar/eliminar archivos PNG sueltos en raíz del repo
-- [ ] Actualizar token Cloudflare con permiso Zone → Cache Purge → Edit (si sigue fallando)
 
 ## Notas / Problemas Conocidos
 
-- **Archivos PNG sueltos:** "Armonía Canela.png" y "Armonía Coco.png" en la raíz del repo, no rastreados por git. Candidatos a eliminación o .gitignore
 - **Token Cloudflare:** el secret CLOUDFLARE_API_TOKEN puede seguir fallando con Authentication error (10000) si no tiene permiso Zone → Cache Purge → Edit
 - **Imágenes variantes:** 15 imágenes con sufijos -2, -3 en carpetas thumbs/catalog sin entrada en products[] — son versiones adicionales que no se muestran en el catálogo
 - **VM-MINIGIRASOL:** imagen en ambas carpetas sin entrada en products[]
