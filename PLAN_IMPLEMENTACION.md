@@ -1,6 +1,6 @@
 # 🕯️ Plan de Implementación — YoSoy222
 
-> Plan por fases del sitio **yosoy222.com**. Última actualización sincronizada con el estado real del código: 5 de septiembre de 2026.
+> Plan por fases del sitio **yosoy222.com**. Última actualización sincronizada con el estado real del código: 12 de septiembre de 2026.
 
 ---
 
@@ -144,6 +144,7 @@
 - [x] Fotos reales de las 7 franelas mapeadas correctamente (F-01…F-07, commits `9b5891e`/`b346ced`/`fc0eca2`)
 - [x] Franelas F-01…F-07 con sus fotos reales (no el set `imagenes_web`, que para esas entradas genera velas IA); el set `imagenes_web` se usa para 36 productos de velas y joyería; Armonía Coco conserva su imagen anterior.
 - [x] Verificar que las cuentas @yo_soy222 (IG/TikTok/FB) enlazadas sean las definitivas
+- [x] **Imágenes adicionales documentadas** — 15 variantes (sufijos `-2`, `-3`) y 1 imagen (`VM-MINIGIRASOL`) en carpetas pero sin entrada en `products[]`; 4 imágenes decorativas (hero/nosotros) documentadas en AGENTS.md
 
 ### SEO y Analytics
 - [ ] Google Analytics (tag GA4)
@@ -158,7 +159,7 @@
 - [x] **GitHub Actions: Purge automático de Cloudflare** — workflow `purge-cache.yml` restaurado (se había perdido). Se dispara tras cada deploy exitoso de GitHub Pages. Requiere secrets `CLOUDFLARE_ZONE_ID` y `CLOUDFLARE_API_TOKEN` (autenticación Bearer) en Settings → Secrets del repo. **Estado: secrets configurados.**
 - [x] **Fix imágenes hero rotas** — rutas `Vela Rosa.jpg` / `Vela Canela.jpg` (no existían) reemplazadas por archivos reales (`VM-ROSA_vela_rosa_79g.jpg` / `VE-ARMONIA-CANELA_vela_armonia_canela_508g.jpg`). Cache bump v2→v3 para forzar limpieza en dispositivos con PWA instalada (commit `d1fe806`, 5 sep 2026).
 - [x] **Optimización de imágenes (perf, 5 sep 2026)** — thumbs máx 480px JPEG q78 (~20 KB c/u, 6.1→1.4 MB) y catalog máx 900px JPEG q80 (6.1→3.5 MB). Total ~12 MB → ~4.9 MB. + `fetchpriority="high"` hero, `decoding="async"`, fuentes recortadas a pesos usados.
-- [x] **PWA offline total (cache v4, 5 sep 2026)** — `sw.js` v4 con `PRECACHE_IMAGES`: la app envía thumbs+catalog de los 44 productos al SW tras activarse, que los cachea en segundo plano (idempotente). Catálogo completo offline incluido el lightbox.
+- [x] **PWA offline total (cache v7, 12 sep 2026)** — `sw.js` v7 con `PRECACHE_IMAGES`: la app envía thumbs+catalog de los 44 productos al SW tras activarse, que los cachea en segundo plano (idempotente). Catálogo completo offline incluido el lightbox.
 - [ ] **Actualizar token Cloudflare con permiso `Zone → Cache Purge → Edit`** — el token actual en el secret `CLOUDFLARE_API_TOKEN` falla con `Authentication error (10000)` al purgar (verificado 5 sep 2026); el workflow queda en rojo hasta actualizarlo.
 - [ ] Banner/aviso "nueva versión disponible" cuando el service worker detecte update
 - [ ] Minificar CSS/JS
@@ -196,7 +197,18 @@
 
 **El sitio está en producción y funcional.** El pipeline de deploy funciona al 100% (purge automático verificado en verde). Las tareas pendientes de arriba son mejoras incrementales, ninguna bloquea el lanzamiento.
 
+### Estado de imágenes (12 sep 2026)
+
+| Carpeta | Archivos | Detalle |
+|---------|----------|---------|
+| `images/thumbs/` | 63 | 44 productos + 4 decorativas (hero/nosotros) + 15 variantes adicionales |
+| `images/catalog/` | 60 | 44 productos + 16 variantes adicionales |
+| `icons/` | 11 | 10 iconos PWA + source_logo.jpg |
+
+> Las imágenes decorativas (`hero-escaparate.jpg`, `hero-rosas-3.jpg`, `nosotros-1.jpg`, `nosotros-2.jpg`) se usan en el hero y sección Nosotros, no en el catálogo de productos.
+> Las variantes adicionales (sufijos `-2`, `-3`) son versiones extras de productos que existen en las carpetas pero no tienen entrada en `products[]` de `js/app.js`.
+
 ---
 
 *Última actualización: 12 de septiembre de 2026*
-*Commits recientes: `0f39335` (mejora imagen Armonía Coco + guía de imágenes), `7957e27` (fix imagen obsoleta + cache v7), `9e8efdf` (eliminar imágenes antiguas), `cc228bf` (imágenes Nosotros), `197690a` (imágenes hero), `803a864` (Virgen del Carmen), `fdca502` (Sagrada Familia), `48bee8c` (Mini Petit)*
+*Commits recientes: `b912d75` (docs: agregar guía de imágenes y actualizar documentación), `0f39335` (fix: mejorar Armonía Coco - quitar bordes y agrandar producto), `45438a3` (fix: mejorar imagen Armonía Coco), `a079b92` (fix: quitar bordes laterales de Armonía Coco), `53203a0` (fix: quitar borde blanco de Armonía Coco)*

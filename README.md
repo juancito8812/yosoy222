@@ -82,7 +82,7 @@ yosoy222/                          ← RAÍZ del repositorio│   ├── inde
 │   └── Lightbox (vista ampliada de producto, role="dialog")
 │
 ├── css/
-│   └── style.css                   ← Estilos completos (~832 líneas)
+│   └── style.css                   ← Estilos completos (~833 líneas)
 │       ├── Tokens CSS (:root — paleta tierra crema)
 │       ├── Header, hero, catálogo, tarjetas, buscador, filtros
 │       ├── Cómo comprar, Nosotros, Contacto, Footer
@@ -93,7 +93,7 @@ yosoy222/                          ← RAÍZ del repositorio│   ├── inde
 │       └── Media queries (900px, 600px, 380px)
 │
 ├── js/
-│   └── app.js                      ← Toda la lógica JS (~564 líneas)
+│   └── app.js                      ← Toda la lógica JS (~585 líneas)
 │       ├── Config WhatsApp: const WHATSAPP = '584126481628'
 │       ├── Array products[] — 44 productos (file, name, cat, price, desc)
 │       ├── Seguridad: escapeHtml() + loadCart() validado (rechaza NaN/Infinity/qty no-entero)
@@ -105,20 +105,26 @@ yosoy222/                          ← RAÍZ del repositorio│   ├── inde
 │       └── PWA: registro SW + precache del catálogo offline (mensaje PRECACHE_IMAGES)
 │
 ├── manifest.json                   ← PWA: nombre, iconos, tema, id + scope (~68 líneas)
-├── sw.js                           ← Service worker: caché offline (cache v7, ~127 líneas)
-├── icons/                          ← 10 iconos PWA — 8 'any' (72,96,128,144,152,192,384,512px) + 2 maskable
+├── sw.js                           ← Service worker: caché offline (cache v7, ~138 líneas)
+├── icons/                          ← 11 archivos: 10 iconos PWA (72-512px + maskable) + source_logo.jpg
 │
 ├── images/
-│   ├── thumbs/                     ← Miniaturas del grid (60 archivos, máx 480px JPEG q78)
-│   └── catalog/                    ← Imágenes para el lightbox (60 archivos, máx 900px JPEG q80)
+│   ├── thumbs/                     ← Miniaturas del grid (63 archivos, máx 480px JPEG q78) — 44 productos + 4 decorativas + 15 variantes
+│   └── catalog/                    ← Imágenes para el lightbox (60 archivos, máx 900px JPEG q80) — 44 productos + 16 variantes
 │
-├── process_images.py               ← Remoción de bordes blancos (v1, básica)
-├── process_images_v2.py            ← Remoción de bordes blancos (v2, detección adaptativa agresiva)
-├── CNAME                          ← Dominio personalizado (yosoy222.com)
-├── .gitignore                     ← Archivos ignorados (incluye server.js de pruebas)
-├── AGENTS.md                      ← Instrucciones para agentes AI
-├── README.md                      ← Este archivo
-└── PLAN_IMPLEMENTACION.md         ← Plan de fases del proyecto
+├── scripts/
+│   ├── generate_icons.py           ← Regenera los 10 iconos PWA desde icons/source_logo.jpg
+│   ├── verify_icons.py             ← Valida iconos contra manifest.json
+│   ├── process_images.py           ← Remoción de bordes blancos (v1 y v2)
+│   ├── process_images_v2.py        ← Remoción adaptativa/agresiva de bordes blancos (recomendado)
+│   └── IMAGE_GUIDE.md              ← Guía de procesamiento de imágenes
+│
+├── _headers                        ← CSP + headers de seguridad (GitHub Pages NO los aplica)
+├── CNAME                           ← Dominio personalizado (yosoy222.com)
+├── .gitignore                      ← Archivos ignorados (incluye server.js de pruebas)
+├── AGENTS.md                       ← Instrucciones para agentes AI
+├── README.md                       ← Este archivo
+└── PLAN_IMPLEMENTACION.md          ← Plan de fases del proyecto
 ```
 
 ### Flujo de datos
@@ -257,9 +263,19 @@ Si las cuentas reales tienen otro usuario, editar `index.html` (secciones contac
 
 ## CÓMO AGREGAR UN PRODUCTO
 
+### ⚠️ IMPORTANTE: Procesar imágenes ANTES de subir
+
+**Siempre leer `scripts/IMAGE_GUIDE.md` antes de procesar cualquier imagen nueva.** Ahí está el estándar visual, tamaños, proceso paso a paso y checklist de calidad.
+
+Resumen rápido:
+- **thumbs:** máx 480×480 px, JPEG q78
+- **catalog:** máx 900×900 px, JPEG q80
+- Sin bordes blancos, producto centrado, fondo difuminado (blur + brightness 0.85)
+- Siempre cuadradas (1:1)
+
 ### Paso 1: Imagen
 
-Colocar el archivo en **ambas** carpetas con el mismo nombre:
+Procesar según `scripts/IMAGE_GUIDE.md` y colocar el archivo en **ambas** carpetas con el mismo nombre:
 ```
 images/thumbs/NOMBRE.jpg       ← miniatura del grid
 images/catalog/NOMBRE.jpg      ← imagen grande del lightbox
@@ -687,26 +703,30 @@ curl -sI https://yosoy222.com | head -5
 | Archivo | Propósito | Líneas aprox. |
 |---------|-----------|---------------|
 | `index.html` | Landing page | ~298 |
-| `css/style.css` | Todos los estilos | ~832 |
-| `js/app.js` | Toda la lógica JS | ~564 |
+| `css/style.css` | Todos los estilos | ~833 |
+| `js/app.js` | Toda la lógica JS | ~585 |
 | `manifest.json` | Metadata PWA (id + scope) | ~68 |
-| `sw.js` | Service worker (offline, cache v7) | ~127 |
-| `icons/` | Iconos PWA (10 PNG) | — |
+| `sw.js` | Service worker (offline, cache v7) | ~138 |
+| `icons/` | Iconos PWA (10 PNG + source_logo.jpg) | — |
 | `CNAME` | Dominio personalizado | 1 |
 
 ### Imágenes
 
 | Carpeta | Contenido | Uso |
 |---------|-----------|-----|
-| `images/thumbs/` | Miniaturas del grid (60 archivos) | Tarjetas de producto |
-| `images/catalog/` | Imágenes grandes (60 archivos) | Lightbox |
+| `images/thumbs/` | Miniaturas del grid (63 archivos: 44 productos + 4 decorativas + 15 variantes) | Tarjetas de producto |
+| `images/catalog/` | Imágenes grandes (60 archivos: 44 productos + 16 variantes) | Lightbox |
 
-### Opcionales / herramientas
+### Scripts y herramientas
 
 | Archivo | Propósito |
 |---------|-----------|
-| `process_images.py` | Remoción básica de bordes blancos |
-| `process_images_v2.py` | Remoción adaptativa/agresiva de bordes blancos (recomendado) |
+| `scripts/generate_icons.py` | Regenera los 10 iconos PWA desde `icons/source_logo.jpg` |
+| `scripts/verify_icons.py` | Valida iconos contra `manifest.json` |
+| `scripts/process_images.py` | Remoción de bordes blancos (v1 y v2) |
+| `scripts/process_images_v2.py` | Remoción adaptativa/agresiva de bordes blancos (recomendado) |
+| `scripts/IMAGE_GUIDE.md` | Guía de procesamiento de imágenes |
+| `_headers` | CSP + headers de seguridad (GitHub Pages NO los aplica; sirve para Netlify/Cloudflare Pages) |
 | `PLAN_IMPLEMENTACION.md` | Plan de fases del proyecto |
 | `AGENTS.md` | Instrucciones para agentes AI |
 | `.gitignore` | Archivos ignorados (`server.js` de pruebas, etc.) |
@@ -757,10 +777,11 @@ git checkout -- index.html
 - Verificar `js/app.js`: `const WHATSAPP = '584126481628';` y los 3 enlaces fijos en `index.html`
 
 ### Algunas imágenes aún muestran bordes blancos
-- Correr `python3 process_images_v2.py` (detección agresiva) y volver a hacer push
+- **Para imágenes nuevas:** seguir `scripts/IMAGE_GUIDE.md` (proceso completo con fondo difuminado)
+- **Para imágenes existentes:** correr `python3 scripts/process_images_v2.py` (detección agresiva) y volver a hacer push
 
 ### Un producto nuevo no aparece
-- ¿Está en `products[]` de `app.js` con `cat` válida (`vela`, `collar`, `pulsera`, `franela`, `otro`)? ¿Se hizo push? El deploy tarda ~2 min.
+- ¿Está en `products[]` de `js/app.js` con `cat` válida (`vela`, `collar`, `pulsera`, `franela`, `otro`)? ¿Se hizo push? El deploy tarda ~2 min.
 
 ### La búsqueda no encuentra algo
 - La búsqueda cubre **nombre y descripción**. Si buscas "premium" y no aparece, ese término no está en ningún nombre/descripción — revisa el texto en el Excel/app.js
@@ -807,4 +828,4 @@ git log --oneline -1   # último commit
 
 ---
 
-*Documentación actualizada: 12 de septiembre de 2026 — sincronizada con el estado real del código: 44 productos, cache v7 con offline total, imágenes optimizadas (thumbs 480px / catalog 900px), imágenes hero decorativas actualizadas (hero-rosas-3.jpg, hero-escaparate.jpg), sección Nosotros con imágenes nuevas, híbrido `imagenes_web` (36 productos, 7 franelas reales, Armonía Coco), paleta tierra crema, Excel verificado 42/42 sin diferencias, PWA instalable con 10 iconos (manifest con id/scope), lightbox + carrito con focus trap y teclado, footer Venezuela, seguridad vía Cloudflare (CSP + headers: X-Frame-Options DENY, Permissions-Policy, HSTS, nosniff, Referrer-Policy), GitHub Actions purge automático verificado en verde, code review de seguridad completo (0 hallazgos críticos), a11y y hardening aplicados, WhatsApp centralizado en js/app.js y checklist de seguridad documentado.*
+*Documentación actualizada: 12 de septiembre de 2026 — sincronizada con el estado real del código: 44 productos, cache v7 con offline total, imágenes optimizadas (thumbs 480px / catalog 900px), imágenes hero decorativas actualizadas (hero-rosas-3.jpg, hero-escaparate.jpg), sección Nosotros con imágenes nuevas, híbrido `imagenes_web` (36 productos, 7 franelas reales, Armonía Coco), paleta tierra crema, Excel verificado 42/42 sin diferencias, PWA instalable con 10 iconos (manifest con id/scope), lightbox + carrito con focus trap y teclado, footer Venezuela, seguridad vía Cloudflare (CSP + headers: X-Frame-Options DENY, Permissions-Policy, HSTS, nosniff, Referrer-Policy), GitHub Actions purge automático verificado en verde, code review de seguridad completo (0 hallazgos críticos), a11y y hardening aplicados, WhatsApp centralizado en js/app.js, checklist de seguridad documentado, estructura de scripts/ actualizada, imágenes adicionales documentadas (63 thumbs: 44 productos + 4 decorativas + 15 variantes, 60 catalog: 44 productos + 16 variantes).* 

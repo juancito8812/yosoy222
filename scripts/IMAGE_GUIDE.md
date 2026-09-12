@@ -1,6 +1,7 @@
 # Guía de Imágenes — YoSoy222
 
-> Cómo deben quedar las imágenes de productos al procesarlas para la web.
+> **⚠️ OBLIGATORIO:** Esta guía debe seguirse cada vez que se procese una imagen nueva para el sitio.
+> Cualquier imagen que no cumpla con estos estándar será rechazada en el code review.
 
 ---
 

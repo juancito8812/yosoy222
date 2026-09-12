@@ -40,27 +40,40 @@ python3 -m http.server 8080
 
 ```
 index.html          ← Página única (nav, hero, catálogo, lightbox, carrito, footer)
-css/style.css       ← Estilos completos (~832 líneas, paleta tierra crema)
-js/app.js           ← Toda la lógica (~564 líneas, 44 productos, búsqueda, filtros, carrito, WhatsApp, a11y focus trap, precache PWA)
+css/style.css       ← Estilos completos (~833 líneas, paleta tierra crema)
+js/app.js           ← Toda la lógica (~585 líneas, 44 productos, búsqueda, filtros, carrito, WhatsApp, a11y focus trap, precache PWA)
 manifest.json       ← PWA metadata (id + scope)
 sw.js               ← Service worker (cache v7, precache catálogo offline por lotes)
-icons/              ← 10 iconos PWA (72-512px + maskable) + source_logo.jpg original:
+icons/              ← 11 archivos: 10 iconos PWA (72-512px + maskable) + source_logo.jpg original:
                       8 any (RGB plano) + 2 maskable (RGBA)
-scripts/generate_icons.py  ← regenera los 10 iconos PWA desde icons/source_logo.jpg
-scripts/verify_icons.py    ← valida iconos contra manifest.json (existencia, tamaño, formato)
-scripts/process_images.py  ← recorte y optimización de bordes en imágenes
-scripts/IMAGE_GUIDE.md     ← guía de cómo deben quedar las imágenes (estándar visual, tamaños, proceso, checklist)
-images/thumbs/      ← Miniaturas del grid (60 archivos, máx 480px)
-images/catalog/     ← Imágenes grandes para lightbox (60 archivos, máx 900px)
-.github/workflows/  ← purge-cache.yml (purge automático Cloudflare tras deploy, valida con jq)
+scripts/
+  generate_icons.py   ← regenera los 10 iconos PWA desde icons/source_logo.jpg
+  verify_icons.py     ← valida iconos contra manifest.json (existencia, tamaño, formato)
+  process_images.py   ← recorte y optimización de bordes en imágenes (v1 y v2)
+  process_images_v2.py ← versión adaptativa/agresiva (recomendada)
+  IMAGE_GUIDE.md      ← guía de cómo deben quedar las imágenes (estándar visual, tamaños, proceso, checklist)
+images/
+  thumbs/             ← Miniaturas del grid (63 archivos, máx 480px) — 44 productos + 4 decorativas (hero/nosotros) + 15 variantes adicionales
+  catalog/            ← Imágenes grandes para lightbox (60 archivos, máx 900px) — 44 productos + 16 variantes adicionales
+.github/workflows/
+  purge-cache.yml     ← purge automático Cloudflare tras deploy, valida con jq
+_headers              ← CSP + headers de seguridad (GitHub Pages NO los aplica; sirve para Netlify/Cloudflare Pages)
+CNAME                 ← Dominio personalizado (yosoy222.com)
 ```
+
+### Nota sobre imágenes
+
+- **44 productos** tienen imagen en el array `products[]` de `js/app.js`
+- **Imágenes decorativas** (no en products[]): `hero-escaparate.jpg`, `hero-rosas-3.jpg`, `nosotros-1.jpg`, `nosotros-2.jpg` — se usan en el hero y sección Nosotros
+- **Variantes adicionales** (sufijos `-2`, `-3`): versiones extras de algunos productos que no están en products[] pero sí en las carpetas de imágenes
+- **`VM-MINIGIRASOL_wax_melts_mini_girasol.jpg`**: imagen en thumbs/catalog sin entrada en products[]
 
 ---
 
 ## PWA y caché
 
 - `CACHE_NAME` en `sw.js` = `yosoy222-v7` (bump de versión cuando cambia el SW o assets precacheados).
-- A partir de ahora, los iconos PWA se regeneran y validan como un paso repetible:
+- Iconos PWA se regeneran y validan como un paso repetible:
   - `python3 scripts/generate_icons.py` — regenera los 10 iconos desde `icons/source_logo.jpg`.
   - `python3 scripts/verify_icons.py` — verifica que los iconos coinciden con `manifest.json` (existencia, tamaño real vs `sizes`, formato: any=RGB plano, maskable=RGBA).
   - Siempre ejecutar `verify_icons.py` después de regenerar; si falla, no se considera cambio listo.
@@ -94,7 +107,19 @@ cd "/home/jr/Documentos/Catalogo velas" && python3 _verify_sync.py
 
 ## Cómo agregar un producto
 
-1. **Imagen:** copiar a `images/thumbs/` Y `images/catalog/` con el mismo nombre
+### ⚠️ IMPORTANTE: Procesar imágenes ANTES de subir
+
+**Siempre leer `scripts/IMAGE_GUIDE.md` antes de procesar cualquier imagen nueva.** Ahí está el estándar visual, tamaños, proceso paso a paso y checklist de calidad.
+
+Resumen rápido:
+- **thumbs:** máx 480×480 px, JPEG q78
+- **catalog:** máx 900×900 px, JPEG q80
+- Sin bordes blancos, producto centrado, fondo difuminado (blur + brightness 0.85)
+- Siempre cuadradas (1:1)
+
+### Pasos
+
+1. **Imagen:** procesar según `scripts/IMAGE_GUIDE.md` y copiar a `images/thumbs/` Y `images/catalog/` con el mismo nombre
 2. **Dato:** agregar entrada en `js/app.js` → array `products`:
    ```javascript
    { file: "ARCHIVO.jpg", name: "Nombre", cat: "vela", price: 15, desc: "Descripción" }
@@ -173,9 +198,9 @@ git push origin main
 
 ---
 
-*Última actualización: 2026-09-10 — sesión de revisión de seguridad y alineación de documentación completada:
-- WhatsApp centralizado como única configuración en `js/app.js` (`const WHATSAPP = '584126481628'`); los 3 enlaces de `index.html` deben usar ese mismo valor.
-- Checklist de seguridad antes del deploy documentado en AGENTS.md, README.md y MEMORY.md.
-- Documentación cruzada alineada en AGENTS.md, README.md y .agents/MEMORY.md.
-- Último commit de documentación: `0e04f73` (actualizar versión de memoria y último commit desplegado).*
+*Última actualización: 2026-09-12 — revisión completa del estado del repo:
+- Estructura del proyecto actualizada (scripts/ con todos los archivos, imágenes decorativas y variantes documentadas)
+- Conteo de imágenes corregido: 63 thumbs (44 productos + 4 decorativas + 15 variantes), 60 catalog
+- Líneas de código actualizadas: index.html 298, style.css 833, app.js 585, sw.js 138, manifest.json 68
+- Documentación sincronizada con estado real del código (cache v7, 44 productos, WhatsApp centralizado)*
 
