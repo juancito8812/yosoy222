@@ -159,7 +159,7 @@
 - [x] **GitHub Actions: Purge automático de Cloudflare** — workflow `purge-cache.yml` restaurado (se había perdido). Se dispara tras cada deploy exitoso de GitHub Pages. Requiere secrets `CLOUDFLARE_ZONE_ID` y `CLOUDFLARE_API_TOKEN` (autenticación Bearer) en Settings → Secrets del repo. **Estado: secrets configurados.**
 - [x] **Fix imágenes hero rotas** — rutas `Vela Rosa.jpg` / `Vela Canela.jpg` (no existían) reemplazadas por archivos reales (`VM-ROSA_vela_rosa_79g.jpg` / `VE-ARMONIA-CANELA_vela_armonia_canela_508g.jpg`). Cache bump v2→v3 para forzar limpieza en dispositivos con PWA instalada (commit `d1fe806`, 5 sep 2026).
 - [x] **Optimización de imágenes (perf, 5 sep 2026)** — thumbs máx 480px JPEG q78 (~20 KB c/u, 6.1→1.4 MB) y catalog máx 900px JPEG q80 (6.1→3.5 MB). Total ~12 MB → ~4.9 MB. + `fetchpriority="high"` hero, `decoding="async"`, fuentes recortadas a pesos usados.
-- [x] **PWA offline total (cache v7, 12 sep 2026)** — `sw.js` v7 con `PRECACHE_IMAGES`: la app envía thumbs+catalog de los 44 productos al SW tras activarse, que los cachea en segundo plano (idempotente). Catálogo completo offline incluido el lightbox.
+- [x] **PWA offline total (cache v8, 12 sep 2026)** — `sw.js` v8 con `PRECACHE_IMAGES`: la app envía thumbs+catalog de los 44 productos al SW tras activarse, que los cachea en segundo plano (idempotente). Catálogo completo offline incluido el lightbox. Query strings `?v=8` en imágenes/iconos para forzar actualización en PWA instalada.
 - [ ] **Actualizar token Cloudflare con permiso `Zone → Cache Purge → Edit`** — el token actual en el secret `CLOUDFLARE_API_TOKEN` falla con `Authentication error (10000)` al purgar (verificado 5 sep 2026); el workflow queda en rojo hasta actualizarlo.
 - [ ] Banner/aviso "nueva versión disponible" cuando el service worker detecte update
 - [ ] Minificar CSS/JS
@@ -211,4 +211,4 @@
 ---
 
 *Última actualización: 12 de septiembre de 2026*
-*Commits recientes: `0e7d276` (fix: actualizar imagen Armonía Canela con foto profesional), `76a2959` (docs: actualizar documentación — sincronizar con estado real del repo), `b912d75` (docs: agregar guía de imágenes y actualizar documentación), `0f39335` (fix: mejorar Armonía Coco - quitar bordes y agrandar producto)*
+*Commits recientes: `69607ca` (fix: forzar actualización de imágenes en PWA y web), `d383718` (fix: forzar actualización de iconos PWA para usuarios instalados), `09e50a3` (docs: actualizar documentación completa + code review seguridad/calidad), `0e7d276` (fix: actualizar imagen Armonía Canela con foto profesional)*

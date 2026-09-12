@@ -17,7 +17,7 @@ Tienda online de velas artesanales, pulseras, collares, franelas y accesorios. *
 ## Stack
 
 - **HTML5 + CSS3 + JavaScript vanilla** — sin frameworks, sin npm, sin build tools
-- **PWA:** manifest.json + sw.js (service worker con cache v7, stale-while-revalidate)
+- **PWA:** manifest.json + sw.js (service worker con cache v8, stale-while-revalidate, query strings `?v=8` en imágenes/iconos)
 - **Hosting:** GitHub Pages (deploy automático al hacer push a `main`)
 - **DNS/CDN:** Cloudflare (proxy activado, Cache Rule HTML TTL 5 min, purge automático vía GitHub Actions)
 - **Base de datos:** `Catalogo.xlsx` en `/home/jr/Documentos/Catalogo velas/Catalogo.xlsx`
@@ -43,7 +43,7 @@ index.html          ← Página única (nav, hero, catálogo, lightbox, carrito,
 css/style.css       ← Estilos completos (~833 líneas, paleta tierra crema)
 js/app.js           ← Toda la lógica (~585 líneas, 44 productos, búsqueda, filtros, carrito, WhatsApp, a11y focus trap, precache PWA)
 manifest.json       ← PWA metadata (id + scope)
-sw.js               ← Service worker (cache v7, precache catálogo offline por lotes)
+sw.js               ← Service worker (cache v8, stale-while-revalidate, query strings `?v=8` en imágenes/iconos)
 icons/              ← 11 archivos: 10 iconos PWA (72-512px + maskable) + source_logo.jpg original:
                       8 any (RGB plano) + 2 maskable (RGBA)
 scripts/
@@ -72,7 +72,7 @@ CNAME                 ← Dominio personalizado (yosoy222.com)
 
 ## PWA y caché
 
-- `CACHE_NAME` en `sw.js` = `yosoy222-v7` (bump de versión cuando cambia el SW o assets precacheados).
+- `CACHE_NAME` en `sw.js` = `yosoy222-v8` (bump de versión cuando cambia el SW o assets precacheados).
 - Iconos PWA se regeneran y validan como un paso repetible:
   - `python3 scripts/generate_icons.py` — regenera los 10 iconos desde `icons/source_logo.jpg`.
   - `python3 scripts/verify_icons.py` — verifica que los iconos coinciden con `manifest.json` (existencia, tamaño real vs `sizes`, formato: any=RGB plano, maskable=RGBA).
@@ -157,7 +157,7 @@ git push origin main
 4. El sitio usa CSP estricto via meta tag (sin `unsafe-inline`)
 5. `escapeHtml()` en todo render dinámico (anti-XSS)
 6. `loadCart()` valida localStorage al cargar
-7. PWA: al cambiar `sw.js`, bump de `CACHE_NAME` (`yosoy222-vN`); la versión nueva precachea el catálogo offline completo vía mensaje `PRECACHE_IMAGES` desde `app.js`
+7. PWA: al cambiar `sw.js`, bump de `CACHE_NAME` (`yosoy222-vN`); la versión nueva precachea el catálogo offline completo vía mensaje `PRECACHE_IMAGES` desde `app.js`. Los iconos e imágenes usan query strings `?v=N` para forzar actualización en la caché del navegador.
 8. WhatsApp es única configuración en `js/app.js` → `const WHATSAPP = '584126481628'`. Los enlaces de `index.html` deben usar ese mismo valor.
 9. Antes del deploy revisar: (a) secrets de Cloudflare en GitHub y permisos del token, (b) cabeceras reales con `curl -sI https://yosoy222.com/`.
 
@@ -169,7 +169,7 @@ git push origin main
 |-----|-------|-------|
 | WhatsApp | `js/app.js` línea 12 | `const WHATSAPP = '584126481628'` (única configuración) |
 | WhatsApp | `index.html` (3 lugares) | debe usar `584126481628` igual que `js/app.js` |
-| Cache version | `sw.js` línea 6 | `yosoy222-v7` |
+| Cache version | `sw.js` línea 6 | `yosoy222-v8` |
 | Iconos PWA | `icons/` + `manifest.json` | 8 any RGB plano (72,96,128,144,152,192,384,512) + 2 maskable RGBA (192,512) |
 | Regenerar iconos | `scripts/generate_icons.py` | Desde `icons/source_logo.jpg`; luego `scripts/verify_icons.py` |
 | Redes sociales | `index.html` contacto + footer | @yo_soy222 (IG, TikTok, FB) |
@@ -183,7 +183,7 @@ git push origin main
 | Problema | Causa | Solución |
 |----------|-------|----------|
 | Imágenes rotas en hero | Rutas incorrectas | Verificar archivos en `images/thumbs/` |
-| PWA muestra versión vieja | Cache del SW + manifest/icones cacheados | Bump `CACHE_NAME` en `sw.js` y regenerar/verificar iconos con `scripts/generate_icons.py` + `scripts/verify_icons.py` |
+| PWA muestra versión vieja | Cache del SW + manifest/icones cacheados | Bump `CACHE_NAME` en `sw.js`, regenerar/verificar iconos con `scripts/generate_icons.py` + `scripts/verify_icons.py`, y actualizar query strings `?v=N` en URLs de imágenes/iconos |
 | WhatsApp abre número viejo | Caché del navegador o enlaces sin actualizar | Verificar que `js/app.js` y `index.html` usan `584126481628` |
 | Imágenes no cargan | Abrir con `file://` | Usar `python3 -m http.server` |
 | Franelas muestran velas | Cache del SW | Clear site data en DevTools |
@@ -202,8 +202,9 @@ git push origin main
 - Estructura del proyecto actualizada (scripts/ con todos los archivos, imágenes decorativas y variantes documentadas)
 - Conteo de imágenes corregido: 63 thumbs (44 productos + 4 decorativas + 15 variantes), 60 catalog
 - Líneas de código actualizadas: index.html 298, style.css 833, app.js 585, sw.js 138, manifest.json 68
-- Documentación sincronizada con estado real del código (cache v7, 44 productos, WhatsApp centralizado)
+- Documentación sincronizada con estado real del código (cache v8, 44 productos, WhatsApp centralizado)
 - Code review de seguridad: 0 hallazgos críticos, 0 hallazgos altos (escapeHtml, loadCart, CSP, SW bien implementados)
 - Code review de calidad: correctitud ✓, legibilidad ✓, arquitectura ✓, performance ✓ (requestAnimationFrame, lazy loading, stale-while-revalidate)
-- Imagen Armonía Canela actualizada con foto profesional*
+- Imagen Armonía Canela actualizada con foto profesional
+- Cache busting implementado: query strings `?v=8` en imágenes/iconos para forzar actualización en PWA instalada*
 
