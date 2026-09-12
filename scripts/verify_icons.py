@@ -55,8 +55,8 @@ def main() -> int:
             problems.append(f"{src}: no puedo parsear sizes -> {declared}")
             continue
 
-        # Ajustar ruta para que siempre sea absoluta respecto a REPO_ROOT
-        clean_src = str(src).lstrip("/")
+        # Ajustar ruta para que siempre sea absoluta respecto a REPO_ROOT (ignorar query strings como ?v=8)
+        clean_src = str(src).split("?")[0].lstrip("/")
         path = REPO_ROOT / clean_src
         if not path.exists():
             problems.append(f"{src}: archivo no existe")

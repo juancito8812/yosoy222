@@ -552,7 +552,7 @@
      PWA — Register Service Worker + offline catalog precache
      ============================================ */
   function catalogUrls() {
-    const urls = products.flatMap(p => [`images/thumbs/${p.file}`, `images/catalog/${p.file}`]);
+    const urls = products.flatMap(p => [`images/thumbs/${p.file}?v=8`, `images/catalog/${p.file}?v=8`]);
     return [...new Set(urls)];
   }
 
