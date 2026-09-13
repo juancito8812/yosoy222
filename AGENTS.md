@@ -39,16 +39,19 @@ python3 -m http.server 8080
 ## Estructura del proyecto
 
 ```
-index.html          ← Página única (nav, hero, catálogo, lightbox, carrito, footer)
+index.html          ← Página única (nav, hero, catálogo prerenderizado para SEO, lightbox, carrito, footer)
 css/style.css       ← Estilos completos (~833 líneas, paleta tierra crema)
 js/app.js           ← Toda la lógica (~585 líneas, 44 productos, búsqueda, filtros, carrito, WhatsApp, a11y focus trap, precache PWA)
 manifest.json       ← PWA metadata (id + scope)
+robots.txt          ← Directivas estándar para motores de búsqueda y enlace a sitemap.xml
+sitemap.xml         ← Mapa del sitio XML canónico para Google / Bing
 sw.js               ← Service worker (cache v9, stale-while-revalidate, query strings `?v=9` en imágenes/iconos)
 icons/              ← 11 archivos: 10 iconos PWA (72-512px + maskable) + source_logo.jpg original:
                       8 any (RGB plano) + 2 maskable (RGBA)
 scripts/
   generate_icons.py   ← regenera los 10 iconos PWA desde icons/source_logo.jpg
   verify_icons.py     ← valida iconos contra manifest.json (existencia, tamaño, formato)
+  prerender_catalog.py ← prerenderiza las tarjetas de producto en index.html para SEO
   process_images.py   ← recorte y optimización de bordes en imágenes (v1 y v2)
   process_images_v2.py ← versión adaptativa/agresiva (recomendada)
   IMAGE_GUIDE.md      ← guía de cómo deben quedar las imágenes (estándar visual, tamaños, proceso, checklist)
