@@ -86,13 +86,20 @@ def main():
     with open(INDEX_HTML, 'r', encoding='utf-8') as f:
         html = f.read()
 
-    # Reemplazar el contenedor <div class="products-grid" id="productsGrid">...</div>
-    grid_pattern = re.compile(r'(<div class="products-grid" id="productsGrid">)(.*?)(</div>)', re.DOTALL)
-    if not grid_pattern.search(html):
+    start_tag = '<div class="products-grid" id="productsGrid">'
+    end_tag = '<div class="empty-state"'
+
+    start_pos = html.find(start_tag)
+    if start_pos == -1:
         print("Error: No se encontró <div class=\"products-grid\" id=\"productsGrid\"> en index.html", file=sys.stderr)
         sys.exit(1)
 
-    new_html = grid_pattern.sub(r'\g<1>' + rendered_grid + r'\g<3>', html, count=1)
+    end_pos = html.find(end_tag, start_pos)
+    if end_pos == -1:
+        print("Error: No se encontró <div class=\"empty-state\" en index.html", file=sys.stderr)
+        sys.exit(1)
+
+    new_html = html[:start_pos] + start_tag + rendered_grid + '</div>\n\n            ' + html[end_pos:]
 
     with open(INDEX_HTML, 'w', encoding='utf-8') as f:
         f.write(new_html)
