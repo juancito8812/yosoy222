@@ -356,6 +356,7 @@
     const count = cart.reduce((s, i) => s + i.qty, 0);
 
     cartCount.textContent = count;
+    cartBtn.setAttribute('aria-label', `Abrir carrito, ${count} productos`);
 
     if (cart.length === 0) {
       cartItems.replaceChildren(cartEmpty);

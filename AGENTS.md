@@ -172,7 +172,7 @@ git push origin main
 |-----|-------|-------|
 | WhatsApp | `js/app.js` línea 12 | `const WHATSAPP = '584126481628'` (única configuración) |
 | WhatsApp | `index.html` (3 lugares) | debe usar `584126481628` igual que `js/app.js` |
-| Cache version | `sw.js` línea 6 | `yosoy222-v9` |
+| Cache version | `sw.js` línea 6 | `yosoy222-v10` |
 | Iconos PWA | `icons/` + `manifest.json` | 8 any RGB plano (72,96,128,144,152,192,384,512) + 2 maskable RGBA (192,512) |
 | Regenerar iconos | `scripts/generate_icons.py` | Desde `icons/source_logo.jpg`; luego `scripts/verify_icons.py` |
 | Redes sociales | `index.html` contacto + footer | @yo_soy222 (IG, TikTok, FB) |
