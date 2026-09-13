@@ -3,7 +3,7 @@
    Offline caching for PWA
    ============================================ */
 
-const CACHE_NAME = 'yosoy222-v10';
+const CACHE_NAME = 'yosoy222-v11';
 
 // Assets to precache on install (offline shell + LCP images)
 const PRECACHE_ASSETS = [

@@ -6,6 +6,16 @@
 (function () {
   'use strict';
 
+  /* ----- Global Error Handlers ----- */
+  if (typeof window !== 'undefined') {
+    window.addEventListener('error', (event) => {
+      console.error('YoSoy222 UI Error:', event.error || event.message);
+    });
+    window.addEventListener('unhandledrejection', (event) => {
+      console.error('YoSoy222 Promise Rejection:', event.reason);
+    });
+  }
+
   /* ----- Config ----- */
   // WhatsApp: único punto de configuración del número de pedidos del sitio.
   // Si cambia el número, editar SOLO esta línea; no copiar el número en index.html.
@@ -80,14 +90,46 @@
     return str.replace(/[&<>"']/g, (c) => map[c]);
   };
 
-  /* ----- Security & Sync: Validate cart from localStorage and reconcile with catalog ----- */
-  function loadCart() {
+  /* ----- Cart TTL & Calculations (Pure domain logic) ----- */
+  const CART_TTL_MS = 30 * 24 * 60 * 60 * 1000; // 30 days
+
+  function calculateCartTotals(cartItems) {
+    const total = (cartItems || []).reduce((s, i) => s + (Number(i.price) || 0) * (Number(i.qty) || 0), 0);
+    const count = (cartItems || []).reduce((s, i) => s + (Number(i.qty) || 0), 0);
+    return { total, count };
+  }
+
+  function filterProductList(items, filter, search, map = catMap) {
+    const normSearch = (search || '').trim().toLowerCase();
+    return (items || []).filter(p => {
+      const matchesCat = !filter || filter === 'todos' || (map && map[p.cat] === filter);
+      const name = (p.name || '').toLowerCase();
+      const desc = (p.desc || '').toLowerCase();
+      const matchesSearch = !normSearch || name.includes(normSearch) || desc.includes(normSearch);
+      return matchesCat && matchesSearch;
+    });
+  }
+
+  function loadCartData(raw, catalog = products, now = Date.now()) {
+    if (!raw) return { items: [], expired: false };
     try {
-      const raw = localStorage.getItem('yosoy222_cart');
-      if (!raw) return [];
       const parsed = JSON.parse(raw);
-      if (!Array.isArray(parsed)) return [];
-      return parsed
+      let candidateItems = [];
+      let expired = false;
+
+      if (Array.isArray(parsed)) {
+        // Legacy cart format (direct array)
+        candidateItems = parsed;
+      } else if (parsed && typeof parsed === 'object' && Array.isArray(parsed.items)) {
+        candidateItems = parsed.items;
+        if (typeof parsed.updatedAt === 'number' && now - parsed.updatedAt > CART_TTL_MS) {
+          return { items: [], expired: true };
+        }
+      } else {
+        return { items: [], expired: false };
+      }
+
+      const validItems = candidateItems
         .filter(item =>
           item &&
           typeof item.name === 'string' &&
@@ -100,17 +142,43 @@
           item.qty <= 999
         )
         .map(item => {
-          const product = products.find(p => p.name === item.name);
+          const product = (catalog || []).find(p => p.name === item.name);
           if (!product) return null;
           return { ...item, price: product.price };
         })
         .filter(Boolean);
+
+      return { items: validItems, expired };
     } catch {
-      return [];
+      return { items: [], expired: false };
     }
   }
 
-  const header        = $('#header');
+  function saveCartData(items, now = Date.now()) {
+    return JSON.stringify({
+      items: items || [],
+      updatedAt: now
+    });
+  }
+
+  /* ----- Browser DOM & Runtime Initialization ----- */
+  if (typeof document !== 'undefined') {
+    /* ----- Security & Sync: Validate cart from localStorage and reconcile with catalog ----- */
+    function loadCart() {
+      try {
+        if (typeof localStorage === 'undefined') return [];
+        const raw = localStorage.getItem('yosoy222_cart');
+        const data = loadCartData(raw, products, Date.now());
+        if (data.expired) {
+          localStorage.removeItem('yosoy222_cart');
+        }
+        return data.items;
+      } catch {
+        return [];
+      }
+    }
+
+    const header        = $('#header');
   const menuToggle    = $('#menuToggle');
   const nav           = $('#nav');
   const navLinks      = $$('.nav-link');
@@ -348,12 +416,17 @@
   }
 
   function saveCart() {
-    localStorage.setItem('yosoy222_cart', JSON.stringify(cart));
+    try {
+      if (typeof localStorage !== 'undefined') {
+        localStorage.setItem('yosoy222_cart', saveCartData(cart, Date.now()));
+      }
+    } catch {
+      // Ignore quota errors in private browsing
+    }
   }
 
   function renderCart() {
-    const total = cart.reduce((s, i) => s + i.price * i.qty, 0);
-    const count = cart.reduce((s, i) => s + i.qty, 0);
+    const { total, count } = calculateCartTotals(cart);
 
     cartCount.textContent = count;
     cartBtn.setAttribute('aria-label', `Abrir carrito, ${count} productos`);
@@ -588,5 +661,20 @@
       navigator.serviceWorker.ready.then(requestCatalogPrecache);
     });
   }
+}
 
+  /* ----- Testing / Node.js exports ----- */
+  if (typeof module !== 'undefined' && module.exports) {
+    module.exports = {
+      CART_TTL_MS,
+      calculateCartTotals,
+      filterProductList,
+      loadCartData,
+      saveCartData,
+      products,
+      catMap,
+      escapeHtml
+    };
+  }
 })();
+

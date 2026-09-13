@@ -26,3 +26,9 @@ jobs:
           fi
           echo "$RESPONSE" | jq -e '.success == true and (.errors | length) == 0' >/dev/null || { echo "ERROR: Cloudflare rechazo el purge:"; echo "$RESPONSE"; exit 1; }
           echo "Cache purge completed successfully"
+      - name: Smoke test live site
+        run: |
+          echo "Running smoke test on production..."
+          curl -fsS -o /dev/null -w "HTTP %{http_code} in %{time_total}s\n" https://yosoy222.com/
+          echo "Production smoke test passed."
+

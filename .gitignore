@@ -19,3 +19,7 @@ server.js
 # Python
 __pycache__/
 *.py[cod]
+
+# Audit
+.readiness-audit/
+
