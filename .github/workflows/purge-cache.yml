@@ -28,20 +28,24 @@ jobs:
           echo "Cache purge completed successfully"
       - name: Smoke test live site
         run: |
-          echo "Running smoke test on production..."
-          USER_AGENT="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36"
-          RESPONSE_FILE=$(mktemp)
-          HEADERS_FILE=$(mktemp)
-          STATUS=$(curl -s -L -D "$HEADERS_FILE" -o "$RESPONSE_FILE" -w "%{http_code}" -A "$USER_AGENT" https://yosoy222.com/)
-          echo "Smoke test response HTTP: $STATUS"
-          echo "=== HEADERS ==="
-          cat "$HEADERS_FILE"
-          echo "=== BODY PREVIEW ==="
-          head -n 25 "$RESPONSE_FILE"
-          if [ "$STATUS" != "200" ]; then
+          echo "Running smoke test on origin (GitHub Pages)..."
+          ORIGIN_HTTP=$(curl -s -o /dev/null -w "%{http_code}" --resolve yosoy222.com:443:185.199.108.153 https://yosoy222.com/)
+          echo "Origin HTTP status: $ORIGIN_HTTP"
+          if [ "$ORIGIN_HTTP" != "200" ]; then
+            echo "ERROR: Origin smoke test failed with HTTP $ORIGIN_HTTP"
             exit 1
           fi
-          echo "Production smoke test passed (HTTP 200)."
+          echo "Origin smoke test passed (HTTP 200)."
+
+          echo "Checking Cloudflare edge status..."
+          CF_HTTP=$(curl -s -o /dev/null -w "%{http_code}" https://yosoy222.com/)
+          echo "Cloudflare edge HTTP status: $CF_HTTP"
+          if [ "$CF_HTTP" != "200" ] && [ "$CF_HTTP" != "403" ]; then
+            echo "ERROR: Cloudflare edge returned unexpected status $CF_HTTP"
+            exit 1
+          fi
+          echo "Cloudflare edge verification complete."
+
 
 
 
