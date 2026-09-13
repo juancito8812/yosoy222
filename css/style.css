@@ -18,13 +18,13 @@
 
   /* Text */
   --text: #3b3125;
-  --text-muted: #7b6a50;
-  --text-faint: #726048;
+  --text-muted: #6b5a42;
+  --text-faint: #65543c;
 
   /* Accent (earth amber, candle flame) */
-  --accent: #a96f2d;
-  --accent-hover: #8f5c22;
-  --accent-glow: rgba(169,111,45,0.22);
+  --accent: #854f19;
+  --accent-hover: #6e3e10;
+  --accent-glow: rgba(133,79,25,0.22);
 
   /* Functional */
   --whatsapp: #25d366;
@@ -646,7 +646,7 @@ em { font-style: italic; color: var(--accent); }
   color: var(--text-muted); font-size: 0.85rem;
   margin-top: 0.5rem; max-width: 260px; line-height: 1.6;
 }
-.footer-col h4 {
+.footer-col h3, .footer-col h4 {
   font-family: 'Inter', sans-serif; font-size: 0.75rem;
   text-transform: uppercase; letter-spacing: 0.1em;
   color: var(--accent); margin-bottom: 0.75rem;

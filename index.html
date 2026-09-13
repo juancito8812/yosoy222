@@ -31,7 +31,7 @@
            porque solo tienen efecto como header HTTP real (verificado con curl en yosoy222.com).
          El archivo _headers del repo solo surte efecto si el sitio se mueve a Netlify o Cloudflare Pages.
     -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; manifest-src 'self'; worker-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' https://static.cloudflareinsights.com; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; manifest-src 'self'; worker-src 'self'; connect-src 'self' https://cloudflareinsights.com; object-src 'none'; base-uri 'self'; form-action 'self'">
     <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
 
     <!-- PWA Manifest -->
@@ -41,7 +41,8 @@
     <link rel="stylesheet" href="css/style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@400;500;600;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@400;500;600;700&display=swap"></noscript>
 </head>
 <body>
 
@@ -76,28 +77,29 @@
         </div>
     </header>
 
-    <!-- ======================= HERO ======================= -->
-    <section class="hero" id="inicio">
-        <div class="container hero-inner">
-            <div class="hero-copy">
-                <p class="eyebrow">Hecho a mano · Con amor</p>
-                <h1>Velas que<br><em>encienden</em> tu<br>espacio.</h1>
-                <p class="hero-lead">Velas artesanales, pulseras, collares y detalles únicos. Cada pieza es hecha a mano — elige la tuya y la pedimos directo por WhatsApp.</p>
-                <div class="hero-actions">
-                    <a href="#catalogo" class="btn btn-primary">Ver el catálogo</a>
-                    <a href="#como-comprar" class="btn btn-ghost">Cómo comprar</a>
+    <main id="main">
+        <!-- ======================= HERO ======================= -->
+        <section class="hero" id="inicio">
+            <div class="container hero-inner">
+                <div class="hero-copy">
+                    <p class="eyebrow">Hecho a mano · Con amor</p>
+                    <h1>Velas que<br><em>encienden</em> tu<br>espacio.</h1>
+                    <p class="hero-lead">Velas artesanales, pulseras, collares y detalles únicos. Cada pieza es hecha a mano — elige la tuya y la pedimos directo por WhatsApp.</p>
+                    <div class="hero-actions">
+                        <a href="#catalogo" class="btn btn-primary">Ver el catálogo</a>
+                        <a href="#como-comprar" class="btn btn-ghost">Cómo comprar</a>
+                    </div>
+                </div>
+                <div class="hero-visual" aria-hidden="true">
+                    <figure class="hero-img hero-img-main">
+                        <img src="images/thumbs/hero-rosas-3.jpg" alt="Velas artesanales en forma de rosa de YoSoy222" width="480" height="480" loading="eager" fetchpriority="high" decoding="async">
+                    </figure>
+                    <figure class="hero-img hero-img-float">
+                        <img src="images/thumbs/hero-escaparate.jpg" alt="Velas artesanales en escaparate de YoSoy222" width="480" height="480" loading="lazy" fetchpriority="low" decoding="async">
+                    </figure>
                 </div>
             </div>
-            <div class="hero-visual" aria-hidden="true">
-                <figure class="hero-img hero-img-main">
-                    <img src="images/thumbs/hero-rosas-3.jpg" alt="Velas artesanales en forma de rosa de YoSoy222" loading="eager" fetchpriority="high" decoding="async">
-                </figure>
-                <figure class="hero-img hero-img-float">
-                    <img src="images/thumbs/hero-escaparate.jpg" alt="Velas artesanales en escaparate de YoSoy222" loading="lazy" fetchpriority="low" decoding="async">
-                </figure>
-            </div>
-        </div>
-    </section>
+        </section>
 
     <!-- ======================= CATÁLOGO ======================= -->
     <section class="catalogo" id="catalogo">
@@ -175,8 +177,8 @@
                 <p>No son productos. Son rituales cotidianos que iluminan, protegen y recuerdan propósito. Yo_Soy222 es luz hecha objeto. Una marca para quienes desean vivir con calma, intención y significado.</p>
             </div>
             <div class="nosotros-imgs">
-                <img src="images/thumbs/nosotros-1.jpg" alt="Vela artesanal YoSoy222" loading="lazy">
-                <img src="images/thumbs/nosotros-2.jpg" alt="Vela artesanal en cristal" loading="lazy">
+                <img src="images/thumbs/nosotros-1.jpg" alt="Vela artesanal YoSoy222" width="480" height="480" loading="lazy">
+                <img src="images/thumbs/nosotros-2.jpg" alt="Vela artesanal en cristal" width="480" height="480" loading="lazy">
             </div>
         </div>
     </section>
@@ -212,10 +214,11 @@
             </div>
         </div>
     </section>
+    </main>
 
     <!-- ======================= CARRITO ======================= -->
     <div class="cart-overlay" id="cartOverlay"></div>
-    <aside class="cart-drawer" id="cartDrawer" role="dialog" aria-modal="true" aria-label="Carrito de compras">
+    <div class="cart-drawer" id="cartDrawer" role="dialog" aria-modal="true" aria-label="Carrito de compras">
         <div class="cart-header">
             <h3>Tu pedido</h3>
             <button class="cart-close" id="cartClose" aria-label="Cerrar carrito">
@@ -240,7 +243,7 @@
                 Pedir por WhatsApp
             </a>
         </div>
-    </aside>
+    </div>
 
     <!-- ======================= FOOTER ======================= -->
     <footer class="footer">
@@ -251,14 +254,14 @@
                 <p>Velas artesanales, pulseras, collares y accesorios hechos a mano con amor.</p>
             </div>
             <nav class="footer-col" aria-label="Navegación del pie">
-                <h4>Secciones</h4>
+                <h3>Secciones</h3>
                 <a href="#catalogo">Catálogo</a>
                 <a href="#como-comprar">Cómo comprar</a>
                 <a href="#nosotros">Nosotros</a>
                 <a href="#contacto">Contacto</a>
             </nav>
             <nav class="footer-col" aria-label="Redes sociales">
-                <h4>Redes</h4>
+                <h3>Redes</h3>
                 <a href="https://wa.me/584126481628" target="_blank" rel="noopener">WhatsApp</a>
                 <a href="https://www.instagram.com/yo_soy222" target="_blank" rel="noopener">Instagram</a>
                 <a href="https://www.tiktok.com/@yo_soy222" target="_blank" rel="noopener">TikTok</a>
