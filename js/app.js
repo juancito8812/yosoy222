@@ -759,9 +759,11 @@
         .catch(() => {});
     });
 
-    // First activation (skipWaiting + clients.claim) also triggers precache
+    // First activation (skipWaiting + clients.claim) also triggers precache and UI refresh
     navigator.serviceWorker.addEventListener('controllerchange', () => {
       navigator.serviceWorker.ready.then(requestCatalogPrecache);
+      renderProducts();
+      applyFilters();
     });
   }
 }
