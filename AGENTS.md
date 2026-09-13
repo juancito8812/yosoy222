@@ -11,7 +11,7 @@ Tienda online de velas artesanales, pulseras, collares, franelas y accesorios.
 - **Repositorio:** https://github.com/juancito8812/yosoy222
 - **WhatsApp Oficial:** `+58 412 648 1628` (`584126481628`)
 - **Hosting:** GitHub Pages con proxy, DNS y CDN bajo Cloudflare.
-- **Arquitectura:** PWA instalable con catálogo pre-renderizado para SEO (Schema.org) y soporte offline (Service Worker Cache v13).
+- **Arquitectura:** PWA instalable con catálogo pre-renderizado para SEO (Schema.org) y soporte offline (Service Worker Cache v15).
 
 ---
 
@@ -19,7 +19,7 @@ Tienda online de velas artesanales, pulseras, collares, franelas y accesorios.
 
 - **Cero dependencias de runtime:** Vanilla HTML5 semántico, CSS3 moderno y ES6+ JavaScript. No introducir frameworks pesados (React, Vue, etc.) ni empaquetadores complejos.
 - **Testing Nativo:** Módulo `node:test` de Node.js (ejecutable con `npm test` o `node --test tests/*.test.mjs`). Cero paquetes de testing externos.
-- **PWA (Cache v14):** Estrategia Network-First para navegación de páginas (`mode === 'navigate'`) y Stale-While-Revalidate para recursos estáticos. Precaching enfocado en shell, dashboard y miniaturas (`images/thumbs/`).
+- **PWA (Cache v15):** Estrategia Network-First para navegación de páginas (`mode === 'navigate'`) y Stale-While-Revalidate para recursos estáticos. Precaching enfocado en shell, dashboard, iconos HD y miniaturas (`images/thumbs/`). Iconos de alta resolución generados desde fuente 1280px con fondo blanco sólido y Safe Zone del 80% sin franjas negras.
 - **Dashboard & Analítica Privada:** Telemetría sin cookies en `js/analytics.js` y panel de control en `dashboard.html` (`/dashboard.html`) protegido con autenticación criptográfica (Web Crypto SHA-256 salted hash, protección anti-fuerza bruta, rate-limiting, sesiones efímeras con timeout de 2h y opción de cambio de credenciales).
 - **SEO & Indexabilidad:** 44 productos prerenderizados en `index.html` mediante `scripts/prerender_catalog.py` y datos estructurados Schema.org (`Store` + `ItemList`).
 - **Base de Datos / Fuente de Verdad:** Archivo Excel `Catalogo.xlsx` ubicado localmente en `/home/jr/Documentos/Catalogo velas/Catalogo.xlsx`.
@@ -52,10 +52,14 @@ gh run list --limit 3
 ```
 yosoy222/
 ├── index.html                     ← Landing page con 44 productos prerenderizados y Schema.org LD+JSON
+├── dashboard.html                 ← Panel de control privado con autenticación SHA-256
 ├── css/style.css                  ← Sistema de diseño, tokens en :root (contraste WCAG AA)
+├── css/dashboard.css              ← Estilos dedicados para el dashboard y gráficos
 ├── js/app.js                      ← Catálogo inmutable, filtros, carrito blindado, a11y focus trap
-├── sw.js                          ← Service Worker (Cache v12, Network-First navegación)
-├── manifest.json                  ← Metadata PWA (id, scope, display standalone)
+├── js/analytics.js                ← Motor de telemetría de eventos y compatibilidad GA4
+├── js/dashboard.js                ← Renderizado de gráficos en Canvas y cálculo de KPIs
+├── sw.js                          ← Service Worker (Cache v15, Network-First navegación)
+├── manifest.json                  ← Metadata PWA (id, scope, display standalone, iconos v15)
 ├── package.json                   ← Script "test" para node --test
 ├── robots.txt / sitemap.xml       ← Directivas canónicas de indexación
 ├── _headers                       ← Cabeceras HTTP de seguridad (HSTS, CSP, X-Frame-Options)
@@ -73,7 +77,7 @@ yosoy222/
 │   ├── verify_icons.py            ← Validador de especificación de iconos contra manifest.json
 │   ├── process_images_v2.py       ← Eliminación de bordes blancos y recorte 1:1
 │   └── IMAGE_GUIDE.md             ← Guía de requerimientos visuales
-├── icons/                         ← 10 iconos PWA + source_logo.jpg
+├── icons/                         ← 10 iconos PWA HD (fondo blanco sólido, 80% Safe Zone) + source_logo.jpg
 └── images/
     ├── thumbs/                    ← Miniaturas (máx 480px, ~20 KB)
     └── catalog/                   ← Imágenes de alta resolución para Lightbox (máx 900px)
@@ -106,7 +110,7 @@ Al modificar, agregar o eliminar productos del catálogo:
    ```bash
    npm test
    ```
-5. Si hubo cambios estructurales en el Service Worker o assets esenciales, actualizar `CACHE_NAME` en `sw.js` (e.g. `yosoy222-v13`).
+5. Si hubo cambios estructurales en el Service Worker o assets esenciales, actualizar `CACHE_NAME` en `sw.js` (e.g. `yosoy222-v15`).
 6. Realizar commit y push a `main`.
 
 ---
