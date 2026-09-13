@@ -102,6 +102,7 @@
   function filterProductList(items, filter, search, map = catMap) {
     const normSearch = (search || '').trim().toLowerCase();
     return (items || []).filter(p => {
+      if (!p || typeof p !== 'object') return false;
       const matchesCat = !filter || filter === 'todos' || (map && map[p.cat] === filter);
       const name = (p.name || '').toLowerCase();
       const desc = (p.desc || '').toLowerCase();
@@ -122,8 +123,11 @@
         candidateItems = parsed;
       } else if (parsed && typeof parsed === 'object' && Array.isArray(parsed.items)) {
         candidateItems = parsed.items;
-        if (typeof parsed.updatedAt === 'number' && now - parsed.updatedAt > CART_TTL_MS) {
-          return { items: [], expired: true };
+        if (parsed.updatedAt !== undefined) {
+          const isValidTimestamp = typeof parsed.updatedAt === 'number' && Number.isFinite(parsed.updatedAt) && parsed.updatedAt > 0;
+          if (!isValidTimestamp || (now - parsed.updatedAt > CART_TTL_MS)) {
+            return { items: [], expired: true };
+          }
         }
       } else {
         return { items: [], expired: false };
@@ -144,7 +148,11 @@
         .map(item => {
           const product = (catalog || []).find(p => p.name === item.name);
           if (!product) return null;
-          return { ...item, price: product.price };
+          return {
+            name: product.name,
+            price: product.price,
+            qty: item.qty
+          };
         })
         .filter(Boolean);
 
@@ -212,6 +220,8 @@
      ============================================ */
   function renderProducts() {
     if (!grid) return;
+    // Guard: do not destroy DOM if products are already prerendered in HTML
+    if (grid.children.length === products.length) return;
     grid.innerHTML = products.map((p, i) => `
           <article class="product-card" data-index="${i}">
           <button type="button" class="product-image" data-name="${escapeHtml(p.name)}" aria-label="Ampliar imagen de ${escapeHtml(p.name)}">
@@ -230,44 +240,48 @@
   }
 
   /* ============================================
-     HEADER — scroll + active nav
+     HEADER — scroll + active nav (Zero-reflow IntersectionObserver)
      ============================================ */
   let ticking = false;
   window.addEventListener('scroll', () => {
     if (!ticking) {
       requestAnimationFrame(() => {
-        header.classList.toggle('scrolled', window.scrollY > 40);
-        updateActiveNav();
+        if (header) header.classList.toggle('scrolled', window.scrollY > 40);
         ticking = false;
       });
       ticking = true;
     }
-  });
+  }, { passive: true });
 
   const sections = $$('section[id]');
-  function updateActiveNav() {
-    const y = window.scrollY + 120;
-    for (const s of sections) {
-      if (y >= s.offsetTop && y < s.offsetTop + s.offsetHeight) {
-        navLinks.forEach(l => l.classList.toggle('active', l.getAttribute('href') === '#' + s.id));
-        break;
-      }
-    }
+  if ('IntersectionObserver' in window && sections.length > 0) {
+    const navObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const id = entry.target.getAttribute('id');
+          navLinks.forEach(l => l.classList.toggle('active', l.getAttribute('href') === '#' + id));
+        }
+      });
+    }, { rootMargin: '-20% 0px -60% 0px', threshold: 0 });
+
+    sections.forEach(s => navObserver.observe(s));
   }
 
   /* ============================================
      MOBILE MENU
      ============================================ */
-  menuToggle.addEventListener('click', () => {
-    const open = menuToggle.classList.toggle('active');
-    nav.classList.toggle('open', open);
-    menuToggle.setAttribute('aria-expanded', open);
-  });
-  navLinks.forEach(l => l.addEventListener('click', () => {
-    menuToggle.classList.remove('active');
-    nav.classList.remove('open');
-    menuToggle.setAttribute('aria-expanded', 'false');
-  }));
+  if (menuToggle && nav) {
+    menuToggle.addEventListener('click', () => {
+      const open = menuToggle.classList.toggle('active');
+      nav.classList.toggle('open', open);
+      menuToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+    });
+    navLinks.forEach(l => l.addEventListener('click', () => {
+      menuToggle.classList.remove('active');
+      nav.classList.remove('open');
+      menuToggle.setAttribute('aria-expanded', 'false');
+    }));
+  }
 
   /* ============================================
      SEARCH + FILTERS
@@ -275,26 +289,41 @@
   filterBtns.forEach(btn => {
     btn.addEventListener('click', () => {
       activeFilter = btn.dataset.filter;
-      filterBtns.forEach(b => b.classList.remove('active'));
+      filterBtns.forEach(b => {
+        b.classList.remove('active');
+        b.setAttribute('aria-pressed', 'false');
+      });
       btn.classList.add('active');
+      btn.setAttribute('aria-pressed', 'true');
       applyFilters();
     });
   });
 
+  let searchDebounceTimer = null;
   if (searchInput) {
     searchInput.addEventListener('input', (e) => {
-      searchTerm = e.target.value.trim().toLowerCase();
-      applyFilters();
+      clearTimeout(searchDebounceTimer);
+      searchDebounceTimer = setTimeout(() => {
+        searchTerm = e.target.value.trim().toLowerCase();
+        applyFilters();
+      }, 150);
     });
   }
 
   if (clearSearchBtn) {
     clearSearchBtn.addEventListener('click', () => {
+      clearTimeout(searchDebounceTimer);
       if (searchInput) searchInput.value = '';
       searchTerm = '';
       activeFilter = 'todos';
-      filterBtns.forEach(b => b.classList.remove('active'));
-      filterBtns[0].classList.add('active');
+      filterBtns.forEach(b => {
+        b.classList.remove('active');
+        b.setAttribute('aria-pressed', 'false');
+      });
+      if (filterBtns[0]) {
+        filterBtns[0].classList.add('active');
+        filterBtns[0].setAttribute('aria-pressed', 'true');
+      }
       applyFilters();
     });
   }
@@ -307,6 +336,7 @@
     // Cards keep the same order as `products`, so grid.children[i] is product i.
     products.forEach((p, i) => {
       const card = grid.children[i];
+      if (!card) return;
       const matchesCat = activeFilter === 'todos' || catMap[p.cat] === activeFilter;
       const name = p.name.toLowerCase();
       const desc = p.desc.toLowerCase();
@@ -333,32 +363,34 @@
 
   function openCart() {
     lastFocused = document.activeElement;
-    cartOverlay.classList.add('open');
-    cartDrawer.classList.add('open');
+    if (cartOverlay) cartOverlay.classList.add('open');
+    if (cartDrawer) cartDrawer.classList.add('open');
     document.body.style.overflow = 'hidden';
     if (cartClose) cartClose.focus();
   }
   function closeCart() {
-    cartOverlay.classList.remove('open');
-    cartDrawer.classList.remove('open');
+    if (cartOverlay) cartOverlay.classList.remove('open');
+    if (cartDrawer) cartDrawer.classList.remove('open');
     document.body.style.overflow = '';
     if (lastFocused && document.contains(lastFocused)) lastFocused.focus();
   }
 
-  cartBtn.addEventListener('click', openCart);
-  cartClose.addEventListener('click', closeCart);
-  cartOverlay.addEventListener('click', closeCart);
+  if (cartBtn) cartBtn.addEventListener('click', openCart);
+  if (cartClose) cartClose.addEventListener('click', closeCart);
+  if (cartOverlay) cartOverlay.addEventListener('click', closeCart);
 
   // Delegated clicks survive re-renders: qty steppers and remove buttons
-  cartItems.addEventListener('click', (e) => {
-    const qtyBtn = e.target.closest('.qty-btn');
-    if (qtyBtn) {
-      changeQty(parseInt(qtyBtn.dataset.idx, 10), parseInt(qtyBtn.dataset.delta, 10));
-      return;
-    }
-    const removeBtn = e.target.closest('.cart-item-remove');
-    if (removeBtn) removeItem(parseInt(removeBtn.dataset.idx, 10));
-  });
+  if (cartItems) {
+    cartItems.addEventListener('click', (e) => {
+      const qtyBtn = e.target.closest('.qty-btn');
+      if (qtyBtn) {
+        changeQty(parseInt(qtyBtn.dataset.idx, 10), parseInt(qtyBtn.dataset.delta, 10));
+        return;
+      }
+      const removeBtn = e.target.closest('.cart-item-remove');
+      if (removeBtn) removeItem(parseInt(removeBtn.dataset.idx, 10));
+    });
+  }
 
   if (cartBrowse) {
     cartBrowse.addEventListener('click', (e) => {
@@ -372,13 +404,16 @@
   }
 
   function addToCart(btn) {
+    if (!btn || !btn.dataset) return;
     const name = btn.dataset.name;
-    const price = parseFloat(btn.dataset.price);
-    const existing = cart.find(item => item.name === name);
+    const product = products.find(p => p.name === name);
+    if (!product) return;
+
+    const existing = cart.find(item => item.name === product.name);
     if (existing) {
       existing.qty = Math.min(existing.qty + 1, 999);
     } else {
-      cart.push({ name, price, qty: 1 });
+      cart.push({ name: product.name, price: product.price, qty: 1 });
     }
 
     btn.classList.add('added');
@@ -392,16 +427,21 @@
   }
 
   function bumpCount() {
+    if (!cartCount) return;
     cartCount.classList.add('bump');
     setTimeout(() => cartCount.classList.remove('bump'), 200);
   }
 
   function changeQty(index, delta) {
-    const item = cart[index];
+    const idx = Number(index);
+    if (!Number.isInteger(idx) || idx < 0 || idx >= cart.length) return;
+    const item = cart[idx];
     if (!item) return;
-    const newQty = item.qty + delta;
+    const deltaNum = Number(delta);
+    if (!Number.isInteger(deltaNum)) return;
+    const newQty = item.qty + deltaNum;
     if (newQty <= 0) {
-      cart.splice(index, 1);
+      cart.splice(idx, 1);
     } else {
       item.qty = Math.min(newQty, 999);
     }
@@ -410,7 +450,9 @@
   }
 
   function removeItem(index) {
-    cart.splice(index, 1);
+    const idx = Number(index);
+    if (!Number.isInteger(idx) || idx < 0 || idx >= cart.length) return;
+    cart.splice(idx, 1);
     saveCart();
     renderCart();
   }
@@ -533,11 +575,13 @@
   }
 
   function lightboxPrevFn() {
+    if (!visibleProducts.length) return;
     currentLightboxIndex = (currentLightboxIndex - 1 + visibleProducts.length) % visibleProducts.length;
     updateLightboxContent();
   }
 
   function lightboxNextFn() {
+    if (!visibleProducts.length) return;
     currentLightboxIndex = (currentLightboxIndex + 1) % visibleProducts.length;
     updateLightboxContent();
   }
@@ -567,16 +611,17 @@
     });
   }
 
-  // Keyboard navigation + focus trap (cart and lightbox)
+  // Keyboard navigation + focus trap (cart, lightbox, and mobile nav)
   const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])';
   document.addEventListener('keydown', (e) => {
     const lightboxActive = lightbox && lightbox.classList.contains('active');
     const cartActive = cartDrawer && cartDrawer.classList.contains('open');
+    const navActive = nav && nav.classList.contains('open');
 
     if (e.key === 'Escape') {
       if (lightboxActive) { closeLightboxFn(); return; }
       if (cartActive) { closeCart(); return; }
-      if (menuToggle && menuToggle.classList.contains('active')) {
+      if (navActive && menuToggle) {
         menuToggle.classList.remove('active');
         nav.classList.remove('open');
         menuToggle.setAttribute('aria-expanded', 'false');
@@ -591,7 +636,7 @@
     }
 
     if (e.key !== 'Tab') return;
-    const container = lightboxActive ? lightbox : (cartActive ? cartDrawer : null);
+    const container = lightboxActive ? lightbox : (cartActive ? cartDrawer : (navActive ? nav : null));
     if (!container) return;
     const focusables = [...container.querySelectorAll(FOCUSABLE)]
       .filter(el => el.offsetParent !== null && !el.hasAttribute('hidden'));
@@ -620,14 +665,14 @@
   renderProducts();
   applyFilters();
   renderCart();
-  updateActiveNav();
+  // Note: active nav highlighting is managed by IntersectionObserver
 
   /* ============================================
      PWA — Register Service Worker + offline catalog precache
      ============================================ */
   function catalogUrls() {
-    const urls = products.flatMap(p => [`images/thumbs/${p.file}?v=9`, `images/catalog/${p.file}?v=9`]);
-    return [...new Set(urls)];
+    // Only precache thumbnails for offline browsing; catalog full images load on-demand
+    return products.map(p => `images/thumbs/${p.file}?v=9`);
   }
 
   function requestCatalogPrecache(reg) {
@@ -645,9 +690,6 @@
             if (!newWorker) return;
             newWorker.addEventListener('statechange', () => {
               if (newWorker.state === 'activated') {
-                // Clear old cache versions to force fresh downloads
-                const worker = (navigator.serviceWorker.controller || reg.active);
-                if (worker) worker.postMessage({ type: 'CLEAR_OLD_CACHE' });
                 requestCatalogPrecache(reg);
               }
             });

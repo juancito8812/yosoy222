@@ -140,3 +140,42 @@ test('CART ROBUSTNESS: loadCartData rejects quantities > 999 or non-finite price
   assert.equal(result.items[0].qty, 5);
 });
 
+test('SECURITY: loadCartData strips injected/foreign properties to prevent smuggling', () => {
+  const catalog = [{ name: 'Rosa', price: 7 }];
+  const data = JSON.stringify({
+    updatedAt: Date.now(),
+    items: [
+      { name: 'Rosa', price: 7, qty: 1, extraField: 'malicious', admin: true }
+    ]
+  });
+  const result = loadCartData(data, catalog);
+  assert.equal(result.items.length, 1);
+  assert.deepEqual(Object.keys(result.items[0]).sort(), ['name', 'price', 'qty'].sort());
+  assert.equal(result.items[0].extraField, undefined);
+  assert.equal(result.items[0].admin, undefined);
+});
+
+test('SECURITY: loadCartData expires corrupted or non-positive updatedAt timestamps', () => {
+  const catalog = [{ name: 'Rosa', price: 7 }];
+  const corruptedNull = JSON.stringify({ updatedAt: null, items: [{ name: 'Rosa', price: 7, qty: 1 }] });
+  assert.equal(loadCartData(corruptedNull, catalog).expired, true);
+
+  const corruptedNegative = JSON.stringify({ updatedAt: -500, items: [{ name: 'Rosa', price: 7, qty: 1 }] });
+  assert.equal(loadCartData(corruptedNegative, catalog).expired, true);
+});
+
+test('RELIABILITY: filterProductList safely handles corrupted product records with missing fields', () => {
+  const malformed = [
+    { name: null, cat: 'vela', desc: null },
+    { cat: 'pulsera' },
+    null,
+    undefined,
+    { name: 'Rosa', cat: 'vela', desc: 'Vela artesanal' }
+  ];
+  const result = filterProductList(malformed, 'todos', 'rosa');
+  assert.equal(result.length, 1);
+  assert.equal(result[0].name, 'Rosa');
+});
+
+
+

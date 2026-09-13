@@ -3,7 +3,7 @@
    Offline caching for PWA
    ============================================ */
 
-const CACHE_NAME = 'yosoy222-v11';
+const CACHE_NAME = 'yosoy222-v12';
 
 // Assets to precache on install (offline shell + LCP images)
 const PRECACHE_ASSETS = [
@@ -47,55 +47,63 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// Fetch event — serve from cache, fallback to network
+// Fetch event — Network-first for navigation, Cache-first/Stale-while-revalidate for assets
 self.addEventListener('fetch', (event) => {
   // Skip non-GET requests
   if (event.request.method !== 'GET') return;
 
-  // Skip external requests (fonts, WhatsApp, etc.)
+  // Skip external requests (fonts, WhatsApp, analytics, etc.)
   if (!event.request.url.startsWith(self.location.origin)) return;
 
+  // 1. Navigation requests: Network-First with Cache fallback (ensures online users get fresh HTML)
+  if (event.request.mode === 'navigate') {
+    event.respondWith(
+      fetch(event.request)
+        .then((networkResponse) => {
+          if (networkResponse && networkResponse.status === 200) {
+            const clone = networkResponse.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put('/index.html', clone));
+          }
+          return networkResponse;
+        })
+        .catch(() => caches.match('/index.html'))
+    );
+    return;
+  }
+
+  // 2. Static subresources: Cache-First / Stale-While-Revalidate
   event.respondWith(
     caches.match(event.request, { ignoreSearch: true })
       .then((cachedResponse) => {
-        // Return cached version if available
         if (cachedResponse) {
-          // Update cache in background (stale-while-revalidate)
-          event.waitUntil(
-            fetch(event.request)
-              .then((networkResponse) => {
-                if (networkResponse && networkResponse.status === 200) {
-                  caches.open(CACHE_NAME)
-                    .then((cache) => cache.put(event.request, networkResponse));
-                }
-              })
-              .catch(() => {})
-          );
+          // Revalidate JS and CSS in background
+          const url = new URL(event.request.url);
+          if (url.pathname.endsWith('.js') || url.pathname.endsWith('.css')) {
+            event.waitUntil(
+              fetch(event.request)
+                .then((networkResponse) => {
+                  if (networkResponse && networkResponse.status === 200) {
+                    const clone = networkResponse.clone();
+                    caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
+                  }
+                })
+                .catch(() => {})
+            );
+          }
           return cachedResponse;
         }
 
         // Not in cache — fetch from network
         return fetch(event.request)
           .then((networkResponse) => {
-            // Don't cache non-successful responses
             if (!networkResponse || networkResponse.status !== 200) {
               return networkResponse;
             }
-
-            // Cache the new response
             const responseToCache = networkResponse.clone();
-            caches.open(CACHE_NAME)
-              .then((cache) => cache.put(event.request, responseToCache));
-
+            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, responseToCache));
             return networkResponse;
           })
-          .catch(() => {
-            // Offline fallback for navigation requests
-            if (event.request.mode === 'navigate') {
-              return caches.match('/index.html');
-            }
-            return new Response('Offline', { status: 503, statusText: 'Service Unavailable' });
-          });
+          .catch(() => new Response('Offline', { status: 503, statusText: 'Service Unavailable' }));
       })
   );
 });
@@ -107,19 +115,7 @@ self.addEventListener('message', (event) => {
     self.skipWaiting();
     return;
   }
-  if (data.type === 'CLEAR_OLD_CACHE') {
-    // Clear old cache versions to force fresh downloads
-    event.waitUntil(
-      caches.keys().then((cacheNames) => {
-        return Promise.all(
-          cacheNames
-            .filter((name) => name !== CACHE_NAME)
-            .map((name) => caches.delete(name))
-        );
-      })
-    );
-    return;
-  }
+
   if (data.type === 'PRECACHE_IMAGES' && Array.isArray(data.urls)) {
     event.waitUntil(
       caches.open(CACHE_NAME)
