@@ -29,6 +29,14 @@ jobs:
       - name: Smoke test live site
         run: |
           echo "Running smoke test on production..."
-          curl -fsS -o /dev/null -w "HTTP %{http_code} in %{time_total}s\n" https://yosoy222.com/
-          echo "Production smoke test passed."
+          USER_AGENT="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36"
+          STATUS=$(curl -s -L -o /dev/null -w "%{http_code}" -A "$USER_AGENT" https://yosoy222.com/)
+          echo "Smoke test response HTTP: $STATUS"
+          if [ "$STATUS" != "200" ]; then
+            echo "Smoke test unexpected HTTP status $STATUS. Diagnostic details:"
+            curl -v -L -A "$USER_AGENT" https://yosoy222.com/ 2>&1 | head -n 40
+            exit 1
+          fi
+          echo "Production smoke test passed (HTTP 200)."
+
 
