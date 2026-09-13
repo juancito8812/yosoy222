@@ -466,32 +466,46 @@ em { font-style: italic; color: var(--accent); }
 
 .contact-list {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 0.75rem;
-  max-width: 800px; margin: 0 auto;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.85rem;
+  max-width: 860px;
+  margin: 0 auto;
 }
 .contact-link {
-  display: flex; align-items: center; gap: 0.85rem;
-  padding: 1rem 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.65rem;
+  padding: 0.95rem 1rem;
+  min-height: 52px;
   background: var(--bg-card);
   border-radius: var(--radius);
   border: 1px solid var(--border);
-  transition: border-color var(--duration) var(--ease), transform var(--duration) var(--ease);
+  text-decoration: none;
+  color: var(--text);
+  box-shadow: var(--shadow-sm);
+  transition: border-color var(--duration) var(--ease), transform var(--duration) var(--ease), box-shadow var(--duration) var(--ease);
 }
 .contact-link:hover {
-  border-color: var(--border-strong);
+  border-color: var(--accent);
   transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
 }
-.contact-link svg { flex-shrink: 0; color: var(--text-muted); }
-.contact-link:hover svg { color: var(--accent); }
+.contact-link svg {
+  flex-shrink: 0;
+  color: var(--text-muted);
+  transition: color var(--duration) var(--ease), transform var(--duration) var(--ease);
+}
+.contact-link:hover svg {
+  color: var(--accent);
+  transform: scale(1.1);
+}
 .contact-name {
   display: block;
-  font-family: 'Inter', sans-serif; font-weight: 600;
-  font-size: 0.9rem;
-}
-.contact-detail {
-  display: block;
-  font-size: 0.75rem; color: var(--text-faint);
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 0.92rem;
+  white-space: nowrap;
 }
 
 /* ============================================
@@ -703,7 +717,17 @@ em { font-style: italic; color: var(--accent); }
 
   .steps { grid-template-columns: 1fr; gap: 0.75rem; }
 
-  .contact-list { grid-template-columns: 1fr; }
+  .contact-list {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.65rem;
+  }
+  .contact-link {
+    padding: 0.85rem 0.5rem;
+    min-height: 48px;
+  }
+  .contact-name {
+    font-size: 0.85rem;
+  }
 
   .hero-actions { flex-direction: column; }
   .hero-actions .btn { width: 100%; }
@@ -714,6 +738,13 @@ em { font-style: italic; color: var(--accent); }
 
 @media (max-width: 380px) {
   .products-grid { grid-template-columns: 1fr; }
+  .contact-link {
+    gap: 0.45rem;
+    padding: 0.75rem 0.35rem;
+  }
+  .contact-name {
+    font-size: 0.8rem;
+  }
 }
 
 /* ============================================
