@@ -147,31 +147,30 @@
 - [x] **Imágenes adicionales documentadas** — 15 variantes (sufijos `-2`, `-3`) y 1 imagen (`VM-MINIGIRASOL`) en carpetas pero sin entrada en `products[]`; 4 imágenes decorativas (hero/nosotros) documentadas en AGENTS.md
 
 ### SEO y Analytics
+- [x] Meta tags Open Graph completos (og:image, og:url, og:type) y Twitter Cards (summary) (13 sep 2026)
+- [x] Canonical URL en index.html (13 sep 2026)
 - [ ] Google Analytics (tag GA4)
-- [ ] Google Search Console
-- [ ] Meta tags Open Graph completos (og:image, og:url, og:type)
-- [ ] Sitemap.xml + robots.txt
-- [ ] Canonical URL
+- [ ] Google Search Console (sitemap.xml + robots.txt)
 
 ### Performance / PWA
 - [x] Headers HTTP reales vía **Transform Rule en Cloudflare** (ruleset `http_response_headers_transform`): X-Frame-Options DENY, nosniff, Permissions-Policy, Referrer-Policy y HSTS (`max-age=31536000; includeSubDomains`) — verificados en vivo con curl (3 sep 2026)
 - [x] **Cache Rule HTML** en Cloudflare (ruleset `http_request_cache_settings`, TTL edge 5 min) — HTML cacheado en edge, deploys frescos en ~5 min
-- [x] **GitHub Actions: Purge automático de Cloudflare** — workflow `purge-cache.yml` restaurado (se había perdido). Se dispara tras cada deploy exitoso de GitHub Pages. Requiere secrets `CLOUDFLARE_ZONE_ID` y `CLOUDFLARE_API_TOKEN` (autenticación Bearer) en Settings → Secrets del repo. **Estado: secrets configurados.**
+- [x] **GitHub Actions: Purge automático de Cloudflare** — workflow `purge-cache.yml` ejecutándose con éxito tras cada deploy (verificado en verde).
 - [x] **Fix imágenes hero rotas** — rutas `Vela Rosa.jpg` / `Vela Canela.jpg` (no existían) reemplazadas por archivos reales (`VM-ROSA_vela_rosa_79g.jpg` / `VE-ARMONIA-CANELA_vela_armonia_canela_508g.jpg`). Cache bump v2→v3 para forzar limpieza en dispositivos con PWA instalada (commit `d1fe806`, 5 sep 2026).
 - [x] **Optimización de imágenes (perf, 5 sep 2026)** — thumbs máx 480px JPEG q78 (~20 KB c/u, 6.1→1.4 MB) y catalog máx 900px JPEG q80 (6.1→3.5 MB). Total ~12 MB → ~4.9 MB. + `fetchpriority="high"` hero, `decoding="async"`, fuentes recortadas a pesos usados.
-- [x] **PWA offline total (cache v9, 12 sep 2026)** — `sw.js` v9 con `PRECACHE_IMAGES`: la app envía thumbs+catalog de los 44 productos al SW tras activarse, que los cachea en segundo plano (idempotente). Catálogo completo offline incluido el lightbox. Query strings `?v=9` en imágenes/iconos para forzar actualización en PWA instalada.
-- [ ] **Actualizar token Cloudflare con permiso `Zone → Cache Purge → Edit`** — el token actual en el secret `CLOUDFLARE_API_TOKEN` falla con `Authentication error (10000)` al purgar (verificado 5 sep 2026); el workflow queda en rojo hasta actualizarlo.
+- [x] **PWA offline total (cache v9, 13 sep 2026)** — `sw.js` v9 con `PRECACHE_IMAGES`: precache del catálogo completo (thumbs + catalog) con `{ ignoreSearch: true }`, query strings `?v=9`, y limpieza inmediata de versiones anteriores.
+- [x] **Optimización PageSpeed 100/100/100 (13 sep 2026)** — 100 Accesibilidad (contraste WCAG AA ratio >6.2:1, landmark `<main id="main">`, semántica h3), 100 Prácticas recomendadas (CSP compatible con Cloudflare Web Analytics, sin errores de consola), 100 SEO, 90-99 Rendimiento (prevención CLS con width/height 480px).
 - [ ] Banner/aviso "nueva versión disponible" cuando el service worker detecte update
 - [ ] Minificar CSS/JS
 
 ### Seguridad (Cloudflare WAF)
-- [ ] **WAF Managed Ruleset** con acción `managed_challenge` (decisión del usuario: challenge, no block) en la fase `http_request_firewall_managed` — requiere token Cloudflare con permiso para esa fase (el actual con `#waf:edit` no accede; verificado 3 sep 2026)
+- [ ] **WAF Managed Ruleset** con acción `managed_challenge` en la fase `http_request_firewall_managed`
 
 ### Performance futura (edge)
 - [ ] **Cloudflare Polish (WebP automático)** — NO disponible en plan Free (docs oficiales: solo Pro+). Alternativa gratis: convertir el catálogo a WebP local en el repo (~35-40% menos que JPEG actual).
 
 ### Funcionalidad / UX
-- [ ] Focus trap y gestión de foco al abrir el carrito y el lightbox (accesibilidad total)
+- [x] Focus trap y gestión de foco al abrir el carrito y el lightbox con teclado (Esc, ←, →, Tab)
 - [ ] Filtros por rango de precio y ordenamiento (menor/mayor precio)
 - [ ] Rutas compartibles por categoría (hash en la URL)
 - [ ] Indicador "sin conexión" cuando el PWA sirve caché
@@ -194,6 +193,7 @@
 | Fase 9: Correcciones + documentación | ✅ COMPLETADA | 3 sep 2026 |
 | Fase 11: Hardening (code review) + Performance + PWA offline total | ✅ COMPLETADA | 5 sep 2026 |
 | Fase 12: Code review de seguridad completo | ✅ COMPLETADA | 12 sep 2026 |
+| Fase 13: Optimización PageSpeed (100/100) + Cache v9 | ✅ COMPLETADA | 13 sep 2026 |
 
 **El sitio está en producción y funcional.** El pipeline de deploy funciona al 100% (purge automático verificado en verde). Las tareas pendientes de arriba son mejoras incrementales, ninguna bloquea el lanzamiento.
 

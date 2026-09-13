@@ -198,13 +198,11 @@ git push origin main
 
 ---
 
-*Última actualización: 2026-09-12 — revisión completa del estado del repo + code review seguridad/calidad:
-- Estructura del proyecto actualizada (scripts/ con todos los archivos, imágenes decorativas y variantes documentadas)
-- Conteo de imágenes corregido: 63 thumbs (44 productos + 4 decorativas + 15 variantes), 60 catalog
-- Líneas de código actualizadas: index.html 298, style.css 833, app.js 585, sw.js 138, manifest.json 68
-- Documentación sincronizada con estado real del código (cache v9, 44 productos, WhatsApp centralizado)
-- Code review de seguridad: 0 hallazgos críticos, 0 hallazgos altos (escapeHtml, loadCart, CSP, SW bien implementados)
-- Code review de calidad: correctitud ✓, legibilidad ✓, arquitectura ✓, performance ✓ (requestAnimationFrame, lazy loading, stale-while-revalidate)
-- Imagen Armonía Canela actualizada con foto profesional
-- Cache busting implementado: query strings `?v=9` en imágenes/iconos para forzar actualización en PWA instalada*
+*Última actualización: 2026-09-13 — optimización integral PageSpeed + cache v9:
+- Puntuaciones Google PageSpeed: 100 Accesibilidad, 100 Prácticas recomendadas, 100 SEO, 90-99 Rendimiento
+- Accesibilidad WCAG AA: contraste de color reforzado en `:root` (--accent: #854f19, ratio >6.2:1), hito principal `<main id="main">`, jerarquía semántica de encabezados (h3 en footer) y drawer con div[role="dialog"]
+- Rendimiento y prevención CLS: dimensiones explícitas (width/height 480px) y aspect-ratio 1:1 en imágenes
+- CSP actualizado para Cloudflare Web Analytics (static.cloudflareinsights.com y cloudflareinsights.com)
+- Service worker cache v9 con offline total e invalidación inmediata (ignoreSearch: true y query strings ?v=9)
+- Iconos y catálogo offline validados al 100% con scripts/verify_icons.py*
 
