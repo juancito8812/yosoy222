@@ -296,6 +296,9 @@
       btn.classList.add('active');
       btn.setAttribute('aria-pressed', 'true');
       applyFilters();
+      if (window.YoSoyAnalytics && activeFilter !== 'todos') {
+        window.YoSoyAnalytics.track('filter_category', { category: activeFilter });
+      }
     });
   });
 
@@ -306,6 +309,9 @@
       searchDebounceTimer = setTimeout(() => {
         searchTerm = e.target.value.trim().toLowerCase();
         applyFilters();
+        if (window.YoSoyAnalytics && searchTerm) {
+          window.YoSoyAnalytics.track('search', { query: searchTerm });
+        }
       }, 150);
     });
   }
@@ -424,6 +430,10 @@
     saveCart();
     renderCart();
     bumpCount();
+
+    if (window.YoSoyAnalytics) {
+      window.YoSoyAnalytics.track('add_to_cart', { name: product.name, price: product.price, cat: product.cat });
+    }
   }
 
   function bumpCount() {
@@ -550,6 +560,10 @@
     lightbox.classList.add('active');
     document.body.style.overflow = 'hidden';
     if (lightboxClose) lightboxClose.focus();
+
+    if (window.YoSoyAnalytics && targetProduct) {
+      window.YoSoyAnalytics.track('view_item', { name: targetProduct.name, cat: targetProduct.cat, price: targetProduct.price });
+    }
   }
 
   function closeLightboxFn() {
@@ -610,6 +624,53 @@
       if (e.target === lightbox) closeLightboxFn();
     });
   }
+
+  // Analytics tracking for conversions
+  if (cartWhatsapp) {
+    cartWhatsapp.addEventListener('click', () => {
+      const total = cart.reduce((s, i) => s + i.price * i.qty, 0);
+      const count = cart.reduce((s, i) => s + i.qty, 0);
+      if (window.YoSoyAnalytics) {
+        window.YoSoyAnalytics.track('whatsapp_checkout', {
+          origin: 'cart_drawer',
+          total: Number(total.toFixed(2)),
+          itemsCount: count
+        });
+      }
+    });
+  }
+
+  if (lightboxWhatsapp) {
+    lightboxWhatsapp.addEventListener('click', () => {
+      const p = visibleProducts[currentLightboxIndex];
+      if (window.YoSoyAnalytics && p) {
+        window.YoSoyAnalytics.track('whatsapp_contact', {
+          origin: 'lightbox',
+          product: p.name,
+          price: p.price
+        });
+      }
+    });
+  }
+
+  const floatWa = $('.whatsapp-float');
+  if (floatWa) {
+    floatWa.addEventListener('click', () => {
+      if (window.YoSoyAnalytics) {
+        window.YoSoyAnalytics.track('whatsapp_contact', { origin: 'floating_button' });
+      }
+    });
+  }
+
+  $$('.contact-link').forEach(link => {
+    link.addEventListener('click', () => {
+      const nameEl = link.querySelector('.contact-name');
+      const channel = nameEl ? nameEl.textContent : 'direct';
+      if (window.YoSoyAnalytics) {
+        window.YoSoyAnalytics.track('channel_click', { channel });
+      }
+    });
+  });
 
   // Keyboard navigation + focus trap (cart, lightbox, and mobile nav)
   const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])';
