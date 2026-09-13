@@ -544,7 +544,7 @@ Tokens principales en `:root` de [`css/style.css`](file:///home/debianserver/Doc
 | `js/app.js` | Lógica de catálogo, filtros, carrito seguro y eventos |
 | `js/analytics.js` | Motor de telemetría, eventos de conversión y compatibilidad GA4 |
 | `js/dashboard.js` | Renderizado de gráficos en Canvas, cálculo de KPIs y exportación CSV |
-| `sw.js` | Service Worker (Cache v14, Network-First navegación) |
+| `sw.js` | Service Worker (Cache v15, Network-First navegación) |
 | `manifest.json` | Configuración PWA e iconos |
 | `tests/cart_and_filters.test.mjs` | Suite de 13 pruebas unitarias y de seguridad |
 | `.github/workflows/` | Automatización de CI y purga de caché con smoke test |

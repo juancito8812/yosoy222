@@ -1,35 +1,23 @@
 #!/usr/bin/env python3
 """
-Genera los iconos PWA del sitio a partir de la imagen de WhatsApp adjunta.
+scripts/generate_icons.py
+Genera los 10 iconos PWA oficiales desde icons/source_logo.jpg.
 
-Política de iconos:
-- "any"  -> fondo blanco, sin transparencia (mejor compatibilidad con lanzadores).
-- "maskable" -> conserva canal alfa (sirve para iconos que se recortan en la plataforma).
-
-Fuente: imagen adjunta con fondo blanco.
-Proceso:
-1. Cargar imagen a RGBA.
-2. Píxeles "blancos" (R,G,B >= 250) -> hacer transparentes.
-3. Cada tamaño:
-   - Redimensionar a T x T.
-   - Centrar sobre canvas square transparente.
-   - "any": aplanar sobre fondo blanco (RGB).
-   - "maskable": mantener RGBA.
+Política de calidad y compatibilidad:
+- "any"      -> Fondo blanco sólido (RGB), logo centrado con padding de 8% (alta nitidez).
+- "maskable" -> Fondo blanco sólido (RGBA opaco), centrado en la Safe Zone (padding 15%)
+                para evitar barras negras / franjas en lanzadores de Android/iOS.
 """
 
-import os
 import sys
 from pathlib import Path
-
-import numpy as np
 from PIL import Image
 
-# Configuración del proyecto
 REPO_ROOT = Path(__file__).resolve().parent.parent
 ICONS_DIR = REPO_ROOT / "icons"
-LOCAL_SOURCE = ICONS_DIR / "source_logo.jpg"
-FALLBACK_SOURCE = Path("/home/jr/.var/app/org.telegram.desktop/data/TelegramDesktop/tdata/temp_data/photo_2026-09-05_22-43-50.jpg")
-SOURCE_IMAGE = LOCAL_SOURCE if LOCAL_SOURCE.exists() else FALLBACK_SOURCE
+SOURCE_IMAGE = ICONS_DIR / "source_logo.jpg"
+
+resample_filter = getattr(Image, "Resampling", Image).LANCZOS
 
 ANY_SIZES = {
     "icon-72x72.png": 72,
@@ -47,89 +35,90 @@ MASKABLE_SIZES = {
     "icon-maskable-512x512.png": 512,
 }
 
-WHITE_THRESHOLD = 250
-PAD_FRACTION = 0.06  # padding suave para maskable
+def get_content_bbox(img: Image.Image, threshold: int = 250) -> tuple[int, int, int, int]:
+    w, h = img.size
+    min_x, min_y, max_x, max_y = w, h, 0, 0
+    found = False
+    for y in range(h):
+        for x in range(w):
+            pixel = img.getpixel((x, y))
+            if isinstance(pixel, (tuple, list)):
+                r, g, b = pixel[0], pixel[1], pixel[2]
+            else:
+                r = g = b = int(pixel)
+            if r < threshold or g < threshold or b < threshold:
+                if not found:
+                    min_x, min_y, max_x, max_y = x, y, x, y
+                    found = True
+                else:
+                    min_x = min(min_x, x)
+                    min_y = min(min_y, y)
+                    max_x = max(max_x, x)
+                    max_y = max(max_y, y)
+    if not found:
+        return (0, 0, w, h)
+    return (min_x, min_y, max_x, max_y)
 
+def make_any_icon(logo_crop: Image.Image, target_size: int, padding_fraction: float = 0.08) -> Image.Image:
+    bw, bh = logo_crop.size
+    canvas = Image.new("RGB", (target_size, target_size), (255, 255, 255))
+    max_content = int(target_size * (1 - 2 * padding_fraction))
+    
+    scale = min(max_content / bw, max_content / bh)
+    new_w = max(1, int(bw * scale))
+    new_h = max(1, int(bh * scale))
+    
+    scaled = logo_crop.resize((new_w, new_h), resample_filter)
+    pos_x = (target_size - new_w) // 2
+    pos_y = (target_size - new_h) // 2
+    
+    canvas.paste(scaled, (pos_x, pos_y))
+    return canvas
 
-def load_base_image(path: str) -> Image.Image:
-    if not os.path.exists(path):
-        raise FileNotFoundError(f"Imagen fuente no encontrada: {path}")
-    im = Image.open(path).convert("RGBA")
-    arr = np.array(im).astype(np.uint8)
-    rgb = arr[..., :3]
-    alpha = arr[..., 3].copy()
-    white = (rgb >= WHITE_THRESHOLD).all(axis=2)
-    alpha[white] = 0
-    return Image.fromarray(np.dstack([rgb, alpha]))
-
-
-def square_center(img: Image.Image, size: int) -> Image.Image:
-    im = img.resize((size, size), Image.LANCZOS)
-    W, H = im.size
-    s = max(W, H)
-    sq = Image.new("RGBA", (s, s), (0, 0, 0, 0))
-    sq.paste(im, ((s - W) // 2, (s - H) // 2))
-    return sq.resize((size, size), Image.LANCZOS)
-
-
-def make_any(img: Image.Image, size: int) -> Image.Image:
-    rgba = square_center(img, size)
-    flat = Image.new("RGB", (size, size), (255, 255, 255))
-    flat.paste(rgba, mask=rgba.split()[3])
-    return flat
-
-
-def make_maskable(img: Image.Image, size: int) -> Image.Image:
-    im = img.resize((size, size), Image.LANCZOS)
-    W, H = im.size
-    pad_x = int(W * PAD_FRACTION)
-    pad_y = int(H * PAD_FRACTION)
-    crop = im.crop((pad_x, pad_y, W - pad_x, H - pad_y))
-    s2 = max(crop.size)
-    canvas = Image.new("RGBA", (s2, s2), (0, 0, 0, 0))
-    canvas.paste(crop, ((s2 - crop.size[0]) // 2, (s2 - crop.size[1]) // 2))
-    return canvas.resize((size, size), Image.LANCZOS)
-
-
-def verify_any_opaque(path: Path) -> bool:
-    if not path.exists():
-        return False
-    a = np.array(Image.open(path))
-    if a.shape[2] != 3:
-        return False
-    return True
-
+def make_maskable_icon(logo_crop: Image.Image, target_size: int, padding_fraction: float = 0.15) -> Image.Image:
+    bw, bh = logo_crop.size
+    canvas = Image.new("RGBA", (target_size, target_size), (255, 255, 255, 255))
+    max_content = int(target_size * (1 - 2 * padding_fraction))
+    
+    scale = min(max_content / bw, max_content / bh)
+    new_w = max(1, int(bw * scale))
+    new_h = max(1, int(bh * scale))
+    
+    scaled = logo_crop.resize((new_w, new_h), resample_filter)
+    pos_x = (target_size - new_w) // 2
+    pos_y = (target_size - new_h) // 2
+    
+    canvas.paste(scaled, (pos_x, pos_y))
+    return canvas
 
 def main() -> int:
-    print("fuente:", SOURCE_IMAGE)
-    base = load_base_image(SOURCE_IMAGE)
-
-    for name, size in ANY_SIZES.items():
-        path = ICONS_DIR / name
-        img = make_any(base, size)
-        img.save(path, optimize=True)
-        print(f"any  {name} -> {path}")
-
-    for name, size in MASKABLE_SIZES.items():
-        path = ICONS_DIR / name
-        img = make_maskable(base, size)
-        img.save(path, optimize=True)
-        print(f"mask {name} -> {path}")
-
-    print("\n verificando any opacos...")
-    issues = []
-    for name, size in ANY_SIZES.items():
-        path = ICONS_DIR / name
-        if not verify_any_opaque(path):
-            issues.append(name)
-
-    if issues:
-        print("ERROR any no opacos:", issues)
+    if not SOURCE_IMAGE.exists():
+        print(f"ERROR: Fuente no encontrada en {SOURCE_IMAGE}", file=sys.stderr)
         return 1
 
-    print("OK todos los any están aplanados (RGB sin alpha)")
-    return 0
+    print(f"Procesando imagen fuente: {SOURCE_IMAGE}")
+    src_img = Image.open(SOURCE_IMAGE).convert("RGB")
+    
+    bbox = get_content_bbox(src_img)
+    logo_crop = src_img.crop(bbox)
+    print(f"Dimensiones de contenido detectadas: {logo_crop.size[0]}x{logo_crop.size[1]} px")
 
+    # Generar iconos ANY
+    for name, size in ANY_SIZES.items():
+        out_path = ICONS_DIR / name
+        icon = make_any_icon(logo_crop, size)
+        icon.save(out_path, optimize=True)
+        print(f"  ✓ any {name} -> {size}x{size} (RGB sólido)")
+
+    # Generar iconos MASKABLE (Safe Zone)
+    for name, size in MASKABLE_SIZES.items():
+        out_path = ICONS_DIR / name
+        icon = make_maskable_icon(logo_crop, size)
+        icon.save(out_path, optimize=True)
+        print(f"  ✓ maskable {name} -> {size}x{size} (RGBA opaco con Safe Zone)")
+
+    print("\nIconos generados exitosamente.")
+    return 0
 
 if __name__ == "__main__":
     sys.exit(main())
