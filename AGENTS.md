@@ -20,7 +20,7 @@ Tienda online de velas artesanales, pulseras, collares, franelas y accesorios.
 - **Cero dependencias de runtime:** Vanilla HTML5 semántico, CSS3 moderno y ES6+ JavaScript. No introducir frameworks pesados (React, Vue, etc.) ni empaquetadores complejos.
 - **Testing Nativo:** Módulo `node:test` de Node.js (ejecutable con `npm test` o `node --test tests/*.test.mjs`). Cero paquetes de testing externos.
 - **PWA (Cache v14):** Estrategia Network-First para navegación de páginas (`mode === 'navigate'`) y Stale-While-Revalidate para recursos estáticos. Precaching enfocado en shell, dashboard y miniaturas (`images/thumbs/`).
-- **Dashboard & Analítica Privada:** Telemetría sin cookies en `js/analytics.js` y panel de control en `dashboard.html` (`/dashboard.html`) con métricas de conversión, funnel, canales de tráfico y exportación CSV.
+- **Dashboard & Analítica Privada:** Telemetría sin cookies en `js/analytics.js` y panel de control en `dashboard.html` (`/dashboard.html`) protegido con autenticación criptográfica (Web Crypto SHA-256 salted hash, protección anti-fuerza bruta, rate-limiting, sesiones efímeras con timeout de 2h y opción de cambio de credenciales).
 - **SEO & Indexabilidad:** 44 productos prerenderizados en `index.html` mediante `scripts/prerender_catalog.py` y datos estructurados Schema.org (`Store` + `ItemList`).
 - **Base de Datos / Fuente de Verdad:** Archivo Excel `Catalogo.xlsx` ubicado localmente en `/home/jr/Documentos/Catalogo velas/Catalogo.xlsx`.
 

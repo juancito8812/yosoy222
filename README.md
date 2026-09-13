@@ -538,7 +538,7 @@ Tokens principales en `:root` de [`css/style.css`](file:///home/debianserver/Doc
 | Archivo / Directorio | Propósito |
 |----------------------|-----------|
 | `index.html` | Estructura web, metadatos, Schema.org y catálogo prerenderizado |
-| `dashboard.html` | Panel privado de analítica, estadísticas en tiempo real y embudo |
+| `dashboard.html` | Panel privado de analítica con autenticación criptográfica (SHA-256 + anti-bruteforce) |
 | `css/style.css` | Sistema de diseño responsive y tokens de color |
 | `css/dashboard.css` | Estilos dedicados para el dashboard y gráficos |
 | `js/app.js` | Lógica de catálogo, filtros, carrito seguro y eventos |

@@ -1,13 +1,102 @@
 /* ============================================
-   YoSoy222 — Dashboard Engine
-   Data processing, pure-canvas charts, metrics & export
+   YoSoy222 — Dashboard & Security Engine
+   Cryptographic Auth Gate, Rate Limiting, Pure-Canvas Charts & CSV Export
    ============================================ */
 
 (function () {
   'use strict';
 
-  let currentDays = 30; // default view range
+  const AUTH_SALT = 'yosoy222_auth_salt_2026';
+  // Default salted SHA-256 for user "juancito" and password "YoSoy222#Admin2026"
+  const DEFAULT_HASH = '1549ba80a1e67b2423e6cdb96dbf8fbd9c98e3b166d996c1f7201a1006b3928a';
+  const MAX_ATTEMPTS = 5;
+  const LOCKOUT_MINUTES = 15;
+  const SESSION_TTL_HOURS = 2;
 
+  let currentDays = 30;
+
+  // --- CRYPTOGRAPHIC UTILITIES ---
+  async function computeHash(username, password) {
+    const raw = (username.trim().toLowerCase() + ':' + password + ':' + AUTH_SALT);
+    const buffer = new TextEncoder().encode(raw);
+    const digest = await crypto.subtle.digest('SHA-256', buffer);
+    return Array.from(new Uint8Array(digest)).map(b => b.toString(16).padStart(2, '0')).join('');
+  }
+
+  function getActiveHash() {
+    return localStorage.getItem('yosoy222_auth_hash') || DEFAULT_HASH;
+  }
+
+  // --- BRUTE FORCE PROTECTION ---
+  function getLockoutState() {
+    try {
+      const raw = localStorage.getItem('yosoy222_auth_lock');
+      if (!raw) return { attempts: 0, lockUntil: 0 };
+      return JSON.parse(raw);
+    } catch {
+      return { attempts: 0, lockUntil: 0 };
+    }
+  }
+
+  function recordFailedAttempt() {
+    const state = getLockoutState();
+    state.attempts = (state.attempts || 0) + 1;
+    if (state.attempts >= MAX_ATTEMPTS) {
+      state.lockUntil = Date.now() + (LOCKOUT_MINUTES * 60 * 1000);
+    }
+    localStorage.setItem('yosoy222_auth_lock', JSON.stringify(state));
+    return state;
+  }
+
+  function clearFailedAttempts() {
+    localStorage.removeItem('yosoy222_auth_lock');
+  }
+
+  // --- SESSION MANAGEMENT ---
+  function isSessionValid() {
+    try {
+      const raw = sessionStorage.getItem('yosoy222_dash_session');
+      if (!raw) return false;
+      const sess = JSON.parse(raw);
+      if (!sess || !sess.expires) return false;
+      return Date.now() < sess.expires;
+    } catch {
+      return false;
+    }
+  }
+
+  function createSession() {
+    const expires = Date.now() + (SESSION_TTL_HOURS * 60 * 60 * 1000);
+    const token = Array.from(crypto.getRandomValues(new Uint8Array(24))).map(b => b.toString(16).padStart(2, '0')).join('');
+    sessionStorage.setItem('yosoy222_dash_session', JSON.stringify({ token, expires }));
+  }
+
+  function destroySession() {
+    sessionStorage.removeItem('yosoy222_dash_session');
+  }
+
+  // --- UI SWITCHER ---
+  function setDashboardVisible(authenticated) {
+    const overlay = document.getElementById('authOverlay');
+    const content = document.getElementById('dashContent');
+
+    if (authenticated) {
+      if (overlay) overlay.style.display = 'none';
+      if (content) {
+        content.style.display = 'flex';
+        renderDashboard();
+      }
+    } else {
+      if (overlay) overlay.style.display = 'flex';
+      if (content) content.style.display = 'none';
+      const err = document.getElementById('authError');
+      if (err) err.style.display = 'none';
+      const userInput = document.getElementById('authUser');
+      if (userInput) userInput.focus();
+    }
+  }
+
+  // --- DATA COMPUTATION ---
   function getRawData() {
     try {
       const raw = localStorage.getItem('yosoy222_analytics');
@@ -19,12 +108,11 @@
   }
 
   function filterByDays(items, days) {
-    if (days === 0) return items; // 0 = All time
+    if (days === 0) return items;
     const cutoff = Date.now() - (days * 24 * 60 * 60 * 1000);
     return items.filter(i => (i.t || i.timestamp) >= cutoff);
   }
 
-  // Calculate Metrics
   function computeStats(days) {
     const raw = getRawData();
     const sessions = filterByDays(raw.sessions || [], days);
@@ -33,30 +121,19 @@
     const totalSessions = sessions.length;
     const pageViews = events.filter(e => e.type === 'page_view').length || totalSessions;
     
-    // WhatsApp clicks
     const waEvents = events.filter(e => e.type === 'whatsapp_checkout' || e.type === 'whatsapp_contact');
     const waOrders = events.filter(e => e.type === 'whatsapp_checkout');
-    
-    // Cart Adds
     const cartAdds = events.filter(e => e.type === 'add_to_cart');
-    
-    // Estimated Revenue from completed WhatsApp clicks
     const totalRevenue = waOrders.reduce((sum, e) => sum + (Number(e.total) || 0), 0);
-    
-    // Conversion Rate: WhatsApp checkouts / sessions
     const conversionRate = totalSessions > 0 ? ((waEvents.length / totalSessions) * 100).toFixed(1) : '0.0';
-
-    // Funnel
     const viewedProducts = events.filter(e => e.type === 'view_item').length;
     
-    // Traffic Sources
     const sources = {};
     sessions.forEach(s => {
       const src = s.src || 'directo';
       sources[src] = (sources[src] || 0) + 1;
     });
 
-    // Top Products
     const productViews = {};
     const productAdds = {};
     events.forEach(e => {
@@ -68,15 +145,6 @@
       }
     });
 
-    // Top Searches
-    const searches = {};
-    events.forEach(e => {
-      if (e.type === 'search' && e.query) {
-        searches[e.query] = (searches[e.query] || 0) + 1;
-      }
-    });
-
-    // Group by Day (for charts)
     const dailyMap = {};
     const chartDays = days === 0 ? 30 : days;
     for (let i = chartDays - 1; i >= 0; i--) {
@@ -106,15 +174,14 @@
       sources,
       productViews,
       productAdds,
-      searches,
       dailyMap,
       recentEvents: events.slice(-15).reverse()
     };
   }
 
-  // Draw Line Chart on Canvas
+  // --- CHARTS ---
   function drawTrendChart(canvas, dailyMap) {
-    if (!canvas) return;
+    if (!canvas || !canvas.parentElement) return;
     const ctx = canvas.getContext('2d');
     const width = canvas.width = canvas.parentElement.clientWidth;
     const height = canvas.height = canvas.parentElement.clientHeight;
@@ -124,14 +191,12 @@
     const labels = Object.keys(dailyMap);
     const viewData = labels.map(k => dailyMap[k].views);
     const waData = labels.map(k => dailyMap[k].whatsapp);
-
     const maxVal = Math.max(...viewData, ...waData, 5);
     const padX = 40;
     const padY = 30;
     const chartW = width - padX * 2;
     const chartH = height - padY * 2;
 
-    // Grid lines
     ctx.strokeStyle = '#e5ded4';
     ctx.lineWidth = 1;
     ctx.beginPath();
@@ -146,8 +211,7 @@
     }
     ctx.stroke();
 
-    // Helper: draw a series line
-    function drawLine(data, strokeColor, fillColor) {
+    function drawLine(data, strokeColor) {
       if (data.length < 2) return;
       ctx.beginPath();
       data.forEach((val, i) => {
@@ -160,7 +224,6 @@
       ctx.lineWidth = 2.5;
       ctx.stroke();
 
-      // Points
       ctx.fillStyle = strokeColor;
       data.forEach((val, i) => {
         const x = padX + (chartW / (data.length - 1)) * i;
@@ -171,11 +234,9 @@
       });
     }
 
-    // Draw Views & WhatsApp
     drawLine(viewData, '#854f19');
     drawLine(waData, '#25d366');
 
-    // Bottom Labels
     ctx.fillStyle = '#8b7a69';
     ctx.font = '10px Inter, sans-serif';
     ctx.textAlign = 'center';
@@ -188,9 +249,8 @@
     });
   }
 
-  // Draw Donut Chart for Traffic Sources
   function drawSourceChart(canvas, sources) {
-    if (!canvas) return;
+    if (!canvas || !canvas.parentElement) return;
     const ctx = canvas.getContext('2d');
     const size = Math.min(canvas.parentElement.clientWidth, canvas.parentElement.clientHeight);
     canvas.width = size;
@@ -200,7 +260,6 @@
 
     const keys = Object.keys(sources);
     const total = Object.values(sources).reduce((a, b) => a + b, 0) || 1;
-
     const colors = {
       instagram: '#e1306c',
       tiktok: '#111111',
@@ -238,25 +297,21 @@
       startAngle += sliceAngle;
     });
 
-    // Inner Text
     ctx.fillStyle = '#2b221a';
     ctx.font = 'bold 12px Inter, sans-serif';
     ctx.textAlign = 'center';
     ctx.fillText(`${total} Visitas`, centerX, centerY + 4);
   }
 
-  // Render Everything to DOM
   function renderDashboard() {
     const stats = computeStats(currentDays);
 
-    // KPIs
     document.getElementById('kpiViews').textContent = stats.pageViews.toLocaleString();
     document.getElementById('kpiWhatsapp').textContent = stats.waTotal.toLocaleString();
     document.getElementById('kpiCart').textContent = stats.cartAdds.toLocaleString();
     document.getElementById('kpiRevenue').textContent = `$${stats.totalRevenue.toFixed(2)} USD`;
     document.getElementById('kpiConversion').textContent = `${stats.conversionRate}%`;
 
-    // Funnel
     document.getElementById('funnelViews').textContent = stats.pageViews;
     document.getElementById('funnelProducts').textContent = stats.viewedProducts;
     document.getElementById('funnelCart').textContent = stats.cartAdds;
@@ -270,11 +325,9 @@
     document.getElementById('funnelCRate').textContent = `${cRate}% vieron producto`;
     document.getElementById('funnelWRate').textContent = `${wRate}% añadieron`;
 
-    // Draw Charts
     drawTrendChart(document.getElementById('trendCanvas'), stats.dailyMap);
     drawSourceChart(document.getElementById('sourceCanvas'), stats.sources);
 
-    // Render Sources Legend
     const sourceLegend = document.getElementById('sourceLegend');
     if (sourceLegend) {
       sourceLegend.innerHTML = Object.entries(stats.sources).map(([k, v]) => `
@@ -285,7 +338,6 @@
       `).join('') || '<p style="color:#726252; font-size:0.8rem;">Sin datos en este rango</p>';
     }
 
-    // Render Top Products Table
     const topProdTable = document.getElementById('topProductsTable');
     if (topProdTable) {
       const allNames = Array.from(new Set([...Object.keys(stats.productViews), ...Object.keys(stats.productAdds)]));
@@ -300,7 +352,6 @@
       `).join('') || '<tr><td colspan="3" style="text-align:center; color:#726252;">Sin productos visualizados aún</td></tr>';
     }
 
-    // Render Recent Events Feed
     const eventTable = document.getElementById('eventTable');
     if (eventTable) {
       const typeClasses = {
@@ -326,7 +377,7 @@
     }
   }
 
-  // Export CSV
+  // --- CSV EXPORT ---
   function exportCSV() {
     const raw = getRawData();
     const rows = [
@@ -352,7 +403,7 @@
     document.body.removeChild(link);
   }
 
-  // Seed Demo Data (so juancito can immediately see how it looks)
+  // --- DEMO DATA ---
   function seedDemoData() {
     const products = ['Rosa', 'Mini Corazones', 'Armonía Canela', 'Sagrada Familia', 'Gargantilla G-01', 'Pulsera Infinito', 'F-01 Loto Sagrado'];
     const sources = ['instagram', 'instagram', 'tiktok', 'google_search', 'directo', 'whatsapp'];
@@ -389,8 +440,102 @@
     renderDashboard();
   }
 
-  // Event Listeners
+  // --- INITIALIZATION & EVENTS ---
   document.addEventListener('DOMContentLoaded', () => {
+    // Check initial auth status
+    if (isSessionValid()) {
+      setDashboardVisible(true);
+    } else {
+      setDashboardVisible(false);
+    }
+
+    // Auth Form Submission
+    const authForm = document.getElementById('authForm');
+    const authError = document.getElementById('authError');
+
+    if (authForm) {
+      authForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const user = document.getElementById('authUser').value;
+        const pass = document.getElementById('authPassword').value;
+
+        // Check lockout
+        const lock = getLockoutState();
+        if (lock.lockUntil && Date.now() < lock.lockUntil) {
+          const remainingMins = Math.ceil((lock.lockUntil - Date.now()) / 60000);
+          authError.textContent = `Demasiados intentos fallidos. Bloqueado por ${remainingMins} minuto(s).`;
+          authError.style.display = 'block';
+          return;
+        }
+
+        const inputHash = await computeHash(user, pass);
+        const targetHash = getActiveHash();
+
+        if (inputHash === targetHash) {
+          clearFailedAttempts();
+          createSession();
+          authError.style.display = 'none';
+          document.getElementById('authPassword').value = '';
+          setDashboardVisible(true);
+        } else {
+          const failed = recordFailedAttempt();
+          const remaining = MAX_ATTEMPTS - failed.attempts;
+          if (remaining > 0) {
+            authError.textContent = `Credenciales incorrectas. Te quedan ${remaining} intento(s).`;
+          } else {
+            authError.textContent = `Demasiados intentos fallidos. Bloqueado por ${LOCKOUT_MINUTES} minutos.`;
+          }
+          authError.style.display = 'block';
+        }
+      });
+    }
+
+    // Logout
+    const logoutBtn = document.getElementById('logoutBtn');
+    if (logoutBtn) {
+      logoutBtn.addEventListener('click', () => {
+        destroySession();
+        setDashboardVisible(false);
+      });
+    }
+
+    // Change Password Modal
+    const openPwdBtn = document.getElementById('openPwdBtn');
+    const pwdModal = document.getElementById('pwdModal');
+    const cancelPwdBtn = document.getElementById('cancelPwdBtn');
+    const pwdForm = document.getElementById('pwdForm');
+
+    if (openPwdBtn && pwdModal) {
+      openPwdBtn.addEventListener('click', () => {
+        pwdModal.style.display = 'flex';
+      });
+    }
+
+    if (cancelPwdBtn && pwdModal) {
+      cancelPwdBtn.addEventListener('click', () => {
+        pwdModal.style.display = 'none';
+      });
+    }
+
+    if (pwdForm) {
+      pwdForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const newU = document.getElementById('newUsername').value;
+        const newP = document.getElementById('newPassword').value;
+
+        if (newP.length < 6) {
+          alert('La contraseña debe tener al menos 6 caracteres.');
+          return;
+        }
+
+        const newHash = await computeHash(newU, newP);
+        localStorage.setItem('yosoy222_auth_hash', newHash);
+        alert('Credenciales actualizadas exitosamente.');
+        pwdModal.style.display = 'none';
+      });
+    }
+
+    // Range Selector
     const rangeSelect = document.getElementById('rangeSelect');
     if (rangeSelect) {
       rangeSelect.addEventListener('change', (e) => {
@@ -399,9 +544,11 @@
       });
     }
 
+    // Export CSV
     const exportBtn = document.getElementById('exportBtn');
     if (exportBtn) exportBtn.addEventListener('click', exportCSV);
 
+    // Demo Data
     const demoBtn = document.getElementById('demoBtn');
     if (demoBtn) {
       demoBtn.addEventListener('click', () => {
@@ -411,6 +558,7 @@
       });
     }
 
+    // Clear Data
     const clearBtn = document.getElementById('clearBtn');
     if (clearBtn) {
       clearBtn.addEventListener('click', () => {
@@ -422,9 +570,7 @@
     }
 
     window.addEventListener('resize', () => {
-      renderDashboard();
+      if (isSessionValid()) renderDashboard();
     });
-
-    renderDashboard();
   });
 })();

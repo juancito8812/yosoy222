@@ -13,222 +13,281 @@
 </head>
 <body>
 
-    <!-- Header -->
-    <header class="dash-header">
-        <div class="dash-header-inner">
-            <a href="/" class="dash-brand" title="Volver a la tienda">
-                <span style="font-size: 1.4rem;">🕯️</span>
-                <h1>YoSoy<span style="color: var(--accent);">222</span></h1>
-                <span class="badge">Estadísticas</span>
-            </a>
+    <!-- Authentication Gate Screen -->
+    <div class="auth-overlay" id="authOverlay">
+        <div class="auth-card">
+            <div class="auth-logo">🔐</div>
+            <h1 class="auth-title">Panel de Control</h1>
+            <p class="auth-subtitle">Acceso exclusivo para el administrador de YoSoy222</p>
 
-            <div class="dash-controls">
-                <select class="range-select" id="rangeSelect" aria-label="Rango de tiempo">
-                    <option value="7">Últimos 7 días</option>
-                    <option value="30" selected>Últimos 30 días</option>
-                    <option value="60">Últimos 60 días</option>
-                    <option value="0">Histórico completo</option>
-                </select>
+            <form class="auth-form" id="authForm" autocomplete="on">
+                <div class="auth-field">
+                    <label class="auth-label" for="authUser">Usuario</label>
+                    <input class="auth-input" type="text" id="authUser" name="username" placeholder="Tu usuario" required autofocus autocomplete="username">
+                </div>
 
-                <button class="btn-dash btn-dash-primary" id="exportBtn">
-                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-                    Exportar CSV
-                </button>
+                <div class="auth-field">
+                    <label class="auth-label" for="authPassword">Contraseña</label>
+                    <input class="auth-input" type="password" id="authPassword" name="password" placeholder="••••••••" required autocomplete="current-password">
+                </div>
 
-                <a href="/" class="btn-dash">
-                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
-                    Ver Tienda
-                </a>
-            </div>
+                <button class="auth-btn" type="submit" id="authSubmitBtn">Ingresar al Dashboard</button>
+
+                <div class="auth-error" id="authError" style="display: none;" role="alert"></div>
+            </form>
         </div>
-    </header>
+    </div>
 
-    <main class="dash-main">
-        <!-- KPI Cards -->
-        <section class="kpi-grid">
-            <div class="kpi-card">
-                <div class="kpi-header">
-                    <span class="kpi-title">Visitas Totales</span>
-                    <span class="kpi-icon">👁️</span>
+    <!-- Main Protected Dashboard UI -->
+    <div id="dashContent" style="display: none; flex-direction: column; min-height: 100vh;">
+        <!-- Header -->
+        <header class="dash-header">
+            <div class="dash-header-inner">
+                <a href="/" class="dash-brand" title="Volver a la tienda">
+                    <span style="font-size: 1.4rem;">🕯️</span>
+                    <h1>YoSoy<span style="color: var(--accent);">222</span></h1>
+                    <span class="badge">Estadísticas</span>
+                </a>
+
+                <div class="dash-controls">
+                    <select class="range-select" id="rangeSelect" aria-label="Rango de tiempo">
+                        <option value="7">Últimos 7 días</option>
+                        <option value="30" selected>Últimos 30 días</option>
+                        <option value="60">Últimos 60 días</option>
+                        <option value="0">Histórico completo</option>
+                    </select>
+
+                    <button class="btn-dash btn-dash-primary" id="exportBtn">
+                        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                        Exportar CSV
+                    </button>
+
+                    <button class="btn-dash" id="openPwdBtn" title="Cambiar contraseña de acceso">
+                        🔑 Contraseña
+                    </button>
+
+                    <a href="/" class="btn-dash">
+                        🏪 Tienda
+                    </a>
+
+                    <button class="btn-dash" id="logoutBtn" style="color: var(--danger); border-color: rgba(217,56,41,0.2);" title="Cerrar sesión">
+                        Salir
+                    </button>
                 </div>
-                <div class="kpi-value" id="kpiViews">0</div>
-                <div class="kpi-subtitle">Sesiones registradas</div>
             </div>
+        </header>
 
-            <div class="kpi-card">
-                <div class="kpi-header">
-                    <span class="kpi-title">Pedidos WhatsApp</span>
-                    <span class="kpi-icon">💬</span>
+        <main class="dash-main">
+            <!-- KPI Cards -->
+            <section class="kpi-grid">
+                <div class="kpi-card">
+                    <div class="kpi-header">
+                        <span class="kpi-title">Visitas Totales</span>
+                        <span class="kpi-icon">👁️</span>
+                    </div>
+                    <div class="kpi-value" id="kpiViews">0</div>
+                    <div class="kpi-subtitle">Sesiones registradas</div>
                 </div>
-                <div class="kpi-value" id="kpiWhatsapp" style="color: #15803d;">0</div>
-                <div class="kpi-subtitle">Conversiones directas</div>
-            </div>
 
-            <div class="kpi-card">
-                <div class="kpi-header">
-                    <span class="kpi-title">Carritos Armados</span>
-                    <span class="kpi-icon">🛒</span>
+                <div class="kpi-card">
+                    <div class="kpi-header">
+                        <span class="kpi-title">Pedidos WhatsApp</span>
+                        <span class="kpi-icon">💬</span>
+                    </div>
+                    <div class="kpi-value" id="kpiWhatsapp" style="color: #15803d;">0</div>
+                    <div class="kpi-subtitle">Conversiones directas</div>
                 </div>
-                <div class="kpi-value" id="kpiCart">0</div>
-                <div class="kpi-subtitle">Productos añadidos</div>
-            </div>
 
-            <div class="kpi-card">
-                <div class="kpi-header">
-                    <span class="kpi-title">Ventas Potenciales</span>
-                    <span class="kpi-icon">💰</span>
+                <div class="kpi-card">
+                    <div class="kpi-header">
+                        <span class="kpi-title">Carritos Armados</span>
+                        <span class="kpi-icon">🛒</span>
+                    </div>
+                    <div class="kpi-value" id="kpiCart">0</div>
+                    <div class="kpi-subtitle">Productos añadidos</div>
                 </div>
-                <div class="kpi-value" id="kpiRevenue" style="color: var(--accent);">$0 USD</div>
-                <div class="kpi-subtitle">En pedidos WhatsApp</div>
-            </div>
 
-            <div class="kpi-card">
-                <div class="kpi-header">
-                    <span class="kpi-title">Tasa de Conversión</span>
-                    <span class="kpi-icon">📈</span>
+                <div class="kpi-card">
+                    <div class="kpi-header">
+                        <span class="kpi-title">Ventas Potenciales</span>
+                        <span class="kpi-icon">💰</span>
+                    </div>
+                    <div class="kpi-value" id="kpiRevenue" style="color: var(--accent);">$0 USD</div>
+                    <div class="kpi-subtitle">En pedidos WhatsApp</div>
                 </div>
-                <div class="kpi-value" id="kpiConversion">0.0%</div>
-                <div class="kpi-subtitle">Visitas ➔ WhatsApp</div>
-            </div>
-        </section>
 
-        <!-- Charts Grid -->
-        <section class="charts-grid">
-            <!-- Trend Line Chart -->
-            <div class="dash-card">
+                <div class="kpi-card">
+                    <div class="kpi-header">
+                        <span class="kpi-title">Tasa de Conversión</span>
+                        <span class="kpi-icon">📈</span>
+                    </div>
+                    <div class="kpi-value" id="kpiConversion">0.0%</div>
+                    <div class="kpi-subtitle">Visitas ➔ WhatsApp</div>
+                </div>
+            </section>
+
+            <!-- Charts Grid -->
+            <section class="charts-grid">
+                <!-- Trend Line Chart -->
+                <div class="dash-card">
+                    <div class="dash-card-header">
+                        <h2 class="dash-card-title">Evolución de Tráfico y Pedidos</h2>
+                        <div style="font-size: 0.75rem; display: flex; gap: 0.75rem;">
+                            <span style="color: var(--accent);">● Visitas</span>
+                            <span style="color: #25d366;">● WhatsApp</span>
+                        </div>
+                    </div>
+                    <div class="canvas-container">
+                        <canvas id="trendCanvas"></canvas>
+                    </div>
+                </div>
+
+                <!-- Traffic Sources Donut -->
+                <div class="dash-card">
+                    <div class="dash-card-header">
+                        <h2 class="dash-card-title">Canales de Tráfico</h2>
+                    </div>
+                    <div class="canvas-container" style="height: 150px;">
+                        <canvas id="sourceCanvas"></canvas>
+                    </div>
+                    <div id="sourceLegend" style="margin-top: 1rem;"></div>
+                </div>
+            </section>
+
+            <!-- Funnel Section -->
+            <section class="dash-card" style="margin-bottom: 1.5rem;">
                 <div class="dash-card-header">
-                    <h2 class="dash-card-title">Evolución de Tráfico y Pedidos</h2>
-                    <div style="font-size: 0.75rem; display: flex; gap: 0.75rem;">
-                        <span style="color: var(--accent);">● Visitas</span>
-                        <span style="color: #25d366;">● WhatsApp</span>
+                    <h2 class="dash-card-title">Embudo de Conversión (Funnel)</h2>
+                </div>
+                <div class="funnel-row">
+                    <div class="funnel-step">
+                        <h4>1. Visitas</h4>
+                        <div class="step-val" id="funnelViews">0</div>
+                        <div class="step-rate">100% de inicio</div>
+                    </div>
+                    <div class="funnel-step">
+                        <h4>2. Vieron Producto</h4>
+                        <div class="step-val" id="funnelProducts">0</div>
+                        <div class="step-rate" id="funnelPRate">0%</div>
+                    </div>
+                    <div class="funnel-step">
+                        <h4>3. Agregaron al Carrito</h4>
+                        <div class="step-val" id="funnelCart">0</div>
+                        <div class="step-rate" id="funnelCRate">0%</div>
+                    </div>
+                    <div class="funnel-step">
+                        <h4>4. Pedido en WhatsApp</h4>
+                        <div class="step-val" id="funnelWhatsapp" style="color: #15803d;">0</div>
+                        <div class="step-rate" id="funnelWRate">0%</div>
                     </div>
                 </div>
-                <div class="canvas-container">
-                    <canvas id="trendCanvas"></canvas>
-                </div>
-            </div>
+            </section>
 
-            <!-- Traffic Sources Donut -->
-            <div class="dash-card">
+            <!-- Tables Row -->
+            <section class="charts-grid" style="margin-bottom: 1.5rem;">
+                <!-- Top Products -->
+                <div class="dash-card">
+                    <div class="dash-card-header">
+                        <h2 class="dash-card-title">Productos Más Populares</h2>
+                    </div>
+                    <div class="table-container">
+                        <table class="dash-table">
+                            <thead>
+                                <tr>
+                                    <th>Producto</th>
+                                    <th>Vistas</th>
+                                    <th>En Carrito</th>
+                                </tr>
+                            </thead>
+                            <tbody id="topProductsTable"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Recent Activity Feed -->
+                <div class="dash-card">
+                    <div class="dash-card-header">
+                        <h2 class="dash-card-title">Actividad Reciente en Vivo</h2>
+                    </div>
+                    <div class="table-container">
+                        <table class="dash-table">
+                            <thead>
+                                <tr>
+                                    <th>Hora</th>
+                                    <th>Evento</th>
+                                    <th>Detalle</th>
+                                </tr>
+                            </thead>
+                            <tbody id="eventTable"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- External Hubs & Admin Tools -->
+            <section class="dash-card">
                 <div class="dash-card-header">
-                    <h2 class="dash-card-title">Canales de Tráfico</h2>
+                    <h2 class="dash-card-title">Herramientas y Conexiones Externas</h2>
                 </div>
-                <div class="canvas-container" style="height: 150px;">
-                    <canvas id="sourceCanvas"></canvas>
-                </div>
-                <div id="sourceLegend" style="margin-top: 1rem;"></div>
-            </div>
-        </section>
-
-        <!-- Funnel Section -->
-        <section class="dash-card" style="margin-bottom: 1.5rem;">
-            <div class="dash-card-header">
-                <h2 class="dash-card-title">Embudo de Conversión (Funnel)</h2>
-            </div>
-            <div class="funnel-row">
-                <div class="funnel-step">
-                    <h4>1. Visitas</h4>
-                    <div class="step-val" id="funnelViews">0</div>
-                    <div class="step-rate">100% de inicio</div>
-                </div>
-                <div class="funnel-step">
-                    <h4>2. Vieron Producto</h4>
-                    <div class="step-val" id="funnelProducts">0</div>
-                    <div class="step-rate" id="funnelPRate">0%</div>
-                </div>
-                <div class="funnel-step">
-                    <h4>3. Agregaron al Carrito</h4>
-                    <div class="step-val" id="funnelCart">0</div>
-                    <div class="step-rate" id="funnelCRate">0%</div>
-                </div>
-                <div class="funnel-step">
-                    <h4>4. Pedido en WhatsApp</h4>
-                    <div class="step-val" id="funnelWhatsapp" style="color: #15803d;">0</div>
-                    <div class="step-rate" id="funnelWRate">0%</div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Tables Row -->
-        <section class="charts-grid" style="margin-bottom: 1.5rem;">
-            <!-- Top Products -->
-            <div class="dash-card">
-                <div class="dash-card-header">
-                    <h2 class="dash-card-title">Productos Más Populares</h2>
-                </div>
-                <div class="table-container">
-                    <table class="dash-table">
-                        <thead>
-                            <tr>
-                                <th>Producto</th>
-                                <th>Vistas</th>
-                                <th>En Carrito</th>
-                            </tr>
-                        </thead>
-                        <tbody id="topProductsTable"></tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- Recent Activity Feed -->
-            <div class="dash-card">
-                <div class="dash-card-header">
-                    <h2 class="dash-card-title">Actividad Reciente en Vivo</h2>
-                </div>
-                <div class="table-container">
-                    <table class="dash-table">
-                        <thead>
-                            <tr>
-                                <th>Hora</th>
-                                <th>Evento</th>
-                                <th>Detalle</th>
-                            </tr>
-                        </thead>
-                        <tbody id="eventTable"></tbody>
-                    </table>
-                </div>
-            </div>
-        </section>
-
-        <!-- External Hubs & Admin Tools -->
-        <section class="dash-card">
-            <div class="dash-card-header">
-                <h2 class="dash-card-title">Herramientas y Conexiones Externas</h2>
-            </div>
-            <div class="hub-grid">
-                <div class="hub-card">
-                    <div>
-                        <h4>🔍 Google Search Console</h4>
-                        <p>Posicionamiento SEO, palabras clave en Google y rendimiento de búsqueda.</p>
+                <div class="hub-grid">
+                    <div class="hub-card">
+                        <div>
+                            <h4>🔍 Google Search Console</h4>
+                            <p>Posicionamiento SEO, palabras clave en Google y rendimiento de búsqueda.</p>
+                        </div>
+                        <a href="https://search.google.com/search-console" target="_blank" rel="noopener noreferrer" class="btn-dash btn-dash-primary" style="text-align: center; justify-content: center;">Abrir Search Console ↗</a>
                     </div>
-                    <a href="https://search.google.com/search-console" target="_blank" rel="noopener noreferrer" class="btn-dash btn-dash-primary" style="text-align: center; justify-content: center;">Abrir Search Console ↗</a>
-                </div>
 
-                <div class="hub-card">
-                    <div>
-                        <h4>📊 Google Looker Studio</h4>
-                        <p>Crea dashboards visuales enlazados con tu Search Console y Analytics.</p>
+                    <div class="hub-card">
+                        <div>
+                            <h4>📊 Google Looker Studio</h4>
+                            <p>Crea dashboards visuales enlazados con tu Search Console y Analytics.</p>
+                        </div>
+                        <a href="https://lookerstudio.google.com/" target="_blank" rel="noopener noreferrer" class="btn-dash" style="text-align: center; justify-content: center;">Abrir Looker Studio ↗</a>
                     </div>
-                    <a href="https://lookerstudio.google.com/" target="_blank" rel="noopener noreferrer" class="btn-dash" style="text-align: center; justify-content: center;">Abrir Looker Studio ↗</a>
-                </div>
 
-                <div class="hub-card">
-                    <div>
-                        <h4>⚙️ Gestión de Datos</h4>
-                        <p>Simula datos de prueba o reinicia los contadores locales de tu navegador.</p>
-                    </div>
-                    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
-                        <button class="btn-dash" id="demoBtn" style="flex: 1;">Datos de Prueba</button>
-                        <button class="btn-dash" id="clearBtn" style="color: var(--danger); border-color: rgba(217,56,41,0.2);">Reiniciar</button>
+                    <div class="hub-card">
+                        <div>
+                            <h4>⚙️ Gestión de Datos</h4>
+                            <p>Simula datos de prueba o reinicia los contadores locales de tu navegador.</p>
+                        </div>
+                        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                            <button class="btn-dash" id="demoBtn" style="flex: 1;">Datos de Prueba</button>
+                            <button class="btn-dash" id="clearBtn" style="color: var(--danger); border-color: rgba(217,56,41,0.2);">Reiniciar</button>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </section>
-    </main>
+            </section>
+        </main>
 
-    <footer class="dash-footer">
-        <p>YoSoy222 — Dashboard de Analítica y Conversión en Tiempo Real · Privado y Seguro</p>
-    </footer>
+        <footer class="dash-footer">
+            <p>YoSoy222 — Dashboard de Analítica y Conversión en Tiempo Real · Protegido con Autenticación Criptográfica</p>
+        </footer>
+    </div>
+
+    <!-- Modal for Changing Password -->
+    <div class="modal-backdrop" id="pwdModal" style="display: none;">
+        <div class="modal-content">
+            <h3 style="font-family: 'Playfair Display', serif; font-size: 1.25rem; margin-bottom: 0.5rem;">Cambiar Credenciales</h3>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1rem;">Establece un nuevo usuario o contraseña para este dispositivo.</p>
+
+            <form id="pwdForm" style="display: flex; flex-direction: column; gap: 0.75rem;">
+                <div class="auth-field">
+                    <label class="auth-label" for="newUsername">Nuevo Usuario</label>
+                    <input class="auth-input" type="text" id="newUsername" required placeholder="juancito">
+                </div>
+                <div class="auth-field">
+                    <label class="auth-label" for="newPassword">Nueva Contraseña</label>
+                    <input class="auth-input" type="password" id="newPassword" required placeholder="Mínimo 8 caracteres">
+                </div>
+
+                <div style="display: flex; justify-content: flex-end; gap: 0.5rem; margin-top: 0.75rem;">
+                    <button type="button" class="btn-dash" id="cancelPwdBtn">Cancelar</button>
+                    <button type="submit" class="btn-dash btn-dash-primary">Guardar Cambios</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
     <script src="js/dashboard.js"></script>
 </body>

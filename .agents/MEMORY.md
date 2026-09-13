@@ -22,7 +22,7 @@
 
 ## Decisiones Clave & Hitos
 
-- **13 sep 2026** — **Dashboard & Analítica Privada (Fase 16, Cache v14):** panel en `/dashboard.html` con KPIs en tiempo real, gráficos de evolución y canales de tráfico (Instagram, TikTok, Facebook, Google Search, WhatsApp, Directo), funnel de 4 pasos, eventos recientes y exportador CSV.
+- **13 sep 2026** — **Dashboard & Analítica Privada Protegida (Fase 16, Cache v14):** panel en `/dashboard.html` protegido con Web Crypto SHA-256 salted hash, rate-limiting anti-fuerza bruta, expiración de sesión, KPIs en tiempo real, gráficos de evolución y canales de tráfico (Instagram, TikTok, Facebook, Google Search, WhatsApp, Directo), funnel de 4 pasos, eventos recientes y exportador CSV.
 - **13 sep 2026** — **Corrección de prerender_catalog.py & Limpieza DOM:** corrección del delimitador regex que causaba anidación y duplicación de tarjetas (se eliminaron 120KB de tags sobrantes en `index.html`, reduciendo la altura de `#catalogo` de 126k px a 5k px).
 - **13 sep 2026** — **PWA Cache v13 & Tarjetas de Contacto:** rediseño accesible de redes sociales con botones uniformes, enlaces directos a WhatsApp, Instagram, TikTok y Facebook.
 - **13 sep 2026** — **Google PageSpeed 99/100/100/100:** 100 Accesibilidad (WCAG AA contraste >6.2:1, landmark `<main>`, h3 en footer, drawer semántico), 100 Prácticas recomendadas (CSP compatible con Cloudflare Web Analytics, sin errores de consola), 100 SEO (meta OpenGraph, Twitter Cards, Canonical URL, Schema.org LD+JSON) y 99 Rendimiento (prevención CLS con width/height y aspect-ratio 1:1, LCP 0.8s, TBT 0ms).
