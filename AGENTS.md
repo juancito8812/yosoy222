@@ -11,7 +11,7 @@ Tienda online de velas artesanales, pulseras, collares, franelas y accesorios.
 - **Repositorio:** https://github.com/juancito8812/yosoy222
 - **WhatsApp Oficial:** `+58 412 648 1628` (`584126481628`)
 - **Hosting:** GitHub Pages con proxy, DNS y CDN bajo Cloudflare.
-- **Arquitectura:** PWA instalable con catálogo pre-renderizado para SEO (Schema.org) y soporte offline (Service Worker Cache v12).
+- **Arquitectura:** PWA instalable con catálogo pre-renderizado para SEO (Schema.org) y soporte offline (Service Worker Cache v13).
 
 ---
 
@@ -19,7 +19,7 @@ Tienda online de velas artesanales, pulseras, collares, franelas y accesorios.
 
 - **Cero dependencias de runtime:** Vanilla HTML5 semántico, CSS3 moderno y ES6+ JavaScript. No introducir frameworks pesados (React, Vue, etc.) ni empaquetadores complejos.
 - **Testing Nativo:** Módulo `node:test` de Node.js (ejecutable con `npm test` o `node --test tests/*.test.mjs`). Cero paquetes de testing externos.
-- **PWA (Cache v12):** Estrategia Network-First para navegación de páginas (`mode === 'navigate'`) y Stale-While-Revalidate para recursos estáticos. Precaching enfocado en miniaturas (`images/thumbs/`).
+- **PWA (Cache v13):** Estrategia Network-First para navegación de páginas (`mode === 'navigate'`) y Stale-While-Revalidate para recursos estáticos. Precaching enfocado en miniaturas (`images/thumbs/`).
 - **SEO & Indexabilidad:** 44 productos prerenderizados en `index.html` mediante `scripts/prerender_catalog.py` y datos estructurados Schema.org (`Store` + `ItemList`).
 - **Base de Datos / Fuente de Verdad:** Archivo Excel `Catalogo.xlsx` ubicado localmente en `/home/jr/Documentos/Catalogo velas/Catalogo.xlsx`.
 

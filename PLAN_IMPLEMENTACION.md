@@ -216,6 +216,7 @@
 | Fase 12 | ✅ COMPLETADA | Catálogo prerenderizado para SEO, Schema.org LD+JSON, robots y sitemap |
 | Fase 13 | ✅ COMPLETADA | Roadmap 30/60/90 días: Tests unitarios, CI/CD, Dependabot y TTL de carrito |
 | Fase 14 | ✅ COMPLETADA | Code review exhaustivo (20 hallazgos), Cache v12, Network-First SW y HSTS |
+| Fase 15 | ✅ COMPLETADA | Tarjetas de contacto uniformes (Cache v13), corrección de prerender_catalog.py y PageSpeed 99/100/100/100 |
 
 ---
 

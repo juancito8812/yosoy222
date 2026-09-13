@@ -540,7 +540,7 @@ Tokens principales en `:root` de [`css/style.css`](file:///home/debianserver/Doc
 | `index.html` | Estructura web, metadatos, Schema.org y catálogo prerenderizado |
 | `css/style.css` | Sistema de diseño responsive y tokens de color |
 | `js/app.js` | Lógica de catálogo, filtros, carrito seguro y eventos |
-| `sw.js` | Service Worker (Cache v12, Network-First navegación) |
+| `sw.js` | Service Worker (Cache v13, Network-First navegación) |
 | `manifest.json` | Configuración PWA e iconos |
 | `tests/cart_and_filters.test.mjs` | Suite de 13 pruebas unitarias y de seguridad |
 | `.github/workflows/` | Automatización de CI y purga de caché con smoke test |
