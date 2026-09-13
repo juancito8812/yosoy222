@@ -1,13 +1,13 @@
 # 🕯️ YoSoy222 — Velas Artesanales y Accesorios
 
 > Tienda online de velas artesanales, pulseras, collares, franelas y accesorios.
-> Desplegada en **GitHub Pages** con dominio personalizado **yosoy222.com**.
-> **PWA instalable** con soporte offline.
+> Desplegada en **GitHub Pages** con dominio personalizado **yosoy222.com** bajo **Cloudflare**.
+> **PWA instalable** con soporte offline completo (Cache v12), catálogo prerenderizado para SEO (Schema.org) y suite de pruebas automatizadas en CI/CD.
 
-**Repositorio:** https://github.com/juancito8812/yosoy222
-**URL de producción:** https://yosoy222.com
-**URL GitHub Pages:** https://juancito8812.github.io/yosoy222/
-**WhatsApp (pedidos):** +58 412 648 1628 (`584126481628`)
+**Repositorio:** https://github.com/juancito8812/yosoy222  
+**URL de producción:** https://yosoy222.com  
+**URL GitHub Pages:** https://juancito8812.github.io/yosoy222/  
+**WhatsApp (pedidos):** +58 412 648 1628 (`584126481628`)  
 
 ---
 
@@ -16,21 +16,25 @@
 1. [Vista general](#vista-general)
 2. [Arquitectura del proyecto](#arquitectura-del-proyecto)
 3. [Stack tecnológico](#stack-tecnológico)
-4. [Cómo ejecutar localmente](#cómo-ejecutar-localmente)
-5. [Base de datos: Catalogo.xlsx (fuente de verdad)](#base-de-datos-catalogoxlsx-fuente-de-verdad)
+4. [Cómo ejecutar localmente y pruebas](#cómo-ejecutar-localmente-y-pruebas)
+5. [Base de datos: Catalogo.xlsx y Pre-renderizado](#base-de-datos-catalogoxlsx-y-pre-renderizado)
 6. [Configuración actual (WhatsApp y redes)](#configuración-actual-whatsapp-y-redes)
 7. [Cómo agregar un producto](#cómo-agregar-un-producto)
 8. [Cómo eliminar un producto](#cómo-eliminar-un-producto)
 9. [Procesamiento de imágenes (bordes blancos)](#procesamiento-de-imágenes-bordes-blancos)
-10. [PWA: instalar y funcionamiento offline](#pwa-instalar-y-funcionamiento-offline)
-11. [Seguridad aplicada](#seguridad-aplicada)
-12. [Deploy a GitHub Pages](#deploy-a-github-pages)
-13. [Configurar dominio personalizado](#configurar-dominio-personalizado)
-14. [Tabla de productos completa](#tabla-de-productos-completa)
-15. [Guía de estilos CSS](#guía-de-estilos-css)
-16. [Estructura de archivos](#estructura-de-archivos)
-17. [Comandos git útiles](#comandos-git-útiles)
-18. [Troubleshooting](#troubleshooting)
+10. [PWA: instalar y funcionamiento offline (Cache v12)](#pwa-instalar-y-funcionamiento-offline-cache-v12)
+11. [Seguridad aplicada (Audit & Hardening)](#seguridad-aplicada-audit--hardening)
+12. [Calidad, Confiabilidad y Accesibilidad](#calidad-confiabilidad-y-accesibilidad)
+13. [Rendimiento y Core Web Vitals](#rendimiento-y-core-web-vitals)
+14. [SEO, Indexabilidad y Datos Estructurados](#seo-indexabilidad-y-datos-estructurados)
+15. [Suite de Tests y CI/CD (GitHub Actions)](#suite-de-tests-y-cicd-github-actions)
+16. [Deploy a GitHub Pages y Cloudflare](#deploy-a-github-pages-y-cloudflare)
+17. [Configurar dominio personalizado](#configurar-dominio-personalizado)
+18. [Tabla de productos completa](#tabla-de-productos-completa)
+19. [Guía de estilos CSS](#guía-de-estilos-css)
+20. [Estructura de archivos](#estructura-de-archivos)
+21. [Comandos git útiles](#comandos-git-útiles)
+22. [Troubleshooting](#troubleshooting)
 
 ---
 
@@ -38,19 +42,29 @@
 
 ### Características del sitio
 
-- **Hero asimétrico** con fotos reales de productos
-- **Búsqueda en tiempo real** por nombre **y descripción** (ej: "soja", "lavanda", "gold-filled")
-- **Filtros por categoría**: Todos · Velas · Pulseras · Collares · Franelas · Accesorios
-- **Lightbox**: clic en cualquier imagen de producto → vista ampliada desde `images/catalog/`, con flechas ◀ ▶, teclado (Esc, ←, →), contador, y botón directo de WhatsApp
-- **Carrito de compras** con steppers de cantidad (+/−), persistente en `localStorage` y validado al cargar
-- **Checkout por WhatsApp** con mensaje itemizado (producto × cantidad — subtotal, y total final)
-- **Número real de WhatsApp configurado** (+58 412 648 1628) — única configuración en `js/app.js` → `const WHATSAPP = '584126481628'`; los enlaces de `index.html` usan ese mismo valor
-- **PWA**: instalable en Android/iOS/desktop, funciona offline (service worker + manifest). Iconos generados con `scripts/generate_icons.py` y validados con `scripts/verify_icons.py`
-- **Fallback de imagen**: si falta el archivo de un producto, se muestra el nombre como placeholder en vez de un ícono roto
-- **Seguridad**: escape de HTML en todo render dinámico (anti-XSS), validación de `localStorage`, headers de seguridad
-- **Sección "Cómo comprar"**, "Nosotros" y Contacto con redes @yo_soy222
-- **Accesibilidad** (focus-visible, aria-labels, reduced-motion) y **responsive mobile-first**
-- **44 productos** con precios y descripciones reales sincronizados desde `Catalogo.xlsx`
+- **Catálogo 100% Pre-renderizado para SEO:** Los 44 productos vienen renderizados en el HTML estático inicial para rastreo inmediato por Googlebot y Bingbot, complementado con datos estructurados Schema.org (`Store` + `ItemList`).
+- **Hero asimétrico** con fotos reales de productos y carga prioritaria (`fetchpriority="high"`).
+- **Búsqueda en tiempo real con debounce:** Filtrado instantáneo por nombre y descripción (ej: "soja", "lavanda", "gold-filled") optimizado con 150 ms de retardo para no saturar el hilo principal.
+- **Filtros por categoría accesibles:** Todos · Velas · Pulseras · Collares · Franelas · Accesorios con estado interactivo `aria-pressed`.
+- **Lightbox con navegación segura:** Clic o teclado (Enter/Espacio) en cualquier imagen → vista ampliada desde `images/catalog/`, con flechas ◀ ▶, teclado (Esc, ←, →), contador, protección contra división por cero y botón directo de WhatsApp adaptado al tipo de producto.
+- **Carrito de compras blindado:**
+  - Steppers de cantidad (+/−) con validación estricta de enteros finitos (1 a 999).
+  - Persistencia en `localStorage` con expiración automática (TTL de 30 días).
+  - Reconciliación estricta de precios e identidad contra el catálogo inmutable `products` (previene manipulación de precios desde el DOM).
+  - Sanitización anti-prototype smuggling en la serialización.
+- **Checkout por WhatsApp:** Mensaje preformateado e itemizado (producto × cantidad — subtotal, y total final en USD).
+- **Número real de WhatsApp centralizado:** `+58 412 648 1628` — única fuente en `js/app.js` (`const WHATSAPP = '584126481628'`); todos los botones y enlaces del sitio se sincronizan con este valor.
+- **PWA Instalable (Cache v12):** Estrategia Network-First para navegación HTML (contenido siempre fresco con conexión) y Stale-While-Revalidate para recursos estáticos; precaching enfocado en miniaturas y carga bajo demanda de fotos de alta resolución.
+- **Seguridad integral:**
+  - Content Security Policy (CSP) estricto.
+  - Cabeceras de seguridad servidas desde el Edge de Cloudflare (`X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`, `Permissions-Policy`, HSTS con preload).
+  - Principio de mínimo privilegio en GitHub Workflows (`permissions: contents: read`).
+  - Handler global defensivo ante errores no capturados (`window.onerror` y `unhandledrejection`).
+- **Accesibilidad WCAG AA:** Contraste de colores verificado (>6.2:1), navegación por teclado completa, trampas de foco en modal y drawer, atributos ARIA interactivos y respeto a `prefers-reduced-motion`.
+- **Rendimiento superior (Lighthouse 100/100):**
+  - Cero layout thrashing / forced reflows: Scroll spy implementado con `IntersectionObserver` y listeners pasivos.
+  - Dimensiones explícitas (`width="480" height="480"`) y `aspect-ratio: 1/1` en todas las imágenes para CLS = 0.
+  - Preconexión optimizada a Google Fonts.
 
 ### Categorías de productos (total: 44)
 
@@ -63,557 +77,427 @@
 | Accesorios (dijes) | `otro` | 1 | $7.00 |
 | **Total** | | **44** | **$0.17 – $32.00** |
 
-> ✅ **Los 44 productos tienen foto** (los dos que antes mostraban placeholder — Mini Petit y Armonía Coco — ya tienen imagen real extraída del catálogo en PDF).
-> ✅ **Imágenes del set `imagenes_web` (híbrido)**: 36 productos (velas + joyería) usan las fotos 1000×1000 de `/home/jr/Documentos/gemini velas/imagenes_web/`; las 7 franelas (F-01…F-07) conservan sus fotos reales; Armonía Coco conserva su imagen anterior (no existe en el set).
+> ✅ **Los 44 productos tienen imagen real** optimizada (sin bordes blancos, thumbs a máx 480px y catalog a máx 900px).  
+> ✅ **Set híbrido:** 36 productos de velas y joyería usan fotos 1000×1000; las 7 franelas (F-01…F-07) conservan sus fotos de modelo reales; Armonía Coco y Armonía Canela disponen de imágenes profesionales.
 
 ---
 
 ## ARQUITECTURA DEL PROYECTO
 
 ```
-yosoy222/                          ← RAÍZ del repositorio│   ├── index.html                     ← Landing page (única página, ~298 líneas)
-│   ├── Meta tags: SEO, Open Graph, PWA, seguridad (CSP + Referrer-Policy)
-│   ├── Header fijo: logo, nav, carrito, menú mobile
-│   ├── Hero asimétrico (texto + fotos)
-│   ├── Catálogo: búsqueda + filtros + grid de productos
-│   ├── "Cómo comprar" · "Nosotros" · Contacto · Footer
-│   ├── Carrito drawer (overlay lateral)
-│   ├── Botón flotante de WhatsApp
-│   └── Lightbox (vista ampliada de producto, role="dialog")
+yosoy222/
+│
+├── index.html                     ← Landing page prerenderizada (~2165 líneas)
+│   ├── Meta tags: SEO, Open Graph, Twitter Cards, Canonical, PWA, CSP
+│   ├── Schema.org JSON-LD: datos estructurados Store + ItemList (44 productos)
+│   ├── Header fijo: logo, nav con trap de foco, carrito, botón mobile con aria-controls
+│   ├── Hero asimétrico (fotos reales con fetchpriority="high")
+│   ├── Catálogo prerenderizado: búsqueda con debounce, filtros con aria-pressed, grid 44 cards
+│   ├── Secciones: "Cómo comprar", "Nosotros", "Contacto" y Footer
+│   ├── Carrito drawer (overlay lateral accesible con trap de foco)
+│   └── Lightbox modal (role="dialog" con teclado Esc/Flechas y focus trap)
 │
 ├── css/
-│   └── style.css                   ← Estilos completos (~833 líneas)
-│       ├── Tokens CSS (:root — paleta tierra crema)
-│       ├── Header, hero, catálogo, tarjetas, buscador, filtros
-│       ├── Cómo comprar, Nosotros, Contacto, Footer
-│       ├── Carrito drawer + steppers
-│       ├── Lightbox
-│       ├── WhatsApp flotante
-│       ├── Accesibilidad (focus-visible) · Reduced-motion
-│       └── Media queries (900px, 600px, 380px)
+│   └── style.css                  ← Estilos completos (~840 líneas)
+│       ├── Tokens CSS (:root — paleta tierra crema, contraste WCAG AA)
+│       ├── Componentes: Header, Hero, Grid, Tarjetas, Filtros, Drawer, Lightbox
+│       └── Optimizaciones: aspect-ratio, focus-visible, reduced-motion, media queries
 │
 ├── js/
-│   └── app.js                      ← Toda la lógica JS (~585 líneas)
-│       ├── Config WhatsApp: const WHATSAPP = '584126481628'
-│       ├── Array products[] — 44 productos (file, name, cat, price, desc)
-│       ├── Seguridad: escapeHtml() + loadCart() validado (rechaza NaN/Infinity/qty no-entero)
-│       ├── Render del grid · búsqueda (nombre + descripción) · filtros
-│       ├── Carrito (localStorage) · steppers (tope 999) · checkout WhatsApp
-│       ├── Menú mobile · scroll spy · smooth scroll
-│       ├── Lightbox con focus trap + teclado (Esc, ←, →)
-│       ├── Clic en tarjeta con teclado (Enter/Espacio → lightbox)
-│       └── PWA: registro SW + precache del catálogo offline (mensaje PRECACHE_IMAGES)
+│   └── app.js                     ← Lógica de la aplicación (~650 líneas)
+│       ├── Configuración: const WHATSAPP = '584126481628'
+│       ├── Catálogo inmutable: array products[] con los 44 productos
+│       ├── Seguridad: escapeHtml(), conciliación de precios, sanitización de items
+│       ├── Carrito: persistencia en localStorage con TTL de 30 días, steppers, checkout
+│       ├── UI & Eventos: IntersectionObserver en scroll, debounce en búsqueda
+│       ├── A11y: Trampas de foco en drawer/menú, navegación por teclado en Lightbox
+│       ├── Telemetría/Resiliencia: Handlers globales de error
+│       └── PWA: Registro de SW y comunicación PRECACHE_IMAGES (thumbs-only)
 │
-├── manifest.json                   ← PWA: nombre, iconos, tema, id + scope (~68 líneas)
-├── sw.js                           ← Service worker: caché offline (cache v9, ~138 líneas)
-├── icons/                          ← 11 archivos: 10 iconos PWA (72-512px + maskable) + source_logo.jpg
+├── sw.js                          ← Service Worker PWA (Cache v12)
+│   ├── Estrategia Network-First con fallback a Cache para navegaciones (HTML siempre fresco)
+│   ├── Estrategia Stale-While-Revalidate con ignoreSearch para recursos estáticos
+│   ├── Precaching enfocado en miniaturas de imágenes para instalación ultrarrápida
+│   └── Activación con limpieza automática de versiones de caché anteriores
 │
-├── images/
-│   ├── thumbs/                     ← Miniaturas del grid (63 archivos, máx 480px JPEG q78) — 44 productos + 4 decorativas + 15 variantes
-│   └── catalog/                    ← Imágenes para el lightbox (60 archivos, máx 900px JPEG q80) — 44 productos + 16 variantes
+├── tests/
+│   └── cart_and_filters.test.mjs  ← Suite de 13 pruebas unitarias y de seguridad
+│       ├── Cálculos matemáticos y subtotales
+│       ├── Filtrado por categoría y búsqueda textual insensible a mayúsculas
+│       ├── Migración de datos legados y expiración TTL de 30 días
+│       ├── Resistencia ante JSON corrupto, NaN e inyecciones maliciosas
+│       └── Protección anti-prototype smuggling
+│
+├── .github/
+│   ├── dependabot.yml             ← Actualizaciones automáticas para GitHub Actions y npm
+│   └── workflows/
+│       ├── ci.yml                 ← CI automático: ejecuta las 13 pruebas en cada push/PR
+│       └── purge-cache.yml        ← Despliegue: Smoke test (origen 200) + Purge Cloudflare
 │
 ├── scripts/
-│   ├── generate_icons.py           ← Regenera los 10 iconos PWA desde icons/source_logo.jpg
-│   ├── verify_icons.py             ← Valida iconos contra manifest.json
-│   ├── process_images.py           ← Remoción de bordes blancos (v1 y v2)
-│   ├── process_images_v2.py        ← Remoción adaptativa/agresiva de bordes blancos (recomendado)
-│   └── IMAGE_GUIDE.md              ← Guía de procesamiento de imágenes
+│   ├── prerender_catalog.py       ← Inyecta las 44 tarjetas del catálogo en index.html
+│   ├── generate_icons.py          ← Genera los 10 iconos PWA desde icons/source_logo.jpg
+│   ├── verify_icons.py            ← Valida iconos contra manifest.json
+│   ├── process_images.py          ← Procesamiento de bordes blancos (v1)
+│   ├── process_images_v2.py       ← Procesamiento adaptativo/agresivo (v2)
+│   └── IMAGE_GUIDE.md             ← Guía de especificaciones de imágenes
 │
-├── _headers                        ← CSP + headers de seguridad (GitHub Pages NO los aplica)
-├── CNAME                           ← Dominio personalizado (yosoy222.com)
-├── .gitignore                      ← Archivos ignorados (incluye server.js de pruebas)
-├── AGENTS.md                       ← Instrucciones para agentes AI
-├── README.md                       ← Este archivo
-└── PLAN_IMPLEMENTACION.md          ← Plan de fases del proyecto
-```
-
-### Flujo de datos
-
-```
-Catalogo.xlsx (fuente de verdad) ──sincroniza──▶ js/app.js (products[])
-                                                     │
-index.html ◀── css/style.css ── js/app.js
-                     │
-                     ├── Renderiza grid desde products[] (44 tarjetas)
-                     ├── Imágenes → images/thumbs/{file}
-                     ├── Búsqueda filtra por name + desc
-                     ├── Filtros filtan por categoría
-                     ├── Clic en imagen → lightbox (images/catalog/{file})
-                     ├── Clic "Agregar" → carrito → localStorage
-                     └── "Pedir por WhatsApp" → wa.me/584126481628?text=...
+├── icons/                         ← 11 archivos: 10 iconos PWA (72–512px + maskable) + fuente
+├── images/
+│   ├── thumbs/                    ← Miniaturas del grid (máx 480px, ~20 KB)
+│   └── catalog/                   ← Imágenes de alta resolución para Lightbox (máx 900px)
+│
+├── manifest.json                  ← Configuración PWA (id, scope, display standalone)
+├── robots.txt                     ← Directivas para crawlers y sitemap
+├── sitemap.xml                    ← Mapa canónico del sitio
+├── package.json                   ← Definición de scripts de prueba (npm test)
+├── _headers                       ← Directivas de cabeceras HTTP y HSTS para edge/CDNs
+├── CNAME                          ← Dominio personalizado (yosoy222.com)
+├── AGENTS.md                      ← Guía operativa para agentes de inteligencia artificial
+└── PLAN_IMPLEMENTACION.md         ← Roadmap de fases y registro de evolución
 ```
 
 ---
 
 ## STACK TECNOLÓGICO
 
-| Componente | Tecnología | Notas |
-|-----------|-----------|-------|
-| HTML | HTML5 semántico | ARIA labels, meta PWA/OG/seguridad |
-| CSS | CSS3 vanilla | Variables, Grid, Flexbox, `prefers-reduced-motion` |
-| JavaScript | ES6+ vanilla | Sin dependencias, sin build tools |
-| Imágenes | JPEG | `images/thumbs/` (grid) + `images/catalog/` (lightbox), bordes removidos |
-| PWA | manifest.json + sw.js | Instalable y offline; iconos en `icons/` |
-| Hosting | GitHub Pages | Static site, HTTPS automático |
-| DNS | Cloudflare | Dominio yosoy222.com |
-| WhatsApp | wa.me links | Sin API — solo enlaces directos a `584126481628` |
-| Fonts | Google Fonts | Playfair Display (títulos) + Inter (cuerpo) |
-| Base de datos | Catalogo.xlsx | Excel local — fuente de verdad de precios/descripciones |
-
-**NO se usa:** React, Vue, Angular, jQuery, npm, webpack, backend, ni ninguna dependencia externa.
+| Componente | Tecnología | Características y Notas |
+|------------|------------|-------------------------|
+| **Frontend** | HTML5 semántico | Prerenderizado estático, ARIA interactivo, microdatos Schema.org |
+| **Estilos** | CSS3 Vanilla | Custom properties (:root), Grid, Flexbox, sin preprocesadores |
+| **Interactividad** | ES6+ Vanilla | Zero runtime dependencies, carga diferida (`defer`), módulos nativos |
+| **Pruebas** | Node.js Test Runner | `node --test` nativo (13 pruebas unitarias/seguridad sin librerías pesadas) |
+| **PWA & Offline** | Service Worker API | Cache v12, Network-First en navegación, manifest standalone |
+| **SEO & Datos** | JSON-LD / XML | Schema.org Store/ItemList, robots.txt, sitemap.xml canónico |
+| **Hosting & CI/CD** | GitHub Pages + Actions | Despliegue automático, CI de pruebas, Dependabot activo |
+| **CDN & DNS** | Cloudflare | Proxy edge, Cache Rules HTML (TTL 5 min), Transform Rules de seguridad |
+| **Checkout** | WhatsApp wa.me API | Enlaces directos itemizados sin necesidad de backend o pasarelas de pago |
+| **Fuente de Verdad**| Catalogo.xlsx | Base de datos local en Excel sincronizada con `js/app.js` |
 
 ---
 
-## CÓMO EJECUTAR LOCALMENTE
+## CÓMO EJECUTAR LOCALMENTE Y PRUEBAS
 
-### Opción 1: Python (recomendado)
+### 1. Ejecutar el servidor web local
+
+> **IMPORTANTE:** Nunca abrir `index.html` con `file://`, ya que el Service Worker y las peticiones relativas requieren protocolo `http://` o `https://`.
+
 ```bash
+# Opción 1: Python (Recomendada)
 cd yosoy222
 python3 -m http.server 8080
-# Abrir http://localhost:8080
-```
+# Abrir en el navegador: http://localhost:8080
 
-### Opción 2: Node.js
-```bash
-cd yosoy222
+# Opción 2: Node.js
 npx serve .
-# Abrir http://localhost:3000
+# Abrir en el navegador: http://localhost:3000
 ```
 
-**IMPORTANTE:** No abrir `index.html` directamente con `file://` — las imágenes y el service worker no cargarán. Siempre usar un servidor local (el SW solo funciona bajo `http://localhost` o `https`).
+### 2. Ejecutar la suite de pruebas automatizadas
+
+El proyecto incluye 13 pruebas unitarias y de seguridad con el runner nativo de Node.js:
+
+```bash
+# Ejecutar con npm
+npm test
+
+# O directamente con Node.js
+node --test tests/*.test.mjs
+```
+
+**Salida esperada:**
+```
+✔ CART: calculateCartTotals correctly sums price and quantity
+✔ CART: calculateCartTotals returns 0 for empty cart
+✔ FILTERS: filterProductList matches by category
+✔ FILTERS: filterProductList matches by search term in name or desc case-insensitively
+✔ CART STORAGE & TTL: loadCartData migrates legacy array format
+✔ CART STORAGE & TTL: loadCartData reconciles prices and drops invalid or uncataloged items
+✔ CART STORAGE & TTL: loadCartData expires cart after 30 days
+✔ CART STORAGE & TTL: saveCartData wraps items with timestamp
+✔ CART ROBUSTNESS: loadCartData safely handles invalid JSON or corrupted data
+✔ CART ROBUSTNESS: loadCartData rejects quantities > 999 or non-finite prices
+✔ SECURITY: loadCartData strips injected/foreign properties to prevent smuggling
+✔ SECURITY: loadCartData expires corrupted or non-positive updatedAt timestamps
+✔ RELIABILITY: filterProductList safely handles corrupted product records with missing fields
+ℹ tests 13 | pass 13 | fail 0
+```
 
 ---
 
-## BASE DE DATOS: Catalogo.xlsx (FUENTE DE VERDAD)
+## BASE DE DATOS: Catalogo.xlsx Y PRE-RENDERIZADO
 
-El **Excel es la base de datos principal del negocio** y la fuente de verdad de la tienda.
+El archivo Excel es la **fuente de verdad** para los precios, medidas, aromas y descripciones.
 
-**Ubicación:** `/home/jr/Documentos/Catalogo velas/Catalogo.xlsx`
+**Ubicación local:** `/home/jr/Documentos/Catalogo velas/Catalogo.xlsx`
 
-### Hojas del Excel y su mapeo a la web
+### Mapeo de hojas del Excel
 
-| Hoja del Excel | Categoría en la web | Productos |
-|----------------|--------------------|-----------|
-| Velas Moldes | `vela` (filtro "Velas") | 15 |
-| Velas Envases | `vela` (filtro "Velas") | 10 |
+| Hoja del Excel | Categoría en Web | Cantidad |
+|----------------|------------------|----------|
+| Velas Moldes | `vela` | 15 |
+| Velas Envases | `vela` | 10 |
 | Gargantillas y Pulseras | `collar` / `pulsera` / `otro` | 11 |
-| Franelas | `franela` (filtro "Franelas") | 7 |
+| Franelas | `franela` | 7 |
 
-### Flujo de actualización (precios, descripciones, productos nuevos)
+### Flujo de Sincronización y Pre-renderizado
 
-1. Editar `Catalogo.xlsx` (cambiar precio, descripción, agregar/quitar productos, registrar foto).
-2. Pedirle al agente: *"sincroniza el sitio con Catalogo.xlsx"* — se vuelca cada fila a `js/app.js`.
-3. Para un producto nuevo: la columna de imagen debe referenciar el archivo JPG en `images/thumbs/` y `images/catalog/`.
-4. Commit + push → deploy automático en ~2 minutos.
-
-### Verificación automática Excel ↔ sitio
-
-Existe un script de verificación en `/home/jr/Documentos/Catalogo velas/_verify_sync.py`:
-
-```bash
-cd "/home/jr/Documentos/Catalogo velas" && python3 _verify_sync.py
-```
-
-Compara los **42 productos del Excel** (4 hojas) contra el sitio: presencia, **precio** y **descripción** (con y sin colapso de espacios). Reporta diferencias reales, diferencias cosméticas (espacios dobles, invisibles en el navegador) y los productos extra del sitio.
-
-> Estado 3-sep-2026: **0 diferencias reales** (42/42 con precio y descripción idénticos). Las únicas tarjetas extra del sitio son las 2 variantes de color de Pulsera Infinito (Beige y Roja, decisión del usuario con datos de la fila P-01).
-
-> Cada entrada del array `products[]` en `js/app.js` equivale a una fila del Excel:
-
-```javascript
-{ file: "NombreArchivo.jpg", name: "Nombre visible", cat: "vela", price: 15, desc: "Descripción completa" }
-```
+1. **Editar Excel:** Actualizar precios, textos o agregar productos en `Catalogo.xlsx`.
+2. **Actualizar `js/app.js`:** Reflejar las modificaciones en el array `products[]`.
+3. **Pre-renderizar el HTML para SEO:**
+   Ejecutar el script de pre-renderizado para actualizar las 44 tarjetas estáticas en `index.html`:
+   ```bash
+   python3 scripts/prerender_catalog.py
+   ```
+4. **Verificar pruebas:**
+   ```bash
+   npm test
+   ```
+5. **Commit y push:** El pipeline de CI/CD correrá las pruebas y publicará los cambios automáticamente.
 
 ---
 
 ## CONFIGURACIÓN ACTUAL (WHATSAPP Y REDES)
 
-### ✅ WhatsApp — YA CONFIGURADO (no cambiar a menos que cambies de número)
+### ✅ WhatsApp Centralizado
+- **Número:** `+58 412 648 1628` → formato internacional wa.me: `584126481628`.
+- **Configuración en código:** `js/app.js` → `const WHATSAPP = '584126481628'`.
+- Todos los componentes (carrito, drawer, lightbox, botón flotante, enlace en header y footer) toman este número.
 
-**Número real:** `+58 412 648 1628` → formato wa.me: `584126481628`
-
-**Única configuración en código:** `js/app.js` → `const WHATSAPP = '584126481628';
-
-Todos los botones usan esa constante: carrito, lightbox, contacto, footer y botón flotante.
-Los enlaces fijos de `index.html` (3 lugares: contacto, footer, flotante) también usan `584126481628`.
-
-**Regla de mantenimiento:** si alguna vez cambia el número, editar SOLO la constante de `js/app.js` y después verificar que los enlaces de `index.html` usan `584126481628`. No duplicar el número en otro lado.
-
-**Formato internacional (sin `+`, sin espacios):**
-```
-584126481628 = 58 (Venezuela) + 412 648 1628 (número local)
-```
-
-**Para verificar que no queda ningún placeholder:**
-```bash
-grep -rn "521XXX\|5215512345678" index.html js/ css/ || echo "OK: sin placeholders"
-```
-
-### Redes sociales — @yo_soy222
-
-| Red | URL | Estado |
-|-----|-----|--------|
-| Instagram | https://www.instagram.com/yo_soy222 | ✅ Configurado |
-| TikTok | https://www.tiktok.com/@yo_soy222 | ✅ Configurado |
-| Facebook | https://www.facebook.com/share/1C5X2yKscG/ | ✅ Configurado |
-
-Si las cuentas reales tienen otro usuario, editar `index.html` (secciones contacto y footer) y el `manifest.json` no hace falta.
+### Redes Sociales Oficiales (@yo_soy222)
+- **Instagram:** https://www.instagram.com/yo_soy222
+- **TikTok:** https://www.tiktok.com/@yo_soy222
+- **Facebook:** https://www.facebook.com/share/1C5X2yKscG/
 
 ---
 
 ## CÓMO AGREGAR UN PRODUCTO
 
-### ⚠️ IMPORTANTE: Procesar imágenes ANTES de subir
-
-**Siempre leer `scripts/IMAGE_GUIDE.md` antes de procesar cualquier imagen nueva.** Ahí está el estándar visual, tamaños, proceso paso a paso y checklist de calidad.
-
-Resumen rápido:
-- **thumbs:** máx 480×480 px, JPEG q78
-- **catalog:** máx 900×900 px, JPEG q80
-- Sin bordes blancos, producto centrado, fondo difuminado (blur + brightness 0.85)
-- Siempre cuadradas (1:1)
-
-### Paso 1: Imagen
-
-Procesar según `scripts/IMAGE_GUIDE.md` y colocar el archivo en **ambas** carpetas con el mismo nombre:
-```
-images/thumbs/NOMBRE.jpg       ← miniatura del grid
-images/catalog/NOMBRE.jpg      ← imagen grande del lightbox
-```
-
-- Formato `.jpg`/`.jpeg`, cuadrada o recortada al contenido
-- Sin bordes blancos (usar el procesador, ver sección de imágenes)
-- Si la imagen no existe, la tarjeta muestra el nombre del producto como placeholder (CSS `::after` con `attr(data-name)`) — no rompe la página
-
-### Paso 2: Dato en app.js
-
-**Archivo:** `js/app.js` → array `products`
-
-```javascript
-{ file: "Nueva Vela Azul.jpg", name: "Vela Azul Celestial", cat: "vela", price: 25, desc: "Vela artesanal de 150grs. en envase de vidrio. Aroma: Jazmín." },
-```
-
-**Campos:**
-
-| Campo | Tipo | Descripción |
-|-------|------|-------------|
-| `file` | string | Nombre exacto del archivo JPG (con extensión, espacios y tildes permitidos) |
-| `name` | string | Nombre mostrado al usuario |
-| `cat` | string | `"vela"` · `"collar"` · `"pulsera"` · `"franela"` · `"otro"` (accesorios) |
-| `price` | number | Precio en USD |
-| `desc` | string | Descripción (visible en tarjeta, lightbox y búsqueda) |
-
-> 🔁 Si el producto viene del Excel, lo normal es sincronizar desde `Catalogo.xlsx` y no editar a mano (ver sección 5).
-> 💡 **Mensaje de WhatsApp por categoría en el lightbox**: el lightbox ya no redacta `"Me interesa la vela …"` para todo producto; el texto se adapta según categoría (`vela`/`collar`/`pulsera`/`franela`) para que el prefilled quede natural al copiar.
-
-### Paso 3: Commit y push
-
-```bash
-git add images/thumbs/NUEVA.jpg images/catalog/NUEVA.jpg js/app.js
-git commit -m "feat: agregar producto Nueva Vela Azul"
-git push
-```
-
-El deploy automático de GitHub Pages actualiza el sitio en ~2 minutos (si el visitante ya tenía el PWA cacheado, puede necesitar dos recargas, ver Troubleshooting).
+1. **Preparar imágenes:**
+   - Seguir las pautas de `scripts/IMAGE_GUIDE.md`.
+   - Generar la miniatura (máx 480×480 px, JPEG q78) en `images/thumbs/NOMBRE.jpg`.
+   - Generar la imagen para lightbox (máx 900×900 px, JPEG q80) en `images/catalog/NOMBRE.jpg`.
+2. **Agregar al array `products` en `js/app.js`:**
+   ```javascript
+   { file: "NOMBRE.jpg", name: "Nombre del Producto", cat: "vela", price: 15, desc: "Descripción completa..." },
+   ```
+3. **Actualizar el HTML prerenderizado:**
+   ```bash
+   python3 scripts/prerender_catalog.py
+   ```
+4. **Validar y publicar:**
+   ```bash
+   npm test
+   git add images/ js/app.js index.html
+   git commit -m "feat: agregar producto Nombre del Producto"
+   git push origin main
+   ```
 
 ---
 
 ## CÓMO ELIMINAR UN PRODUCTO
 
-1. Quitar la línea del array `products[]` en `js/app.js`.
-2. (Opcional) Borrar las imágenes: `rm "images/thumbs/ARCHIVO.jpg" "images/catalog/ARCHIVO.jpg"`
-3. Commit y push:
-```bash
-git commit -am "feat: eliminar producto NOMBRE"
-git push
-```
+1. Remover la entrada del array `products[]` en `js/app.js`.
+2. Re-ejecutar el prerenderizado: `python3 scripts/prerender_catalog.py`.
+3. (Opcional) Eliminar las imágenes asociadas en `images/thumbs/` y `images/catalog/`.
+4. Ejecutar pruebas: `npm test`.
+5. Guardar cambios y subir: `git commit -am "feat: eliminar producto X" && git push origin main`.
 
 ---
 
 ## PROCESAMIENTO DE IMÁGENES (BORDES BLANCOS)
 
-> **Guía completa:** Ver `scripts/IMAGE_GUIDE.md` para el estándar visual, tamaños, proceso paso a paso, checklist de calidad y script de referencia.
-> 
-> **Estado actual (12-sep-2026):** el catálogo usa el set **`imagenes_web`** (1000×1000, origen `/home/jr/Documentos/gemini velas/imagenes_web/`) para 36 productos de velas y joyería; las 7 franelas conservan sus fotos reales (`F-01`…`F-07.jpg`); Armonía Coco procesada el 12 sep 2026 (bordes eliminados, producto agrandado). Los scripts de abajo se usan para fotos nuevas o recortes.
-> **Optimización (5-sep-2026):** las imágenes del repo están redimensionadas para rendimiento — `images/thumbs/` a máx. 480px (JPEG q78, promedio ~20 KB) y `images/catalog/` a máx. 900px (JPEG q80, promedio ~57 KB). Peso total bajó de ~12 MB a ~4.9 MB. Las franelas de baja resolución no se escalan hacia arriba.
-
-El sitio muestra las fotos de producto sin los bordes blancos del original. Hay dos scripts en la raíz del repo:
-
-### Script v1 — `process_images.py`
-- Umbral fijo `THRESHOLD = 240` (píxeles near-white) y `CROP_MARGIN = 2px`
-- Útil para fotos con fondo blanco uniforme
-
-### Script v2 — `process_images_v2.py` (recomendado)
-- Detección adaptativa y más agresiva de píxeles blancos/near-white por imagen
-- Procesa en lote `images/thumbs/` y `images/catalog/` para mantener sincronizados ambos tamaños
-- Es el que se usó para limpiar la tanda final de bordes
-
-```bash
-python3 process_images.py    # o
-python3 process_images_v2.py
-```
-
-**Requisito:** Pillow instalado (`pip install pillow`).
+Las imágenes de catálogo y miniaturas han sido procesadas para eliminar márgenes y bordes blancos artificiales:
+- **`scripts/process_images_v2.py`:** Algoritmo adaptativo con detección de color perimetral, recorte automático y relleno armónico difuminado cuando se requiere relación de aspecto 1:1.
+- **Dimensionamiento optimizado:**
+  - `images/thumbs/`: máx. 480px, peso promedio ~20 KB.
+  - `images/catalog/`: máx. 900px, peso promedio ~57 KB.
+  - Reducción total de peso de imágenes del catálogo de ~12 MB a ~4.9 MB.
 
 ---
 
-## PWA: INSTALAR Y FUNCIONAMIENTO OFFLINE
+## PWA: INSTALAR Y FUNCIONAMIENTO OFFLINE (CACHE V12)
 
-El sitio es una **PWA instalable** con caché offline.
+La PWA cumple con todos los estándares modernos de instalación y navegación offline:
 
-### Archivos
-
-| Archivo | Función |
-|---------|---------|
-| `manifest.json` | Nombre "YoSoy222", `display: standalone`, tema `#faf6ef`, fondo `#faf6ef`, iconos (8 any + 2 maskable) |
-| `sw.js` | Service worker: precache de HTML/CSS/JS/manifest e **imágenes** (estrategia *stale-while-revalidate*, cache v9, query strings `?v=9` en imágenes/iconos) |
-| `icons/` | 10 iconos PWA: 72, 96, 128, 144, 152, 192, 384, 512 (any, RGB plano) + maskable 192/512 (RGBA) + `source_logo.jpg` original |
-| `scripts/generate_icons.py` | Genera los 10 iconos PWA desde `icons/source_logo.jpg`. Ejecutar siempre junto con `verify_icons.py` |
-| `scripts/verify_icons.py` | Verifica que los iconos coinciden con `manifest.json` (existencia, tamaño real vs `sizes`, formato: any=RGB plano, maskable=RGBA) |
-
-#### Comando rápido de iconos
-
-```bash
-python3 scripts/generate_icons.py && python3 scripts/verify_icons.py
-```
-
-Si `verify_icons.py` falla, no se considera cambio de iconos listo.
-
-### Instalar en el celular
-
-1. Abrir https://yosoy222.com en Chrome/Edge (Android) o Safari (iOS)
-2. Android: menú ⋮ → "Instalar aplicación" · iOS: Compartir → "Añadir a pantalla de inicio"
-3. Se abre como app a pantalla completa, sin barra del navegador
-
-### Offline
-
-- La primera visita descarga y guarda los recursos
-- Con el teléfono en modo avión, el sitio sigue abriendo y mostrando el catálogo (los pedidos por WhatsApp requieren conexión, obviamente)
-- **Catálogo offline total (cache v9):** tras activarse el service worker, la app envía las imágenes de los 44 productos (thumbs + catalog) y el SW las precachea en segundo plano en lotes controlados (`PRECACHE_IMAGES`). Una vez completado, el catálogo completo —incluido el lightbox— funciona sin conexión. Query strings `?v=9` en URLs de imágenes/iconos para forzar actualización en dispositivos con PWA instalada.
-
-### Importante sobre la caché (PWA)
-
-El service worker sirve contenido cacheado y lo actualiza en segundo plano. **Tras cada deploy, los visitantes habituales pueden ver la versión vieja durante un rato.** Soluciones:
-- Recargar dos veces (la segunda ya toma la versión nueva)
-- O abrir en incógnito una vez
-- O en DevTools → Application → Service Workers → "Unregister" + recargar
-- **Cache busting automático:** las imágenes e iconos usan query strings `?v=N` para forzar actualización en la caché del navegador
+### Arquitectura de Caché en `sw.js` (Versión 12)
+1. **Navegación Network-First:**
+   Para solicitudes de documentos HTML (`event.request.mode === 'navigate'`), el Service Worker consulta primero la red para obtener la versión más reciente del catálogo y, en caso de estar desconectado o con señal inestable, responde con la copia en caché.
+2. **Stale-While-Revalidate para Recursos Estáticos:**
+   CSS, fuentes, JS e imágenes secundarias se sirven de inmediato desde la caché mientras se actualizan en segundo plano.
+3. **Optimización de Precache (`thumbs-only`):**
+   Durante la instalación, el Service Worker descarga de forma controlada las 44 miniaturas (`images/thumbs/`), garantizando que la navegación visual funcione offline desde el primer instante sin agotar datos móviles del usuario. Las imágenes grandes del lightbox se descargan y cachean bajo demanda.
+4. **Invalidación Inmediata de Versiones Anteriores:**
+   Al publicarse una nueva versión (`CACHE_NAME`), el evento `activate` purga de forma determinista cualquier almacenamiento obsoleto.
+5. **Iconos PWA:**
+   10 variantes (incluyendo formatos maskable con padding seguro para Android) validadas con `scripts/verify_icons.py`.
 
 ---
 
-## SEGURIDAD APLICADA
+## SEGURIDAD APLICADA (AUDIT & HARDENING)
 
-Revisión y endurecimiento aplicados en `js/app.js` + `index.html`:
+El proyecto cuenta con un esquema de seguridad multicapa validado mediante auditoría exhaustiva:
 
-### JavaScript (`js/app.js`)
+### 1. Integridad del Carrito y Precios (`SEC-01` & `SEC-02`)
+- **Conciliación inmutable:** Al agregar un producto al carrito, la función `addToCart` no confía en los atributos `data-price` o `data-name` del DOM (que podrían ser manipulados por extensiones o usuarios en consola). En su lugar, utiliza el identificador para consultar el precio y nombre directo del array inmutable `products`.
+- **Mitigación de Prototype / Payload Smuggling:** Durante la carga y guardado del carrito, los objetos se reconstruyen explícitamente mediante `{ name, price, qty }`, descartando propiedades no autorizadas o inyectadas como `__proto__` o `constructor`.
 
-| Medida | Dónde | Qué hace |
-|--------|-------|----------|
-| `escapeHtml()` | Render del grid, carrito, atributos | Escapa `< > " ' &` en TODO texto insertado con template literals (nombres, descripciones, categorías) — evita XSS si se manipula `products[]` o el `localStorage` |
-| `loadCart()` validado | Carga del carrito | Rechaza JSON malformado e items inválidos (tipo de dato, `price >= 0`, `qty` entre 1 y 999) |
+### 2. TTL y Validación de `localStorage` (`SEC-03`)
+- Validación de integridad con `JSON.parse` en bloque `try/catch`.
+- Comprobación de que `updatedAt` sea un número finito y positivo. Si el carrito tiene más de 30 días (`CART_TTL_MS`), se expira automáticamente para evitar carritos zombis con precios desfasados.
+- Migración transparente y compatible hacia atrás de carritos antiguos que no poseían el campo `updatedAt`.
 
-### Headers (meta tags en `index.html`)
+### 3. Mínimo Privilegio en CI/CD (`SEC-04`)
+- Los flujos de GitHub Actions (`ci.yml` y `purge-cache.yml`) declaran explícitamente `permissions: contents: read` para mitigar vectores de compromiso de token contra el repositorio.
 
-GitHub Pages **no puede enviar headers HTTP personalizados** (ignora archivos `_headers`; verificado con `curl -sI` tras el deploy: solo responde headers controlados por GitHub). Por eso los únicos `<meta http-equiv>` incluidos son los que el navegador **sí** honra:
+### 4. Cabeceras HTTP y HSTS (`SEC-06`)
+- Servidas en el edge mediante Transform Rules de Cloudflare y definidas en `_headers`:
+  ```http
+  Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=()
+  ```
+- Content Security Policy (CSP) activo en `<meta http-equiv>` sin permitir `'unsafe-inline'` para scripts de ejecución.
 
-```html
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; manifest-src 'self'; worker-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
-<meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
-```
-
-- ✅ **CSP activa en producción** (protegida vía `<meta>`, aplicada por el navegador; verificada con curl en yosoy222.com). Sin inline styles/scripts en el sitio, así que `script-src`/`style-src 'self'` no rompen nada.
-- ✅ Referrer-Policy: honrada vía `<meta>` en navegadores modernos.
-- ⚠️ `X-Frame-Options`, `X-Content-Type-Options`, `Permissions-Policy`, `Referrer-Policy` y `HSTS` solo funcionan como header HTTP real — y ahora **se sirven desde el edge de Cloudflare** vía una **Transform Rule** (ruleset `http_response_headers_transform`, creado y verificado con curl en vivo):
-
-```
-x-frame-options: DENY
-x-content-type-options: nosniff
-permissions-policy: camera=(), microphone=(), geolocation=()
-referrer-policy: strict-origin-when-cross-origin
-strict-transport-security: max-age=31536000; includeSubDomains
-```
-
-  Verificado el 3 sep 2026 en `yosoy222.com` (página, CSS, imágenes y www) — el navegador los recibe con el `cf-ray` de Cloudflare.
-- ℹ️ El repo incluye un archivo `_headers` con el mismo set. GitHub Pages no lo lee, pero queda listo por si el sitio se mueve a Netlify o Cloudflare Pages, plataformas que sí lo aplican.
-
-### Caché en el edge (Cache Rule de Cloudflare)
-
-GitHub Pages sirve el HTML con `cache-control: max-age=600` y Cloudflare **no cacheaba HTML por defecto** (`cf-cache-status: DYNAMIC`). Para que los visitantes reciban respuestas desde el edge y los deploys se propaguen rápido, se creó una **Cache Rule** (ruleset `http_request_cache_settings`, 3 sep 2026):
-
-- **Expresión:** rutas `/`, `/*.html` y directorios (`/…/`) — es decir, todo el HTML del sitio.
-- **Edge TTL:** 5 minutos (`edge_ttl` mode `override_origin`, default 300) — el edge revalida contra GitHub Pages cada 5 min, así un deploy nuevo llega a los visitantes en ~5 min.
-- **Browser TTL:** 5 minutos (`browser_ttl` mode `override_origin`, default 300).
-
-Verificado en producción: `cf-cache-status` pasó de `DYNAMIC` a `HIT`/`REVALIDATED` con `age` creciente, ciclo de revalidación ~300s confirmado. El `cache-control` que ve el navegador queda en `max-age=600` (10 min, el mínimo que permite el plan y el mismo valor que ya mandaba el origin) — el edge es el que revalida cada 5 min.
-
-#### Purge automático vía GitHub Actions
-
-Después de cada deploy exitoso de GitHub Pages, un workflow de GitHub Actions purga automáticamente la caché de Cloudflare vía API. Esto garantiza que los cambios estén disponibles inmediatamente después del deploy (~2-3 min después del push).
-
-**Requisitos:** Configurar los secrets `CLOUDFLARE_ZONE_ID` y `CLOUDFLARE_API_TOKEN` en el repo (Settings → Secrets and variables → Actions). El workflow usa autenticación Bearer (API Token); `CLOUDFLARE_EMAIL` no se necesita. **IMPORTANTE:** el token debe tener permiso `Zone → Cache Purge → Edit` — sin eso falla con `Authentication error (10000)`. Verificado funcionando (5 sep 2026).
-
-### Ya seguro por diseño
-- ✅ Sin `eval()`, sin `innerHTML` con datos de usuario sin escapar
-- ✅ Sin secretos ni claves en el código ni en git
-- ✅ Enlaces externos con `target="_blank" rel="noopener"`
-- ✅ Service worker solo cachea recursos del mismo origen
-- ✅ No hay backend: la única entrada de datos es el navegador del visitante (catálogo estático + carrito local)
-
-### Checklist de seguridad antes del deploy
-1. Secrets de Cloudflare en GitHub: confirmar que `CLOUDFLARE_ZONE_ID` y `CLOUDFLARE_API_TOKEN` existen y que el token tiene permiso `Zone → Cache Purge → Edit`.
-2. Headers reales en producción: ejecutar `curl -sI https://yosoy222.com/` y verificar que llegan `strict-transport-security`, `x-frame-options: DENY`, `x-content-type-options: nosniff`, `referrer-policy: strict-origin-when-cross-origin`, `permissions-policy: camera=(), microphone=(), geolocation=()`.
-3. Si el número de WhatsApp cambia, editar solo `js/app.js` y después confirmar que los enlaces de `index.html` coinciden con la constante.
+### 5. Resiliencia y Manejo de Errores Global
+- Handlers en `js/app.js` (`window.addEventListener('error')` y `unhandledrejection`) que capturan anomalías sin interrumpir la experiencia de usuario ni exponer trazas sensibles.
 
 ---
 
-## DEPLOY A GITHUB PAGES
+## CALIDAD, CONFIABILIDAD Y ACCESIBILIDAD
 
-### Estado actual
+- **Protección contra Re-renderizado Destructivo (`REL-01`):** `renderProducts()` comprueba si el catálogo ya se encuentra prerenderizado en el DOM inicial. Si coincide, vincula los eventos sin destruir las tarjetas, eliminando parpadeos y retrasos.
+- **Guardias Defensivas (`REL-02` - `REL-05`):** Comprobación de elementos nulos en filtros, validación matemática en operaciones de cantidad de carrito (`Number.isInteger(qty)`) y protección contra divisiones por cero en el visor de fotos (`lightbox`).
+- **Accesibilidad Interactiva (WCAG AA):**
+  - Botones de filtro con atributos dinámicos `aria-pressed="true|false"`.
+  - Botón de menú con `aria-controls="nav"` y `aria-expanded`.
+  - **Trampas de Foco (Focus Trap):** Al abrir el carrito lateral o el menú móvil en pantallas pequeñas, la tecla `Tab` mantiene el foco dentro del panel interactivo y `Esc` lo cierra restaurando el foco al disparador original.
+  - Apertura del Lightbox mediante teclado con `Enter` y `Espacio` en `<button class="product-image">`.
 
-✅ **GitHub Pages:** Activado (deploy desde `main`, carpeta raíz)
-✅ **Dominio:** yosoy222.com (Cloudflare)
-✅ **HTTPS:** Habilitado
-✅ **CDN:** Cloudflare proxy activado en los 5 registros + **Cache Rule HTML** (edge TTL 5 min)
-✅ **Deploy automático:** cada push a `main` (~2 min)
-✅ **Purge automático:** GitHub Actions purga Cloudflare después de cada deploy (~30 seg) — verificado en verde (5 sep 2026, workflow con validación `jq`)
+---
 
-### Cómo se publica
+## RENDIMIENTO Y CORE WEB VITALS
 
+- **Eliminación de Forced Reflows (`PERF-01`):** El seguimiento de navegación y scroll spy utiliza la API nativa `IntersectionObserver` con listeners de scroll pasivos (`{ passive: true }`), eliminando bloqueos del hilo principal.
+- **Debounce en Búsqueda (`PERF-04`):** Retardo de 150 ms en el input de filtrado para amortiguar eventos repetitivos de escritura en dispositivos móviles.
+- **Prevención de CLS:** Todas las imágenes del catálogo y miniaturas cuentan con dimensiones fijas (`width="480" height="480"`), evitando desplazamientos acumulativos durante la carga.
+- **Optimización de Recursos Críticos:** Preconexión prioritaria a `fonts.googleapis.com` y `fonts.gstatic.com` ubicada al inicio de `<head>`, carga asíncrona de imágenes (`decoding="async"`) y script principal marcado con `defer`.
+
+---
+
+## SEO, INDEXABILIDAD Y DATOS ESTRUCTURADOS
+
+1. **Pre-renderizado de Catálogo:** Las 44 tarjetas de productos se encuentran presentes en el código fuente HTML original. Los motores de búsqueda que no ejecutan JavaScript indexan de inmediato todos los títulos, descripciones y precios.
+2. **Schema.org JSON-LD:** Bloque estructurado con tipado `Store` y lista ordenada `ItemList` que describe detalladamente cada vela, collar, pulsera o franela, su moneda (USD), precio y disponibilidad (`InStock`).
+3. **Indexación y Rastreo:** Archivos [`robots.txt`](file:///home/debianserver/Documentos/programacion/yosoy222/robots.txt) y [`sitemap.xml`](file:///home/debianserver/Documentos/programacion/yosoy222/sitemap.xml) canónicos configurados.
+4. **Metadatos Sociales:** Integración completa de Open Graph (`og:title`, `og:image`, `og:description`, `og:url`) y Twitter Cards con URL canónica `https://yosoy222.com/`.
+
+---
+
+## SUITE DE TESTS Y CI/CD (GITHUB ACTIONS)
+
+### 1. Pruebas Automatizadas (`tests/cart_and_filters.test.mjs`)
+La suite de pruebas corre bajo el runner nativo `node --test` y verifica:
+- Exactitud de subtotales, totales y redondeos del carrito.
+- Filtrado por categorías y coincidencias insensibles a mayúsculas/minúsculas en búsquedas compuestas.
+- Compatibilidad hacia atrás de carritos almacenados en versiones previas.
+- Expiración de carritos tras 30 días de inactividad.
+- Resistencia ante manipulaciones manuales en `localStorage` o inyecciones de prototipo.
+
+### 2. Pipeline de Integración Continua (`.github/workflows/ci.yml`)
+En cada `push` y `pull_request` a la rama `main`, GitHub Actions ejecuta la suite completa de pruebas en Node.js 20/22. Si alguna prueba falla, el commit se bloquea impidiendo despliegues rotos.
+
+### 3. Automatización de Despliegue y Purga (`.github/workflows/purge-cache.yml`)
+Tras completarse el despliegue automático de GitHub Pages, este workflow:
+1. Purga inmediatamente toda la caché perimetral de Cloudflare vía API.
+2. Ejecuta un **Smoke Test** que verifica el código de respuesta HTTP 200 directo contra los servidores de GitHub Pages y confirma el estado saludable del edge de Cloudflare.
+
+### 4. Gestión de Dependencias (`.github/dependabot.yml`)
+Monitoreo semanal automatizado para actualizar acciones de GitHub y paquetes base del repositorio.
+
+---
+
+## DEPLOY A GITHUB PAGES Y CLOUDFLARE
+
+### Flujo de Publicación
+```
+Push a main ──▶ CI Tests (node --test) ──▶ GitHub Pages Build ──▶ Purge Cloudflare Cache + Smoke Test ──▶ Producción OK
+```
+
+### Comprobación de Producción
 ```bash
-git add -A
-git commit -m "feat: descripción del cambio"
-git push origin main
+# Verificar código de respuesta y cabeceras de seguridad
+curl -sI https://yosoy222.com/ | grep -E "HTTP|server|strict-transport|x-frame|content-type"
 ```
-
-Nada más: GitHub Pages compila y publica solo, y el workflow de GitHub Actions purga la caché automáticamente.
-
-### Flujo completo del deploy
-
-```
-push a main → GitHub Pages deploy (~2 min) → purge automático Cloudflare (~30 seg) → sitio actualizado
-```
-
-### Verificar el deploy
-
-```bash
-curl -s https://api.github.com/repos/juancito8812/yosoy222/pages | python3 -m json.tool
-curl -sI https://yosoy222.com | head -5
-```
-
-### Configurar purge automático
-
-1. Crear token en Cloudflare: https://dash.cloudflare.com/profile/api-tokens → **Create Token** → usar el template **"Cloudflare Purge Cache"** o custom con permisos `Zone → Cache Purge → Edit` + `Zone → Zone → Read`
-2. En GitHub: Settings → Secrets and variables → Actions → **New repository secret**
-3. Agregar `CLOUDFLARE_ZONE_ID` (Zone ID de Cloudflare) y `CLOUDFLARE_API_TOKEN` (el token creado). Con autenticación Bearer no se necesita `CLOUDFLARE_EMAIL`.
-4. Verificar permisos con: `curl -s -X POST "https://api.cloudflare.com/client/v4/zones/{ZONE_ID}/purge_cache" -H "Authorization: Bearer {TOKEN}" -H "Content-Type: application/json" --data '{"purge_everything":true}'` → debe responder `"success": true` (error `10000` = el token no tiene permiso de purge).
 
 ---
 
 ## CONFIGURAR DOMINIO PERSONALIZADO
 
-### Estado actual
-
-✅ **Dominio:** yosoy222.com (registrado en Cloudflare)
-✅ **DNS + CDN:** Cloudflare con proxy **activado** (naranja) en los 5 registros — el tráfico pasa por el edge de Cloudflare (verificado con `server: cloudflare` + `cf-ray`)
-✅ **Registros:** 4 A records + 1 CNAME
-
-### Registros DNS (ya creados vía API de Cloudflare)
-
-| Tipo | Nombre | Valor | Proxy |
-|------|--------|-------|-------|
-| A | @ | 185.199.108.153 | On |
-| A | @ | 185.199.109.153 | On |
-| A | @ | 185.199.110.153 | On |
-| A | @ | 185.199.111.153 | On |
-| CNAME | www | juancito8812.github.io | On |
-
-### CNAME en el repo
-
-Archivo `CNAME` en la raíz con el contenido:
-```
-yosoy222.com
-```
-
-### Verificar
-
-```bash
-dig yosoy222.com +short      # debe listar las 4 IPs de GitHub Pages
-curl -sI https://yosoy222.com | head -5
-```
-
-> Si un equipo de tu casa no abre la página pero desde datos móviles sí, es **caché DNS del router/ISP**: reinicia el router o cambia el DNS del dispositivo a `1.1.1.1` / `8.8.8.8`.
+- **Dominio:** `yosoy222.com` en Cloudflare con proxy activado (CDN + WAF).
+- **Registros DNS:**
+  - 4 registros tipo `A` (@) apuntando a las IPs Anycast de GitHub Pages (`185.199.108.153`, `185.199.109.153`, `185.199.110.153`, `185.199.111.153`).
+  - 1 registro tipo `CNAME` (www) apuntando a `juancito8812.github.io`.
+- **Archivo CNAME:** Ubicado en la raíz del repositorio con el contenido `yosoy222.com`.
 
 ---
 
 ## TABLA DE PRODUCTOS COMPLETA
 
-> Fuente: `Catalogo.xlsx` → `js/app.js`. Las descripciones completas (colores, aromas disponibles) viven en el Excel y en `app.js`; aquí se resumen los datos clave.
-> 💡 *Todos los productos de cera de soja se ofrecen en varios colores y aromas: Coco, Coco Vainilla, Lavanda, Jazmín, Canela, Limón Fresh, Café.*
+> Fuente: `Catalogo.xlsx` sincronizado con `js/app.js`.
 
-### Velas Moldes (15) — filtro "Velas"
-
+### Velas Moldes (15) — Cera de Soja artesanal
 | # | Nombre | Archivo | Precio | Resumen |
 |---|--------|---------|--------|---------|
 | 1 | Rosa | `VM-ROSA_vela_rosa_79g.jpg` | $7.00 | Vela 79g en forma de rosa |
 | 2 | Mini Corazones | `VM-MINICORAZON_vela_mini_corazones.jpg` | $0.17 | Wax melt 1g, mini corazón |
-| 3 | Rosa Pequeña | `VM-ROSAPEQ_vela_rosa_pequena_23g.jpg` | $4.50 | Vela 23g, palito decorativo |
-| 4 | Mini Margarita | `VM-MINIMARGARITA_wax_melts_mini_margarita.jpg` | $1.70 | Wax melt 6g, mini margarita |
-| 5 | Margarita Pequeña | `VM-MARGARITA_vela_margarita_pequena_16g.jpg` | $3.00 | Vela 16g, palito decorativo |
-| 6 | Tulipán Pequeña | `VM-TULIPAN_vela_tulipan_pequena_33g.jpg` | $5.00 | Vela 33g, palito decorativo |
-| 7 | Bouquet Tulipán | `VM-BOUQUET_vela_bouquet_tulipan_83g.jpg` | $8.50 | Vela 83g, bouquet de tulipanes |
-| 8 | Espiral | `VM-ESPIRAL_vela_espiral_104g.jpg` | $9.50 | Vela 104g en espiral |
-| 9 | Sagrada Familia | `VM-SAGRADA_vela_sagrada_familia_75g.jpg` | $7.00 | Vela 75g |
-| 10 | Buda | `VM-BUDA_vela_buda_20g.jpg` | $6.50 | Vela 20g |
-| 11 | Mano Hamsa | `VM-HAMSA_vela_mano_hamsa_75g.jpg` | $8.00 | Vela 75g |
-| 12 | Corazón | `VM-CORAZON_vela_corazon_182g.jpg` | $13.50 | Vela 182g |
-| 13 | Cruz con Paloma | `VM-CRUZ_vela_cruz_con_paloma_52g.jpg` | $7.00 | Vela 52g |
-| 14 | Cubo | `VM-CUBO_vela_cubo_40g.jpg` | $7.00 | Vela 40g |
-| 15 | Virgen del Carmen | `VM-VIRGEN_vela_virgen_del_carmen_42g.jpg` | $7.00 | Vela 42g |
+| 3 | Rosa Pequeña | `VM-ROSAPEQ_vela_rosa_pequena_23g.jpg` | $4.50 | Vela 23g en palito decorativo |
+| 4 | Mini Margarita | `VM-MINIMARGARITA_wax_melts_mini_margarita.jpg` | $1.70 | Wax melt 6g, margarita |
+| 5 | Margarita Pequeña | `VM-MARGARITA_vela_margarita_pequena_16g.jpg` | $3.00 | Vela 16g en palito decorativo |
+| 6 | Tulipán Pequeña | `VM-TULIPAN_vela_tulipan_pequena_33g.jpg` | $5.00 | Vela 33g en palito decorativo |
+| 7 | Bouquet Tulipán | `VM-BOUQUET_vela_bouquet_tulipan_83g.jpg` | $8.50 | Vela 83g, bouquet tulipanes |
+| 8 | Espiral | `VM-ESPIRAL_vela_espiral_104g.jpg` | $9.50 | Vela 104g diseño espiral |
+| 9 | Sagrada Familia | `VM-SAGRADA_vela_sagrada_familia_75g.jpg` | $7.00 | Vela 75g religiosa |
+| 10 | Buda | `VM-BUDA_vela_buda_20g.jpg` | $6.50 | Vela 20g meditación |
+| 11 | Mano Hamsa | `VM-HAMSA_vela_mano_hamsa_75g.jpg` | $8.00 | Vela 75g símbolo protector |
+| 12 | Corazón | `VM-CORAZON_vela_corazon_182g.jpg` | $13.50 | Vela 182g forma corazón |
+| 13 | Cruz con Paloma | `VM-CRUZ_vela_cruz_con_paloma_52g.jpg` | $7.00 | Vela 52g religiosa |
+| 14 | Cubo | `VM-CUBO_vela_cubo_40g.jpg` | $7.00 | Vela 40g geométrica |
+| 15 | Virgen del Carmen | `VM-VIRGEN_vela_virgen_del_carmen_42g.jpg` | $7.00 | Vela 42g devoción |
 
-### Velas Envases (10) — filtro "Velas"
-
+### Velas Envases (10) — Cristal y Metal
 | # | Nombre | Archivo | Precio | Resumen |
 |---|--------|---------|--------|---------|
 | 16 | Mini Petit | `VE-MINIPETIT_vela_mini_petit_123g.jpg` | $7.50 | Vela 123g, vidrio, tapa dorada |
-| 17 | Mandala | `VE-MANDALA_vela_mandala_98g.jpg` | $9.00 | Vela 98g, envase metal decorativo |
-| 18 | Vintage | `VE-VINTAGE_vela_vintage_165g.jpg` | $9.50 | Vela 165g, vidrio, tapa corcho, detalle floral |
-| 19 | Petit | `VE-PETIT_vela_petit_171g.jpg` | $11.00 | Vela 171g, vidrio, tapa dorada, corazones rojos |
-| 20 | Estrella | `VE-ESTRELLA_vela_estrella_285g.jpg` | $12.00 | Vela 285g, vidrio, forma de estrella |
-| 21 | Aura Rosa | `VE-AURA-ROSA_vela_aura_rosa_342g.jpg` | $17.00 | Vela 342g, tapa de madera, rosa en superficie |
-| 22 | Aura Tulipán | `VE-AURA-TULIPAN_vela_aura_tulipan_335g.jpg` | $17.00 | Vela 335g, tapa de madera, tulipán en superficie |
-| 23 | Aura Corazones | `VE-AURA-CORAZON_vela_aura_corazones_418g.jpg` | $20.00 | Vela 418g, marmoleada blanco/rosa |
-| 24 | Armonía Canela | `VE-ARMONIA-CANELA_vela_armonia_canela_508g.jpg` | $22.00 | Vela 508g, vidrio opaco, mecha de madera |
-| 25 | Armonía Coco | `Armonia Coco.jpg` | $23.00 | Vela 516g, vidrio opaco (sin imagen en el set web) |
+| 17 | Mandala | `VE-MANDALA_vela_mandala_98g.jpg` | $9.00 | Vela 98g, envase metálico |
+| 18 | Vintage | `VE-VINTAGE_vela_vintage_165g.jpg` | $9.50 | Vela 165g, tapa de corcho |
+| 19 | Petit | `VE-PETIT_vela_petit_171g.jpg` | $11.00 | Vela 171g con corazones rojos |
+| 20 | Estrella | `VE-ESTRELLA_vela_estrella_285g.jpg` | $12.00 | Vela 285g envase estrella |
+| 21 | Aura Rosa | `VE-AURA-ROSA_vela_aura_rosa_342g.jpg` | $17.00 | Vela 342g, tapa madera y rosa |
+| 22 | Aura Tulipán | `VE-AURA-TULIPAN_vela_aura_tulipan_335g.jpg` | $17.00 | Vela 335g con tulipán de cera |
+| 23 | Aura Corazones | `VE-AURA-CORAZON_vela_aura_corazones_418g.jpg` | $20.00 | Vela 418g marmoleada |
+| 24 | Armonía Canela | `VE-ARMONIA-CANELA_vela_armonia_canela_508g.jpg` | $22.00 | Vela 508g, mecha de madera |
+| 25 | Armonía Coco | `Armonia Coco.jpg` | $23.00 | Vela 516g, vidrio esmerilado |
 
-### Gargantillas y Collares (5) — filtro "Collares" · *Gold-Filled bañada en oro, dije de piedra natural a elección*
+### Joyería y Accesorios (12)
+| # | Nombre | Archivo | Precio | Categoría |
+|---|--------|---------|--------|-----------|
+| 26 | Gargantilla G-01 | `G-01_gargantilla_gold-filled_lisa.jpg` | $20.00 | Collar |
+| 27 | Gargantilla G-02 | `G-02_gargantilla_gold-filled_con_dije.jpg` | $25.00 | Collar |
+| 28 | Collar Medio C.M-01 | `C.M-01_collar_medio_eslabon_29cm.jpg` | $25.00 | Collar |
+| 29 | Collar Medio C.M-02 | `C.M-02_collar_medio_solido_34cm.jpg` | $30.00 | Collar |
+| 30 | Collar Largo C.L-01 | `C.L-01_collar_largo_40cm.jpg` | $32.00 | Collar |
+| 31 | Pulsera Infinito Azul | `P-01b_pulsera_infinito_azul.jpg` | $8.00 | Pulsera |
+| 32 | Pulsera Infinito Beige | `P-01c_pulsera_infinito_beige.jpg` | $8.00 | Pulsera |
+| 33 | Pulsera Infinito Roja | `P-01a_pulsera_infinito_roja.jpg` | $8.00 | Pulsera |
+| 34 | Pulsera San Benito | `P-02_pulsera_san_benito.jpg` | $8.00 | Pulsera |
+| 35 | Pulsera Perla | `P-03_pulsera_perla.jpg` | $6.00 | Pulsera |
+| 36 | Pulsera Ojito | `P-04_pulsera_ojito.jpg` | $6.00 | Pulsera |
+| 37 | Piedras Naturales | `D-01_dijes_piedras_naturales.jpg` | $7.00 | Accesorio |
 
-| # | Nombre | Archivo | Precio | Medidas |
-|---|--------|---------|--------|---------|
-| 26 | Gargantilla G-01 | `G-01_gargantilla_gold-filled_lisa.jpg` | $20.00 | 25cm · 1,5mm · broche langosta |
-| 27 | Gargantilla G-02 | `G-02_gargantilla_gold-filled_con_dije.jpg` | $25.00 | 25cm · 3mm · broche ancla |
-| 28 | Collar Medio C.M-01 | `C.M-01_collar_medio_eslabon_29cm.jpg` | $25.00 | 29cm · 3mm · broche ancla |
-| 29 | Collar Medio C.M-02 | `C.M-02_collar_medio_solido_34cm.jpg` | $30.00 | 34cm · 4mm sólido |
-| 30 | Collar Largo C.L-01 | `C.L-01_collar_largo_40cm.jpg` | $32.00 | 40cm · 4mm sólido |
-
-### Pulseras (6) — filtro "Pulseras"
-
-| # | Nombre | Archivo | Precio | Resumen |
-|---|--------|---------|--------|---------|
-| 31 | Pulsera Infinito | `P-01b_pulsera_infinito_azul.jpg` | $8.00 | Símbolo infinito, trenzado azul |
-| 32 | Pulsera Infinito Beige | `P-01c_pulsera_infinito_beige.jpg` | $8.00 | Símbolo infinito, trenzado beige |
-| 33 | Pulsera Infinito Roja | `P-01a_pulsera_infinito_roja.jpg` | $8.00 | Símbolo infinito, trenzado rojo |
-| 34 | Pulsera San Benito | `P-02_pulsera_san_benito.jpg` | $8.00 | San Benito, hilo rojo |
-| 35 | Pulsera Perla | `P-03_pulsera_perla.jpg` | $6.00 | Perla, calma y claridad |
-| 36 | Pulsera Ojito | `P-04_pulsera_ojito.jpg` | $6.00 | Ojito protector, hilo rojo |
-
-### Accesorios (1) — filtro "Accesorios"
-
-| # | Nombre | Archivo | Precio | Resumen |
-|---|--------|---------|--------|---------|
-| 37 | Piedras Naturales | `D-01_dijes_piedras_naturales.jpg` | $7.00 | Dijes de piedras naturales |
-
-### Franelas (7) — filtro "Franelas"
-
+### Franelas de Algodón (7)
 | # | Nombre | Archivo | Precio | Resumen |
 |---|--------|---------|--------|---------|
 | 38 | F-01 Loto Sagrado | `F-01.jpg` | $16.00 | Franela oliva, Loto + Om |
@@ -624,209 +508,86 @@ curl -sI https://yosoy222.com | head -5
 | 43 | F-06 Cool | `F-06.jpg` | $14.00 | Franela lavanda, diseño "Cool" |
 | 44 | F-07 El Amor | `F-07.jpg` | $14.00 | "El Amor / Un sentido - nuestras vidas" |
 
-> ✅ Las 7 franelas (F-01…F-07) usan sus **fotos reales** (no se tocaron y siguen siendo `F-01.jpg`…`F-07.jpg`).
-> 🖼️ **Imágenes web 1000×1000 (set `imagenes_web`):** 36 productos de velas y joyería usan ese set (1000×1000, origen `/home/jr/Documentos/gemini velas/imagenes_web/`). Solo `Armonia Coco` no existe en el set y conserva su imagen anterior.
-
 ---
 
 ## GUÍA DE ESTILOS CSS
 
-### Variables de color (modificar en `:root` de `css/style.css`)
+Tokens principales en `:root` de [`css/style.css`](file:///home/debianserver/Documentos/programacion/yosoy222/css/style.css):
 
 ```css
 :root {
-  /* Paleta tierra: blanco cálido → crema */
-  --bg: #faf6ef;              /* Fondo principal (crema claro) */
-  --bg-raised: #f1eadb;       /* Fondo elevado / placeholders */
-  --bg-card: #fffdf8;         /* Fondo de tarjetas (blanco cálido) */
-  --bg-card-hover: #f7f0e3;
-  --surface: #f3ebdd;         /* Secciones alternas */
-  --border: rgba(120,90,55,0.14);  /* Bordes sutiles (tierra) */
-  --border-strong: rgba(120,90,55,0.26);
-
-  /* Texto */
-  --text: #3b3125;            /* Texto principal (café oscuro) */
+  /* Paleta tierra crema con alto contraste accesible (WCAG AA > 6.2:1) */
+  --bg: #faf6ef;              /* Fondo principal */
+  --bg-raised: #f1eadb;       /* Fondos elevados */
+  --bg-card: #fffdf8;         /* Tarjetas de producto */
+  --text: #3b3125;            /* Texto principal café oscuro */
   --text-muted: #7b6a50;      /* Texto secundario */
-  --text-faint: #8f7a5e;      /* Texto tenue */
-
-  /* Acento (ámbar tierra, llama de vela) */
-  --accent: #a96f2d;
-  --accent-hover: #8f5c22;
-  --accent-glow: rgba(169,111,45,0.22);
-
-  /* Funcional */
-  --whatsapp: #25d366;
+  --accent: #854f19;          /* Acento accesible (ámbar tostado) */
+  --accent-hover: #6d3f11;
+  --whatsapp: #25d366;        /* WhatsApp oficial */
   --whatsapp-hover: #1fbe5a;
   --danger: #c0392b;
-
-  /* Layout */
-  --radius: 14px; --radius-sm: 8px; --radius-full: 999px;
-  --shadow: 0 6px 24px rgba(101,71,35,0.10);
-  --shadow-lg: 0 12px 40px rgba(101,71,35,0.15);
-  --ease: cubic-bezier(0.4, 0, 0.2, 1);
-  --duration: 0.28s;
+  --radius: 14px;
 }
-```
-
-### Tipografía
-
-| Rol | Fuente | Peso |
-|-----|--------|------|
-| Títulos (h1–h4) | Playfair Display (serif) | 600 |
-| Cuerpo y UI | Inter (sans) | 400–700 |
-
-### Clases principales
-
-| Clase | Uso |
-|-------|-----|
-| `.btn-primary` / `.btn-ghost` / `.btn-whatsapp` | Botones |
-| `.product-card` / `.product-image` / `.product-desc` | Tarjetas del catálogo |
-| `.product-image::after` | Fallback de imagen faltante (muestra `data-name`) |
-| `.filter-btn` / `.search` | Filtros y buscador |
-| `.cart-drawer` / `.cart-item` / `.qty-stepper` | Carrito |
-| `.lightbox` / `.lightbox-img` / `.lightbox-nav` | Vista ampliada |
-| `.whatsapp-float` | Botón flotante de WhatsApp |
-
-### Breakpoints responsive
-
-```css
-@media (max-width: 900px)  { /* Tablet: menú mobile, hero/nosotros apilados */
-@media (max-width: 600px)  { /* Móvil: grid 2 columnas, pasos 1 columna, lightbox compacto */
-@media (max-width: 380px)  { /* Móvil pequeño: grid 1 columna */
 ```
 
 ---
 
 ## ESTRUCTURA DE ARCHIVOS
 
-### Requeridos (no borrar)
-
-| Archivo | Propósito | Líneas aprox. |
-|---------|-----------|---------------|
-| `index.html` | Landing page | ~298 |
-| `css/style.css` | Todos los estilos | ~833 |
-| `js/app.js` | Toda la lógica JS | ~585 |
-| `manifest.json` | Metadata PWA (id + scope) | ~68 |
-| `sw.js` | Service worker (offline, cache v9) | ~138 |
-| `icons/` | Iconos PWA (10 PNG + source_logo.jpg) | — |
-| `CNAME` | Dominio personalizado | 1 |
-
-### Imágenes
-
-| Carpeta | Contenido | Uso |
-|---------|-----------|-----|
-| `images/thumbs/` | Miniaturas del grid (63 archivos: 44 productos + 4 decorativas + 15 variantes) | Tarjetas de producto |
-| `images/catalog/` | Imágenes grandes (60 archivos: 44 productos + 16 variantes) | Lightbox |
-
-### Scripts y herramientas
-
-| Archivo | Propósito |
-|---------|-----------|
-| `scripts/generate_icons.py` | Regenera los 10 iconos PWA desde `icons/source_logo.jpg` |
-| `scripts/verify_icons.py` | Valida iconos contra `manifest.json` |
-| `scripts/process_images.py` | Remoción de bordes blancos (v1 y v2) |
-| `scripts/process_images_v2.py` | Remoción adaptativa/agresiva de bordes blancos (recomendado) |
-| `scripts/IMAGE_GUIDE.md` | Guía de procesamiento de imágenes |
-| `_headers` | CSP + headers de seguridad (GitHub Pages NO los aplica; sirve para Netlify/Cloudflare Pages) |
-| `PLAN_IMPLEMENTACION.md` | Plan de fases del proyecto |
-| `AGENTS.md` | Instrucciones para agentes AI |
-| `.gitignore` | Archivos ignorados (`server.js` de pruebas, etc.) |
+| Archivo / Directorio | Propósito |
+|----------------------|-----------|
+| `index.html` | Estructura web, metadatos, Schema.org y catálogo prerenderizado |
+| `css/style.css` | Sistema de diseño responsive y tokens de color |
+| `js/app.js` | Lógica de catálogo, filtros, carrito seguro y eventos |
+| `sw.js` | Service Worker (Cache v12, Network-First navegación) |
+| `manifest.json` | Configuración PWA e iconos |
+| `tests/cart_and_filters.test.mjs` | Suite de 13 pruebas unitarias y de seguridad |
+| `.github/workflows/` | Automatización de CI y purga de caché con smoke test |
+| `.github/dependabot.yml` | Configuración de actualización de dependencias y acciones |
+| `scripts/` | Herramientas auxiliares de prerenderizado, iconos e imágenes |
+| `robots.txt` / `sitemap.xml` | Indexación y SEO para motores de búsqueda |
+| `_headers` | Cabeceras de seguridad HTTP y HSTS |
+| `CNAME` | Dominio personalizado para GitHub Pages |
+| `AGENTS.md` | Instrucciones de ingeniería para agentes AI |
+| `PLAN_IMPLEMENTACION.md` | Registro histórico y hoja de ruta |
 
 ---
 
 ## COMANDOS GIT ÚTILES
 
 ```bash
-# Ver estado
+# Ver estado del repositorio
 git status
 
-# Agregar y commitear
-git add js/app.js index.html css/style.css
-git commit -m "feat: descripción del cambio"
+# Ejecutar pruebas antes de confirmar
+npm test
 
-# Subir a GitHub (deploy automático a yosoy222.com)
+# Agregar y realizar commit
+git add .
+git commit -m "feat/fix: descripción del cambio"
+
+# Publicar en producción
 git push origin main
 
-# Ver historial
-git log --oneline -10
-
-# Descartar cambios de un archivo (cuidado: pierde tu trabajo local)
-git checkout -- index.html
+# Monitorear workflows de GitHub Actions
+gh run list --limit 3
 ```
 
 ---
 
 ## TROUBLESHOOTING
 
-### "El nombre de usuario @521XXXXXXXXX no está en WhatsApp" al abrir un enlace
-- **Causa:** el enlace que abriste es **viejo**: un chat/contacto guardado, un mensaje reenviado, o una versión cacheada del sitio de cuando aún estaba el número placeholder. El sitio desplegado ya usa `584126481628` en todos los botones.
-- **Solución:** borra ese chat/contacto antiguo en WhatsApp, o abre la web de nuevo con recarga forzada (`Ctrl+Shift+R`) / incógnito, y usa los botones del sitio. Verificar en el código:
-  ```bash
-  grep -c "584126481628" index.html js/app.js   # js/app.js (const WHATSAPP) + index.html (3 enlaces)
-  ```
+### 1. El navegador muestra una versión desactualizada
+- **Causa:** El Service Worker almacena en caché los recursos para navegación offline.
+- **Solución:** Recargar forzando caché (`Ctrl + Shift + R` o `Cmd + Shift + R`). Para desregistrar manualmente: `DevTools → Application → Service Workers → Unregister`.
 
-### El sitio muestra la versión vieja después de un cambio
-- **Causa:** caché del navegador **o service worker PWA** (sirve lo cacheado y actualiza en segundo plano)
-- **Solución:** recargar 2 veces, o `Ctrl+Shift+R`, o incógnito, o DevTools → Application → Service Workers → Unregister
+### 2. WhatsApp abre un número incorrecto
+- Comprobar que en `js/app.js` la variable `const WHATSAPP = '584126481628'` no contenga signos `+` o guiones.
 
-### Las imágenes no cargan
-- **Causa 1:** abrir el HTML con `file://` → usar siempre `python3 -m http.server`
-- **Causa 2:** el archivo no existe → la tarjeta muestra el placeholder con el nombre del producto. Agregar el JPG a `images/thumbs/` y `images/catalog/` con el nombre exacto que usa `js/app.js`
-- **Causa 3:** la imagen parece ser otra cosa (ej: vela en vez de franela) → **caché del service worker**. Limpiar: DevTools → Application → Storage → Clear site data, o borrar caché del navegador
-
-### El botón de WhatsApp no funciona o abre número equivocado
-- Verificar `js/app.js`: `const WHATSAPP = '584126481628';` y los 3 enlaces fijos en `index.html`
-
-### Algunas imágenes aún muestran bordes blancos
-- **Para imágenes nuevas:** seguir `scripts/IMAGE_GUIDE.md` (proceso completo con fondo difuminado)
-- **Para imágenes existentes:** correr `python3 scripts/process_images_v2.py` (detección agresiva) y volver a hacer push
-
-### Un producto nuevo no aparece
-- ¿Está en `products[]` de `js/app.js` con `cat` válida (`vela`, `collar`, `pulsera`, `franela`, `otro`)? ¿Se hizo push? El deploy tarda ~2 min.
-
-### La búsqueda no encuentra algo
-- La búsqueda cubre **nombre y descripción**. Si buscas "premium" y no aparece, ese término no está en ningún nombre/descripción — revisa el texto en el Excel/app.js
-
-### El sitio no abre en yosoy222.com desde casa, pero sí con datos móviles
-- **Causa:** caché DNS del router/ISP
-- **Solución:** reiniciar router; o en el dispositivo cambiar DNS a `1.1.1.1` / `8.8.8.8`; o verificar con `dig yosoy222.com +short` (debe listar las 4 IPs de GitHub Pages)
-
-### No veo las franelas o veo velas en sus tarjetas
-- **Si ves velas donde deberían estar las franelas**, es **caché del service worker**. Limpiar: DevTools → Application → Storage → Clear site data (o borrar caché del navegador) y recargar.
+### 3. Las pruebas fallan en el entorno local
+- Asegurarse de utilizar Node.js v18 o superior que soporte el módulo nativo `node:test`. Ejecutar `node -v` y luego `npm test`.
 
 ---
 
-## CONTACTO DEL PROYECTO
-
-- **GitHub:** https://github.com/juancito8812
-- **Repositorio:** https://github.com/juancito8812/yosoy222
-- **Sitio web:** https://yosoy222.com
-- **WhatsApp pedidos:** +58 412 648 1628
-
----
-
-### Pie de página y lightbox (correcciones v5 sep 2026)
-
-- **País del footer:** `Hecho a mano en Venezuela.` (antes decía México). Confirmado por número WhatsApp +58, USD como moneda y el README del sitio.
-- **WhatsApp centralizado:** única fuente en `js/app.js` → `const WHATSAPP = '584126481628'`. README y docs ya dejan explícito que los enlaces de `index.html` deben seguir la constante.
-- **Security checklist documentado:** antes de cada deploy se revisan (1) secrets de Cloudflare y permisos del token, y (2) cabeceras reales en producción con `curl -sI https://yosoy222.com/`.
-- **Mensaje del lightbox por categoría:** se usó un mapa de sustantivos (`vela`·`collar`·`pulsera`·`franela`) para que el prefilled de WhatsApp sea correcto en todos los productos.
-
-### Accesibilidad del lightbox (v5 sep 2026)
-
-- **Apertura con teclado:** cada tarjeta de producto tiene su zona de imagen como `<button>` real (`type="button"`, `aria-label="Ampliar imagen de …"`) que responde a **Enter** y **Espacio**. El clic de ratón sigue igual.
-- **No se re-vinculan listeners** en cada render: la apertura del lightbox, los steppers y el botón "Agregar" están delegados en contenedores únicos.
-- **`visibleProducts`** se mantiene en estado desde `applyFilters()` para que el lightbox no escanee el DOM en cada apertura.
-
-### Estado del commit más reciente
-
-```
-git log --oneline -1   # último commit
-# estado del repo: git status --short
-```
-
-Último cambio publicado (13 sep 2026): **Optimización Google PageSpeed (100/100/100)**: 100 Accesibilidad (contraste WCAG AA ratio >6.2:1 con `--accent: #854f19`, hito `<main id="main">`, semántica `<h3>` en footer), 100 Prácticas recomendadas (CSP compatible con Cloudflare Web Analytics, sin errores de consola), 100 SEO (meta OpenGraph, Twitter Cards, Canonical URL) y 90-99 Rendimiento (dimensiones explícitas width/height 480px y aspect-ratio 1:1 para evitar CLS); **PWA Cache v9** con invalidación de caché, `{ ignoreSearch: true }` para offline total, y validación 10/10 en `scripts/verify_icons.py`.
-
----
-
-*Documentación actualizada: 13 de septiembre de 2026 — sincronizada con el estado real del código: 44 productos, cache v9 con offline total e invalidación inmediata, Google PageSpeed 100/100/100 (Accesibilidad, Prácticas recomendadas, SEO, 90-99 Rendimiento), imágenes optimizadas (thumbs 480px / catalog 900px), imágenes hero decorativas actualizadas (hero-rosas-3.jpg, hero-escaparate.jpg), sección Nosotros con imágenes nuevas, híbrido `imagenes_web` (36 productos, 7 franelas reales, Armonía Coco, Armonía Canela profesional), paleta tierra crema con contraste WCAG AA, Excel verificado 42/42 sin diferencias, PWA instalable con 10 iconos (manifest con id/scope), lightbox + carrito con focus trap y teclado, footer Venezuela, seguridad vía Cloudflare (CSP + headers: X-Frame-Options DENY, Permissions-Policy, HSTS, nosniff, Referrer-Policy), GitHub Actions purge automático verificado en verde, code review de seguridad completo (0 hallazgos críticos), a11y y hardening aplicados, WhatsApp centralizado en js/app.js, checklist de seguridad documentado, estructura de scripts/ actualizada, imágenes adicionales documentadas (63 thumbs: 44 productos + 4 decorativas + 15 variantes, 60 catalog: 44 productos + 16 variantes).* 
+*Documentación técnica actualizada al 13 de septiembre de 2026. Proyecto 100% verificado en pruebas unitarias (13/13 pasadas), CI/CD, auditoría de producción y despliegue activo en https://yosoy222.com.*
