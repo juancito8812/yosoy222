@@ -219,6 +219,7 @@
 | Fase 15 | ✅ COMPLETADA | Tarjetas de contacto uniformes (Cache v13), corrección de prerender_catalog.py y PageSpeed 99/100/100/100 |
 | Fase 16 | ✅ COMPLETADA | Dashboard privado (/dashboard.html), autenticación criptográfica (SHA-256 salted hash, anti-fuerza bruta), telemetría local, embudo de conversión y exportación CSV (Cache v14) |
 | Fase 17 | ✅ COMPLETADA | Nuevos iconos PWA HD (1280px fuente, fondo blanco sólido, Safe Zone sin franjas negras) y Cache v15 |
+| Fase 18 | ✅ COMPLETADA | Rediseño Luxury Glassmorphism del Dashboard, curvas Bezier con gradientes, unificación de textos de catálogo y Cache v16 |
 
 ---
 

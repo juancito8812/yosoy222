@@ -54,7 +54,8 @@
   - Sanitización anti-prototype smuggling en la serialización.
 - **Checkout por WhatsApp:** Mensaje preformateado e itemizado (producto × cantidad — subtotal, y total final en USD).
 - **Número real de WhatsApp centralizado:** `+58 412 648 1628` — única fuente en `js/app.js` (`const WHATSAPP = '584126481628'`); todos los botones y enlaces del sitio se sincronizan con este valor.
-- **PWA Instalable (Cache v12):** Estrategia Network-First para navegación HTML (contenido siempre fresco con conexión) y Stale-While-Revalidate para recursos estáticos; precaching enfocado en miniaturas y carga bajo demanda de fotos de alta resolución.
+- **PWA Instalable (Cache v16):** Estrategia Network-First para navegación HTML (contenido siempre fresco con conexión) y Stale-While-Revalidate para recursos estáticos; precaching enfocado en shell, dashboard, iconos HD y miniaturas (`images/thumbs/`).
+- **Dashboard Privado de Analítica y Conversión:** Panel de control en `/dashboard.html` con estética *Luxury Glassmorphism*, gráficos de tendencias en curvas Bezier, desglose de canales (Instagram, TikTok, Facebook, Google, WhatsApp), embudo de conversión paso a paso, desglose por dispositivos, ranking de popularidad de productos, actividad en tiempo real, exportación CSV y autenticación criptográfica segura con Web Crypto SHA-256 salted hash y rate-limiting anti-fuerza bruta.
 - **Seguridad integral:**
   - Content Security Policy (CSP) estricto.
   - Cabeceras de seguridad servidas desde el Edge de Cloudflare (`X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`, `Permissions-Policy`, HSTS con preload).
@@ -316,21 +317,21 @@ Las imágenes de catálogo y miniaturas han sido procesadas para eliminar márge
 
 ---
 
-## PWA: INSTALAR Y FUNCIONAMIENTO OFFLINE (CACHE V12)
+## PWA: INSTALAR Y FUNCIONAMIENTO OFFLINE (CACHE V16)
 
 La PWA cumple con todos los estándares modernos de instalación y navegación offline:
 
-### Arquitectura de Caché en `sw.js` (Versión 12)
+### Arquitectura de Caché en `sw.js` (Versión 16)
 1. **Navegación Network-First:**
    Para solicitudes de documentos HTML (`event.request.mode === 'navigate'`), el Service Worker consulta primero la red para obtener la versión más reciente del catálogo y, en caso de estar desconectado o con señal inestable, responde con la copia en caché.
 2. **Stale-While-Revalidate para Recursos Estáticos:**
-   CSS, fuentes, JS e imágenes secundarias se sirven de inmediato desde la caché mientras se actualizan en segundo plano.
-3. **Optimización de Precache (`thumbs-only`):**
-   Durante la instalación, el Service Worker descarga de forma controlada las 44 miniaturas (`images/thumbs/`), garantizando que la navegación visual funcione offline desde el primer instante sin agotar datos móviles del usuario. Las imágenes grandes del lightbox se descargan y cachean bajo demanda.
+   CSS, fuentes, JS e imágenes secundarias se sirven de inmediato desde la caché mientras se actualizan en segundo plano con control de versión `?v=16`.
+3. **Precache Integral & Resiliencia Offline:**
+   Durante la instalación, el Service Worker descarga de forma controlada el shell de la aplicación, el panel de dashboard y las 44 miniaturas (`images/thumbs/`), garantizando que la navegación visual funcione offline desde el primer instante sin agotar datos móviles del usuario. Las imágenes grandes del lightbox se descargan y cachean bajo demanda.
 4. **Invalidación Inmediata de Versiones Anteriores:**
-   Al publicarse una nueva versión (`CACHE_NAME`), el evento `activate` purga de forma determinista cualquier almacenamiento obsoleto.
-5. **Iconos PWA:**
-   10 variantes (incluyendo formatos maskable con padding seguro para Android) validadas con `scripts/verify_icons.py`.
+   Al publicarse una nueva versión (`CACHE_NAME = 'yosoy222-v16'`), el evento `activate` purga de forma determinista cualquier almacenamiento obsoleto y el evento `controllerchange` refresca la vista del catálogo automáticamente.
+5. **Iconos PWA de Alta Definición:**
+   10 variantes (incluyendo formatos maskable con padding seguro del 15% para Android/iOS sin franjas negras) validadas con `scripts/verify_icons.py`.
 
 ---
 
@@ -544,7 +545,7 @@ Tokens principales en `:root` de [`css/style.css`](file:///home/debianserver/Doc
 | `js/app.js` | Lógica de catálogo, filtros, carrito seguro y eventos |
 | `js/analytics.js` | Motor de telemetría, eventos de conversión y compatibilidad GA4 |
 | `js/dashboard.js` | Renderizado de gráficos en Canvas, cálculo de KPIs y exportación CSV |
-| `sw.js` | Service Worker (Cache v15, Network-First navegación) |
+| `sw.js` | Service Worker (Cache v16, Network-First navegación) |
 | `manifest.json` | Configuración PWA e iconos |
 | `tests/cart_and_filters.test.mjs` | Suite de 13 pruebas unitarias y de seguridad |
 | `.github/workflows/` | Automatización de CI y purga de caché con smoke test |

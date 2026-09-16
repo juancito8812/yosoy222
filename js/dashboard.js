@@ -7,7 +7,7 @@
   'use strict';
 
   const AUTH_SALT = 'yosoy222_auth_salt_2026';
-  // Default salted SHA-256 for user "juancito" and password "YoSoy222#Admin2026"
+  // Precomputed salted SHA-256 hash for default administrator authentication
   const DEFAULT_HASH = '1549ba80a1e67b2423e6cdb96dbf8fbd9c98e3b166d996c1f7201a1006b3928a';
   const MAX_ATTEMPTS = 5;
   const LOCKOUT_MINUTES = 15;
