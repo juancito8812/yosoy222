@@ -12,8 +12,25 @@
   const MAX_EVENTS = 2000;
   const RETENTION_DAYS = 60;
 
-  // Optional: GA4 Measurement ID (if configured)
-  const GA_ID = window.GA_MEASUREMENT_ID || null;
+  // Google Analytics 4 Measurement ID
+  const GA_ID = 'G-Y9R0B5NH75';
+
+  // Initialize GA4 without inline scripts (100% CSP compliant)
+  if (typeof window !== 'undefined' && GA_ID) {
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { window.dataLayer.push(arguments); }
+    window.gtag = gtag;
+    gtag('js', new Date());
+    gtag('config', GA_ID, {
+      send_page_view: true
+    });
+
+    // Asynchronously inject the official GTM script
+    const script = document.createElement('script');
+    script.async = true;
+    script.src = `https://www.googletagmanager.com/gtag/js?id=${GA_ID}`;
+    document.head.appendChild(script);
+  }
 
   // Helper: Detect referrer / traffic channel
   function detectSource() {
@@ -101,10 +118,44 @@
     data.events.push(evt);
     saveAnalyticsData(data);
 
-    // Forward to GA4 if initialized
+    // Forward enriched e-commerce events to GA4
     if (typeof window.gtag === 'function' && GA_ID) {
       try {
-        window.gtag('event', type, details);
+        if (type === 'view_item') {
+          window.gtag('event', 'view_item', {
+            currency: 'USD',
+            value: Number(details.price) || 0,
+            items: [{ item_name: details.name, item_category: details.cat, price: details.price }]
+          });
+        } else if (type === 'add_to_cart') {
+          window.gtag('event', 'add_to_cart', {
+            currency: 'USD',
+            value: Number(details.price) || 0,
+            items: [{ item_name: details.name, item_category: details.cat, price: details.price, quantity: details.qty || 1 }]
+          });
+        } else if (type === 'whatsapp_checkout') {
+          window.gtag('event', 'begin_checkout', {
+            currency: 'USD',
+            value: Number(details.total) || 0,
+            items_count: details.itemsCount || 1
+          });
+          window.gtag('event', 'generate_lead', {
+            currency: 'USD',
+            value: Number(details.total) || 0,
+            lead_type: 'whatsapp_order'
+          });
+        } else if (type === 'whatsapp_contact') {
+          window.gtag('event', 'contact', {
+            method: 'whatsapp',
+            product: details.product || 'general'
+          });
+        } else if (type === 'search') {
+          window.gtag('event', 'search', {
+            search_term: details.query
+          });
+        } else {
+          window.gtag('event', type, details);
+        }
       } catch {}
     }
   }

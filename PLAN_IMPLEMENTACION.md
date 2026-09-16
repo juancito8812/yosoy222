@@ -195,8 +195,8 @@
 ## 📋 TAREAS FUTURAS / MEJORAS OPCIONALES
 
 ### Analytics y Marketing
-- [ ] Integración de Google Analytics 4 (GA4) o analytics respetuoso de privacidad (Cloudflare Web Analytics ya compatible con la CSP actual).
-- [ ] Registro formal y verificación en Google Search Console.
+- [x] Integración de Google Analytics 4 (GA4, ID `G-Y9R0B5NH75`) con eventos de e-commerce sincronizados (`view_item`, `add_to_cart`, `begin_checkout`, `generate_lead`, `search`).
+- [x] Registro formal y verificación en Google Search Console (`sitemap.xml`).
 
 ### Funcionalidades UX Opcionales
 - [ ] Banner interactivo informando al usuario cuando una nueva versión de la PWA esté disponible para actualizar.
@@ -220,6 +220,7 @@
 | Fase 16 | ✅ COMPLETADA | Dashboard privado (/dashboard.html), autenticación criptográfica (SHA-256 salted hash, anti-fuerza bruta), telemetría local, embudo de conversión y exportación CSV (Cache v14) |
 | Fase 17 | ✅ COMPLETADA | Nuevos iconos PWA HD (1280px fuente, fondo blanco sólido, Safe Zone sin franjas negras) y Cache v15 |
 | Fase 18 | ✅ COMPLETADA | Rediseño Luxury Glassmorphism del Dashboard, curvas Bezier con gradientes, unificación de textos de catálogo y Cache v16 |
+| Fase 19 | ✅ COMPLETADA | Integración completa de Google Analytics 4 (GA4 G-Y9R0B5NH75) con telemetría de eventos e-commerce |
 
 ---
 
