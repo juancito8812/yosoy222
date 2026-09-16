@@ -25,11 +25,13 @@
       send_page_view: true
     });
 
-    // Asynchronously inject the official GTM script
-    const script = document.createElement('script');
-    script.async = true;
-    script.src = `https://www.googletagmanager.com/gtag/js?id=${GA_ID}`;
-    document.head.appendChild(script);
+    // Asynchronously inject the official GTM script if not already in markup
+    if (!document.querySelector(`script[src*="${GA_ID}"]`)) {
+      const script = document.createElement('script');
+      script.async = true;
+      script.src = `https://www.googletagmanager.com/gtag/js?id=${GA_ID}`;
+      document.head.appendChild(script);
+    }
   }
 
   // Helper: Detect referrer / traffic channel
