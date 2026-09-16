@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YoSoy222 — Dashboard de Estadísticas</title>
+    <title>YoSoy222 — Dashboard de Analítica y Conversión</title>
     <meta name="robots" content="noindex, nofollow">
     <link rel="icon" href="icons/icon-96x96.png?v=15" type="image/png" sizes="96x96">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/dashboard.css">
 </head>
 <body>
@@ -16,22 +16,22 @@
     <!-- Authentication Gate Screen -->
     <div class="auth-overlay" id="authOverlay">
         <div class="auth-card">
-            <div class="auth-logo">🔐</div>
-            <h1 class="auth-title">Panel de Control</h1>
-            <p class="auth-subtitle">Acceso exclusivo para el administrador de YoSoy222</p>
+            <div class="auth-logo">🕯️</div>
+            <h1 class="auth-title">YoSoy<span style="color: var(--accent);">222</span></h1>
+            <p class="auth-subtitle">Panel Privado de Analítica y Conversión</p>
 
             <form class="auth-form" id="authForm" autocomplete="on">
                 <div class="auth-field">
-                    <label class="auth-label" for="authUser">Usuario</label>
+                    <label class="auth-label" for="authUser">Usuario Administrador</label>
                     <input class="auth-input" type="text" id="authUser" name="username" placeholder="Tu usuario" required autofocus autocomplete="username">
                 </div>
 
                 <div class="auth-field">
-                    <label class="auth-label" for="authPassword">Contraseña</label>
+                    <label class="auth-label" for="authPassword">Contraseña de Seguridad</label>
                     <input class="auth-input" type="password" id="authPassword" name="password" placeholder="••••••••" required autocomplete="current-password">
                 </div>
 
-                <button class="auth-btn" type="submit" id="authSubmitBtn">Ingresar al Dashboard</button>
+                <button class="auth-btn" type="submit" id="authSubmitBtn">Acceder al Dashboard</button>
 
                 <div class="auth-error" id="authError" style="display: none;" role="alert"></div>
             </form>
@@ -43,34 +43,41 @@
         <!-- Header -->
         <header class="dash-header">
             <div class="dash-header-inner">
-                <a href="/" class="dash-brand" title="Volver a la tienda">
-                    <span style="font-size: 1.4rem;">🕯️</span>
-                    <h1>YoSoy<span style="color: var(--accent);">222</span></h1>
-                    <span class="badge">Estadísticas</span>
-                </a>
+                <div style="display: flex; align-items: center; gap: 0.85rem;">
+                    <a href="/" class="dash-brand" title="Ir a la tienda">
+                        <span class="dash-logo-icon">🕯️</span>
+                        <h1>YoSoy<span style="color: var(--accent);">222</span></h1>
+                    </a>
+                    <span class="live-pill">
+                        <span class="live-dot"></span>
+                        En Vivo
+                    </span>
+                </div>
 
                 <div class="dash-controls">
-                    <select class="range-select" id="rangeSelect" aria-label="Rango de tiempo">
-                        <option value="7">Últimos 7 días</option>
-                        <option value="30" selected>Últimos 30 días</option>
-                        <option value="60">Últimos 60 días</option>
-                        <option value="0">Histórico completo</option>
-                    </select>
+                    <!-- Segmented Range Selector -->
+                    <div class="range-segmented" role="group" aria-label="Rango de fecha">
+                        <button class="range-btn" data-days="1">Hoy</button>
+                        <button class="range-btn" data-days="7">7D</button>
+                        <button class="range-btn active" data-days="30">30D</button>
+                        <button class="range-btn" data-days="60">60D</button>
+                        <button class="range-btn" data-days="0">Todo</button>
+                    </div>
 
-                    <button class="btn-dash btn-dash-primary" id="exportBtn">
-                        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-                        Exportar CSV
+                    <button class="btn-action btn-action-primary" id="exportBtn" title="Descargar datos en CSV">
+                        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                        CSV
                     </button>
 
-                    <button class="btn-dash" id="openPwdBtn" title="Cambiar contraseña de acceso">
-                        🔑 Contraseña
+                    <button class="btn-action" id="openPwdBtn" title="Cambiar clave">
+                        🔑 Clave
                     </button>
 
-                    <a href="/" class="btn-dash">
+                    <a href="/" class="btn-action" title="Abrir tienda">
                         🏪 Tienda
                     </a>
 
-                    <button class="btn-dash" id="logoutBtn" style="color: var(--danger); border-color: rgba(217,56,41,0.2);" title="Cerrar sesión">
+                    <button class="btn-action" id="logoutBtn" style="color: #f87171; border-color: rgba(239, 68, 68, 0.25);" title="Cerrar sesión">
                         Salir
                     </button>
                 </div>
@@ -78,30 +85,30 @@
         </header>
 
         <main class="dash-main">
-            <!-- KPI Cards -->
+            <!-- Top KPI Cards Grid -->
             <section class="kpi-grid">
                 <div class="kpi-card">
                     <div class="kpi-header">
                         <span class="kpi-title">Visitas Totales</span>
-                        <span class="kpi-icon">👁️</span>
+                        <div class="kpi-icon-wrap">👁️</div>
                     </div>
                     <div class="kpi-value" id="kpiViews">0</div>
-                    <div class="kpi-subtitle">Sesiones registradas</div>
+                    <div class="kpi-subtitle">Sesiones de navegación</div>
                 </div>
 
                 <div class="kpi-card">
                     <div class="kpi-header">
                         <span class="kpi-title">Pedidos WhatsApp</span>
-                        <span class="kpi-icon">💬</span>
+                        <div class="kpi-icon-wrap green">💬</div>
                     </div>
-                    <div class="kpi-value" id="kpiWhatsapp" style="color: #15803d;">0</div>
-                    <div class="kpi-subtitle">Conversiones directas</div>
+                    <div class="kpi-value" id="kpiWhatsapp" style="color: var(--whatsapp);">0</div>
+                    <div class="kpi-subtitle">Checkouts iniciados</div>
                 </div>
 
                 <div class="kpi-card">
                     <div class="kpi-header">
                         <span class="kpi-title">Carritos Armados</span>
-                        <span class="kpi-icon">🛒</span>
+                        <div class="kpi-icon-wrap">🛒</div>
                     </div>
                     <div class="kpi-value" id="kpiCart">0</div>
                     <div class="kpi-subtitle">Productos añadidos</div>
@@ -109,32 +116,34 @@
 
                 <div class="kpi-card">
                     <div class="kpi-header">
-                        <span class="kpi-title">Ventas Potenciales</span>
-                        <span class="kpi-icon">💰</span>
+                        <span class="kpi-title">Ventas Estimadas</span>
+                        <div class="kpi-icon-wrap">💰</div>
                     </div>
-                    <div class="kpi-value" id="kpiRevenue" style="color: var(--accent);">$0 USD</div>
+                    <div class="kpi-value" id="kpiRevenue" style="color: var(--accent);">$0</div>
                     <div class="kpi-subtitle">En pedidos WhatsApp</div>
                 </div>
 
                 <div class="kpi-card">
                     <div class="kpi-header">
-                        <span class="kpi-title">Tasa de Conversión</span>
-                        <span class="kpi-icon">📈</span>
+                        <span class="kpi-title">Conversión Global</span>
+                        <div class="kpi-icon-wrap">📈</div>
                     </div>
                     <div class="kpi-value" id="kpiConversion">0.0%</div>
                     <div class="kpi-subtitle">Visitas ➔ WhatsApp</div>
                 </div>
             </section>
 
-            <!-- Charts Grid -->
-            <section class="charts-grid">
-                <!-- Trend Line Chart -->
+            <!-- Row 1: Traffic Line Chart & Acquisition Donut -->
+            <section class="grid-2col">
                 <div class="dash-card">
                     <div class="dash-card-header">
-                        <h2 class="dash-card-title">Evolución de Tráfico y Pedidos</h2>
-                        <div style="font-size: 0.75rem; display: flex; gap: 0.75rem;">
-                            <span style="color: var(--accent);">● Visitas</span>
-                            <span style="color: #25d366;">● WhatsApp</span>
+                        <h2 class="dash-card-title">
+                            <span>📈</span>
+                            Evolución de Tráfico y Pedidos
+                        </h2>
+                        <div style="font-size: 0.76rem; display: flex; gap: 0.9rem; align-items: center;">
+                            <span style="color: var(--accent); font-weight: 600;">● Visitas</span>
+                            <span style="color: var(--whatsapp); font-weight: 600;">● WhatsApp</span>
                         </div>
                     </div>
                     <div class="canvas-container">
@@ -142,53 +151,94 @@
                     </div>
                 </div>
 
-                <!-- Traffic Sources Donut -->
                 <div class="dash-card">
                     <div class="dash-card-header">
-                        <h2 class="dash-card-title">Canales de Tráfico</h2>
+                        <h2 class="dash-card-title">
+                            <span>🎯</span>
+                            Canales de Tráfico
+                        </h2>
+                        <span class="dash-card-tag" id="sourceTotalBadge">0 fuentes</span>
                     </div>
-                    <div class="canvas-container" style="height: 150px;">
+                    <div class="canvas-container" style="height: 140px;">
                         <canvas id="sourceCanvas"></canvas>
                     </div>
                     <div id="sourceLegend" style="margin-top: 1rem;"></div>
                 </div>
             </section>
 
-            <!-- Funnel Section -->
-            <section class="dash-card" style="margin-bottom: 1.5rem;">
-                <div class="dash-card-header">
-                    <h2 class="dash-card-title">Embudo de Conversión (Funnel)</h2>
+            <!-- Row 2: Funnel Pipeline & Devices Breakdown -->
+            <section class="grid-2col">
+                <!-- Funnel -->
+                <div class="dash-card">
+                    <div class="dash-card-header">
+                        <h2 class="dash-card-title">
+                            <span>⚡</span>
+                            Embudo de Conversión (Funnel)
+                        </h2>
+                        <span class="dash-card-tag">Paso a paso</span>
+                    </div>
+                    <div class="funnel-pipeline">
+                        <div class="funnel-step">
+                            <div class="funnel-step-label">1. Visitas</div>
+                            <div class="funnel-step-val" id="funnelViews">0</div>
+                            <div class="funnel-step-rate">100% de inicio</div>
+                        </div>
+                        <div class="funnel-step">
+                            <div class="funnel-step-label">2. Vieron Producto</div>
+                            <div class="funnel-step-val" id="funnelProducts">0</div>
+                            <div class="funnel-step-rate" id="funnelPRate">0%</div>
+                        </div>
+                        <div class="funnel-step">
+                            <div class="funnel-step-label">3. En Carrito</div>
+                            <div class="funnel-step-val" id="funnelCart">0</div>
+                            <div class="funnel-step-rate" id="funnelCRate">0%</div>
+                        </div>
+                        <div class="funnel-step">
+                            <div class="funnel-step-label">4. WhatsApp</div>
+                            <div class="funnel-step-val" id="funnelWhatsapp" style="color: var(--whatsapp);">0</div>
+                            <div class="funnel-step-rate" id="funnelWRate">0%</div>
+                        </div>
+                    </div>
                 </div>
-                <div class="funnel-row">
-                    <div class="funnel-step">
-                        <h4>1. Visitas</h4>
-                        <div class="step-val" id="funnelViews">0</div>
-                        <div class="step-rate">100% de inicio</div>
+
+                <!-- Devices & Platforms -->
+                <div class="dash-card">
+                    <div class="dash-card-header">
+                        <h2 class="dash-card-title">
+                            <span>📱</span>
+                            Dispositivos
+                        </h2>
+                        <span class="dash-card-tag">Plataforma</span>
                     </div>
-                    <div class="funnel-step">
-                        <h4>2. Vieron Producto</h4>
-                        <div class="step-val" id="funnelProducts">0</div>
-                        <div class="step-rate" id="funnelPRate">0%</div>
-                    </div>
-                    <div class="funnel-step">
-                        <h4>3. Agregaron al Carrito</h4>
-                        <div class="step-val" id="funnelCart">0</div>
-                        <div class="step-rate" id="funnelCRate">0%</div>
-                    </div>
-                    <div class="funnel-step">
-                        <h4>4. Pedido en WhatsApp</h4>
-                        <div class="step-val" id="funnelWhatsapp" style="color: #15803d;">0</div>
-                        <div class="step-rate" id="funnelWRate">0%</div>
+                    <div class="device-row">
+                        <div class="device-item">
+                            <div class="device-icon">📱</div>
+                            <div class="device-info">
+                                <div class="device-title">Móvil (Android / iOS)</div>
+                                <div class="device-val" id="deviceMobile">0%</div>
+                            </div>
+                        </div>
+                        <div class="device-item">
+                            <div class="device-icon">💻</div>
+                            <div class="device-info">
+                                <div class="device-title">Ordenador / Desktop</div>
+                                <div class="device-val" id="deviceDesktop">0%</div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </section>
 
-            <!-- Tables Row -->
-            <section class="charts-grid" style="margin-bottom: 1.5rem;">
-                <!-- Top Products -->
+            <!-- Row 3: Top Products & Live Activity Feed -->
+            <section class="grid-2col">
+                <!-- Top Products Table -->
                 <div class="dash-card">
                     <div class="dash-card-header">
-                        <h2 class="dash-card-title">Productos Más Populares</h2>
+                        <h2 class="dash-card-title">
+                            <span>🕯️</span>
+                            Productos Más Populares
+                        </h2>
+                        <span class="dash-card-tag">Interés de compra</span>
                     </div>
                     <div class="table-container">
                         <table class="dash-table">
@@ -197,6 +247,7 @@
                                     <th>Producto</th>
                                     <th>Vistas</th>
                                     <th>En Carrito</th>
+                                    <th>Popularidad</th>
                                 </tr>
                             </thead>
                             <tbody id="topProductsTable"></tbody>
@@ -207,7 +258,11 @@
                 <!-- Recent Activity Feed -->
                 <div class="dash-card">
                     <div class="dash-card-header">
-                        <h2 class="dash-card-title">Actividad Reciente en Vivo</h2>
+                        <h2 class="dash-card-title">
+                            <span>⏱️</span>
+                            Actividad Reciente
+                        </h2>
+                        <span class="dash-card-tag">Últimos eventos</span>
                     </div>
                     <div class="table-container">
                         <table class="dash-table">
@@ -224,36 +279,40 @@
                 </div>
             </section>
 
-            <!-- External Hubs & Admin Tools -->
+            <!-- Row 4: External Integrations & Data Control Hub -->
             <section class="dash-card">
                 <div class="dash-card-header">
-                    <h2 class="dash-card-title">Herramientas y Conexiones Externas</h2>
+                    <h2 class="dash-card-title">
+                        <span>🛠️</span>
+                        Herramientas y Conexiones
+                    </h2>
+                    <span class="dash-card-tag">Administración</span>
                 </div>
                 <div class="hub-grid">
                     <div class="hub-card">
                         <div>
                             <h4>🔍 Google Search Console</h4>
-                            <p>Posicionamiento SEO, palabras clave en Google y rendimiento de búsqueda.</p>
+                            <p>Monitorea palabras clave, impresiones y cómo te encuentran los usuarios en Google.</p>
                         </div>
-                        <a href="https://search.google.com/search-console" target="_blank" rel="noopener noreferrer" class="btn-dash btn-dash-primary" style="text-align: center; justify-content: center;">Abrir Search Console ↗</a>
+                        <a href="https://search.google.com/search-console" target="_blank" rel="noopener noreferrer" class="btn-action btn-action-primary" style="text-align: center; justify-content: center;">Abrir Search Console ↗</a>
                     </div>
 
                     <div class="hub-card">
                         <div>
                             <h4>📊 Google Looker Studio</h4>
-                            <p>Crea dashboards visuales enlazados con tu Search Console y Analytics.</p>
+                            <p>Diseña informes ejecutivos conectando tus fuentes de datos de Google Search Console.</p>
                         </div>
-                        <a href="https://lookerstudio.google.com/" target="_blank" rel="noopener noreferrer" class="btn-dash" style="text-align: center; justify-content: center;">Abrir Looker Studio ↗</a>
+                        <a href="https://lookerstudio.google.com/" target="_blank" rel="noopener noreferrer" class="btn-action" style="text-align: center; justify-content: center;">Abrir Looker Studio ↗</a>
                     </div>
 
                     <div class="hub-card">
                         <div>
-                            <h4>⚙️ Gestión de Datos</h4>
-                            <p>Simula datos de prueba o reinicia los contadores locales de tu navegador.</p>
+                            <h4>🧪 Entorno de Pruebas</h4>
+                            <p>Genera tráfico simulado para probar los gráficos o limpia los datos locales de prueba.</p>
                         </div>
                         <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
-                            <button class="btn-dash" id="demoBtn" style="flex: 1;">Datos de Prueba</button>
-                            <button class="btn-dash" id="clearBtn" style="color: var(--danger); border-color: rgba(217,56,41,0.2);">Reiniciar</button>
+                            <button class="btn-action" id="demoBtn" style="flex: 1; justify-content: center;">Cargar Datos Demo</button>
+                            <button class="btn-action" id="clearBtn" style="color: #f87171; border-color: rgba(239,68,68,0.25);">Limpiar</button>
                         </div>
                     </div>
                 </div>
@@ -261,19 +320,19 @@
         </main>
 
         <footer class="dash-footer">
-            <p>YoSoy222 — Dashboard de Analítica y Conversión en Tiempo Real · Protegido con Autenticación Criptográfica</p>
+            <p>YoSoy222 — Dashboard de Analítica y Conversión en Tiempo Real · Protegido Criptográficamente (SHA-256)</p>
         </footer>
     </div>
 
-    <!-- Modal for Changing Password -->
+    <!-- Password Change Modal -->
     <div class="modal-backdrop" id="pwdModal" style="display: none;">
         <div class="modal-content">
-            <h3 style="font-family: 'Playfair Display', serif; font-size: 1.25rem; margin-bottom: 0.5rem;">Cambiar Credenciales</h3>
-            <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1rem;">Establece un nuevo usuario o contraseña para este dispositivo.</p>
+            <h3 style="font-family: 'Playfair Display', serif; font-size: 1.3rem; margin-bottom: 0.4rem; color: #fff;">Cambiar Credenciales</h3>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1.25rem;">Establece tu nuevo usuario o contraseña para este panel.</p>
 
-            <form id="pwdForm" style="display: flex; flex-direction: column; gap: 0.75rem;">
+            <form id="pwdForm" style="display: flex; flex-direction: column; gap: 0.85rem;">
                 <div class="auth-field">
-                    <label class="auth-label" for="newUsername">Nuevo Usuario</label>
+                    <label class="auth-label" for="newUsername">Usuario</label>
                     <input class="auth-input" type="text" id="newUsername" required placeholder="juancito">
                 </div>
                 <div class="auth-field">
@@ -282,8 +341,8 @@
                 </div>
 
                 <div style="display: flex; justify-content: flex-end; gap: 0.5rem; margin-top: 0.75rem;">
-                    <button type="button" class="btn-dash" id="cancelPwdBtn">Cancelar</button>
-                    <button type="submit" class="btn-dash btn-dash-primary">Guardar Cambios</button>
+                    <button type="button" class="btn-action" id="cancelPwdBtn">Cancelar</button>
+                    <button type="submit" class="btn-action btn-action-primary">Guardar</button>
                 </div>
             </form>
         </div>

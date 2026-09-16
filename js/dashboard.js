@@ -1,6 +1,6 @@
 /* ============================================
-   YoSoy222 — Dashboard & Security Engine
-   Cryptographic Auth Gate, Rate Limiting, Pure-Canvas Charts & CSV Export
+   YoSoy222 — Luxury Dashboard Engine
+   Cryptographic Auth Gate, Bezier Area Charts, Funnel & Telemetry Analytics
    ============================================ */
 
 (function () {
@@ -128,12 +128,25 @@
     const conversionRate = totalSessions > 0 ? ((waEvents.length / totalSessions) * 100).toFixed(1) : '0.0';
     const viewedProducts = events.filter(e => e.type === 'view_item').length;
     
+    // Devices
+    let mobileCount = 0;
+    let desktopCount = 0;
+    sessions.forEach(s => {
+      if (s.dev === 'móvil') mobileCount++;
+      else desktopCount++;
+    });
+
+    const mobilePct = totalSessions > 0 ? Math.round((mobileCount / totalSessions) * 100) : 0;
+    const desktopPct = totalSessions > 0 ? (100 - mobilePct) : 0;
+
+    // Traffic Sources
     const sources = {};
     sessions.forEach(s => {
       const src = s.src || 'directo';
       sources[src] = (sources[src] || 0) + 1;
     });
 
+    // Top Products
     const productViews = {};
     const productAdds = {};
     events.forEach(e => {
@@ -145,22 +158,40 @@
       }
     });
 
+    // Daily Map
     const dailyMap = {};
-    const chartDays = days === 0 ? 30 : days;
-    for (let i = chartDays - 1; i >= 0; i--) {
-      const d = new Date(Date.now() - (i * 24 * 60 * 60 * 1000));
-      const key = d.toLocaleDateString('es-VE', { day: '2-digit', month: 'short' });
-      dailyMap[key] = { views: 0, whatsapp: 0 };
-    }
+    const chartDays = days === 0 ? 30 : (days === 1 ? 1 : days);
 
-    events.forEach(e => {
-      const d = new Date(e.t || Date.now());
-      const key = d.toLocaleDateString('es-VE', { day: '2-digit', month: 'short' });
-      if (dailyMap[key]) {
-        if (e.type === 'page_view') dailyMap[key].views++;
-        if (e.type.startsWith('whatsapp')) dailyMap[key].whatsapp++;
+    if (chartDays === 1) {
+      // Group by 4-hour intervals for today
+      for (let h = 0; h < 24; h += 4) {
+        const key = `${h}:00`;
+        dailyMap[key] = { views: 0, whatsapp: 0 };
       }
-    });
+      events.forEach(e => {
+        const hour = new Date(e.t || Date.now()).getHours();
+        const block = Math.floor(hour / 4) * 4;
+        const key = `${block}:00`;
+        if (dailyMap[key]) {
+          if (e.type === 'page_view') dailyMap[key].views++;
+          if (e.type.startsWith('whatsapp')) dailyMap[key].whatsapp++;
+        }
+      });
+    } else {
+      for (let i = chartDays - 1; i >= 0; i--) {
+        const d = new Date(Date.now() - (i * 24 * 60 * 60 * 1000));
+        const key = d.toLocaleDateString('es-VE', { day: '2-digit', month: 'short' });
+        dailyMap[key] = { views: 0, whatsapp: 0 };
+      }
+      events.forEach(e => {
+        const d = new Date(e.t || Date.now());
+        const key = d.toLocaleDateString('es-VE', { day: '2-digit', month: 'short' });
+        if (dailyMap[key]) {
+          if (e.type === 'page_view') dailyMap[key].views++;
+          if (e.type.startsWith('whatsapp')) dailyMap[key].whatsapp++;
+        }
+      });
+    }
 
     return {
       totalSessions,
@@ -171,6 +202,8 @@
       totalRevenue,
       conversionRate,
       viewedProducts,
+      mobilePct,
+      desktopPct,
       sources,
       productViews,
       productAdds,
@@ -179,7 +212,7 @@
     };
   }
 
-  // --- CHARTS ---
+  // --- MODERN CANVAS AREA CHART ---
   function drawTrendChart(canvas, dailyMap) {
     if (!canvas || !canvas.parentElement) return;
     const ctx = canvas.getContext('2d');
@@ -192,63 +225,105 @@
     const viewData = labels.map(k => dailyMap[k].views);
     const waData = labels.map(k => dailyMap[k].whatsapp);
     const maxVal = Math.max(...viewData, ...waData, 5);
-    const padX = 40;
-    const padY = 30;
+
+    const padX = 42;
+    const padY = 25;
     const chartW = width - padX * 2;
     const chartH = height - padY * 2;
 
-    ctx.strokeStyle = '#e5ded4';
+    // Grid lines (ultra-subtle)
+    ctx.strokeStyle = 'rgba(198, 138, 76, 0.1)';
     ctx.lineWidth = 1;
     ctx.beginPath();
     for (let i = 0; i <= 4; i++) {
       const y = padY + (chartH / 4) * i;
       ctx.moveTo(padX, y);
       ctx.lineTo(width - padX, y);
-      ctx.fillStyle = '#8b7a69';
+      ctx.fillStyle = '#6e6355';
       ctx.font = '10px Inter, sans-serif';
       ctx.textAlign = 'right';
       ctx.fillText(Math.round(maxVal - (maxVal / 4) * i), padX - 8, y + 3);
     }
     ctx.stroke();
 
-    function drawLine(data, strokeColor) {
-      if (data.length < 2) return;
+    // Helper: Draw smooth Bezier curve with gradient fill
+    function drawSeries(data, strokeColor, gradStart, gradEnd) {
+      if (data.length === 0) return;
+      if (data.length === 1) {
+        const x = padX + chartW / 2;
+        const y = padY + chartH - (data[0] / maxVal) * chartH;
+        ctx.fillStyle = strokeColor;
+        ctx.beginPath();
+        ctx.arc(x, y, 4, 0, Math.PI * 2);
+        ctx.fill();
+        return;
+      }
+
+      const points = data.map((val, i) => ({
+        x: padX + (chartW / (data.length - 1)) * i,
+        y: padY + chartH - (val / maxVal) * chartH
+      }));
+
+      // Area Fill
+      const grad = ctx.createLinearGradient(0, padY, 0, padY + chartH);
+      grad.addColorStop(0, gradStart);
+      grad.addColorStop(1, gradEnd);
+
       ctx.beginPath();
-      data.forEach((val, i) => {
-        const x = padX + (chartW / (data.length - 1)) * i;
-        const y = padY + chartH - (val / maxVal) * chartH;
-        if (i === 0) ctx.moveTo(x, y);
-        else ctx.lineTo(x, y);
-      });
+      ctx.moveTo(points[0].x, padY + chartH);
+      ctx.lineTo(points[0].x, points[0].y);
+
+      for (let i = 0; i < points.length - 1; i++) {
+        const xc = (points[i].x + points[i + 1].x) / 2;
+        const yc = (points[i].y + points[i + 1].y) / 2;
+        ctx.quadraticCurveTo(points[i].x, points[i].y, xc, yc);
+      }
+      ctx.lineTo(points[points.length - 1].x, points[points.length - 1].y);
+      ctx.lineTo(points[points.length - 1].x, padY + chartH);
+      ctx.closePath();
+      ctx.fillStyle = grad;
+      ctx.fill();
+
+      // Line Stroke
+      ctx.beginPath();
+      ctx.moveTo(points[0].x, points[0].y);
+      for (let i = 0; i < points.length - 1; i++) {
+        const xc = (points[i].x + points[i + 1].x) / 2;
+        const yc = (points[i].y + points[i + 1].y) / 2;
+        ctx.quadraticCurveTo(points[i].x, points[i].y, xc, yc);
+      }
+      ctx.lineTo(points[points.length - 1].x, points[points.length - 1].y);
       ctx.strokeStyle = strokeColor;
       ctx.lineWidth = 2.5;
       ctx.stroke();
 
-      ctx.fillStyle = strokeColor;
-      data.forEach((val, i) => {
-        const x = padX + (chartW / (data.length - 1)) * i;
-        const y = padY + chartH - (val / maxVal) * chartH;
+      // Points Glow
+      points.forEach(p => {
+        ctx.fillStyle = strokeColor;
         ctx.beginPath();
-        ctx.arc(x, y, 3.5, 0, Math.PI * 2);
+        ctx.arc(p.x, p.y, 3.5, 0, Math.PI * 2);
         ctx.fill();
       });
     }
 
-    drawLine(viewData, '#854f19');
-    drawLine(waData, '#25d366');
+    // Draw Views & WhatsApp Area
+    drawSeries(viewData, '#c68a4c', 'rgba(198, 138, 76, 0.28)', 'rgba(198, 138, 76, 0.0)');
+    drawSeries(waData, '#25d366', 'rgba(37, 211, 102, 0.22)', 'rgba(37, 211, 102, 0.0)');
 
-    ctx.fillStyle = '#8b7a69';
+    // Bottom Labels
+    ctx.fillStyle = '#8a7d6e';
     ctx.font = '10px Inter, sans-serif';
     ctx.textAlign = 'center';
-    const step = Math.ceil(labels.length / 6);
+    const step = Math.max(1, Math.ceil(labels.length / 7));
     labels.forEach((label, i) => {
       if (i % step === 0 || i === labels.length - 1) {
         const x = padX + (chartW / (labels.length - 1)) * i;
-        ctx.fillText(label, x, height - 8);
+        ctx.fillText(label, x, height - 6);
       }
     });
   }
 
+  // --- MODERN DONUT CHART ---
   function drawSourceChart(canvas, sources) {
     if (!canvas || !canvas.parentElement) return;
     const ctx = canvas.getContext('2d');
@@ -262,22 +337,22 @@
     const total = Object.values(sources).reduce((a, b) => a + b, 0) || 1;
     const colors = {
       instagram: '#e1306c',
-      tiktok: '#111111',
-      facebook: '#1877f2',
-      google_search: '#ea4335',
-      whatsapp: '#25d366',
-      directo: '#854f19',
+      tiktok: '#38bdf8',
+      facebook: '#3b82f6',
+      google_search: '#f43f5e',
+      whatsapp: '#22c55e',
+      directo: '#c68a4c',
       otro_referido: '#a88d74'
     };
 
     let startAngle = -Math.PI / 2;
     const centerX = size / 2;
     const centerY = size / 2;
-    const radius = size * 0.38;
-    const innerRadius = size * 0.22;
+    const radius = size * 0.40;
+    const innerRadius = size * 0.26;
 
     if (keys.length === 0) {
-      ctx.fillStyle = '#e5ded4';
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.06)';
       ctx.beginPath();
       ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
       ctx.arc(centerX, centerY, innerRadius, Math.PI * 2, 0, true);
@@ -288,7 +363,7 @@
     keys.forEach(k => {
       const val = sources[k];
       const sliceAngle = (val / total) * (Math.PI * 2);
-      ctx.fillStyle = colors[k] || '#8b7a69';
+      ctx.fillStyle = colors[k] || '#c68a4c';
       ctx.beginPath();
       ctx.arc(centerX, centerY, radius, startAngle, startAngle + sliceAngle);
       ctx.arc(centerX, centerY, innerRadius, startAngle + sliceAngle, startAngle, true);
@@ -297,21 +372,28 @@
       startAngle += sliceAngle;
     });
 
-    ctx.fillStyle = '#2b221a';
+    // Inner Text
+    ctx.fillStyle = '#ffffff';
     ctx.font = 'bold 12px Inter, sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText(`${total} Visitas`, centerX, centerY + 4);
+    ctx.fillText(`${total}`, centerX, centerY - 1);
+    ctx.fillStyle = '#a69888';
+    ctx.font = '9px Inter, sans-serif';
+    ctx.fillText('Visitas', centerX, centerY + 11);
   }
 
+  // --- RENDER MAIN DASHBOARD ---
   function renderDashboard() {
     const stats = computeStats(currentDays);
 
+    // Update KPI Numbers
     document.getElementById('kpiViews').textContent = stats.pageViews.toLocaleString();
     document.getElementById('kpiWhatsapp').textContent = stats.waTotal.toLocaleString();
     document.getElementById('kpiCart').textContent = stats.cartAdds.toLocaleString();
-    document.getElementById('kpiRevenue').textContent = `$${stats.totalRevenue.toFixed(2)} USD`;
+    document.getElementById('kpiRevenue').textContent = `$${stats.totalRevenue.toFixed(2)}`;
     document.getElementById('kpiConversion').textContent = `${stats.conversionRate}%`;
 
+    // Funnel Steps
     document.getElementById('funnelViews').textContent = stats.pageViews;
     document.getElementById('funnelProducts').textContent = stats.viewedProducts;
     document.getElementById('funnelCart').textContent = stats.cartAdds;
@@ -321,37 +403,61 @@
     const cRate = stats.viewedProducts > 0 ? ((stats.cartAdds / stats.viewedProducts) * 100).toFixed(0) : 0;
     const wRate = stats.cartAdds > 0 ? ((stats.waTotal / stats.cartAdds) * 100).toFixed(0) : 0;
 
-    document.getElementById('funnelPRate').textContent = `${pRate}% de visitas`;
-    document.getElementById('funnelCRate').textContent = `${cRate}% vieron producto`;
-    document.getElementById('funnelWRate').textContent = `${wRate}% añadieron`;
+    document.getElementById('funnelPRate').textContent = `${pRate}%`;
+    document.getElementById('funnelCRate').textContent = `${cRate}%`;
+    document.getElementById('funnelWRate').textContent = `${wRate}%`;
 
+    // Devices
+    document.getElementById('deviceMobile').textContent = `${stats.mobilePct}%`;
+    document.getElementById('deviceDesktop').textContent = `${stats.desktopPct}%`;
+
+    // Draw Charts
     drawTrendChart(document.getElementById('trendCanvas'), stats.dailyMap);
     drawSourceChart(document.getElementById('sourceCanvas'), stats.sources);
 
+    // Source Badge & Legend
+    const sourceKeys = Object.keys(stats.sources);
+    document.getElementById('sourceTotalBadge').textContent = `${sourceKeys.length} canal${sourceKeys.length === 1 ? '' : 'es'}`;
     const sourceLegend = document.getElementById('sourceLegend');
     if (sourceLegend) {
       sourceLegend.innerHTML = Object.entries(stats.sources).map(([k, v]) => `
-        <div style="display:flex; justify-content:space-between; font-size:0.8rem; margin-bottom:0.3rem;">
-          <span style="text-transform:capitalize;">${k.replace('_', ' ')}</span>
-          <strong>${v} (${((v / (stats.totalSessions || 1)) * 100).toFixed(0)}%)</strong>
+        <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.78rem; margin-bottom:0.4rem; padding: 0.2rem 0; border-bottom: 1px solid rgba(255,255,255,0.03);">
+          <span style="text-transform:capitalize; color:var(--text-muted);">${k.replace('_', ' ')}</span>
+          <strong style="color:#fff;">${v} (${((v / (stats.totalSessions || 1)) * 100).toFixed(0)}%)</strong>
         </div>
-      `).join('') || '<p style="color:#726252; font-size:0.8rem;">Sin datos en este rango</p>';
+      `).join('') || '<p style="color:var(--text-faint); font-size:0.78rem; text-align:center;">Sin datos registrados</p>';
     }
 
+    // Top Products with Progress Fill
     const topProdTable = document.getElementById('topProductsTable');
     if (topProdTable) {
       const allNames = Array.from(new Set([...Object.keys(stats.productViews), ...Object.keys(stats.productAdds)]));
-      const sorted = allNames.sort((a, b) => ((stats.productViews[b] || 0) + (stats.productAdds[b] || 0)) - ((stats.productViews[a] || 0) + (stats.productAdds[a] || 0))).slice(0, 6);
-      
-      topProdTable.innerHTML = sorted.map(name => `
-        <tr>
-          <td><strong>${name}</strong></td>
-          <td>${stats.productViews[name] || 0}</td>
-          <td>${stats.productAdds[name] || 0}</td>
-        </tr>
-      `).join('') || '<tr><td colspan="3" style="text-align:center; color:#726252;">Sin productos visualizados aún</td></tr>';
+      const maxScore = Math.max(...allNames.map(n => (stats.productViews[n] || 0) + (stats.productAdds[n] || 0) * 2), 1);
+      const sorted = allNames.sort((a, b) => ((stats.productViews[b] || 0) + (stats.productAdds[b] || 0) * 2) - ((stats.productViews[a] || 0) + (stats.productAdds[a] || 0) * 2)).slice(0, 5);
+
+      topProdTable.innerHTML = sorted.map(name => {
+        const v = stats.productViews[name] || 0;
+        const c = stats.productAdds[name] || 0;
+        const score = v + c * 2;
+        const pct = Math.min(100, Math.round((score / maxScore) * 100));
+        return `
+          <tr>
+            <td>
+              <div style="font-weight:600; color:#fff;">${name}</div>
+            </td>
+            <td>${v}</td>
+            <td><span style="color:#facc15; font-weight:600;">${c}</span></td>
+            <td style="width: 25%;">
+              <div class="progress-bar-wrap">
+                <div class="progress-bar-fill" style="width: ${pct}%;"></div>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('') || '<tr><td colspan="4" style="text-align:center; color:var(--text-faint); padding:1.5rem;">Sin productos visualizados aún</td></tr>';
     }
 
+    // Recent Events Feed
     const eventTable = document.getElementById('eventTable');
     if (eventTable) {
       const typeClasses = {
@@ -365,15 +471,15 @@
 
       eventTable.innerHTML = stats.recentEvents.map(e => {
         const timeStr = new Date(e.t).toLocaleTimeString('es-VE', { hour: '2-digit', minute: '2-digit' });
-        const detail = e.name || e.query || (e.total ? `$${e.total} USD` : e.src || e.origin || '-');
+        const detail = e.name || e.query || (e.total ? `$${e.total} USD` : e.src || e.origin || 'Navegación');
         return `
           <tr>
-            <td>${timeStr}</td>
-            <td><span class="badge-event ${typeClasses[e.type] || 'badge-view'}">${e.type.replace('_', ' ')}</span></td>
-            <td>${detail}</td>
+            <td style="color:var(--text-faint);">${timeStr}</td>
+            <td><span class="badge-evt ${typeClasses[e.type] || 'badge-view'}">${e.type.replace('_', ' ')}</span></td>
+            <td style="font-weight:500;">${detail}</td>
           </tr>
         `;
-      }).join('') || '<tr><td colspan="3" style="text-align:center; color:#726252;">No hay eventos registrados recientemente</td></tr>';
+      }).join('') || '<tr><td colspan="3" style="text-align:center; color:var(--text-faint); padding:1.5rem;">No hay actividad reciente registrada</td></tr>';
     }
   }
 
@@ -403,9 +509,9 @@
     document.body.removeChild(link);
   }
 
-  // --- DEMO DATA ---
+  // --- DEMO DATA SEEDER ---
   function seedDemoData() {
-    const products = ['Rosa', 'Mini Corazones', 'Armonía Canela', 'Sagrada Familia', 'Gargantilla G-01', 'Pulsera Infinito', 'F-01 Loto Sagrado'];
+    const products = ['Rosa', 'Mini Corazones', 'Armonía Canela', 'Sagrada Familia', 'Gargantilla G-01', 'Pulsera Infinito Azul', 'F-01 Loto Sagrado'];
     const sources = ['instagram', 'instagram', 'tiktok', 'google_search', 'directo', 'whatsapp'];
     const now = Date.now();
     const sessions = [];
@@ -413,22 +519,23 @@
 
     for (let i = 29; i >= 0; i--) {
       const dayTime = now - (i * 24 * 60 * 60 * 1000);
-      const visits = Math.floor(Math.random() * 18) + 8;
+      const visits = Math.floor(Math.random() * 22) + 10;
 
       for (let v = 0; v < visits; v++) {
         const sid = 's_' + (dayTime + v);
         const src = sources[Math.floor(Math.random() * sources.length)];
-        sessions.push({ id: sid, t: dayTime + v * 1000, src, dev: Math.random() > 0.3 ? 'móvil' : 'ordenador' });
-        events.push({ type: 'page_view', t: dayTime + v * 1000, sid, src });
+        const isMobile = Math.random() > 0.25;
+        sessions.push({ id: sid, t: dayTime + v * 1000, src, dev: isMobile ? 'móvil' : 'ordenador' });
+        events.push({ type: 'page_view', t: dayTime + v * 1000, sid, src, dev: isMobile ? 'móvil' : 'ordenador' });
 
-        if (Math.random() > 0.4) {
+        if (Math.random() > 0.35) {
           const prod = products[Math.floor(Math.random() * products.length)];
           events.push({ type: 'view_item', name: prod, price: 15, t: dayTime + v * 1000 + 500, sid });
 
-          if (Math.random() > 0.5) {
+          if (Math.random() > 0.45) {
             events.push({ type: 'add_to_cart', name: prod, price: 15, qty: 1, t: dayTime + v * 1000 + 1000, sid });
 
-            if (Math.random() > 0.6) {
+            if (Math.random() > 0.55) {
               events.push({ type: 'whatsapp_checkout', origin: 'cart_drawer', total: 30, itemsCount: 2, t: dayTime + v * 1000 + 1500, sid });
             }
           }
@@ -442,14 +549,13 @@
 
   // --- INITIALIZATION & EVENTS ---
   document.addEventListener('DOMContentLoaded', () => {
-    // Check initial auth status
     if (isSessionValid()) {
       setDashboardVisible(true);
     } else {
       setDashboardVisible(false);
     }
 
-    // Auth Form Submission
+    // Login Form
     const authForm = document.getElementById('authForm');
     const authError = document.getElementById('authError');
 
@@ -459,7 +565,6 @@
         const user = document.getElementById('authUser').value;
         const pass = document.getElementById('authPassword').value;
 
-        // Check lockout
         const lock = getLockoutState();
         if (lock.lockUntil && Date.now() < lock.lockUntil) {
           const remainingMins = Math.ceil((lock.lockUntil - Date.now()) / 60000);
@@ -499,7 +604,7 @@
       });
     }
 
-    // Change Password Modal
+    // Password Modal
     const openPwdBtn = document.getElementById('openPwdBtn');
     const pwdModal = document.getElementById('pwdModal');
     const cancelPwdBtn = document.getElementById('cancelPwdBtn');
@@ -535,20 +640,21 @@
       });
     }
 
-    // Range Selector
-    const rangeSelect = document.getElementById('rangeSelect');
-    if (rangeSelect) {
-      rangeSelect.addEventListener('change', (e) => {
-        currentDays = parseInt(e.target.value, 10);
+    // Segmented Range Buttons
+    const rangeBtns = document.querySelectorAll('.range-btn');
+    rangeBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        rangeBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentDays = parseInt(btn.dataset.days, 10);
         renderDashboard();
       });
-    }
+    });
 
-    // Export CSV
+    // Export & Demo Buttons
     const exportBtn = document.getElementById('exportBtn');
     if (exportBtn) exportBtn.addEventListener('click', exportCSV);
 
-    // Demo Data
     const demoBtn = document.getElementById('demoBtn');
     if (demoBtn) {
       demoBtn.addEventListener('click', () => {
@@ -558,7 +664,6 @@
       });
     }
 
-    // Clear Data
     const clearBtn = document.getElementById('clearBtn');
     if (clearBtn) {
       clearBtn.addEventListener('click', () => {
