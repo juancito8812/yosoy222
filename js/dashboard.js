@@ -1,6 +1,7 @@
 /* ============================================
    YoSoy222 — Luxury Dashboard Engine
    Cryptographic Auth Gate, Supabase Cloud Integration,
+   Geographic Telemetry (Countries & Cities),
    Bezier Area Charts, Funnel & Telemetry Analytics
    ============================================ */
 
@@ -21,6 +22,24 @@
   let currentDays = 30;
   let cachedCloudData = null;
   let lastCloudFetch = 0;
+
+  // Helper: Country Flags
+  function getFlagEmoji(country) {
+    if (!country) return '🌍';
+    const c = country.toLowerCase();
+    if (c.includes('venezuela')) return '🇻🇪';
+    if (c.includes('estados unidos') || c.includes('united states') || c === 'us') return '🇺🇸';
+    if (c.includes('españa') || c.includes('spain') || c === 'es') return '🇪🇸';
+    if (c.includes('colombia') || c === 'co') return '🇨🇴';
+    if (c.includes('méxico') || c.includes('mexico') || c === 'mx') return '🇲🇽';
+    if (c.includes('chile')) return '🇨🇱';
+    if (c.includes('argentina')) return '🇦🇷';
+    if (c.includes('panamá') || c.includes('panama')) return '🇵🇦';
+    if (c.includes('perú') || c.includes('peru')) return '🇵🇪';
+    if (c.includes('ecuador')) return '🇪🇨';
+    if (c.includes('reino unido') || c.includes('united kingdom')) return '🇬🇧';
+    return '🏳️';
+  }
 
   // --- CRYPTOGRAPHIC UTILITIES ---
   async function computeHash(username, password) {
@@ -127,6 +146,8 @@
             sid: r.session_id,
             src: r.source || 'directo',
             dev: r.device || 'móvil',
+            country: r.country || 'Venezuela',
+            city: r.city || 'Caracas',
             name: r.product_name,
             price: Number(r.product_price) || 0,
             cat: r.product_cat,
@@ -144,7 +165,9 @@
                 id: sid,
                 t: e.t,
                 src: e.src,
-                dev: e.dev
+                dev: e.dev,
+                country: e.country,
+                city: e.city
               });
             }
           });
@@ -213,6 +236,16 @@
       sources[src] = (sources[src] || 0) + 1;
     });
 
+    // Geolocation: Countries & Cities
+    const countries = {};
+    const cities = {};
+    sessions.forEach(s => {
+      const co = s.country || 'Venezuela';
+      const ci = s.city || 'Caracas';
+      countries[co] = (countries[co] || 0) + 1;
+      cities[ci] = (cities[ci] || 0) + 1;
+    });
+
     // Top Products
     const productViews = {};
     const productAdds = {};
@@ -230,7 +263,6 @@
     const chartDays = days === 0 ? 30 : (days === 1 ? 1 : days);
 
     if (chartDays === 1) {
-      // Group by 4-hour intervals for today
       for (let h = 0; h < 24; h += 4) {
         const key = `${h}:00`;
         dailyMap[key] = { views: 0, whatsapp: 0 };
@@ -272,6 +304,8 @@
       mobilePct,
       desktopPct,
       sources,
+      countries,
+      cities,
       productViews,
       productAdds,
       dailyMap,
@@ -317,7 +351,6 @@
       ctx.fillText(val, padX - 8, y + 3);
     }
 
-    // Smooth Bezier Curve Function
     function drawSmoothSeries(data, strokeColor, fillColorStart, fillColorEnd) {
       if (data.length < 2) return;
 
@@ -326,7 +359,6 @@
         y: padY + chartH - (val / maxVal) * chartH
       }));
 
-      // Create Gradient Area Fill
       const grad = ctx.createLinearGradient(0, padY, 0, padY + chartH);
       grad.addColorStop(0, fillColorStart);
       grad.addColorStop(1, fillColorEnd);
@@ -348,7 +380,6 @@
         ctx.bezierCurveTo(cp1x, cp1y, cp2x, cp2y, p2.x, p2.y);
       }
 
-      // Stroke Line
       ctx.strokeStyle = strokeColor;
       ctx.lineWidth = 2.5;
       ctx.shadowColor = strokeColor;
@@ -356,14 +387,12 @@
       ctx.stroke();
       ctx.shadowBlur = 0;
 
-      // Fill Area Under Curve
       ctx.lineTo(points[points.length - 1].x, padY + chartH);
       ctx.lineTo(points[0].x, padY + chartH);
       ctx.closePath();
       ctx.fillStyle = grad;
       ctx.fill();
 
-      // Glowing Data Points
       points.forEach(p => {
         ctx.beginPath();
         ctx.arc(p.x, p.y, 3, 0, Math.PI * 2);
@@ -375,13 +404,9 @@
       });
     }
 
-    // Views Area (Warm Amber Gold)
     drawSmoothSeries(viewData, '#c68a4c', 'rgba(198, 138, 76, 0.28)', 'rgba(198, 138, 76, 0.0)');
-
-    // WhatsApp Orders Area (Emerald Green)
     drawSmoothSeries(waData, '#10b981', 'rgba(16, 185, 129, 0.25)', 'rgba(16, 185, 129, 0.0)');
 
-    // Bottom Date Labels
     ctx.fillStyle = '#a69888';
     ctx.font = '10px Inter, sans-serif';
     ctx.textAlign = 'center';
@@ -447,7 +472,6 @@
       startAngle += sliceAngle;
     });
 
-    // Inner Center Text
     ctx.fillStyle = '#ffffff';
     ctx.font = 'bold 13px Inter, sans-serif';
     ctx.textAlign = 'center';
@@ -517,6 +541,63 @@
       }).join('') || '<p style="color:var(--text-faint); font-size:0.78rem; text-align:center;">Sin datos registrados</p>';
     }
 
+    // Geographic Distribution (Countries & Cities)
+    const geoTotalBadge = document.getElementById('geoTotalBadge');
+    const countryKeys = Object.keys(stats.countries);
+    const cityKeys = Object.keys(stats.cities);
+    if (geoTotalBadge) {
+      geoTotalBadge.textContent = `${countryKeys.length} país(es) · ${cityKeys.length} ciudad(es)`;
+    }
+
+    const countriesTable = document.getElementById('countriesTable');
+    if (countriesTable) {
+      const sortedCo = Object.entries(stats.countries).sort((a, b) => b[1] - a[1]);
+      const maxCo = sortedCo[0]?.[1] || 1;
+      countriesTable.innerHTML = sortedCo.map(([co, count]) => {
+        const flag = getFlagEmoji(co);
+        const pct = Math.round((count / (stats.totalSessions || 1)) * 100);
+        const barPct = Math.round((count / maxCo) * 100);
+        return `
+          <tr>
+            <td>
+              <div style="font-weight:600; color:#fff; display:flex; align-items:center; gap:0.4rem;">
+                <span>${flag}</span> <span>${co}</span>
+              </div>
+            </td>
+            <td><strong>${count}</strong> <span style="font-size:0.75rem; color:var(--text-faint);">(${pct}%)</span></td>
+            <td>
+              <div class="progress-bar-wrap">
+                <div class="progress-bar-fill" style="width: ${barPct}%; background: linear-gradient(90deg, #c68a4c, #eab308);"></div>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('') || '<tr><td colspan="3" style="text-align:center; color:var(--text-faint); padding:1rem;">Sin ubicaciones registradas</td></tr>';
+    }
+
+    const citiesTable = document.getElementById('citiesTable');
+    if (citiesTable) {
+      const sortedCi = Object.entries(stats.cities).sort((a, b) => b[1] - a[1]);
+      const maxCi = sortedCi[0]?.[1] || 1;
+      citiesTable.innerHTML = sortedCi.map(([ci, count]) => {
+        const pct = Math.round((count / (stats.totalSessions || 1)) * 100);
+        const barPct = Math.round((count / maxCi) * 100);
+        return `
+          <tr>
+            <td>
+              <div style="font-weight:600; color:#fff;">📍 ${ci}</div>
+            </td>
+            <td><strong>${count}</strong> <span style="font-size:0.75rem; color:var(--text-faint);">(${pct}%)</span></td>
+            <td>
+              <div class="progress-bar-wrap">
+                <div class="progress-bar-fill" style="width: ${barPct}%; background: linear-gradient(90deg, #10b981, #34d399);"></div>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('') || '<tr><td colspan="3" style="text-align:center; color:var(--text-faint); padding:1rem;">Sin ciudades registradas</td></tr>';
+    }
+
     // Top Products with Progress Fill
     const topProdTable = document.getElementById('topProductsTable');
     if (topProdTable) {
@@ -561,14 +642,17 @@
       eventTable.innerHTML = stats.recentEvents.map(e => {
         const timeStr = new Date(e.t).toLocaleTimeString('es-VE', { hour: '2-digit', minute: '2-digit' });
         const detail = e.name || e.query || (e.total ? `$${e.total} USD` : e.src || e.origin || 'Navegación');
+        const flag = getFlagEmoji(e.country);
+        const locationText = `${flag} ${e.city || 'Caracas'}, ${e.country || 'Venezuela'}`;
         return `
           <tr>
             <td style="color:var(--text-faint);">${timeStr}</td>
             <td><span class="badge-evt ${typeClasses[e.type] || 'badge-view'}">${e.type.replace('_', ' ')}</span></td>
+            <td style="font-size:0.8rem; color:#d6c7b2;">${locationText}</td>
             <td style="font-weight:500;">${detail}</td>
           </tr>
         `;
-      }).join('') || '<tr><td colspan="3" style="text-align:center; color:var(--text-faint); padding:1.5rem;">No hay actividad reciente registrada</td></tr>';
+      }).join('') || '<tr><td colspan="4" style="text-align:center; color:var(--text-faint); padding:1.5rem;">No hay actividad reciente registrada</td></tr>';
     }
   }
 
@@ -576,7 +660,7 @@
   function exportCSV() {
     const raw = cachedCloudData || getLocalRawData();
     const rows = [
-      ['Timestamp', 'Fecha', 'Tipo de Evento', 'Detalle / Producto / Busqueda', 'Precio/Total', 'Origen / Fuente', 'Dispositivo']
+      ['Timestamp', 'Fecha', 'Tipo de Evento', 'Detalle / Producto / Busqueda', 'Precio/Total', 'Origen / Fuente', 'Dispositivo', 'Pais', 'Ciudad']
     ];
 
     (raw.events || []).forEach(e => {
@@ -585,7 +669,9 @@
       const val = e.total || e.price || '';
       const src = e.src || e.origin || '';
       const dev = e.dev || '';
-      rows.push([e.t, date, e.type, detail, val, src, dev]);
+      const co = e.country || 'Venezuela';
+      const ci = e.city || 'Caracas';
+      rows.push([e.t, date, e.type, detail, val, src, dev, co, ci]);
     });
 
     const csvContent = 'data:text/csv;charset=utf-8,' + rows.map(r => r.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(',')).join('\n');
@@ -601,7 +687,17 @@
   // --- DEMO DATA SEEDER ---
   function seedDemoData() {
     const products = ['Rosa', 'Mini Corazones', 'Armonía Canela', 'Sagrada Familia', 'Gargantilla G-01', 'Pulsera Infinito Azul', 'F-01 Loto Sagrado'];
-    const sources = ['instagram', 'instagram', 'tiktok', 'google_search', 'directo', 'whatsapp'];
+    const sources = ['instagram', 'instagram', 'tiktok', 'google_search', 'directo', 'whatsapp', 'pwa_app'];
+    const locations = [
+      { country: 'Venezuela', city: 'Caracas' },
+      { country: 'Venezuela', city: 'Valencia' },
+      { country: 'Venezuela', city: 'Maracaibo' },
+      { country: 'Venezuela', city: 'Barquisimeto' },
+      { country: 'Venezuela', city: 'Guatire' },
+      { country: 'Estados Unidos', city: 'Miami' },
+      { country: 'España', city: 'Madrid' },
+      { country: 'Colombia', city: 'Bogotá' }
+    ];
     const now = Date.now();
     const sessions = [];
     const events = [];
@@ -611,19 +707,20 @@
       const t = now - Math.floor(Math.random() * 25 * 24 * 60 * 60 * 1000);
       const src = sources[Math.floor(Math.random() * sources.length)];
       const dev = Math.random() > 0.3 ? 'móvil' : 'ordenador';
+      const loc = locations[Math.floor(Math.random() * locations.length)];
       
-      sessions.push({ id: sid, t, src, dev, path: '/' });
-      events.push({ type: 'page_view', t: t + 100, sid, src, dev, title: 'YoSoy222' });
+      sessions.push({ id: sid, t, src, dev, country: loc.country, city: loc.city, path: '/' });
+      events.push({ type: 'page_view', t: t + 100, sid, src, dev, country: loc.country, city: loc.city, title: 'YoSoy222' });
 
       if (Math.random() > 0.25) {
         const prod = products[Math.floor(Math.random() * products.length)];
-        events.push({ type: 'view_item', t: t + 1500, sid, src, dev, name: prod, price: 12, cat: 'Velas' });
+        events.push({ type: 'view_item', t: t + 1500, sid, src, dev, country: loc.country, city: loc.city, name: prod, price: 12, cat: 'Velas' });
 
         if (Math.random() > 0.45) {
-          events.push({ type: 'add_to_cart', t: t + 3000, sid, src, dev, name: prod, price: 12, qty: 1 });
+          events.push({ type: 'add_to_cart', t: t + 3000, sid, src, dev, country: loc.country, city: loc.city, name: prod, price: 12, qty: 1 });
 
           if (Math.random() > 0.40) {
-            events.push({ type: 'whatsapp_checkout', t: t + 6000, sid, src, dev, total: 24, itemsCount: 2 });
+            events.push({ type: 'whatsapp_checkout', t: t + 6000, sid, src, dev, country: loc.country, city: loc.city, total: 24, itemsCount: 2 });
           }
         }
       }

@@ -230,7 +230,53 @@
                 </div>
             </section>
 
-            <!-- Row 3: Top Products & Live Activity Feed -->
+            <!-- Row 3: Geographic Distribution (Countries & Cities) -->
+            <section class="dash-card" style="margin-bottom: 1.5rem;">
+                <div class="dash-card-header">
+                    <h2 class="dash-card-title">
+                        <span>🌍</span>
+                        Ubicación Geográfica (Países y Ciudades)
+                    </h2>
+                    <span class="dash-card-tag" id="geoTotalBadge">0 ubicaciones</span>
+                </div>
+                <div class="grid-2col" style="margin-bottom: 0;">
+                    <!-- Countries Table -->
+                    <div>
+                        <h4 style="font-size: 0.85rem; color: var(--accent); margin-bottom: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; display: flex; align-items: center; gap: 0.4rem;">🚩 Países</h4>
+                        <div class="table-container" style="max-height: 240px; overflow-y: auto;">
+                            <table class="dash-table">
+                                <thead>
+                                    <tr>
+                                        <th>País</th>
+                                        <th>Visitas</th>
+                                        <th style="width: 30%;">Distribución</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="countriesTable"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Cities Table -->
+                    <div>
+                        <h4 style="font-size: 0.85rem; color: var(--accent); margin-bottom: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; display: flex; align-items: center; gap: 0.4rem;">🏙️ Ciudades</h4>
+                        <div class="table-container" style="max-height: 240px; overflow-y: auto;">
+                            <table class="dash-table">
+                                <thead>
+                                    <tr>
+                                        <th>Ciudad</th>
+                                        <th>Visitas</th>
+                                        <th style="width: 30%;">Distribución</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="citiesTable"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Row 4: Top Products & Live Activity Feed -->
             <section class="grid-2col">
                 <!-- Top Products Table -->
                 <div class="dash-card">
@@ -271,6 +317,7 @@
                                 <tr>
                                     <th>Hora</th>
                                     <th>Evento</th>
+                                    <th>Ubicación</th>
                                     <th>Detalle</th>
                                 </tr>
                             </thead>

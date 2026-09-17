@@ -1,7 +1,7 @@
 /* ============================================
    YoSoy222 — Analytics & Telemetry Engine
    Client-side event tracking, localStorage telemetry,
-   Google Analytics 4 (GA4), and Supabase Cloud Sync.
+   Geolocation (Country & City), GA4 and Supabase Cloud.
    ============================================ */
 
 (function () {
@@ -9,6 +9,7 @@
 
   const STORAGE_KEY = 'yosoy222_analytics';
   const SESSION_KEY = 'yosoy222_session_id';
+  const GEO_KEY = 'yosoy222_geo_data';
   const MAX_EVENTS = 2000;
   const RETENTION_DAYS = 60;
 
@@ -36,6 +37,45 @@
       script.src = `https://www.googletagmanager.com/gtag/js?id=${GA_ID}`;
       document.head.appendChild(script);
     }
+  }
+
+  // Helper: Detect Geolocation (Country & City) asynchronously
+  function getCachedGeo() {
+    try {
+      const cached = sessionStorage.getItem(GEO_KEY);
+      if (cached) return JSON.parse(cached);
+    } catch {}
+    return { country: 'Venezuela', city: 'Caracas', code: 'VE' };
+  }
+
+  // Fetch Geo in background on session start
+  if (typeof window !== 'undefined' && !sessionStorage.getItem(GEO_KEY)) {
+    fetch('https://get.geojs.io/v1/ip/geo.json')
+      .then(r => r.json())
+      .then(data => {
+        if (data && data.country) {
+          const geo = {
+            country: data.country || 'Venezuela',
+            city: data.city || 'Caracas',
+            code: data.country_code || 'VE'
+          };
+          sessionStorage.setItem(GEO_KEY, JSON.stringify(geo));
+        }
+      })
+      .catch(() => {
+        // Fallback: estimate from Intl TimeZone
+        try {
+          const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || '';
+          let country = 'Venezuela';
+          let city = 'Caracas';
+          let code = 'VE';
+          if (tz.includes('Caracas')) { country = 'Venezuela'; city = 'Caracas'; code = 'VE'; }
+          else if (tz.includes('Bogota')) { country = 'Colombia'; city = 'Bogotá'; code = 'CO'; }
+          else if (tz.includes('Madrid')) { country = 'España'; city = 'Madrid'; code = 'ES'; }
+          else if (tz.includes('New_York') || tz.includes('Miami')) { country = 'Estados Unidos'; city = 'Miami'; code = 'US'; }
+          sessionStorage.setItem(GEO_KEY, JSON.stringify({ country, city, code }));
+        } catch {}
+      });
   }
 
   // Helper: Detect referrer / traffic channel & PWA standalone mode
@@ -102,12 +142,15 @@
   }
 
   function trackSession(sid) {
+    const geo = getCachedGeo();
     const data = getAnalyticsData();
     data.sessions.push({
       id: sid,
       t: Date.now(),
       src: detectSource(),
       dev: detectDevice(),
+      country: geo.country,
+      city: geo.city,
       path: window.location.pathname
     });
     saveAnalyticsData(data);
@@ -136,6 +179,9 @@
     const src = details.src || detectSource();
     const dev = details.dev || detectDevice();
     const sid = getSessionId();
+    const geo = getCachedGeo();
+    const country = details.country || geo.country || 'Venezuela';
+    const city = details.city || geo.city || 'Caracas';
 
     const evt = {
       type: String(type || 'custom'),
@@ -143,6 +189,8 @@
       sid: sid,
       src: src,
       dev: dev,
+      country: country,
+      city: city,
       ...details
     };
 
@@ -157,6 +205,8 @@
       session_id: sid,
       source: src,
       device: dev,
+      country: country,
+      city: city,
       product_name: details.name || details.product || null,
       product_price: Number(details.price) || null,
       product_cat: details.cat || null,
@@ -215,7 +265,8 @@
       getData: getAnalyticsData,
       clearData: () => localStorage.removeItem(STORAGE_KEY),
       detectSource,
-      detectDevice
+      detectDevice,
+      getGeo: getCachedGeo
     };
 
     getSessionId();
