@@ -2,7 +2,7 @@
 
 > Tienda online de velas artesanales, pulseras, collares, franelas y accesorios.
 > Desplegada en **GitHub Pages** con dominio personalizado **yosoy222.com** bajo **Cloudflare**.
-> **PWA instalable** con soporte offline completo (Cache v12), catálogo prerenderizado para SEO (Schema.org) y suite de pruebas automatizadas en CI/CD.
+> **PWA instalable** con soporte offline completo (Cache v18), catálogo prerenderizado para SEO (Schema.org), panel privado de analítica con Luxury Glassmorphism y backend en la nube (Supabase Cloud + GA4) y suite de pruebas automatizadas en CI/CD.
 
 **Repositorio:** https://github.com/juancito8812/yosoy222  
 **URL de producción:** https://yosoy222.com  
@@ -54,8 +54,8 @@
   - Sanitización anti-prototype smuggling en la serialización.
 - **Checkout por WhatsApp:** Mensaje preformateado e itemizado (producto × cantidad — subtotal, y total final en USD).
 - **Número real de WhatsApp centralizado:** `+58 412 648 1628` — única fuente en `js/app.js` (`const WHATSAPP = '584126481628'`); todos los botones y enlaces del sitio se sincronizan con este valor.
-- **PWA Instalable (Cache v16):** Estrategia Network-First para navegación HTML (contenido siempre fresco con conexión) y Stale-While-Revalidate para recursos estáticos; precaching enfocado en shell, dashboard, iconos HD y miniaturas (`images/thumbs/`).
-- **Dashboard Privado de Analítica y Conversión:** Panel de control en `/dashboard.html` con estética *Luxury Glassmorphism*, gráficos de tendencias en curvas Bezier, desglose de canales (Instagram, TikTok, Facebook, Google, WhatsApp), embudo de conversión paso a paso, desglose por dispositivos, ranking de popularidad de productos, actividad en tiempo real, exportación CSV y autenticación criptográfica segura con Web Crypto SHA-256 salted hash y rate-limiting anti-fuerza bruta.
+- **PWA Instalable (Cache v18):** Estrategia Network-First para navegación HTML (contenido siempre fresco con conexión) y Stale-While-Revalidate para recursos estáticos; precaching enfocado en shell, dashboard, iconos HD y miniaturas (`images/thumbs/`).
+- **Dashboard Privado de Analítica y Conversión:** Panel de control en `/dashboard.html` con estética *Luxury Glassmorphism*, gráficos de tendencias en curvas Bezier, desglose de canales (Instagram, TikTok, Facebook, Google, WhatsApp), embudo de conversión paso a paso, desglose por dispositivos, ranking de popularidad de productos, actividad en tiempo real, exportación CSV, sincronización en tiempo real con **Supabase Cloud** (`gkekolsttfbiegyhvejy.supabase.co`) con seguridad RLS, integración oficial con **Google Analytics 4** (`G-Y9R0B5NH75`) y autenticación criptográfica segura con Web Crypto SHA-256 salted hash y rate-limiting anti-fuerza bruta.
 - **Seguridad integral:**
   - Content Security Policy (CSP) estricto.
   - Cabeceras de seguridad servidas desde el Edge de Cloudflare (`X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`, `Permissions-Policy`, HSTS con preload).
@@ -99,23 +99,15 @@ yosoy222/
 │   └── Lightbox modal (role="dialog" con teclado Esc/Flechas y focus trap)
 │
 ├── css/
-│   └── style.css                  ← Estilos completos (~840 líneas)
-│       ├── Tokens CSS (:root — paleta tierra crema, contraste WCAG AA)
-│       ├── Componentes: Header, Hero, Grid, Tarjetas, Filtros, Drawer, Lightbox
-│       └── Optimizaciones: aspect-ratio, focus-visible, reduced-motion, media queries
+│   ├── style.css                  ← Estilos completos de la tienda (paleta tierra crema, WCAG AA)
+│   └── dashboard.css              ← Estilos Luxury Glassmorphism para panel de analítica
 │
 ├── js/
-│   └── app.js                     ← Lógica de la aplicación (~650 líneas)
-│       ├── Configuración: const WHATSAPP = '584126481628'
-│       ├── Catálogo inmutable: array products[] con los 44 productos
-│       ├── Seguridad: escapeHtml(), conciliación de precios, sanitización de items
-│       ├── Carrito: persistencia en localStorage con TTL de 30 días, steppers, checkout
-│       ├── UI & Eventos: IntersectionObserver en scroll, debounce en búsqueda
-│       ├── A11y: Trampas de foco en drawer/menú, navegación por teclado en Lightbox
-│       ├── Telemetría/Resiliencia: Handlers globales de error
-│       └── PWA: Registro de SW y comunicación PRECACHE_IMAGES (thumbs-only)
+│   ├── app.js                     ← Lógica de la tienda: catálogo inmutable, carrito blindado, filtros
+│   ├── analytics.js               ← Motor de telemetría: GA4 + Supabase Cloud + localStorage
+│   └── dashboard.js               ← Motor del Dashboard: autenticación SHA-256, gráficos Bezier en Canvas
 │
-├── sw.js                          ← Service Worker PWA (Cache v12)
+├── sw.js                          ← Service Worker PWA (Cache v18)
 │   ├── Estrategia Network-First con fallback a Cache para navegaciones (HTML siempre fresco)
 │   ├── Estrategia Stale-While-Revalidate con ignoreSearch para recursos estáticos
 │   ├── Precaching enfocado en miniaturas de imágenes para instalación ultrarrápida
@@ -317,21 +309,38 @@ Las imágenes de catálogo y miniaturas han sido procesadas para eliminar márge
 
 ---
 
-## PWA: INSTALAR Y FUNCIONAMIENTO OFFLINE (CACHE V16)
+## PWA: INSTALAR Y FUNCIONAMIENTO OFFLINE (CACHE V18)
 
 La PWA cumple con todos los estándares modernos de instalación y navegación offline:
 
-### Arquitectura de Caché en `sw.js` (Versión 16)
+### Arquitectura de Caché en `sw.js` (Versión 18)
 1. **Navegación Network-First:**
    Para solicitudes de documentos HTML (`event.request.mode === 'navigate'`), el Service Worker consulta primero la red para obtener la versión más reciente del catálogo y, en caso de estar desconectado o con señal inestable, responde con la copia en caché.
 2. **Stale-While-Revalidate para Recursos Estáticos:**
-   CSS, fuentes, JS e imágenes secundarias se sirven de inmediato desde la caché mientras se actualizan en segundo plano con control de versión `?v=16`.
+   CSS, fuentes, JS e imágenes secundarias se sirven de inmediato desde la caché mientras se actualizan en segundo plano con control de versión `?v=18`.
 3. **Precache Integral & Resiliencia Offline:**
    Durante la instalación, el Service Worker descarga de forma controlada el shell de la aplicación, el panel de dashboard y las 44 miniaturas (`images/thumbs/`), garantizando que la navegación visual funcione offline desde el primer instante sin agotar datos móviles del usuario. Las imágenes grandes del lightbox se descargan y cachean bajo demanda.
 4. **Invalidación Inmediata de Versiones Anteriores:**
-   Al publicarse una nueva versión (`CACHE_NAME = 'yosoy222-v16'`), el evento `activate` purga de forma determinista cualquier almacenamiento obsoleto y el evento `controllerchange` refresca la vista del catálogo automáticamente.
+   Al publicarse una nueva versión (`CACHE_NAME = 'yosoy222-v18'`), el evento `activate` purga de forma determinista cualquier almacenamiento obsoleto y el evento `controllerchange` refresca la vista del catálogo automáticamente.
 5. **Iconos PWA de Alta Definición:**
    10 variantes (incluyendo formatos maskable con padding seguro del 15% para Android/iOS sin franjas negras) validadas con `scripts/verify_icons.py`.
+
+---
+
+## TELEMETRÍA Y BACKEND EN LA NUBE (SUPABASE & GA4)
+
+La tienda y el panel de analítica cuentan con un sistema de telemetría híbrido y respetuoso con la privacidad:
+
+### 1. Ingesta Global con Supabase Cloud
+- **Endpoint:** `gkekolsttfbiegyhvejy.supabase.co` (`public.yosoy222_events`).
+- **Seguridad RLS:** Row Level Security activo. La clave pública (`anon`) solo tiene permisos de `INSERT` y `SELECT`. Los comandos `UPDATE` y `DELETE` están completamente denegados a nivel de motor de base de datos para impedir la alteración o borrado de métricas.
+- **Sincronización Asíncrona:** Cada evento (`page_view`, `view_item`, `add_to_cart`, `whatsapp_checkout`, `search`) se envía mediante `fetch` con `keepalive: true` en segundo plano sin ralentizar la navegación.
+- **Dashboard en Tiempo Real:** `/dashboard.html` consulta los eventos globales en Supabase, graficando visitas, carritos y pedidos en vivo de todos los clientes con auto-refresco cada 30 segundos.
+
+### 2. Integración Oficial de Google Analytics 4 (GA4)
+- **ID de Medición:** `G-Y9R0B5NH75`.
+- **Cero errores CSP:** Inicialización modular sincronizada en `<head>` sin necesidad de bloques inline inseguros.
+- **Eventos de E-commerce:** Envío estructurado de `view_item`, `add_to_cart`, `begin_checkout`, `generate_lead` y `search`.
 
 ---
 

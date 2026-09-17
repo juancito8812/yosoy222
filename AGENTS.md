@@ -11,7 +11,7 @@ Tienda online de velas artesanales, pulseras, collares, franelas y accesorios.
 - **Repositorio:** https://github.com/juancito8812/yosoy222
 - **WhatsApp Oficial:** `+58 412 648 1628` (`584126481628`)
 - **Hosting:** GitHub Pages con proxy, DNS y CDN bajo Cloudflare.
-- **Arquitectura:** PWA instalable con catálogo pre-renderizado para SEO (Schema.org), panel de analítica privada y soporte offline (Service Worker Cache v16).
+- **Arquitectura:** PWA instalable con catálogo pre-renderizado para SEO (Schema.org), panel de analítica privada con Luxury Glassmorphism, telemetría en la nube (Supabase Cloud + GA4) y soporte offline (Service Worker Cache v18).
 
 ---
 
@@ -19,8 +19,8 @@ Tienda online de velas artesanales, pulseras, collares, franelas y accesorios.
 
 - **Cero dependencias de runtime:** Vanilla HTML5 semántico, CSS3 moderno y ES6+ JavaScript. No introducir frameworks pesados (React, Vue, etc.) ni empaquetadores complejos.
 - **Testing Nativo:** Módulo `node:test` de Node.js (ejecutable con `npm test` o `node --test tests/*.test.mjs`). Cero paquetes de testing externos.
-- **PWA (Cache v16):** Estrategia Network-First para navegación de páginas (`mode === 'navigate'`) y Stale-While-Revalidate para recursos estáticos. Precaching enfocado en shell, dashboard, iconos HD y miniaturas (`images/thumbs/`). Iconos de alta resolución generados desde fuente 1280px con fondo blanco sólido y Safe Zone del 80% sin franjas negras.
-- **Dashboard & Analítica Privada:** Telemetría sin cookies en `js/analytics.js` y panel de control en `dashboard.html` (`/dashboard.html`) protegido con autenticación criptográfica (Web Crypto SHA-256 salted hash, protección anti-fuerza bruta, rate-limiting, sesiones efímeras con timeout de 2h y opción de cambio de credenciales).
+- **PWA (Cache v18):** Estrategia Network-First para navegación de páginas (`mode === 'navigate'`) y Stale-While-Revalidate para recursos estáticos. Precaching enfocado en shell, dashboard, iconos HD y miniaturas (`images/thumbs/`). Iconos de alta resolución generados desde fuente 1280px con fondo blanco sólido y Safe Zone del 80% sin franjas negras.
+- **Dashboard & Analítica Cloud:** Telemetría sin cookies en `js/analytics.js` con ingesta global en Supabase Cloud (`public.yosoy222_events`) blindada por RLS, forwarder oficial GA4 (`G-Y9R0B5NH75`), y panel de control en `dashboard.html` (`/dashboard.html`) protegido con autenticación criptográfica (Web Crypto SHA-256 salted hash, protección anti-fuerza bruta, rate-limiting, sesiones efímeras con timeout de 2h y opción de cambio de credenciales).
 - **SEO & Indexabilidad:** 44 productos prerenderizados en `index.html` mediante `scripts/prerender_catalog.py` y datos estructurados Schema.org (`Store` + `ItemList`).
 - **Base de Datos / Fuente de Verdad:** Archivo Excel `Catalogo.xlsx` ubicado localmente en `/home/jr/Documentos/Catalogo velas/Catalogo.xlsx`.
 
@@ -56,9 +56,9 @@ yosoy222/
 ├── css/style.css                  ← Sistema de diseño, tokens en :root (contraste WCAG AA)
 ├── css/dashboard.css              ← Estilos dedicados para el dashboard y gráficos
 ├── js/app.js                      ← Catálogo inmutable, filtros, carrito blindado, a11y focus trap
-├── js/analytics.js                ← Motor de telemetría de eventos y compatibilidad GA4
-├── js/dashboard.js                ← Renderizado de gráficos en Canvas y cálculo de KPIs
-├── sw.js                          ← Service Worker (Cache v15, Network-First navegación)
+├── js/analytics.js                ← Motor de telemetría: GA4 + Supabase Cloud + localStorage
+├── js/dashboard.js                ← Motor del Dashboard: autenticación SHA-256, gráficos Bezier en Canvas
+├── sw.js                          ← Service Worker (Cache v18, Network-First navegación)
 ├── manifest.json                  ← Metadata PWA (id, scope, display standalone, iconos v15)
 ├── package.json                   ← Script "test" para node --test
 ├── robots.txt / sitemap.xml       ← Directivas canónicas de indexación
