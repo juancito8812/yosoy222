@@ -46,6 +46,7 @@
 - **Productos:** 44 (25 velas, 5 collares, 6 pulseras, 7 franelas, 1 accesorio)
 - **Imágenes:** 63 thumbs, 60 catalog (incluye 4 decorativas y 15 variantes adicionales)
 - **WhatsApp:** 584126481628 (configurado en `js/app.js` y 3 lugares de `index.html`)
+- **Agentes Humanos WhatsApp:** `+58 412 992 2399` y `+58 424 216 2538` (enrutamiento de desvío configurado en n8n y Evolution API `yosoy222_bot`)
 - **Dominio:** yosoy222.com (Cloudflare proxy activado)
 - **Deploy:** GitHub Pages automático (~2 min) + purge Cloudflare automático (~30 seg)
 - **PageSpeed:** 99 Rendimiento, 100 Accesibilidad, 100 Prácticas recomendadas, 100 SEO

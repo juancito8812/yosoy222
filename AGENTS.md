@@ -10,6 +10,7 @@ Tienda online de velas artesanales, pulseras, collares, franelas y accesorios.
 - **URL de Producción:** https://yosoy222.com
 - **Repositorio:** https://github.com/juancito8812/yosoy222
 - **WhatsApp Oficial:** `+58 412 648 1628` (`584126481628`)
+- **Agentes Humanos de Respaldo:** Agente 1 (`+58 412 992 2399`), Agente 2 (`+58 424 216 2538`)
 - **Hosting:** GitHub Pages con proxy, DNS y CDN bajo Cloudflare.
 - **Arquitectura:** PWA instalable con catálogo pre-renderizado para SEO (Schema.org), panel de analítica privada con Luxury Glassmorphism, telemetría en la nube (Supabase Cloud + GA4) y soporte offline (Service Worker Cache v18).
 
