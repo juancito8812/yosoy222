@@ -3,18 +3,18 @@
    Offline caching for PWA
    ============================================ */
 
-const CACHE_NAME = 'yosoy222-v18';
+const CACHE_NAME = 'yosoy222-v19';
 
 // Assets to precache on install (offline shell + LCP images)
 const PRECACHE_ASSETS = [
   '/',
   '/index.html',
   '/dashboard.html',
-  '/css/style.css?v=18',
-  '/css/dashboard.css?v=18',
-  '/js/analytics.js?v=18',
-  '/js/app.js?v=18',
-  '/js/dashboard.js?v=18',
+  '/css/style.css?v=19',
+  '/css/dashboard.css?v=19',
+  '/js/analytics.js?v=19',
+  '/js/app.js?v=19',
+  '/js/dashboard.js?v=19',
   '/manifest.json',
   '/icons/icon-192x192.png?v=15',
   '/icons/icon-512x512.png?v=15',
@@ -27,12 +27,12 @@ const PRECACHE_ASSETS = [
 // Dedicated marker used to know the full catalog is already cached
 const CATALOG_MARKER = '/__catalog_precached__';
 
-// Install event — precache critical assets
+// Install event — precache critical assets and skip waiting immediately
 self.addEventListener('install', (event) => {
+  self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then((cache) => cache.addAll(PRECACHE_ASSETS))
-      .then(() => self.skipWaiting())
   );
 });
 
@@ -51,12 +51,12 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// Fetch event — Network-first for navigation, Cache-first/Stale-while-revalidate for assets
+// Fetch event — Network-first for navigation & JS scripts, Stale-while-revalidate for assets
 self.addEventListener('fetch', (event) => {
   // Skip non-GET requests
   if (event.request.method !== 'GET') return;
 
-  // Skip external requests (fonts, WhatsApp, analytics, etc.)
+  // Skip external requests (fonts, WhatsApp, analytics, Supabase, etc.)
   if (!event.request.url.startsWith(self.location.origin)) return;
 
   // 1. Navigation requests: Network-First with Cache fallback (ensures online users get fresh HTML)
@@ -75,7 +75,24 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // 2. Static subresources: Cache-First / Stale-While-Revalidate
+  // 2. JavaScript files: Network-First with Cache fallback (ensures installed PWA always runs freshest analytics)
+  const url = new URL(event.request.url);
+  if (url.pathname.endsWith('.js')) {
+    event.respondWith(
+      fetch(event.request)
+        .then((networkResponse) => {
+          if (networkResponse && networkResponse.status === 200) {
+            const clone = networkResponse.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
+          }
+          return networkResponse;
+        })
+        .catch(() => caches.match(event.request, { ignoreSearch: true }))
+    );
+    return;
+  }
+
+  // 3. Static subresources: Cache-First / Stale-While-Revalidate
   event.respondWith(
     caches.match(event.request, { ignoreSearch: true })
       .then((cachedResponse) => {

@@ -746,6 +746,9 @@
     window.addEventListener('load', () => {
       navigator.serviceWorker.register('/sw.js')
         .then((reg) => {
+          // Immediately check for updates
+          reg.update().catch(() => {});
+
           reg.addEventListener('updatefound', () => {
             const newWorker = reg.installing;
             if (!newWorker) return;
@@ -757,6 +760,13 @@
           });
         })
         .catch(() => {});
+    });
+
+    // Check for updates whenever the PWA is brought to the foreground
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') {
+        navigator.serviceWorker.ready.then((reg) => reg.update()).catch(() => {});
+      }
     });
 
     // First activation (skipWaiting + clients.claim) also triggers precache and UI refresh

@@ -409,6 +409,7 @@
     const total = Object.values(sources).reduce((a, b) => a + b, 0) || 0;
 
     const colors = {
+      pwa_app: '#f59e0b',
       instagram: '#f43f5e',
       tiktok: '#38bdf8',
       facebook: '#3b82f6',
@@ -505,12 +506,15 @@
     document.getElementById('sourceTotalBadge').textContent = `${sourceKeys.length} canal${sourceKeys.length === 1 ? '' : 'es'}`;
     const sourceLegend = document.getElementById('sourceLegend');
     if (sourceLegend) {
-      sourceLegend.innerHTML = Object.entries(stats.sources).map(([k, v]) => `
+      sourceLegend.innerHTML = Object.entries(stats.sources).map(([k, v]) => {
+        const label = k === 'pwa_app' ? '📱 App PWA' : k.replace('_', ' ');
+        return `
         <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.78rem; margin-bottom:0.4rem; padding: 0.2rem 0; border-bottom: 1px solid rgba(255,255,255,0.03);">
-          <span style="text-transform:capitalize; color:var(--text-muted);">${k.replace('_', ' ')}</span>
+          <span style="text-transform:capitalize; color:var(--text-muted);">${label}</span>
           <strong style="color:#fff;">${v} (${((v / (stats.totalSessions || 1)) * 100).toFixed(0)}%)</strong>
         </div>
-      `).join('') || '<p style="color:var(--text-faint); font-size:0.78rem; text-align:center;">Sin datos registrados</p>';
+      `;
+      }).join('') || '<p style="color:var(--text-faint); font-size:0.78rem; text-align:center;">Sin datos registrados</p>';
     }
 
     // Top Products with Progress Fill

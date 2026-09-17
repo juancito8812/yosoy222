@@ -38,13 +38,15 @@
     }
   }
 
-  // Helper: Detect referrer / traffic channel
+  // Helper: Detect referrer / traffic channel & PWA standalone mode
   function detectSource() {
+    const isPWA = (typeof window !== 'undefined') && (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true);
     const ref = document.referrer.toLowerCase();
     const urlParams = new URLSearchParams(window.location.search);
     const utmSource = urlParams.get('utm_source');
 
     if (utmSource) return utmSource.toLowerCase();
+    if (!ref && isPWA) return 'pwa_app';
     if (!ref) return 'directo';
     if (ref.includes('instagram.com')) return 'instagram';
     if (ref.includes('tiktok.com')) return 'tiktok';
@@ -52,7 +54,7 @@
     if (ref.includes('google.') || ref.includes('bing.') || ref.includes('ecosia.')) return 'google_search';
     if (ref.includes('whatsapp') || ref.includes('wa.me')) return 'whatsapp';
     if (ref.includes('t.co') || ref.includes('twitter.com') || ref.includes('x.com')) return 'twitter_x';
-    return 'otro_referido';
+    return isPWA ? 'pwa_app' : 'otro_referido';
   }
 
   // Helper: Detect Device
