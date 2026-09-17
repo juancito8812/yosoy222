@@ -221,6 +221,7 @@
 | Fase 17 | ✅ COMPLETADA | Nuevos iconos PWA HD (1280px fuente, fondo blanco sólido, Safe Zone sin franjas negras) y Cache v15 |
 | Fase 18 | ✅ COMPLETADA | Rediseño Luxury Glassmorphism del Dashboard, curvas Bezier con gradientes, unificación de textos de catálogo y Cache v16 |
 | Fase 19 | ✅ COMPLETADA | Integración completa de Google Analytics 4 (GA4 G-Y9R0B5NH75) con telemetría de eventos e-commerce |
+| Fase 20 | ✅ COMPLETADA | Conexión global de analítica con Supabase Cloud (`gkekolsttfbiegyhvejy.supabase.co`), ingesta en tiempo real, sincronización en segundo plano con keepalive y visualización centralizada en Dashboard |
 
 ---
 

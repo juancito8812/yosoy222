@@ -23,7 +23,8 @@
 
 ## Decisiones Clave & Hitos
 
-- **16 sep 2026** — **Integración Google Analytics 4 (GA4 G-Y9R0B5NH75, Fase 19):** telemetría de eventos e-commerce (`view_item`, `add_to_cart`, `begin_checkout`, `generate_lead`, `search`) sincronizados automáticamente a Google Analytics 4 respetando la CSP estricta sin inline scripts.
+- **16 sep 2026** — **Conexión Supabase Cloud Analytics (Fase 20):** proyecto dedicado `gkekolsttfbiegyhvejy.supabase.co` para ingesta global de eventos (`yosoy222_events`) sin intermediarios, sincronización en segundo plano y visualización en tiempo real en `/dashboard.html`.
+- **16 sep 2026** — **Integración Google Analytics 4 (GA4 G-Y9R0B5NH75, Fase 19):** telemetría de eventos e-commerce (`view_item`, `add_to_cart`, `begin_checkout`, `generate_lead`, `search`) sincronizada con GA4 en `<head>`.
 - **16 sep 2026** — **Rediseño Luxury Glassmorphism & Cache v16 (Fase 18):** rediseño visual de alta gama en `/dashboard.html` con tema Warm Charcoal & Gold, gráficos Bezier con gradientes luminosos, selector de rango rápido (`[Hoy] [7D] [30D] [60D] [Todo]`), desglose de dispositivos móvil/escritorio, unificación de textos en catálogo y bump a Cache v16.
 - **13 sep 2026** — **Watchdog de Caída en Tiempo Real:** cron job programado cada 2 minutos (`every 2m`) con alertas automáticas al Topic 393 ante cualquier fallo HTTP o timeout.
 - **13 sep 2026** — **Iconos PWA HD & Eliminación de Franjas Negras (Fase 17, Cache v15):** regeneración de los 10 iconos desde la nueva imagen de 1280×1280 px con fondo blanco sólido (`#ffffff`), re-muestreo Lanczos y Safe Zone de 15% en maskable para eliminar franjas negras en Android/iOS.

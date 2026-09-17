@@ -1,6 +1,7 @@
 /* ============================================
    YoSoy222 — Luxury Dashboard Engine
-   Cryptographic Auth Gate, Bezier Area Charts, Funnel & Telemetry Analytics
+   Cryptographic Auth Gate, Supabase Cloud Integration,
+   Bezier Area Charts, Funnel & Telemetry Analytics
    ============================================ */
 
 (function () {
@@ -13,7 +14,13 @@
   const LOCKOUT_MINUTES = 15;
   const SESSION_TTL_HOURS = 2;
 
+  // Supabase Cloud Configuration
+  const SUPABASE_URL = 'https://gkekolsttfbiegyhvejy.supabase.co';
+  const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdrZWtvbHN0dGZiaWVneWh2ZWp5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk1NzY5NzIsImV4cCI6MjEwNTE1Mjk3Mn0.bzRsjLbjsUMarF3fyilr0koIz9ggt3mBdAYjJESDGXU';
+
   let currentDays = 30;
+  let cachedCloudData = null;
+  let lastCloudFetch = 0;
 
   // --- CRYPTOGRAPHIC UTILITIES ---
   async function computeHash(username, password) {
@@ -84,7 +91,7 @@
       if (overlay) overlay.style.display = 'none';
       if (content) {
         content.style.display = 'flex';
-        renderDashboard();
+        renderDashboard(true);
       }
     } else {
       if (overlay) overlay.style.display = 'flex';
@@ -96,8 +103,68 @@
     }
   }
 
-  // --- DATA COMPUTATION ---
-  function getRawData() {
+  // --- DATA COMPUTATION & SUPABASE CLOUD SYNC ---
+  async function fetchCloudData(force = false) {
+    if (!force && cachedCloudData && (Date.now() - lastCloudFetch < 15000)) {
+      return cachedCloudData;
+    }
+    if (!SUPABASE_URL || !SUPABASE_ANON) return null;
+
+    try {
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/yosoy222_events?select=*&order=created_at.desc&limit=2500`, {
+        headers: {
+          'apikey': SUPABASE_ANON,
+          'Authorization': `Bearer ${SUPABASE_ANON}`
+        }
+      });
+      if (res.ok) {
+        const rows = await res.json();
+        if (Array.isArray(rows) && rows.length > 0) {
+          const events = rows.map(r => ({
+            id: r.id,
+            type: r.event_type,
+            t: new Date(r.created_at).getTime(),
+            sid: r.session_id,
+            src: r.source || 'directo',
+            dev: r.device || 'móvil',
+            name: r.product_name,
+            price: Number(r.product_price) || 0,
+            cat: r.product_cat,
+            query: r.query,
+            total: Number(r.total_amount) || 0,
+            itemsCount: Number(r.items_count) || 1,
+            qty: Number(r.items_count) || 1
+          }));
+
+          const sessionMap = new Map();
+          events.forEach(e => {
+            const sid = e.sid || ('s_' + e.t);
+            if (!sessionMap.has(sid)) {
+              sessionMap.set(sid, {
+                id: sid,
+                t: e.t,
+                src: e.src,
+                dev: e.dev
+              });
+            }
+          });
+
+          cachedCloudData = {
+            sessions: Array.from(sessionMap.values()),
+            events: events,
+            isCloud: true
+          };
+          lastCloudFetch = Date.now();
+          return cachedCloudData;
+        }
+      }
+    } catch (e) {
+      console.warn('Supabase Cloud Analytics fetch:', e);
+    }
+    return null;
+  }
+
+  function getLocalRawData() {
     try {
       const raw = localStorage.getItem('yosoy222_analytics');
       if (!raw) return { sessions: [], events: [] };
@@ -113,8 +180,8 @@
     return items.filter(i => (i.t || i.timestamp) >= cutoff);
   }
 
-  function computeStats(days) {
-    const raw = getRawData();
+  function computeStats(days, dataSource) {
+    const raw = dataSource || getLocalRawData();
     const sessions = filterByDays(raw.sessions || [], days);
     const events = filterByDays(raw.events || [], days);
 
@@ -208,113 +275,117 @@
       productViews,
       productAdds,
       dailyMap,
-      recentEvents: events.slice(-15).reverse()
+      recentEvents: events.slice(0, 15),
+      isCloud: !!raw.isCloud
     };
   }
 
-  // --- MODERN CANVAS AREA CHART ---
+  // --- LUXURY BEZIER AREA CHARTS ---
   function drawTrendChart(canvas, dailyMap) {
     if (!canvas || !canvas.parentElement) return;
     const ctx = canvas.getContext('2d');
     const width = canvas.width = canvas.parentElement.clientWidth;
     const height = canvas.height = canvas.parentElement.clientHeight;
+    if (width === 0 || height === 0) return;
 
     ctx.clearRect(0, 0, width, height);
 
     const labels = Object.keys(dailyMap);
     const viewData = labels.map(k => dailyMap[k].views);
     const waData = labels.map(k => dailyMap[k].whatsapp);
-    const maxVal = Math.max(...viewData, ...waData, 5);
 
-    const padX = 42;
+    const maxVal = Math.max(...viewData, ...waData, 5);
+    const padX = 35;
     const padY = 25;
     const chartW = width - padX * 2;
     const chartH = height - padY * 2;
 
-    // Grid lines (ultra-subtle)
-    ctx.strokeStyle = 'rgba(198, 138, 76, 0.1)';
+    // Subtle Horizontal Grid Lines
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
     ctx.lineWidth = 1;
-    ctx.beginPath();
     for (let i = 0; i <= 4; i++) {
       const y = padY + (chartH / 4) * i;
+      ctx.beginPath();
       ctx.moveTo(padX, y);
       ctx.lineTo(width - padX, y);
-      ctx.fillStyle = '#6e6355';
+      ctx.stroke();
+
+      const val = Math.round(maxVal - (maxVal / 4) * i);
+      ctx.fillStyle = '#7a6e60';
       ctx.font = '10px Inter, sans-serif';
       ctx.textAlign = 'right';
-      ctx.fillText(Math.round(maxVal - (maxVal / 4) * i), padX - 8, y + 3);
+      ctx.fillText(val, padX - 8, y + 3);
     }
-    ctx.stroke();
 
-    // Helper: Draw smooth Bezier curve with gradient fill
-    function drawSeries(data, strokeColor, gradStart, gradEnd) {
-      if (data.length === 0) return;
-      if (data.length === 1) {
-        const x = padX + chartW / 2;
-        const y = padY + chartH - (data[0] / maxVal) * chartH;
-        ctx.fillStyle = strokeColor;
-        ctx.beginPath();
-        ctx.arc(x, y, 4, 0, Math.PI * 2);
-        ctx.fill();
-        return;
-      }
+    // Smooth Bezier Curve Function
+    function drawSmoothSeries(data, strokeColor, fillColorStart, fillColorEnd) {
+      if (data.length < 2) return;
 
       const points = data.map((val, i) => ({
         x: padX + (chartW / (data.length - 1)) * i,
         y: padY + chartH - (val / maxVal) * chartH
       }));
 
-      // Area Fill
+      // Create Gradient Area Fill
       const grad = ctx.createLinearGradient(0, padY, 0, padY + chartH);
-      grad.addColorStop(0, gradStart);
-      grad.addColorStop(1, gradEnd);
+      grad.addColorStop(0, fillColorStart);
+      grad.addColorStop(1, fillColorEnd);
 
       ctx.beginPath();
-      ctx.moveTo(points[0].x, padY + chartH);
-      ctx.lineTo(points[0].x, points[0].y);
+      ctx.moveTo(points[0].x, points[0].y);
 
       for (let i = 0; i < points.length - 1; i++) {
-        const xc = (points[i].x + points[i + 1].x) / 2;
-        const yc = (points[i].y + points[i + 1].y) / 2;
-        ctx.quadraticCurveTo(points[i].x, points[i].y, xc, yc);
+        const p0 = points[i === 0 ? 0 : i - 1];
+        const p1 = points[i];
+        const p2 = points[i + 1];
+        const p3 = points[i + 2 >= points.length ? points.length - 1 : i + 2];
+
+        const cp1x = p1.x + (p2.x - p0.x) / 6;
+        const cp1y = p1.y + (p2.y - p0.y) / 6;
+        const cp2x = p2.x - (p3.x - p1.x) / 6;
+        const cp2y = p2.y - (p3.y - p1.y) / 6;
+
+        ctx.bezierCurveTo(cp1x, cp1y, cp2x, cp2y, p2.x, p2.y);
       }
-      ctx.lineTo(points[points.length - 1].x, points[points.length - 1].y);
+
+      // Stroke Line
+      ctx.strokeStyle = strokeColor;
+      ctx.lineWidth = 2.5;
+      ctx.shadowColor = strokeColor;
+      ctx.shadowBlur = 8;
+      ctx.stroke();
+      ctx.shadowBlur = 0;
+
+      // Fill Area Under Curve
       ctx.lineTo(points[points.length - 1].x, padY + chartH);
+      ctx.lineTo(points[0].x, padY + chartH);
       ctx.closePath();
       ctx.fillStyle = grad;
       ctx.fill();
 
-      // Line Stroke
-      ctx.beginPath();
-      ctx.moveTo(points[0].x, points[0].y);
-      for (let i = 0; i < points.length - 1; i++) {
-        const xc = (points[i].x + points[i + 1].x) / 2;
-        const yc = (points[i].y + points[i + 1].y) / 2;
-        ctx.quadraticCurveTo(points[i].x, points[i].y, xc, yc);
-      }
-      ctx.lineTo(points[points.length - 1].x, points[points.length - 1].y);
-      ctx.strokeStyle = strokeColor;
-      ctx.lineWidth = 2.5;
-      ctx.stroke();
-
-      // Points Glow
+      // Glowing Data Points
       points.forEach(p => {
-        ctx.fillStyle = strokeColor;
         ctx.beginPath();
-        ctx.arc(p.x, p.y, 3.5, 0, Math.PI * 2);
+        ctx.arc(p.x, p.y, 3, 0, Math.PI * 2);
+        ctx.fillStyle = strokeColor;
         ctx.fill();
+        ctx.strokeStyle = '#12100e';
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
       });
     }
 
-    // Draw Views & WhatsApp Area
-    drawSeries(viewData, '#c68a4c', 'rgba(198, 138, 76, 0.28)', 'rgba(198, 138, 76, 0.0)');
-    drawSeries(waData, '#25d366', 'rgba(37, 211, 102, 0.22)', 'rgba(37, 211, 102, 0.0)');
+    // Views Area (Warm Amber Gold)
+    drawSmoothSeries(viewData, '#c68a4c', 'rgba(198, 138, 76, 0.28)', 'rgba(198, 138, 76, 0.0)');
 
-    // Bottom Labels
-    ctx.fillStyle = '#8a7d6e';
+    // WhatsApp Orders Area (Emerald Green)
+    drawSmoothSeries(waData, '#10b981', 'rgba(16, 185, 129, 0.25)', 'rgba(16, 185, 129, 0.0)');
+
+    // Bottom Date Labels
+    ctx.fillStyle = '#a69888';
     ctx.font = '10px Inter, sans-serif';
     ctx.textAlign = 'center';
-    const step = Math.max(1, Math.ceil(labels.length / 7));
+    const step = Math.max(1, Math.floor(labels.length / 7));
     labels.forEach((label, i) => {
       if (i % step === 0 || i === labels.length - 1) {
         const x = padX + (chartW / (labels.length - 1)) * i;
@@ -323,26 +394,29 @@
     });
   }
 
-  // --- MODERN DONUT CHART ---
+  // --- TRAFFIC SOURCES DONUT CHART ---
   function drawSourceChart(canvas, sources) {
     if (!canvas || !canvas.parentElement) return;
     const ctx = canvas.getContext('2d');
-    const size = Math.min(canvas.parentElement.clientWidth, canvas.parentElement.clientHeight);
+    const size = Math.min(canvas.parentElement.clientWidth, 220);
     canvas.width = size;
     canvas.height = size;
+    if (size === 0) return;
 
     ctx.clearRect(0, 0, size, size);
 
     const keys = Object.keys(sources);
-    const total = Object.values(sources).reduce((a, b) => a + b, 0) || 1;
+    const total = Object.values(sources).reduce((a, b) => a + b, 0) || 0;
+
     const colors = {
-      instagram: '#e1306c',
+      instagram: '#f43f5e',
       tiktok: '#38bdf8',
       facebook: '#3b82f6',
-      google_search: '#f43f5e',
-      whatsapp: '#22c55e',
+      google_search: '#eab308',
+      whatsapp: '#10b981',
+      twitter_x: '#a855f7',
       directo: '#c68a4c',
-      otro_referido: '#a88d74'
+      otro_referido: '#94a3b8'
     };
 
     let startAngle = -Math.PI / 2;
@@ -351,7 +425,7 @@
     const radius = size * 0.40;
     const innerRadius = size * 0.26;
 
-    if (keys.length === 0) {
+    if (keys.length === 0 || total === 0) {
       ctx.fillStyle = 'rgba(255, 255, 255, 0.06)';
       ctx.beginPath();
       ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
@@ -372,9 +446,9 @@
       startAngle += sliceAngle;
     });
 
-    // Inner Text
+    // Inner Center Text
     ctx.fillStyle = '#ffffff';
-    ctx.font = 'bold 12px Inter, sans-serif';
+    ctx.font = 'bold 13px Inter, sans-serif';
     ctx.textAlign = 'center';
     ctx.fillText(`${total}`, centerX, centerY - 1);
     ctx.fillStyle = '#a69888';
@@ -383,8 +457,19 @@
   }
 
   // --- RENDER MAIN DASHBOARD ---
-  function renderDashboard() {
-    const stats = computeStats(currentDays);
+  async function renderDashboard(forceCloud = false) {
+    const cloud = await fetchCloudData(forceCloud);
+    const stats = computeStats(currentDays, cloud);
+
+    // Update Live Indicator Status
+    const livePill = document.querySelector('.live-pill');
+    if (livePill) {
+      if (stats.isCloud) {
+        livePill.innerHTML = '<span class="live-dot" style="background:#10b981;"></span> En Vivo (Supabase Cloud)';
+      } else {
+        livePill.innerHTML = '<span class="live-dot"></span> En Vivo (Local)';
+      }
+    }
 
     // Update KPI Numbers
     document.getElementById('kpiViews').textContent = stats.pageViews.toLocaleString();
@@ -485,7 +570,7 @@
 
   // --- CSV EXPORT ---
   function exportCSV() {
-    const raw = getRawData();
+    const raw = cachedCloudData || getLocalRawData();
     const rows = [
       ['Timestamp', 'Fecha', 'Tipo de Evento', 'Detalle / Producto / Busqueda', 'Precio/Total', 'Origen / Fuente', 'Dispositivo']
     ];
@@ -517,34 +602,32 @@
     const sessions = [];
     const events = [];
 
-    for (let i = 29; i >= 0; i--) {
-      const dayTime = now - (i * 24 * 60 * 60 * 1000);
-      const visits = Math.floor(Math.random() * 22) + 10;
+    for (let i = 0; i < 45; i++) {
+      const sid = 's_demo_' + i;
+      const t = now - Math.floor(Math.random() * 25 * 24 * 60 * 60 * 1000);
+      const src = sources[Math.floor(Math.random() * sources.length)];
+      const dev = Math.random() > 0.3 ? 'móvil' : 'ordenador';
+      
+      sessions.push({ id: sid, t, src, dev, path: '/' });
+      events.push({ type: 'page_view', t: t + 100, sid, src, dev, title: 'YoSoy222' });
 
-      for (let v = 0; v < visits; v++) {
-        const sid = 's_' + (dayTime + v);
-        const src = sources[Math.floor(Math.random() * sources.length)];
-        const isMobile = Math.random() > 0.25;
-        sessions.push({ id: sid, t: dayTime + v * 1000, src, dev: isMobile ? 'móvil' : 'ordenador' });
-        events.push({ type: 'page_view', t: dayTime + v * 1000, sid, src, dev: isMobile ? 'móvil' : 'ordenador' });
+      if (Math.random() > 0.25) {
+        const prod = products[Math.floor(Math.random() * products.length)];
+        events.push({ type: 'view_item', t: t + 1500, sid, src, dev, name: prod, price: 12, cat: 'Velas' });
 
-        if (Math.random() > 0.35) {
-          const prod = products[Math.floor(Math.random() * products.length)];
-          events.push({ type: 'view_item', name: prod, price: 15, t: dayTime + v * 1000 + 500, sid });
+        if (Math.random() > 0.45) {
+          events.push({ type: 'add_to_cart', t: t + 3000, sid, src, dev, name: prod, price: 12, qty: 1 });
 
-          if (Math.random() > 0.45) {
-            events.push({ type: 'add_to_cart', name: prod, price: 15, qty: 1, t: dayTime + v * 1000 + 1000, sid });
-
-            if (Math.random() > 0.55) {
-              events.push({ type: 'whatsapp_checkout', origin: 'cart_drawer', total: 30, itemsCount: 2, t: dayTime + v * 1000 + 1500, sid });
-            }
+          if (Math.random() > 0.40) {
+            events.push({ type: 'whatsapp_checkout', t: t + 6000, sid, src, dev, total: 24, itemsCount: 2 });
           }
         }
       }
     }
 
     localStorage.setItem('yosoy222_analytics', JSON.stringify({ version: 1, sessions, events }));
-    renderDashboard();
+    cachedCloudData = null;
+    renderDashboard(false);
   }
 
   // --- INITIALIZATION & EVENTS ---
@@ -647,7 +730,7 @@
         rangeBtns.forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         currentDays = parseInt(btn.dataset.days, 10);
-        renderDashboard();
+        renderDashboard(false);
       });
     });
 
@@ -667,15 +750,24 @@
     const clearBtn = document.getElementById('clearBtn');
     if (clearBtn) {
       clearBtn.addEventListener('click', () => {
-        if (confirm('¿Estás seguro de que deseas reiniciar todos los datos de estadísticas?')) {
+        if (confirm('¿Eliminar todos los datos locales de analítica?')) {
           localStorage.removeItem('yosoy222_analytics');
-          renderDashboard();
+          cachedCloudData = null;
+          renderDashboard(false);
         }
       });
     }
 
+    // Responsive Canvas Re-render
     window.addEventListener('resize', () => {
-      if (isSessionValid()) renderDashboard();
+      if (isSessionValid()) renderDashboard(false);
     });
+
+    // Background Auto-Refresh every 30 seconds
+    setInterval(() => {
+      if (isSessionValid() && document.visibilityState === 'visible') {
+        renderDashboard(true);
+      }
+    }, 30000);
   });
 })();

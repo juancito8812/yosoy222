@@ -1,7 +1,7 @@
 /* ============================================
    YoSoy222 — Analytics & Telemetry Engine
    Client-side event tracking, localStorage telemetry,
-   and Google Analytics 4 (GA4) integration.
+   Google Analytics 4 (GA4), and Supabase Cloud Sync.
    ============================================ */
 
 (function () {
@@ -14,6 +14,10 @@
 
   // Google Analytics 4 Measurement ID
   const GA_ID = 'G-Y9R0B5NH75';
+
+  // Supabase Cloud Ingestion
+  const SUPABASE_URL = 'https://gkekolsttfbiegyhvejy.supabase.co';
+  const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdrZWtvbHN0dGZiaWVneWh2ZWp5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk1NzY5NzIsImV4cCI6MjEwNTE1Mjk3Mn0.bzRsjLbjsUMarF3fyilr0koIz9ggt3mBdAYjJESDGXU';
 
   // Initialize GA4 without inline scripts (100% CSP compliant)
   if (typeof window !== 'undefined' && GA_ID) {
@@ -107,20 +111,60 @@
     saveAnalyticsData(data);
   }
 
+  // Cloud Sync to Supabase
+  function syncToSupabase(payload) {
+    if (!SUPABASE_URL || !SUPABASE_ANON) return;
+    try {
+      fetch(`${SUPABASE_URL}/rest/v1/yosoy222_events`, {
+        method: 'POST',
+        headers: {
+          'apikey': SUPABASE_ANON,
+          'Authorization': `Bearer ${SUPABASE_ANON}`,
+          'Content-Type': 'application/json',
+          'Prefer': 'return=minimal'
+        },
+        body: JSON.stringify(payload),
+        keepalive: true
+      }).catch(() => {});
+    } catch {}
+  }
+
   // Public Tracking API
   function trackEvent(type, details = {}) {
+    const src = details.src || detectSource();
+    const dev = details.dev || detectDevice();
+    const sid = getSessionId();
+
     const evt = {
       type: String(type || 'custom'),
       t: Date.now(),
-      sid: getSessionId(),
+      sid: sid,
+      src: src,
+      dev: dev,
       ...details
     };
 
+    // 1. Local Storage Cache
     const data = getAnalyticsData();
     data.events.push(evt);
     saveAnalyticsData(data);
 
-    // Forward enriched e-commerce events to GA4
+    // 2. Global Cloud Sync (Supabase)
+    const sbPayload = {
+      event_type: String(type || 'custom'),
+      session_id: sid,
+      source: src,
+      device: dev,
+      product_name: details.name || details.product || null,
+      product_price: Number(details.price) || null,
+      product_cat: details.cat || null,
+      query: details.query || null,
+      total_amount: Number(details.total) || null,
+      items_count: Number(details.itemsCount) || (type === 'add_to_cart' ? Number(details.qty) || 1 : null)
+    };
+    syncToSupabase(sbPayload);
+
+    // 3. Google Analytics 4 Forwarding
     if (typeof window.gtag === 'function' && GA_ID) {
       try {
         if (type === 'view_item') {
@@ -162,7 +206,7 @@
     }
   }
 
-  // Track initial page view on load
+  // Auto-record initial page view on load
   if (typeof window !== 'undefined') {
     window.YoSoyAnalytics = {
       track: trackEvent,
@@ -172,7 +216,6 @@
       detectDevice
     };
 
-    // Auto-record page view
     getSessionId();
     trackEvent('page_view', {
       title: document.title,
