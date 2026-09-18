@@ -314,9 +314,20 @@ em { font-style: italic; color: var(--accent); }
   box-shadow: 0 8px 24px rgba(101,71,35,0.08);
 }
 .manifiesto-icon {
-  font-size: 1.8rem;
-  display: block;
-  margin-bottom: 0.75rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: rgba(133, 79, 25, 0.08);
+  margin-bottom: 0.9rem;
+  color: var(--accent);
+  transition: transform var(--duration) var(--ease), background var(--duration) var(--ease);
+}
+.manifiesto-item:hover .manifiesto-icon {
+  transform: scale(1.1);
+  background: rgba(133, 79, 25, 0.15);
 }
 .manifiesto-item p {
   font-size: 0.95rem;
@@ -384,9 +395,20 @@ em { font-style: italic; color: var(--accent); }
   opacity: 0.7;
 }
 .pilar-icon {
-  font-size: 2rem;
-  margin-bottom: 1rem;
-  display: block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 58px;
+  height: 58px;
+  border-radius: 14px;
+  background: var(--surface);
+  color: var(--accent);
+  margin-bottom: 1.25rem;
+  transition: transform var(--duration) var(--ease), background var(--duration) var(--ease);
+}
+.pilar-card:hover .pilar-icon {
+  transform: translateY(-2px);
+  background: rgba(133, 79, 25, 0.12);
 }
 .pilar-title {
   font-size: 1.25rem;
@@ -461,7 +483,16 @@ em { font-style: italic; color: var(--accent); }
   color: var(--accent);
   font-weight: 600;
 }
-.ritual-icon { font-size: 1.6rem; }
+.ritual-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(133, 79, 25, 0.08);
+  color: var(--accent);
+}
 .ritual-title {
   font-size: 1.35rem;
   margin-bottom: 0.75rem;
