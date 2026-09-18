@@ -192,6 +192,11 @@ em { font-style: italic; color: var(--accent); }
   line-height: 1.12;
   margin-bottom: 1.25rem;
 }
+.hero-brand {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
 .hero-lead {
   font-size: 1.15rem; color: var(--text-muted);
   line-height: 1.7; margin-bottom: 1.75rem;
