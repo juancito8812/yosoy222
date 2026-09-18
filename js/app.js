@@ -25,9 +25,9 @@
     const products = [
   // === VELAS MOLDES (hoja: Velas Moldes) ===
   { file: "VM-ROSA_vela_rosa_79g.jpg", name: "Rosa", cat: "vela", price: 7, desc: "Vela artesanal de 79grs. en forma de Rosa, Elaborada con Cera de Soja en blanco, rosa claro, rosa oscuro. Aroma Coco, Lavanda, Jazmin." },
-  { file: "VM-MINICORAZON_vela_mini_corazones.jpg", name: "Mini Corazones", cat: "vela", price: 0.17, desc: "Vela artesanal de 1grs. en forma de Mini corazón, Elaborada con Cera de Soja en blanco, rosa, rojo. Aroma Coco, Jazmin" },
+  { file: "VM-MINICORAZON_vela_mini_corazones.jpg", name: "Mini Corazones", cat: "melt", price: 0.17, desc: "Wax Melts de 1grs. en forma de Mini corazón, Elaborada con Cera de Soja en blanco, rosa, rojo. Aroma Coco, Jazmin" },
   { file: "VM-ROSAPEQ_vela_rosa_pequena_23g.jpg", name: "Rosa Pequeña", cat: "vela", price: 4.5, desc: "Vela artesanal de 23grs. en forma de Rosa pequeña presentada en palito decorativo. Elaborada con cera de soja en blanco, rosa, amarillo rosa claro. Aroma: Coco Vainilla" },
-  { file: "VM-MINIMARGARITA_wax_melts_mini_margarita.jpg", name: "Mini Margarita", cat: "vela", price: 1.7, desc: "Wax Melts 6grs. en forma de Mini Margarita. Elaborada con cera de soja en blanco, rosa, amarillo rosa claro. Aroma: Coco Vainilla, Canela" },
+  { file: "VM-MINIMARGARITA_wax_melts_mini_margarita.jpg", name: "Mini Margarita", cat: "melt", price: 1.7, desc: "Wax Melts 6grs. en forma de Mini Margarita. Elaborada con cera de soja en blanco, rosa, amarillo rosa claro. Aroma: Coco Vainilla, Canela" },
   { file: "VM-MARGARITA_vela_margarita_pequena_16g.jpg", name: "Margarita Pequeña", cat: "vela", price: 3, desc: "Vela artesanal de 16grs. en forma de Margarita pequeña presentada en palito decorativo. Elaborada con cera de soja en blanco, rosa, amarillo rosa claro. Aroma: Coco Vainilla" },
   { file: "VM-TULIPAN_vela_tulipan_pequena_33g.jpg", name: "Tulipán Pequeña", cat: "vela", price: 5, desc: "Vela artesanal de 33grs. en forma deTulipan pequeña presentada en palito decorativo. Elaborada con cera de soja en blanco, rosa, amarillo rosa claro. Aroma: Coco Vainilla, Jazmin" },
   { file: "VM-BOUQUET_vela_bouquet_tulipan_83g.jpg", name: "Bouquet Tulipán", cat: "vela", price: 8.5, desc: "Vela artesanal de 83grs. en forma de Buquet Tulipan. Elaborada con cera de soja en blanco, rojo, amarillo, rosa claro. Aroma: Lavanda, Café" },
@@ -37,7 +37,7 @@
   { file: "VM-HAMSA_vela_mano_hamsa_75g.jpg", name: "Mano Hamsa", cat: "vela", price: 8, desc: "Vela artesanal de 75grs. en forma de Mano Hamsa. Elaborada con cera de soja en blanco, verde, rosa, beige Aroma: Coco Vainilla. Canela" },
   { file: "VM-CORAZON_vela_corazon_182g.jpg", name: "Corazón", cat: "vela", price: 13.5, desc: "Vela artesanal de 182grs. en forma de Corazón. Elaborada con cera de soja en blanco, rosa, rojo Aroma: Coco Vainilla. Lavanda, Limon Fresh." },
   { file: "VM-CRUZ_vela_cruz_con_paloma_52g.jpg", name: "Cruz con Paloma", cat: "vela", price: 7, desc: "Vela artesanal de 52grs. en forma de Cruz con palomita. Elaborada con cera de soja en blanco con rosa, amarillo, azul Aroma: Coco Vainilla. Jazmin" },
-  { file: "VM-CUBO_vela_cubo_40g.jpg", name: "Cubo", cat: "vela", price: 7, desc: "Vela artesanal de 40grs. en forma de Cubo. Elaborada con cera de soja en blanco, amarillo, azul, rosa Aroma: Coco Vainilla. Canela" },
+  { file: "VM-CUBO_vela_cubo_40g.jpg", name: "Cubo", cat: "melt", price: 7, desc: "Wax Melts / Vela de 40grs. en forma de Cubo. Elaborada con cera de soja en blanco, amarillo, azul, rosa Aroma: Coco Vainilla. Canela" },
   { file: "VM-VIRGEN_vela_virgen_del_carmen_42g.jpg", name: "Virgen del Carmen", cat: "vela", price: 7, desc: "Vela artesanal de 42grs. en forma de Virgen del Carmen. Elaborada con cera de soja en blanco y dorado Aroma: Coco Vainilla. Canela" },
   // === VELAS ENVASES (hoja: Velas Envases) ===
   { file: "VE-MINIPETIT_vela_mini_petit_123g.jpg", name: "Mini Petit", cat: "vela", price: 7.5, desc: "Vela artesanal de 123grs. Elaborado en envase de vidrio transparente, con tapa metalica dorada. Contiene una base de cera de soja blanca. Aroma: Coco Vainilla" },
@@ -73,10 +73,31 @@
   { file: "F-07.jpg", name: "F-07 El Amor", cat: "franela", price: 14, desc: "Franela que honra el poder del amor. Tela suave, diseño minimalista y un mensaje que ilumina tu energia. El amor da sentido y se siente." },
 ];
 
-  /* Category mapping for display */
-  const catMap = { vela: 'velas', pulsera: 'pulseras', collar: 'collares', franela: 'franelas', otro: 'accesorios' };
-  const catLabels = { vela: 'Vela artesanal', pulsera: 'Pulsera artesanal', collar: 'Collar artesanal', franela: 'Franela artesanal', otro: 'Accesorio artesanal' };
-  const catNouns = { vela: 'la vela', collar: 'el collar', pulsera: 'la pulsera', franela: 'la franela', otro: 'el accesorio' };
+  /* Category mapping for display & ritualistic organization */
+  const catMap = {
+    vela: 'velas',
+    melt: 'melts',
+    pulsera: 'dijes-pulseras',
+    collar: 'dijes-pulseras',
+    otro: 'dijes-pulseras',
+    franela: 'franelas'
+  };
+  const catLabels = {
+    vela: 'Vela ritualista',
+    melt: 'Wax Melts',
+    pulsera: 'Pulsera simbólica',
+    collar: 'Collar con intención',
+    franela: 'Franela con propósito',
+    otro: 'Dije amuleto'
+  };
+  const catDescriptions = {
+    todos: 'Explora nuestra colección completa de rituales de luz, prendas conscientes y amuletos para tu día a día.',
+    velas: 'Piezas únicas elaboradas en cera de soja botánica y aromas envolventes creadas para iluminar tu espacio, armonizar tu energía y acompañar tus momentos de introspección.',
+    melts: 'Wax Melts y figuras aromáticas para difusor que desprenden fragancias puras de forma continua para transformar la atmósfera de tu hogar.',
+    franelas: 'Prendas suaves de algodón con afirmaciones conscientes y corte minimalista que visten tu intención diaria.',
+    'dijes-pulseras': 'Amuletos tejidos a mano y joyería en Gold-Filled con piedras naturales para canalizar protección, claridad y serenidad.'
+  };
+  const catNouns = { vela: 'la vela', melt: 'el wax melt', collar: 'el collar', pulsera: 'la pulsera', franela: 'la franela', otro: 'el amuleto' };
 
   /* ----- DOM refs ----- */
   const $ = (s, p) => (p || document).querySelector(s);
@@ -339,6 +360,11 @@
     visibleProducts = [];
     let count = 0;
 
+    const catIntro = document.getElementById('categoryIntro');
+    if (catIntro) {
+      catIntro.textContent = catDescriptions[activeFilter] || catDescriptions.todos;
+    }
+
     // Cards keep the same order as `products`, so grid.children[i] is product i.
     products.forEach((p, i) => {
       const card = grid.children[i];
@@ -361,6 +387,22 @@
     if (emptyState) emptyState.hidden = !showEmpty;
     grid.style.display = showEmpty ? 'none' : '';
   }
+
+  // Hero Quick-Category Pills
+  $$('.hero-pill-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const cat = btn.dataset.category;
+      if (cat) {
+        activeFilter = cat;
+        filterBtns.forEach(b => {
+          const match = b.dataset.filter === cat;
+          b.classList.toggle('active', match);
+          b.setAttribute('aria-pressed', match ? 'true' : 'false');
+        });
+        applyFilters();
+      }
+    });
+  });
 
   /* ============================================
      CART

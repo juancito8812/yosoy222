@@ -52,11 +52,12 @@ def main():
         sys.exit(1)
 
     cat_labels = {
-        'vela': 'Vela artesanal',
-        'pulsera': 'Pulsera artesanal',
-        'collar': 'Collar artesanal',
-        'franela': 'Franela artesanal',
-        'otro': 'Accesorio artesanal'
+        'vela': 'Vela ritualista',
+        'melt': 'Wax Melts',
+        'pulsera': 'Pulsera simbólica',
+        'collar': 'Collar con intención',
+        'franela': 'Franela con propósito',
+        'otro': 'Dije amuleto'
     }
 
     cards = []
