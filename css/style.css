@@ -301,45 +301,34 @@ em { font-style: italic; color: var(--accent); }
   margin: 0 auto;
 }
 .manifiesto-item {
-  padding: 1.5rem 1.25rem;
+  padding: 1.85rem 1.25rem;
   background: rgba(255, 255, 255, 0.75);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   border-radius: var(--radius);
   border: 1px solid rgba(133, 79, 25, 0.12);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
   transition: transform var(--duration) var(--ease), box-shadow var(--duration) var(--ease);
 }
 .manifiesto-item:hover {
   transform: translateY(-3px);
   box-shadow: 0 8px 24px rgba(101,71,35,0.08);
 }
-.manifiesto-icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 52px;
-  height: 52px;
-  border-radius: 50%;
-  background: rgba(133, 79, 25, 0.08);
-  margin-bottom: 0.9rem;
-  color: var(--accent);
-  transition: transform var(--duration) var(--ease), background var(--duration) var(--ease);
-}
-.manifiesto-item:hover .manifiesto-icon {
-  transform: scale(1.1);
-  background: rgba(133, 79, 25, 0.15);
-}
-.manifiesto-item p {
+.manifiesto-verse {
   font-size: 0.95rem;
-  line-height: 1.5;
-  color: var(--text);
+  color: var(--text-muted);
+  margin-bottom: 0.25rem;
 }
-.manifiesto-item em {
-  font-family: 'Playfair Display', serif;
-  font-size: 1.1rem;
+.manifiesto-emp {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 1.25rem;
+  font-style: italic;
   color: var(--accent);
-  display: block;
-  margin-top: 0.25rem;
+  font-weight: 600;
 }
 
 /* ============================================
@@ -373,10 +362,12 @@ em { font-style: italic; color: var(--accent); }
   background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: 18px;
-  padding: 2.25rem 1.75rem;
-  position: relative;
+  padding: 2.5rem 1.75rem;
   display: flex;
   flex-direction: column;
+  align-items: center;
+  text-align: center;
+  justify-content: center;
   transition: all var(--duration) var(--ease);
 }
 .pilar-card:hover {
@@ -384,42 +375,26 @@ em { font-style: italic; color: var(--accent); }
   border-color: var(--border-strong);
   box-shadow: 0 12px 32px rgba(101,71,35,0.10);
 }
-.pilar-badge {
-  position: absolute;
-  top: 1.25rem;
-  right: 1.25rem;
+.pilar-num {
   font-family: 'Playfair Display', serif;
-  font-size: 0.8rem;
+  font-size: 0.75rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
   color: var(--accent);
   font-weight: 600;
-  opacity: 0.7;
-}
-.pilar-icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 58px;
-  height: 58px;
-  border-radius: 14px;
-  background: var(--surface);
-  color: var(--accent);
-  margin-bottom: 1.25rem;
-  transition: transform var(--duration) var(--ease), background var(--duration) var(--ease);
-}
-.pilar-card:hover .pilar-icon {
-  transform: translateY(-2px);
-  background: rgba(133, 79, 25, 0.12);
+  margin-bottom: 0.85rem;
 }
 .pilar-title {
-  font-size: 1.25rem;
-  margin-bottom: 0.65rem;
+  font-size: 1.35rem;
+  margin-bottom: 0.75rem;
   color: var(--text);
 }
 .pilar-desc {
-  font-size: 0.88rem;
+  font-size: 0.9rem;
   color: var(--text-muted);
   line-height: 1.6;
   margin-bottom: 1.5rem;
+  max-width: 320px;
   flex-grow: 1;
 }
 .pilar-link {
@@ -458,10 +433,13 @@ em { font-style: italic; color: var(--accent); }
   background: var(--bg-card);
   border: 1px solid rgba(133, 79, 25, 0.15);
   border-radius: 18px;
-  padding: 2.25rem 1.75rem;
+  padding: 2.5rem 1.75rem;
   box-shadow: var(--shadow);
   display: flex;
   flex-direction: column;
+  align-items: center;
+  text-align: center;
+  justify-content: center;
   transition: all var(--duration) var(--ease);
 }
 .ritual-card:hover {
@@ -469,47 +447,34 @@ em { font-style: italic; color: var(--accent); }
   border-color: var(--accent);
   box-shadow: 0 14px 36px rgba(101,71,35,0.12);
 }
-.ritual-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 1rem;
-}
 .ritual-num {
   font-family: 'Playfair Display', serif;
-  font-size: 0.8rem;
-  letter-spacing: 0.1em;
+  font-size: 0.75rem;
+  letter-spacing: 0.15em;
   text-transform: uppercase;
   color: var(--accent);
   font-weight: 600;
-}
-.ritual-icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  background: rgba(133, 79, 25, 0.08);
-  color: var(--accent);
+  margin-bottom: 0.85rem;
 }
 .ritual-title {
   font-size: 1.35rem;
-  margin-bottom: 0.75rem;
+  margin-bottom: 0.85rem;
   color: var(--text);
 }
 .ritual-text {
-  font-size: 0.9rem;
+  font-size: 0.92rem;
   color: var(--text-muted);
   line-height: 1.65;
   margin-bottom: 1.5rem;
-  flex-grow: 1;
   font-style: italic;
   font-family: 'Playfair Display', Georgia, serif;
+  max-width: 320px;
+  flex-grow: 1;
 }
 .ritual-footer {
-  padding-top: 0.75rem;
+  padding-top: 0.85rem;
   border-top: 1px solid var(--border);
+  width: 100%;
 }
 .ritual-element {
   font-size: 0.75rem;
