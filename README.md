@@ -2,7 +2,7 @@
 
 > Tienda online de velas artesanales, pulseras, collares, franelas y accesorios.
 > Desplegada en **GitHub Pages** con dominio personalizado **yosoy222.com** bajo **Cloudflare**.
-> **PWA instalable** con soporte offline completo (Cache v18), catálogo prerenderizado para SEO (Schema.org), panel privado de analítica con Luxury Glassmorphism y backend en la nube (Supabase Cloud + GA4) y suite de pruebas automatizadas en CI/CD.
+> **PWA instalable** con soporte offline completo (Cache v19), catálogo prerenderizado para SEO (Schema.org), panel privado de analítica con Luxury Glassmorphism y backend en la nube (Supabase Cloud + GA4) y suite de pruebas automatizadas en CI/CD. Rama actual de trabajo: `redesign-ritual` (no fusionada en `main` hasta aprobación).
 
 **Repositorio:** https://github.com/juancito8812/yosoy222  
 **URL de producción:** https://yosoy222.com  
@@ -54,7 +54,7 @@
   - Sanitización anti-prototype smuggling en la serialización.
 - **Checkout por WhatsApp:** Mensaje preformateado e itemizado (producto × cantidad — subtotal, y total final en USD).
 - **Número real de WhatsApp centralizado:** `+58 412 648 1628` — única fuente en `js/app.js` (`const WHATSAPP = '584126481628'`); todos los botones y enlaces del sitio se sincronizan con este valor.
-- **PWA Instalable (Cache v18):** Estrategia Network-First para navegación HTML (contenido siempre fresco con conexión) y Stale-While-Revalidate para recursos estáticos; precaching enfocado en shell, dashboard, iconos HD y miniaturas (`images/thumbs/`).
+- **PWA Instalable (Cache v19):** Estrategia Network-First para navegación HTML (contenido siempre fresco con conexión) y Stale-While-Revalidate para recursos estáticos; precaching enfocado en shell, dashboard, iconos HD y miniaturas (`images/thumbs/`), con control de versiones `?v=N` en `index.html`, `dashboard.html`, `sw.js` y `manifest.json`. Las secciones de la tienda también cuentan con caché precargado de imágenes en modo offline cuando hay conexión.
 - **Dashboard Privado de Analítica y Conversión:** Panel de control en `/dashboard.html` con estética *Luxury Glassmorphism*, gráficos de tendencias en curvas Bezier, desglose de canales (Instagram, TikTok, Facebook, Google, WhatsApp), embudo de conversión paso a paso, desglose por dispositivos, ranking de popularidad de productos, actividad en tiempo real, exportación CSV, sincronización en tiempo real con **Supabase Cloud** (`gkekolsttfbiegyhvejy.supabase.co`) con seguridad RLS, integración oficial con **Google Analytics 4** (`G-Y9R0B5NH75`) y autenticación criptográfica segura con Web Crypto SHA-256 salted hash y rate-limiting anti-fuerza bruta.
 - **Seguridad integral:**
   - Content Security Policy (CSP) estricto.
@@ -107,7 +107,7 @@ yosoy222/
 │   ├── analytics.js               ← Motor de telemetría: GA4 + Supabase Cloud + localStorage
 │   └── dashboard.js               ← Motor del Dashboard: autenticación SHA-256, gráficos Bezier en Canvas
 │
-├── sw.js                          ← Service Worker PWA (Cache v18)
+├── sw.js                          ← Service Worker PWA (Cache v19)
 │   ├── Estrategia Network-First con fallback a Cache para navegaciones (HTML siempre fresco)
 │   ├── Estrategia Stale-While-Revalidate con ignoreSearch para recursos estáticos
 │   ├── Precaching enfocado en miniaturas de imágenes para instalación ultrarrápida
@@ -257,6 +257,16 @@ El archivo Excel es la **fuente de verdad** para los precios, medidas, aromas y 
 - **Configuración en código:** `js/app.js` → `const WHATSAPP = '584126481628'`.
 - Todos los componentes (carrito, drawer, lightbox, botón flotante, enlace en header y footer) toman este número.
 
+### ✅ Flujo de Automatización n8n (WhatsApp)
+- **Archivo del workflow:** `scripts/whatsapp-n8n-workflow.json` (importar en n8n).
+- **Número central del bot:** `+58 412 648 1628` (`584126481628`) — registrado como `centralNumber` en el nodo `Parse & Route Intent`.
+- **Agentes humanos de escalamiento:** Agente 1 `+58 412 992 2399` (`584129922399`), Agente 2 `+58 424 216 2538` (`584242162538`).
+- **Proveedor:** Elastisys Evolution API (instancia `yosoy222_bot`).
+- **API Key:** Referenciada como `={{ $env.EVOLUTION_API_KEY }}` en los nodos HTTP Request — **configurar en n8n como variable de entorno**, no hardcodear.
+- **Webhook path:** `yosoy222-whatsapp` (configurar en Evolution API → Webhook).
+- **Intentos detectados:** `welcome`, `order_received`, `payment_info`, `catalog_info`, `human_escalation`.
+- **Activación:** Importar el JSON en n8n → configurar `EVOLUTION_API_KEY` → escanear el QR de WhatsApp en Elastisys con el número central → activar el workflow.
+
 ### Redes Sociales Oficiales (@yo_soy222)
 - **Instagram:** https://www.instagram.com/yo_soy222
 - **TikTok:** https://www.tiktok.com/@yo_soy222
@@ -321,7 +331,7 @@ La PWA cumple con todos los estándares modernos de instalación y navegación o
 3. **Precache Integral & Resiliencia Offline:**
    Durante la instalación, el Service Worker descarga de forma controlada el shell de la aplicación, el panel de dashboard y las 44 miniaturas (`images/thumbs/`), garantizando que la navegación visual funcione offline desde el primer instante sin agotar datos móviles del usuario. Las imágenes grandes del lightbox se descargan y cachean bajo demanda.
 4. **Invalidación Inmediata de Versiones Anteriores:**
-   Al publicarse una nueva versión (`CACHE_NAME = 'yosoy222-v18'`), el evento `activate` purga de forma determinista cualquier almacenamiento obsoleto y el evento `controllerchange` refresca la vista del catálogo automáticamente.
+   Al publicarse una nueva versión (`CACHE_NAME = 'yosoy222-v19'`), el evento `activate` purga de forma determinista cualquier almacenamiento obsoleto y el evento `controllerchange` refresca la vista del catálogo automáticamente.
 5. **Iconos PWA de Alta Definición:**
    10 variantes (incluyendo formatos maskable con padding seguro del 15% para Android/iOS sin franjas negras) validadas con `scripts/verify_icons.py`.
 
@@ -604,4 +614,4 @@ gh run list --limit 3
 
 ---
 
-*Documentación técnica actualizada al 13 de septiembre de 2026. Proyecto 100% verificado en pruebas unitarias (13/13 pasadas), CI/CD, auditoría de producción y despliegue activo en https://yosoy222.com.*
+*Documentación técnica actualizada al 18 de septiembre de 2026. Rama actual de trabajo `redesign-ritual` (no fusionada en `main` hasta aprobación 100%). PWA Cache v19, catálogo prerenderizado, flujo n8n WhatsApp preparado. Proyecto 100% verificado en pruebas unitarias (13/13 pasadas), CI/CD y auditoría de producción en `main`.*

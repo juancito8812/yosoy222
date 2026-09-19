@@ -222,7 +222,8 @@
 | Fase 18 | ✅ COMPLETADA | Rediseño Luxury Glassmorphism del Dashboard, curvas Bezier con gradientes, unificación de textos de catálogo y Cache v16 |
 | Fase 19 | ✅ COMPLETADA | Integración completa de Google Analytics 4 (GA4 G-Y9R0B5NH75) con telemetría de eventos e-commerce |
 | Fase 20 | ✅ COMPLETADA | Conexión global de analítica con Supabase Cloud (`gkekolsttfbiegyhvejy.supabase.co`), ingesta en tiempo real, sincronización en segundo plano con keepalive y visualización centralizada en Dashboard |
+| Fase 21 | 🔄 EN PROGRESO (rama `redesign-ritual`) | Rediseño ritualista minimalista crema/beige, secciones de rituales, manifiesto, reorganización de catálogo, iconos SVG, Cache v19, flujo n8n WhatsApp con número central `+58 412 648 1628` y escalamiento a agentes humanos |
 
 ---
 
-*Estado actual: Proyecto en producción, 100% operativo, auditado, seguro, testeado y desplegado en https://yosoy222.com.*
+*Estado actual: Rama `redesign-ritual` en desarrollo (no fusionada en `main` hasta aprobación 100%). PWA Cache v19, catálogo prerenderizado, flujo n8n WhatsApp preparado con número central + agentes humanos. Proyecto en producción estable en `main`.*

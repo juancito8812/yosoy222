@@ -18,7 +18,7 @@
     },
     {
       "parameters": {
-        "jsCode": "// Extraer y normalizar mensaje de WhatsApp desde Evolution API\nconst data = $input.first().json;\n\n// Filtrar mensajes propios o de estado\nif (data.data?.key?.fromMe || data.event !== 'messages.upsert') {\n  return [];\n}\n\nconst msg = data.data?.message;\nconst senderJid = data.data?.key?.remoteJid || '';\nconst senderNumber = senderJid.replace('@s.whatsapp.net', '').replace('@g.us', '');\nconst pushName = data.data?.pushName || 'Cliente';\n\n// Extraer texto (conversacion normal o extendida)\nconst text = (msg?.conversation || msg?.extendedTextMessage?.text || msg?.imageMessage?.caption || '').trim();\n\nif (!text || senderJid.includes('@g.us')) {\n  return []; // Ignorar grupos o mensajes sin texto\n}\n\n// Deteccion de intencion\nconst lower = text.toLowerCase();\nlet intent = 'general';\n\nif (lower.includes('asesor') || lower.includes('humano') || lower.includes('persona') || lower.includes('hablar con alguien') || lower.includes('ayuda') || lower.includes('operador')) {\n  intent = 'human_escalation';\n} else if (lower.includes('pedido') || lower.includes('total: $') || lower.includes('me gustaría hacer este pedido')) {\n  intent = 'order_received';\n} else if (lower.includes('pago') || lower.includes('cuenta') || lower.includes('pago movil') || lower.includes('zelle') || lower.includes('dolares') || lower.includes('transferencia')) {\n  intent = 'payment_info';\n} else if (lower.includes('catalogo') || lower.includes('catálogo') || lower.includes('precio') || lower.includes('modelos')) {\n  intent = 'catalog_info';\n} else if (lower.includes('hola') || lower.includes('buenas') || lower.includes('buenos dias') || lower.includes('buenas tardes')) {\n  intent = 'welcome';\n}\n\nreturn [{\n  json: {\n    senderJid,\n    senderNumber,\n    pushName,\n    text,\n    intent,\n    timestamp: new Date().toLocaleTimeString('es-VE', { hour: '2-digit', minute: '2-digit' }),\n    agents: ['584129922399', '584242162538']\n  }\n}];"
+        "jsCode": "// Extraer y normalizar mensaje de WhatsApp desde Evolution API\nconst data = $input.first().json;\n\n// Filtrar mensajes propios o de estado\nif (data.data?.key?.fromMe || data.event !== 'messages.upsert') {\n  return [];\n}\n\nconst msg = data.data?.message;\nconst senderJid = data.data?.key?.remoteJid || '';\nconst senderNumber = senderJid.replace('@s.whatsapp.net', '').replace('@g.us', '');\nconst pushName = data.data?.pushName || 'Cliente';\n\n// Extraer texto (conversacion normal o extendida)\nconst text = (msg?.conversation || msg?.extendedTextMessage?.text || msg?.imageMessage?.caption || '').trim();\n\nif (!text || senderJid.includes('@g.us')) {\n  return []; // Ignorar grupos o mensajes sin texto\n}\n\n// Deteccion de intencion\nconst lower = text.toLowerCase();\nlet intent = 'general';\n\nif (lower.includes('asesor') || lower.includes('humano') || lower.includes('persona') || lower.includes('hablar con alguien') || lower.includes('ayuda') || lower.includes('operador')) {\n  intent = 'human_escalation';\n} else if (lower.includes('pedido') || lower.includes('total: $') || lower.includes('me gustaría hacer este pedido')) {\n  intent = 'order_received';\n} else if (lower.includes('pago') || lower.includes('cuenta') || lower.includes('pago movil') || lower.includes('zelle') || lower.includes('dolares') || lower.includes('transferencia')) {\n  intent = 'payment_info';\n} else if (lower.includes('catalogo') || lower.includes('catálogo') || lower.includes('precio') || lower.includes('modelos')) {\n  intent = 'catalog_info';\n} else if (lower.includes('hola') || lower.includes('buenas') || lower.includes('buenos dias') || lower.includes('buenas tardes')) {\n  intent = 'welcome';\n}\n\nreturn [{\n  json: {\n    senderJid,\n    senderNumber,\n    pushName,\n    text,\n    intent,\n    timestamp: new Date().toLocaleTimeString('es-VE', { hour: '2-digit', minute: '2-digit' }),\n    centralNumber: '584126481628',\n    agents: ['584129922399', '584242162538']\n  }\n}];"
       },
       "name": "Parse & Route Intent",
       "type": "n8n-nodes-base.code",
@@ -94,7 +94,7 @@
           "parameter": [
             {
               "name": "apikey",
-              "value": "AgenciaSecreta2026"
+              "value": "={{ $env.EVOLUTION_API_KEY }}"
             }
           ]
         },
@@ -129,7 +129,7 @@
           "parameter": [
             {
               "name": "apikey",
-              "value": "AgenciaSecreta2026"
+              "value": "={{ $env.EVOLUTION_API_KEY }}"
             }
           ]
         },
@@ -164,7 +164,7 @@
           "parameter": [
             {
               "name": "apikey",
-              "value": "AgenciaSecreta2026"
+              "value": "={{ $env.EVOLUTION_API_KEY }}"
             }
           ]
         },
@@ -199,7 +199,7 @@
           "parameter": [
             {
               "name": "apikey",
-              "value": "AgenciaSecreta2026"
+              "value": "={{ $env.EVOLUTION_API_KEY }}"
             }
           ]
         },
@@ -234,7 +234,7 @@
           "parameter": [
             {
               "name": "apikey",
-              "value": "AgenciaSecreta2026"
+              "value": "={{ $env.EVOLUTION_API_KEY }}"
             }
           ]
         },
@@ -269,7 +269,7 @@
           "parameter": [
             {
               "name": "apikey",
-              "value": "AgenciaSecreta2026"
+              "value": "={{ $env.EVOLUTION_API_KEY }}"
             }
           ]
         },
@@ -304,7 +304,7 @@
           "parameter": [
             {
               "name": "apikey",
-              "value": "AgenciaSecreta2026"
+              "value": "={{ $env.EVOLUTION_API_KEY }}"
             }
           ]
         },
@@ -339,7 +339,7 @@
           "parameter": [
             {
               "name": "apikey",
-              "value": "AgenciaSecreta2026"
+              "value": "={{ $env.EVOLUTION_API_KEY }}"
             }
           ]
         },
