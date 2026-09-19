@@ -125,4 +125,4 @@ Antes de reportar una tarea como completa:
 
 ---
 
-*Documento actualizado al 13 de septiembre de 2026.*
+*Documento actualizado al 18 de septiembre de 2026.*
