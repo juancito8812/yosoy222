@@ -72,6 +72,16 @@
                   }
                 ]
               }
+            },
+            {
+              "conditions": {
+                "string": [
+                  {
+                    "value1": "={{ $json.intent }}",
+                    "value2": "catalog_info"
+                  }
+                ]
+              }
             }
           ]
         }
@@ -364,6 +374,76 @@
         650
       ],
       "id": "reply-welcome"
+    },
+    {
+      "parameters": {
+        "requestMethod": "POST",
+        "url": "http://agency-evolution-api:8080/message/sendText/yosoy222_bot",
+        "options": {},
+        "headerParametersUi": {
+          "parameter": [
+            {
+              "name": "apikey",
+              "value": "={{ $env.EVOLUTION_API_KEY }}"
+            }
+          ]
+        },
+        "bodyParametersUi": {
+          "parameter": [
+            {
+              "name": "number",
+              "value": "={{ $json.senderNumber }}"
+            },
+            {
+              "name": "text",
+              "value": "=📍 *Catálogo YoSoy222*\n\nConsulta nuestro catálogo completo con 44 productos en:\nhttps://yosoy222.com\n\nVelas ritualistas · Wax Melts · Franelas con intención · Dijes y pulseras\n\n¿Te interesa alguna pieza en particular? ¡Pregútanos sin compromiso! 🕯️"
+            }
+          ]
+        }
+      },
+      "name": "Reply Catalog Info",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        1000,
+        250
+      ],
+      "id": "reply-catalog"
+    },
+    {
+      "parameters": {
+        "requestMethod": "POST",
+        "url": "http://agency-evolution-api:8080/message/sendText/yosoy222_bot",
+        "options": {},
+        "headerParametersUi": {
+          "parameter": [
+            {
+              "name": "apikey",
+              "value": "={{ $env.EVOLUTION_API_KEY }}"
+            }
+          ]
+        },
+        "bodyParametersUi": {
+          "parameter": [
+            {
+              "name": "number",
+              "value": "={{ $json.senderNumber }}"
+            },
+            {
+              "name": "text",
+              "value": "=🕯️ Hola! Gracias por escribir a *YoSoy222*.\n\nNo entendí tu consulta, pero uno de nuestros asesores humanos revisará tu mensaje y te responderá a la brevedad posible. \n\nMientras tanto, puedes:\n• Ver nuestro catálogo: https://yosoy222.com\n• Preguntar por precios o productos"
+            }
+          ]
+        }
+      },
+      "name": "Reply General Fallback",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        1000,
+        50
+      ],
+      "id": "reply-general"
     }
   ],
   "connections": {
@@ -415,6 +495,20 @@
         [
           {
             "node": "Reply Welcome",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Reply Catalog Info",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Reply General Fallback",
             "type": "main",
             "index": 0
           }
