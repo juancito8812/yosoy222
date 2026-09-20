@@ -12,7 +12,7 @@ Tienda online de velas artesanales, pulseras, collares, franelas y accesorios.
 - **WhatsApp Oficial:** `+58 412 648 1628` (`584126481628`)
 - **Agentes Humanos de Respaldo:** Agente 1 (`+58 412 992 2399`), Agente 2 (`+58 424 216 2538`)
 - **Hosting:** GitHub Pages con proxy, DNS y CDN bajo Cloudflare.
-- **Arquitectura:** PWA instalable con catálogo pre-renderizado para SEO (Schema.org), panel de analítica privada con Luxury Glassmorphism, telemetría en la nube (Supabase Cloud + GA4) y soporte offline (Service Worker Cache v19).
+- **Arquitectura:** PWA instalable con catálogo pre-renderizado para SEO (Schema.org), panel de analítica privada con Luxury Glassmorphism, telemetría en la nube (Supabase Cloud + GA4) y soporte offline (Service Worker Cache v34).
 
 ---
 
@@ -20,8 +20,8 @@ Tienda online de velas artesanales, pulseras, collares, franelas y accesorios.
 
 - **Cero dependencias de runtime:** Vanilla HTML5 semántico, CSS3 moderno y ES6+ JavaScript. No introducir frameworks pesados (React, Vue, etc.) ni empaquetadores complejos.
 - **Testing Nativo:** Módulo `node:test` de Node.js (ejecutable con `npm test` o `node --test tests/*.test.mjs`). Cero paquetes de testing externos.
-- **PWA (Cache v19):** Estrategia Network-First para navegación de páginas (`mode === 'navigate'`) y Stale-While-Revalidate para recursos estáticos. Precaching enfocado en shell, dashboard, iconos HD y miniaturas (`images/thumbs/`). Iconos de alta resolución generados desde fuente 1280px con fondo blanco sólido y Safe Zone del 80% sin franjas negras.
-- **Dashboard & Analítica Cloud:** Telemetría sin cookies en `js/analytics.js` con ingesta global en Supabase Cloud (`public.yosoy222_events`) blindada por RLS, forwarder oficial GA4 (`G-Y9R0B5NH75`), y panel de control en `dashboard.html` (`/dashboard.html`) protegido con autenticación criptográfica (Web Crypto SHA-256 salted hash, protección anti-fuerza bruta, rate-limiting, sesiones efímeras con timeout de 2h y opción de cambio de credenciales).
+- **PWA (Cache v34):** Estrategia Network-First para navegación de páginas (`mode === 'navigate'`) y Stale-While-Revalidate para recursos estáticos. Precaching enfocado en shell, dashboard, config compartida, iconos HD y miniaturas (`images/thumbs/`). Iconos de alta resolución generados desde fuente 1280px con fondo blanco sólido y Safe Zone del 80% sin franjas negras.
+- **Dashboard & Analítica Cloud:** Telemetría sin cookies en `js/analytics.js` con ingesta global en Supabase Cloud (`public.yosoy222_events`) **vía Edge Function `dashboard-stats` acción `track`** (sanitización whitelist + rate limit 30/min **durable en Postgres**: RPC atómica `consume_rate_limit` sobre `private.rate_limit_buckets` con limpieza pg_cron cada 10 min y fallback en memoria — verificado: burst 40 con bucket en 5 → 25×200 y 15×429; SQL en `scripts/supabase_rate_limit.sql`; 20 sep 2026). RLS activado y **tabla 100% service_role-only desde el 20 sep 2026** (política `anon_insert_events` eliminada tras desplegar v31; sondeos: anon INSERT 401, anon SELECT vacío, Edge track 200). Lectura global vía la misma función (login admin server-side; credenciales solo en secrets — ver `supabase/README.md`). El cliente ya NO lleva ninguna clave de BD (`js/config.js` solo tiene `SUPABASE_URL` y `GA_ID`). Forwarder oficial GA4 (`G-Y9R0B5NH75`, **carga diferida**: se inyecta tras la primera interacción del usuario o a los 8s como fallback — nunca compite en el arranque; TBT 0ms verificado con Lighthouse); y panel de control en `dashboard.html` (`/dashboard.html`) protegido con autenticación criptográfica (Web Crypto SHA-256 salted hash, protección anti-fuerza bruta, rate-limiting, sesiones efímeras con timeout de 2h y cambio de credenciales con verificación de la vigente).
 - **SEO & Indexabilidad:** 44 productos prerenderizados en `index.html` mediante `scripts/prerender_catalog.py` y datos estructurados Schema.org (`Store` + `ItemList`).
 - **Base de Datos / Fuente de Verdad:** Archivo Excel `Catalogo.xlsx` ubicado localmente en `/home/jr/Documentos/Catalogo velas/Catalogo.xlsx`.
 
@@ -42,6 +42,9 @@ python3 scripts/prerender_catalog.py
 # 4. Regenerar y verificar iconos PWA
 python3 scripts/generate_icons.py && python3 scripts/verify_icons.py
 
+# 4b. Verificar coherencia de versiones de caché (sw.js ↔ manifest ↔ script tags ↔ precache)
+python3 scripts/verify_versions.py
+
 # 5. Monitorear despliegues y workflows en GitHub Actions
 gh run list --limit 3
 ```
@@ -56,11 +59,18 @@ yosoy222/
 ├── dashboard.html                 ← Panel de control privado con autenticación SHA-256
 ├── css/style.css                  ← Sistema de diseño, tokens en :root (contraste WCAG AA)
 ├── css/dashboard.css              ← Estilos dedicados para el dashboard y gráficos
-├── js/app.js                      ← Catálogo inmutable, filtros, carrito blindado, a11y focus trap
-├── js/analytics.js                ← Motor de telemetría: GA4 + Supabase Cloud + localStorage
-├── js/dashboard.js                ← Motor del Dashboard: autenticación SHA-256, gráficos Bezier en Canvas
-├── sw.js                          ← Service Worker (Cache v19, Network-First navegación)
-├── manifest.json                  ← Metadata PWA (id, scope, display standalone, iconos v19)
+├── js/shared.js                   ← Utilidades compartidas (window.YoSoyShared): escapeHtml canónica
+├── js/font-flip.js                ← Aplica el CSS de Google Fonts cargado async (media=print → all): FCP ×8 más rápido
+├── js/app.js                      ← Catálogo inmutable, filtros, carrito (UI/estado), a11y focus trap
+├── js/cart.js                     ← Lógica pura del carrito (window.YoSoyCart): totales, validación, TTL 30 días
+├── js/analytics.js                ← Motor de telemetría: GA4 (diferido) + Supabase Cloud + localStorage
+├── js/dashboard.js                ← Motor del Dashboard: autenticación SHA-256 fail-closed (hash solo en localStorage, nace de login Edge), datos (Edge Function/local), estado
+├── js/dashboard-view.js           ← Vista del Dashboard (pura): gráficos Bezier en Canvas y render de KPIs/tablas
+├── sw.js                          ← Service Worker (Cache v34, Network-First navegación)
+├── supabase/
+│   ├── functions/dashboard-stats  ← Edge Function: login admin server-side + lectura con service_role (nunca expuesta)
+│   └── README.md                  ← Despliegue, secrets, smoke test y rotación
+├── manifest.json                  ← Metadata PWA (id, scope, display standalone, iconos v15)
 ├── package.json                   ← Script "test" para node --test
 ├── robots.txt / sitemap.xml       ← Directivas canónicas de indexación
 ├── _headers                       ← Cabeceras HTTP de seguridad (HSTS, CSP, X-Frame-Options)
@@ -95,6 +105,7 @@ yosoy222/
 5. **Mínimo Privilegio en Workflows (`SEC-04`):** Todo workflow en `.github/workflows/` debe declarar explícitamente `permissions: contents: read` salvo necesidad justificada.
 6. **Escape HTML Sistemático:** Toda inserción de datos dinámicos en el DOM debe utilizar `escapeHtml()` para prevenir ataques de Cross-Site Scripting (XSS).
 7. **Sin `eval()` ni inline scripts:** Cumplir con la Content Security Policy estricta (`script-src 'self'`).
+8. **Script anti-bots inyectado por Cloudflare (`__CF$cv$params`):** Cloudflare añade al HTML servido un script inline cuyo contenido **rota en cada respuesta** (verificado 20 sep 2026: hash distinto por request) → NO es compatible con CSP por hash, y su iframe choca con `default-src 'none'`. Genera 1 error de consola y BP Lighthouse 92/100. **Decisión del dueño: aceptarlo y documentarlo** — NO intentar "arreglarlo" con hashes (inviabile), `unsafe-inline` (destruye la protección XSS) ni cambiando la CSP.
 
 ---
 
@@ -111,7 +122,7 @@ Al modificar, agregar o eliminar productos del catálogo:
    ```bash
    npm test
    ```
-5. Si hubo cambios estructurales en el Service Worker o assets esenciales, actualizar `CACHE_NAME` en `sw.js` (e.g. `yosoy222-v19`).
+5. Si hubo cambios estructurales en el Service Worker o assets esenciales, actualizar `CACHE_NAME` en `sw.js` (e.g. `yosoy222-v20`) y validar coherencia con `python3 scripts/verify_versions.py`.
 6. Realizar commit y push a `main`.
 
 ---
@@ -122,7 +133,8 @@ Antes de reportar una tarea como completa:
 1. Ejecutar `npm test` y confirmar que las 13 pruebas pasan al 100%.
 2. Ejecutar `git status` para verificar que no queden archivos temporales o cambios sin registrar.
 3. Tras hacer `git push`, monitorear con `gh run list --limit 3` y confirmar que tanto `CI Tests` como `Purge Cloudflare Cache` concluyan en verde (`✓`).
+4. Al cambiar credenciales o desplegar la Edge Function, seguir `supabase/README.md` (secrets + smoke test).
 
 ---
 
-*Documento actualizado al 18 de septiembre de 2026.*
+*Documento actualizado al 20 de septiembre de 2026.*

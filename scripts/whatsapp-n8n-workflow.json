@@ -4,7 +4,7 @@
     {
       "parameters": {
         "httpMethod": "POST",
-        "path": "yosoy222-whatsapp/messages-upsert",
+        "path": "yosoy222-whatsapp",
         "responseMode": "noResponse",
         "options": {}
       },

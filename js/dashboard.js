@@ -9,36 +9,33 @@
   'use strict';
 
   const AUTH_SALT = 'yosoy222_auth_salt_2026';
-  // Precomputed salted SHA-256 hash for default administrator authentication
-  const DEFAULT_HASH = '1549ba80a1e67b2423e6cdb96dbf8fbd9c98e3b166d996c1f7201a1006b3928a';
+  // Sin hash por defecto en el código: el hash válido solo existe en
+  // localStorage, persistido tras un login exitoso vía Edge Function
+  // (verificación server-side). El fallback local es fail-closed.
   const MAX_ATTEMPTS = 5;
   const LOCKOUT_MINUTES = 15;
   const SESSION_TTL_HOURS = 2;
 
-  // Supabase Cloud Configuration
-  const SUPABASE_URL = 'https://gkekolsttfbiegyhvejy.supabase.co';
-  const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdrZWtvbHN0dGZiaWVneWh2ZWp5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk1NzY5NzIsImV4cCI6MjEwNTE1Mjk3Mn0.bzRsjLbjsUMarF3fyilr0koIz9ggt3mBdAYjJESDGXU';
+  // Supabase Cloud Configuration (única fuente: js/config.js)
+  const SUPABASE_URL = (window.YoSoyConfig && window.YoSoyConfig.SUPABASE_URL) || '';
+  // Edge Function de lectura autenticada (service_role vive server-side)
+  const STATS_FN = `${SUPABASE_URL}/functions/v1/dashboard-stats`;
+
+  // Credenciales actuales del panel (usuario + token de la Edge Function)
+  let cloudAuth = null;
 
   let currentDays = 30;
   let cachedCloudData = null;
   let lastCloudFetch = 0;
 
-  // Helper: Country Flags
-  function getFlagEmoji(country) {
-    if (!country) return '🌍';
-    const c = country.toLowerCase();
-    if (c.includes('venezuela')) return '🇻🇪';
-    if (c.includes('estados unidos') || c.includes('united states') || c === 'us') return '🇺🇸';
-    if (c.includes('españa') || c.includes('spain') || c === 'es') return '🇪🇸';
-    if (c.includes('colombia') || c === 'co') return '🇨🇴';
-    if (c.includes('méxico') || c.includes('mexico') || c === 'mx') return '🇲🇽';
-    if (c.includes('chile')) return '🇨🇱';
-    if (c.includes('argentina')) return '🇦🇷';
-    if (c.includes('panamá') || c.includes('panama')) return '🇵🇦';
-    if (c.includes('perú') || c.includes('peru')) return '🇵🇪';
-    if (c.includes('ecuador')) return '🇪🇨';
-    if (c.includes('reino unido') || c.includes('united kingdom')) return '🇬🇧';
-    return '🏳️';
+  /* ----- Vista: gráficos y render (js/dashboard-view.js) -----
+     El módulo de vista es puro: recibe stats ya computadas.
+     Este módulo (core) posee auth, datos y estado; obtiene las
+     stats y delega el pintado. Firma original intacta. */
+  async function renderDashboard(forceCloud = false) {
+    const cloud = await fetchCloudData(forceCloud);
+    const stats = computeStats(currentDays, cloud);
+    return YoSoyDashView.renderDashboard(stats);
   }
 
   // --- CRYPTOGRAPHIC UTILITIES ---
@@ -50,7 +47,18 @@
   }
 
   function getActiveHash() {
-    return localStorage.getItem('yosoy222_auth_hash') || DEFAULT_HASH;
+    // Sin fallback: si no hay hash persistido (ningún login Edge previo en
+    // este navegador), la autenticación local no puede aceptar a nadie.
+    return localStorage.getItem('yosoy222_auth_hash');
+  }
+
+  function getActiveUser() {
+    return localStorage.getItem('yosoy222_auth_user');
+  }
+
+  function setActiveCredentials(user, hash) {
+    localStorage.setItem('yosoy222_auth_user', user);
+    localStorage.setItem('yosoy222_auth_hash', hash);
   }
 
   // --- BRUTE FORCE PROTECTION ---
@@ -91,14 +99,134 @@
     }
   }
 
-  function createSession() {
+  function createSession(user = null) {
     const expires = Date.now() + (SESSION_TTL_HOURS * 60 * 60 * 1000);
     const token = Array.from(crypto.getRandomValues(new Uint8Array(24))).map(b => b.toString(16).padStart(2, '0')).join('');
-    sessionStorage.setItem('yosoy222_dash_session', JSON.stringify({ token, expires }));
+    sessionStorage.setItem('yosoy222_dash_session', JSON.stringify({ token, expires, user }));
+  }
+
+  function getSessionUser() {
+    try {
+      const sess = JSON.parse(sessionStorage.getItem('yosoy222_dash_session') || 'null');
+      return (sess && typeof sess.user === 'string') ? sess.user : null;
+    } catch {
+      return null;
+    }
   }
 
   function destroySession() {
     sessionStorage.removeItem('yosoy222_dash_session');
+  }
+
+  // Referencias del formulario de auth (lazy: los helpers se usan solo en el submit)
+  const authErrorEl = document.getElementById('authError');
+  const authUserEl = document.getElementById('authUser');
+  const authPasswordEl = document.getElementById('authPassword');
+
+  // --- UI SWITCHER ---
+  function showAuthError(msg) {
+    authErrorEl.textContent = msg;
+    authErrorEl.style.display = 'block';
+  }
+
+  function acceptLogin(user, token = null) {
+    clearFailedAttempts();
+    createSession(user);
+    cloudAuth = token ? { user, token } : null;
+    authErrorEl.style.display = 'none';
+    authPasswordEl.value = '';
+    setDashboardVisible(true);
+  }
+
+  function rejectLogin() {
+    const failed = recordFailedAttempt();
+    const remaining = MAX_ATTEMPTS - failed.attempts;
+    showAuthError(remaining > 0
+      ? `Credenciales incorrectas. Te quedan ${remaining} intento(s).`
+      : `Demasiados intentos fallidos. Bloqueado por ${LOCKOUT_MINUTES} minutos.`);
+  }
+
+  // Login server-side vía Edge Function. Devuelve true si resolvió el login
+  // (éxito o error definitivo de la función); false si hay que caer al fallback local.
+  async function edgeLogin(user, pass) {
+    try {
+      const res = await fetch(STATS_FN, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'login', user, pass })
+      });
+      const payload = await res.json().catch(() => ({}));
+      if (res.ok && payload.ok && payload.token) {
+        // Persistir user+hash de las credenciales usadas: la verificación del modal
+        // de cambio de credenciales necesita una referencia local aunque el login haya sido vía Edge.
+        try {
+          setActiveCredentials(user.trim().toLowerCase(), await computeHash(user, pass));
+        } catch { /* sin crypto.subtle el modal pedirá re-login */ }
+        acceptLogin(user.trim().toLowerCase(), payload.token);
+        return true;
+      }
+      if (res.status === 429) {
+        showAuthError(`Demasiados intentos fallidos. Bloqueado por ${payload.minutes || LOCKOUT_MINUTES} minuto(s).`);
+        return true;
+      }
+      if (res.status === 401) {
+        rejectLogin();
+        return true;
+      }
+      // Otro error (404 si aún no está desplegada, 5xx, CORS…): fallback local.
+      console.warn('Edge Function no disponible (' + res.status + '); usando autenticación local degradada.');
+    } catch (err) {
+      console.warn('Edge Function inaccesible; usando autenticación local degradada.', err);
+    }
+    return false;
+  }
+
+  // --- TOASTS (feedback no bloqueante; sustituye a confirm() nativo) ---
+  let toastHost = null;
+
+  function ensureToastHost() {
+    if (!toastHost) {
+      toastHost = document.createElement('div');
+      toastHost.className = 'toast-host';
+      document.body.appendChild(toastHost);
+    }
+    return toastHost;
+  }
+
+  // Devuelve Promise<boolean>; auto-descartar = cancelar. textContent siempre (XSS-safe).
+  function showConfirm(message, timeout = 10000) {
+    return new Promise((resolve) => {
+      const el = document.createElement('div');
+      el.className = 'toast';
+      el.setAttribute('role', 'alertdialog');
+
+      const text = document.createElement('p');
+      text.textContent = message;
+      const actions = document.createElement('div');
+      actions.className = 'toast-actions';
+      const yes = document.createElement('button');
+      yes.type = 'button';
+      yes.className = 'btn-action btn-action-primary';
+      yes.textContent = 'Confirmar';
+      const no = document.createElement('button');
+      no.type = 'button';
+      no.className = 'btn-action';
+      no.textContent = 'Cancelar';
+      actions.append(no, yes);
+      el.append(text, actions);
+      ensureToastHost().appendChild(el);
+      requestAnimationFrame(() => el.classList.add('toast-in'));
+
+      const done = (val) => {
+        yes.disabled = no.disabled = true;
+        el.classList.remove('toast-in');
+        setTimeout(() => el.remove(), 300);
+        resolve(val);
+      };
+      yes.addEventListener('click', () => done(true));
+      no.addEventListener('click', () => done(false));
+      setTimeout(() => done(false), timeout);
+    });
   }
 
   // --- UI SWITCHER ---
@@ -115,10 +243,8 @@
     } else {
       if (overlay) overlay.style.display = 'flex';
       if (content) content.style.display = 'none';
-      const err = document.getElementById('authError');
-      if (err) err.style.display = 'none';
-      const userInput = document.getElementById('authUser');
-      if (userInput) userInput.focus();
+      if (authErrorEl) authErrorEl.style.display = 'none';
+      if (authUserEl) authUserEl.focus();
     }
   }
 
@@ -127,18 +253,30 @@
     if (!force && cachedCloudData && (Date.now() - lastCloudFetch < 15000)) {
       return cachedCloudData;
     }
-    if (!SUPABASE_URL || !SUPABASE_ANON) return null;
+    // Lectura global SOLO vía Edge Function autenticada (service_role server-side).
+    // Sin sesión válida en la nube → cae a datos locales (getLocalRawData).
+    if (!STATS_FN || !cloudAuth || !cloudAuth.token) return null;
 
     try {
-      const res = await fetch(`${SUPABASE_URL}/rest/v1/yosoy222_events?select=*&order=created_at.desc&limit=2500`, {
-        headers: {
-          'apikey': SUPABASE_ANON,
-          'Authorization': `Bearer ${SUPABASE_ANON}`
-        }
+      const res = await fetch(STATS_FN, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'stats',
+          user: cloudAuth.user,
+          token: cloudAuth.token,
+          limit: 2500
+        })
       });
+      if (res.status === 401 || res.status === 429) {
+        // Token expirado/inválido o rate limit: cerrar sesión en la nube
+        cloudAuth = null;
+        return null;
+      }
       if (res.ok) {
-        const rows = await res.json();
-        if (Array.isArray(rows) && rows.length > 0) {
+        const payload = await res.json();
+        const rows = Array.isArray(payload.rows) ? payload.rows : [];
+        if (rows.length > 0) {
           const events = rows.map(r => ({
             id: r.id,
             type: r.event_type,
@@ -314,348 +452,6 @@
     };
   }
 
-  // --- LUXURY BEZIER AREA CHARTS ---
-  function drawTrendChart(canvas, dailyMap) {
-    if (!canvas || !canvas.parentElement) return;
-    const ctx = canvas.getContext('2d');
-    const width = canvas.width = canvas.parentElement.clientWidth;
-    const height = canvas.height = canvas.parentElement.clientHeight;
-    if (width === 0 || height === 0) return;
-
-    ctx.clearRect(0, 0, width, height);
-
-    const labels = Object.keys(dailyMap);
-    const viewData = labels.map(k => dailyMap[k].views);
-    const waData = labels.map(k => dailyMap[k].whatsapp);
-
-    const maxVal = Math.max(...viewData, ...waData, 5);
-    const padX = 35;
-    const padY = 25;
-    const chartW = width - padX * 2;
-    const chartH = height - padY * 2;
-
-    // Subtle Horizontal Grid Lines
-    ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
-    ctx.lineWidth = 1;
-    for (let i = 0; i <= 4; i++) {
-      const y = padY + (chartH / 4) * i;
-      ctx.beginPath();
-      ctx.moveTo(padX, y);
-      ctx.lineTo(width - padX, y);
-      ctx.stroke();
-
-      const val = Math.round(maxVal - (maxVal / 4) * i);
-      ctx.fillStyle = '#7a6e60';
-      ctx.font = '10px Inter, sans-serif';
-      ctx.textAlign = 'right';
-      ctx.fillText(val, padX - 8, y + 3);
-    }
-
-    function drawSmoothSeries(data, strokeColor, fillColorStart, fillColorEnd) {
-      if (data.length < 2) return;
-
-      const points = data.map((val, i) => ({
-        x: padX + (chartW / (data.length - 1)) * i,
-        y: padY + chartH - (val / maxVal) * chartH
-      }));
-
-      const grad = ctx.createLinearGradient(0, padY, 0, padY + chartH);
-      grad.addColorStop(0, fillColorStart);
-      grad.addColorStop(1, fillColorEnd);
-
-      ctx.beginPath();
-      ctx.moveTo(points[0].x, points[0].y);
-
-      for (let i = 0; i < points.length - 1; i++) {
-        const p0 = points[i === 0 ? 0 : i - 1];
-        const p1 = points[i];
-        const p2 = points[i + 1];
-        const p3 = points[i + 2 >= points.length ? points.length - 1 : i + 2];
-
-        const cp1x = p1.x + (p2.x - p0.x) / 6;
-        const cp1y = p1.y + (p2.y - p0.y) / 6;
-        const cp2x = p2.x - (p3.x - p1.x) / 6;
-        const cp2y = p2.y - (p3.y - p1.y) / 6;
-
-        ctx.bezierCurveTo(cp1x, cp1y, cp2x, cp2y, p2.x, p2.y);
-      }
-
-      ctx.strokeStyle = strokeColor;
-      ctx.lineWidth = 2.5;
-      ctx.shadowColor = strokeColor;
-      ctx.shadowBlur = 8;
-      ctx.stroke();
-      ctx.shadowBlur = 0;
-
-      ctx.lineTo(points[points.length - 1].x, padY + chartH);
-      ctx.lineTo(points[0].x, padY + chartH);
-      ctx.closePath();
-      ctx.fillStyle = grad;
-      ctx.fill();
-
-      points.forEach(p => {
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, 3, 0, Math.PI * 2);
-        ctx.fillStyle = strokeColor;
-        ctx.fill();
-        ctx.strokeStyle = '#12100e';
-        ctx.lineWidth = 1.5;
-        ctx.stroke();
-      });
-    }
-
-    drawSmoothSeries(viewData, '#c68a4c', 'rgba(198, 138, 76, 0.28)', 'rgba(198, 138, 76, 0.0)');
-    drawSmoothSeries(waData, '#10b981', 'rgba(16, 185, 129, 0.25)', 'rgba(16, 185, 129, 0.0)');
-
-    ctx.fillStyle = '#a69888';
-    ctx.font = '10px Inter, sans-serif';
-    ctx.textAlign = 'center';
-    const step = Math.max(1, Math.floor(labels.length / 7));
-    labels.forEach((label, i) => {
-      if (i % step === 0 || i === labels.length - 1) {
-        const x = padX + (chartW / (labels.length - 1)) * i;
-        ctx.fillText(label, x, height - 6);
-      }
-    });
-  }
-
-  // --- TRAFFIC SOURCES DONUT CHART ---
-  function drawSourceChart(canvas, sources) {
-    if (!canvas || !canvas.parentElement) return;
-    const ctx = canvas.getContext('2d');
-    const size = Math.min(canvas.parentElement.clientWidth, 220);
-    canvas.width = size;
-    canvas.height = size;
-    if (size === 0) return;
-
-    ctx.clearRect(0, 0, size, size);
-
-    const keys = Object.keys(sources);
-    const total = Object.values(sources).reduce((a, b) => a + b, 0) || 0;
-
-    const colors = {
-      pwa_app: '#f59e0b',
-      instagram: '#f43f5e',
-      tiktok: '#38bdf8',
-      facebook: '#3b82f6',
-      google_search: '#eab308',
-      whatsapp: '#10b981',
-      twitter_x: '#a855f7',
-      directo: '#c68a4c',
-      otro_referido: '#94a3b8'
-    };
-
-    let startAngle = -Math.PI / 2;
-    const centerX = size / 2;
-    const centerY = size / 2;
-    const radius = size * 0.40;
-    const innerRadius = size * 0.26;
-
-    if (keys.length === 0 || total === 0) {
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.06)';
-      ctx.beginPath();
-      ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
-      ctx.arc(centerX, centerY, innerRadius, Math.PI * 2, 0, true);
-      ctx.fill();
-      return;
-    }
-
-    keys.forEach(k => {
-      const val = sources[k];
-      const sliceAngle = (val / total) * (Math.PI * 2);
-      ctx.fillStyle = colors[k] || '#c68a4c';
-      ctx.beginPath();
-      ctx.arc(centerX, centerY, radius, startAngle, startAngle + sliceAngle);
-      ctx.arc(centerX, centerY, innerRadius, startAngle + sliceAngle, startAngle, true);
-      ctx.closePath();
-      ctx.fill();
-      startAngle += sliceAngle;
-    });
-
-    ctx.fillStyle = '#ffffff';
-    ctx.font = 'bold 13px Inter, sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText(`${total}`, centerX, centerY - 1);
-    ctx.fillStyle = '#a69888';
-    ctx.font = '9px Inter, sans-serif';
-    ctx.fillText('Visitas', centerX, centerY + 11);
-  }
-
-  // --- RENDER MAIN DASHBOARD ---
-  async function renderDashboard(forceCloud = false) {
-    const cloud = await fetchCloudData(forceCloud);
-    const stats = computeStats(currentDays, cloud);
-
-    // Update Live Indicator Status
-    const livePill = document.querySelector('.live-pill');
-    if (livePill) {
-      if (stats.isCloud) {
-        livePill.innerHTML = '<span class="live-dot" style="background:#10b981;"></span> En Vivo (Supabase Cloud)';
-      } else {
-        livePill.innerHTML = '<span class="live-dot"></span> En Vivo (Local)';
-      }
-    }
-
-    // Update KPI Numbers
-    document.getElementById('kpiViews').textContent = stats.pageViews.toLocaleString();
-    document.getElementById('kpiWhatsapp').textContent = stats.waTotal.toLocaleString();
-    document.getElementById('kpiCart').textContent = stats.cartAdds.toLocaleString();
-    document.getElementById('kpiRevenue').textContent = `$${stats.totalRevenue.toFixed(2)}`;
-    document.getElementById('kpiConversion').textContent = `${stats.conversionRate}%`;
-
-    // Funnel Steps
-    document.getElementById('funnelViews').textContent = stats.pageViews;
-    document.getElementById('funnelProducts').textContent = stats.viewedProducts;
-    document.getElementById('funnelCart').textContent = stats.cartAdds;
-    document.getElementById('funnelWhatsapp').textContent = stats.waTotal;
-
-    const pRate = stats.pageViews > 0 ? ((stats.viewedProducts / stats.pageViews) * 100).toFixed(0) : 0;
-    const cRate = stats.viewedProducts > 0 ? ((stats.cartAdds / stats.viewedProducts) * 100).toFixed(0) : 0;
-    const wRate = stats.cartAdds > 0 ? ((stats.waTotal / stats.cartAdds) * 100).toFixed(0) : 0;
-
-    document.getElementById('funnelPRate').textContent = `${pRate}%`;
-    document.getElementById('funnelCRate').textContent = `${cRate}%`;
-    document.getElementById('funnelWRate').textContent = `${wRate}%`;
-
-    // Devices
-    document.getElementById('deviceMobile').textContent = `${stats.mobilePct}%`;
-    document.getElementById('deviceDesktop').textContent = `${stats.desktopPct}%`;
-
-    // Draw Charts
-    drawTrendChart(document.getElementById('trendCanvas'), stats.dailyMap);
-    drawSourceChart(document.getElementById('sourceCanvas'), stats.sources);
-
-    // Source Badge & Legend
-    const sourceKeys = Object.keys(stats.sources);
-    document.getElementById('sourceTotalBadge').textContent = `${sourceKeys.length} canal${sourceKeys.length === 1 ? '' : 'es'}`;
-    const sourceLegend = document.getElementById('sourceLegend');
-    if (sourceLegend) {
-      sourceLegend.innerHTML = Object.entries(stats.sources).map(([k, v]) => {
-        const label = k === 'pwa_app' ? '📱 App PWA' : k.replace('_', ' ');
-        return `
-        <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.78rem; margin-bottom:0.4rem; padding: 0.2rem 0; border-bottom: 1px solid rgba(255,255,255,0.03);">
-          <span style="text-transform:capitalize; color:var(--text-muted);">${label}</span>
-          <strong style="color:#fff;">${v} (${((v / (stats.totalSessions || 1)) * 100).toFixed(0)}%)</strong>
-        </div>
-      `;
-      }).join('') || '<p style="color:var(--text-faint); font-size:0.78rem; text-align:center;">Sin datos registrados</p>';
-    }
-
-    // Geographic Distribution (Countries & Cities)
-    const geoTotalBadge = document.getElementById('geoTotalBadge');
-    const countryKeys = Object.keys(stats.countries);
-    const cityKeys = Object.keys(stats.cities);
-    if (geoTotalBadge) {
-      geoTotalBadge.textContent = `${countryKeys.length} país(es) · ${cityKeys.length} ciudad(es)`;
-    }
-
-    const countriesTable = document.getElementById('countriesTable');
-    if (countriesTable) {
-      const sortedCo = Object.entries(stats.countries).sort((a, b) => b[1] - a[1]);
-      const maxCo = sortedCo[0]?.[1] || 1;
-      countriesTable.innerHTML = sortedCo.map(([co, count]) => {
-        const flag = getFlagEmoji(co);
-        const pct = Math.round((count / (stats.totalSessions || 1)) * 100);
-        const barPct = Math.round((count / maxCo) * 100);
-        return `
-          <tr>
-            <td>
-              <div style="font-weight:600; color:#fff; display:flex; align-items:center; gap:0.4rem;">
-                <span>${flag}</span> <span>${co}</span>
-              </div>
-            </td>
-            <td><strong>${count}</strong> <span style="font-size:0.75rem; color:var(--text-faint);">(${pct}%)</span></td>
-            <td>
-              <div class="progress-bar-wrap">
-                <div class="progress-bar-fill" style="width: ${barPct}%; background: linear-gradient(90deg, #c68a4c, #eab308);"></div>
-              </div>
-            </td>
-          </tr>
-        `;
-      }).join('') || '<tr><td colspan="3" style="text-align:center; color:var(--text-faint); padding:1rem;">Sin ubicaciones registradas</td></tr>';
-    }
-
-    const citiesTable = document.getElementById('citiesTable');
-    if (citiesTable) {
-      const sortedCi = Object.entries(stats.cities).sort((a, b) => b[1] - a[1]);
-      const maxCi = sortedCi[0]?.[1] || 1;
-      citiesTable.innerHTML = sortedCi.map(([ci, count]) => {
-        const pct = Math.round((count / (stats.totalSessions || 1)) * 100);
-        const barPct = Math.round((count / maxCi) * 100);
-        return `
-          <tr>
-            <td>
-              <div style="font-weight:600; color:#fff;">📍 ${ci}</div>
-            </td>
-            <td><strong>${count}</strong> <span style="font-size:0.75rem; color:var(--text-faint);">(${pct}%)</span></td>
-            <td>
-              <div class="progress-bar-wrap">
-                <div class="progress-bar-fill" style="width: ${barPct}%; background: linear-gradient(90deg, #10b981, #34d399);"></div>
-              </div>
-            </td>
-          </tr>
-        `;
-      }).join('') || '<tr><td colspan="3" style="text-align:center; color:var(--text-faint); padding:1rem;">Sin ciudades registradas</td></tr>';
-    }
-
-    // Top Products with Progress Fill
-    const topProdTable = document.getElementById('topProductsTable');
-    if (topProdTable) {
-      const allNames = Array.from(new Set([...Object.keys(stats.productViews), ...Object.keys(stats.productAdds)]));
-      const maxScore = Math.max(...allNames.map(n => (stats.productViews[n] || 0) + (stats.productAdds[n] || 0) * 2), 1);
-      const sorted = allNames.sort((a, b) => ((stats.productViews[b] || 0) + (stats.productAdds[b] || 0) * 2) - ((stats.productViews[a] || 0) + (stats.productAdds[a] || 0) * 2)).slice(0, 5);
-
-      topProdTable.innerHTML = sorted.map(name => {
-        const v = stats.productViews[name] || 0;
-        const c = stats.productAdds[name] || 0;
-        const score = v + c * 2;
-        const pct = Math.min(100, Math.round((score / maxScore) * 100));
-        return `
-          <tr>
-            <td>
-              <div style="font-weight:600; color:#fff;">${name}</div>
-            </td>
-            <td>${v}</td>
-            <td><span style="color:#facc15; font-weight:600;">${c}</span></td>
-            <td style="width: 25%;">
-              <div class="progress-bar-wrap">
-                <div class="progress-bar-fill" style="width: ${pct}%;"></div>
-              </div>
-            </td>
-          </tr>
-        `;
-      }).join('') || '<tr><td colspan="4" style="text-align:center; color:var(--text-faint); padding:1.5rem;">Sin productos visualizados aún</td></tr>';
-    }
-
-    // Recent Events Feed
-    const eventTable = document.getElementById('eventTable');
-    if (eventTable) {
-      const typeClasses = {
-        whatsapp_checkout: 'badge-whatsapp',
-        whatsapp_contact: 'badge-whatsapp',
-        add_to_cart: 'badge-cart',
-        view_item: 'badge-view',
-        search: 'badge-search',
-        page_view: 'badge-view'
-      };
-
-      eventTable.innerHTML = stats.recentEvents.map(e => {
-        const timeStr = new Date(e.t).toLocaleTimeString('es-VE', { hour: '2-digit', minute: '2-digit' });
-        const detail = e.name || e.query || (e.total ? `$${e.total} USD` : e.src || e.origin || 'Navegación');
-        const flag = getFlagEmoji(e.country);
-        const locationText = `${flag} ${e.city || 'Caracas'}, ${e.country || 'Venezuela'}`;
-        return `
-          <tr>
-            <td style="color:var(--text-faint);">${timeStr}</td>
-            <td><span class="badge-evt ${typeClasses[e.type] || 'badge-view'}">${e.type.replace('_', ' ')}</span></td>
-            <td style="font-size:0.8rem; color:#d6c7b2;">${locationText}</td>
-            <td style="font-weight:500;">${detail}</td>
-          </tr>
-        `;
-      }).join('') || '<tr><td colspan="4" style="text-align:center; color:var(--text-faint); padding:1.5rem;">No hay actividad reciente registrada</td></tr>';
-    }
-  }
-
   // --- CSV EXPORT ---
   function exportCSV() {
     const raw = cachedCloudData || getLocalRawData();
@@ -741,40 +537,27 @@
 
     // Login Form
     const authForm = document.getElementById('authForm');
-    const authError = document.getElementById('authError');
 
     if (authForm) {
       authForm.addEventListener('submit', async (e) => {
         e.preventDefault();
-        const user = document.getElementById('authUser').value;
-        const pass = document.getElementById('authPassword').value;
+        const user = authUserEl.value;
+        const pass = authPasswordEl.value;
 
         const lock = getLockoutState();
         if (lock.lockUntil && Date.now() < lock.lockUntil) {
-          const remainingMins = Math.ceil((lock.lockUntil - Date.now()) / 60000);
-          authError.textContent = `Demasiados intentos fallidos. Bloqueado por ${remainingMins} minuto(s).`;
-          authError.style.display = 'block';
+          showAuthError(`Demasiados intentos fallidos. Bloqueado por ${Math.ceil((lock.lockUntil - Date.now()) / 60000)} minuto(s).`);
           return;
         }
 
-        const inputHash = await computeHash(user, pass);
-        const targetHash = getActiveHash();
+        // Preferente: Edge Function (valida server-side). Si no está disponible, fallback local.
+        if (await edgeLogin(user, pass)) return;
 
-        if (inputHash === targetHash) {
-          clearFailedAttempts();
-          createSession();
-          authError.style.display = 'none';
-          document.getElementById('authPassword').value = '';
-          setDashboardVisible(true);
+        // Fallback local (modo degradado, misma lógica de siempre)
+        if ((await computeHash(user, pass)) === getActiveHash()) {
+          acceptLogin(user.trim().toLowerCase());
         } else {
-          const failed = recordFailedAttempt();
-          const remaining = MAX_ATTEMPTS - failed.attempts;
-          if (remaining > 0) {
-            authError.textContent = `Credenciales incorrectas. Te quedan ${remaining} intento(s).`;
-          } else {
-            authError.textContent = `Demasiados intentos fallidos. Bloqueado por ${LOCKOUT_MINUTES} minutos.`;
-          }
-          authError.style.display = 'block';
+          rejectLogin();
         }
       });
     }
@@ -784,11 +567,13 @@
     if (logoutBtn) {
       logoutBtn.addEventListener('click', () => {
         destroySession();
+        cloudAuth = null;
         setDashboardVisible(false);
       });
     }
 
     // Password Modal
+    const pwdErrorEl = document.getElementById('pwdError');
     const openPwdBtn = document.getElementById('openPwdBtn');
     const pwdModal = document.getElementById('pwdModal');
     const cancelPwdBtn = document.getElementById('cancelPwdBtn');
@@ -796,6 +581,8 @@
 
     if (openPwdBtn && pwdModal) {
       openPwdBtn.addEventListener('click', () => {
+        pwdErrorEl.classList.remove('pwd-success');
+        pwdErrorEl.style.display = 'none';
         pwdModal.style.display = 'flex';
       });
     }
@@ -806,21 +593,39 @@
       });
     }
 
+    function showPwdError(msg) {
+      pwdErrorEl.textContent = msg;
+      pwdErrorEl.style.display = 'block';
+    }
+
+    function showPwdSuccess(msg) {
+      pwdErrorEl.textContent = msg;
+      pwdErrorEl.style.display = 'block';
+      pwdErrorEl.classList.add('pwd-success');
+    }
+
     if (pwdForm) {
       pwdForm.addEventListener('submit', async (e) => {
         e.preventDefault();
-        const newU = document.getElementById('newUsername').value;
-        const newP = document.getElementById('newPassword').value;
+        const currentPassword = document.getElementById('currentPassword').value;
+        const newUsername = document.getElementById('newUsername').value;
+        const newPassword = document.getElementById('newPassword').value;
 
-        if (newP.length < 6) {
-          alert('La contraseña debe tener al menos 6 caracteres.');
+        if (newPassword.length < 8) {
+          showPwdError('La nueva contraseña debe tener al menos 8 caracteres.');
           return;
         }
 
-        const newHash = await computeHash(newU, newP);
-        localStorage.setItem('yosoy222_auth_hash', newHash);
-        alert('Credenciales actualizadas exitosamente.');
-        pwdModal.style.display = 'none';
+        // Verificación de la contraseña vigente: sin ella nadie puede sobrescribir las credenciales.
+        const checkUser = (getSessionUser() || getActiveUser() || '').trim().toLowerCase();
+        if (!checkUser || (await computeHash(checkUser, currentPassword)) !== getActiveHash()) {
+          showPwdError('La contraseña actual no es correcta.');
+          return;
+        }
+
+        setActiveCredentials(newUsername.trim().toLowerCase(), await computeHash(newUsername, newPassword));
+        showPwdSuccess('Credenciales actualizadas exitosamente.');
+        setTimeout(() => { pwdModal.style.display = 'none'; }, 1200);
       });
     }
 
@@ -841,8 +646,8 @@
 
     const demoBtn = document.getElementById('demoBtn');
     if (demoBtn) {
-      demoBtn.addEventListener('click', () => {
-        if (confirm('¿Cargar datos de prueba para visualizar todos los gráficos del Dashboard?')) {
+      demoBtn.addEventListener('click', async () => {
+        if (await showConfirm('¿Cargar datos de prueba para visualizar todos los gráficos del Dashboard?')) {
           seedDemoData();
         }
       });
@@ -850,8 +655,8 @@
 
     const clearBtn = document.getElementById('clearBtn');
     if (clearBtn) {
-      clearBtn.addEventListener('click', () => {
-        if (confirm('¿Eliminar todos los datos locales de analítica?')) {
+      clearBtn.addEventListener('click', async () => {
+        if (await showConfirm('¿Eliminar todos los datos locales de analítica?')) {
           localStorage.removeItem('yosoy222_analytics');
           cachedCloudData = null;
           renderDashboard(false);

@@ -104,21 +104,17 @@
   const $$ = (s, p) => [...(p || document).querySelectorAll(s)];
 
   /* ----- Security: HTML escaping ----- */
-  const escapeHtml = (str) => {
-    if (typeof str === 'number') return String(str);
-    if (typeof str !== 'string') return '';
-    const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
-    return str.replace(/[&<>"']/g, (c) => map[c]);
-  };
+  /* ----- Módulos compartidos: js/shared.js y js/cart.js (cargados antes en el HTML) ----- */
+  const resolveModule = (globalRef, path) =>
+    globalRef || (typeof require === 'function' ? require(path) : null);
 
-  /* ----- Cart TTL & Calculations (Pure domain logic) ----- */
-  const CART_TTL_MS = 30 * 24 * 60 * 60 * 1000; // 30 days
+  const YoSoySharedModule = resolveModule(typeof window !== 'undefined' && window.YoSoyShared, './shared.js');
+  if (!YoSoySharedModule) throw new Error('YoSoy222: js/shared.js debe cargarse antes que app.js');
+  const { escapeHtml } = YoSoySharedModule;
 
-  function calculateCartTotals(cartItems) {
-    const total = (cartItems || []).reduce((s, i) => s + (Number(i.price) || 0) * (Number(i.qty) || 0), 0);
-    const count = (cartItems || []).reduce((s, i) => s + (Number(i.qty) || 0), 0);
-    return { total, count };
-  }
+  const YoSoyCartModule = resolveModule(typeof window !== 'undefined' && window.YoSoyCart, './cart.js');
+  if (!YoSoyCartModule) throw new Error('YoSoy222: js/cart.js debe cargarse antes que app.js');
+  const { calculateCartTotals, loadCartData, saveCartData } = YoSoyCartModule;
 
   function filterProductList(items, filter, search, map = catMap) {
     const normSearch = (search || '').trim().toLowerCase();
@@ -129,64 +125,6 @@
       const desc = (p.desc || '').toLowerCase();
       const matchesSearch = !normSearch || name.includes(normSearch) || desc.includes(normSearch);
       return matchesCat && matchesSearch;
-    });
-  }
-
-  function loadCartData(raw, catalog = products, now = Date.now()) {
-    if (!raw) return { items: [], expired: false };
-    try {
-      const parsed = JSON.parse(raw);
-      let candidateItems = [];
-      let expired = false;
-
-      if (Array.isArray(parsed)) {
-        // Legacy cart format (direct array)
-        candidateItems = parsed;
-      } else if (parsed && typeof parsed === 'object' && Array.isArray(parsed.items)) {
-        candidateItems = parsed.items;
-        if (parsed.updatedAt !== undefined) {
-          const isValidTimestamp = typeof parsed.updatedAt === 'number' && Number.isFinite(parsed.updatedAt) && parsed.updatedAt > 0;
-          if (!isValidTimestamp || (now - parsed.updatedAt > CART_TTL_MS)) {
-            return { items: [], expired: true };
-          }
-        }
-      } else {
-        return { items: [], expired: false };
-      }
-
-      const validItems = candidateItems
-        .filter(item =>
-          item &&
-          typeof item.name === 'string' &&
-          typeof item.price === 'number' &&
-          typeof item.qty === 'number' &&
-          Number.isFinite(item.price) &&
-          Number.isInteger(item.qty) &&
-          item.price >= 0 &&
-          item.qty > 0 &&
-          item.qty <= 999
-        )
-        .map(item => {
-          const product = (catalog || []).find(p => p.name === item.name);
-          if (!product) return null;
-          return {
-            name: product.name,
-            price: product.price,
-            qty: item.qty
-          };
-        })
-        .filter(Boolean);
-
-      return { items: validItems, expired };
-    } catch {
-      return { items: [], expired: false };
-    }
-  }
-
-  function saveCartData(items, now = Date.now()) {
-    return JSON.stringify({
-      items: items || [],
-      updatedAt: now
     });
   }
 
@@ -557,6 +495,20 @@
       `Hola YoSoy222 👋\n\nMe gustaría hacer este pedido:\n\n${lines.join('\n')}\n\n*Total: $${total.toFixed(2)} USD*\n\n¡Gracias! 🕯️`
     );
     cartWhatsapp.href = `https://wa.me/${WHATSAPP}?text=${msg}`;
+
+    // Aviso no bloqueante cuando no hay conexión: el carrito no se pierde
+    const existingNote = document.getElementById('offline-checkout-note');
+    if (navigator.onLine === false) {
+      if (!existingNote) {
+        const note = document.createElement('p');
+        note.id = 'offline-checkout-note';
+        note.className = 'offline-note';
+        note.textContent = 'Sin conexión ahora mismo — tu carrito queda guardado; envía el pedido cuando recuperes internet.';
+        cartFooter.insertAdjacentElement('beforeend', note);
+      }
+    } else if (existingNote) {
+      existingNote.remove();
+    }
   }
 
   /* ============================================
@@ -582,6 +534,24 @@
      ============================================ */
   const lightbox = $('#lightbox');
   const lightboxImg = $('#lightboxImg');
+  const lightboxInfo = $('.lightbox-info');
+
+  // Offline: la imagen grande nunca se precachea (solo miniaturas) — recupera con la miniatura
+  lightboxImg.addEventListener('error', () => {
+    const p = visibleProducts[currentLightboxIndex];
+    if (!p || lightboxImg.dataset.fallback) return;
+    lightboxImg.dataset.fallback = '1';
+    lightboxImg.src = `images/thumbs/${p.file}?v=9`;
+    if (lightboxInfo && !lightboxInfo.querySelector('.offline-note')) lightboxInfo.insertAdjacentHTML('afterbegin',
+      '<p class="offline-note">Sin conexión: se muestra la miniatura. La foto ampliada cargará cuando vuelva internet.</p>');
+  });
+
+  // Vuelve la conexión y la imagen grande carga — la nota queda obsoleta
+  // (el load de la miniatura de respaldo también dispara load: se distingue por el src)
+  lightboxImg.addEventListener('load', () => {
+    if (lightboxImg.src.includes('/thumbs/')) return;
+    lightboxInfo?.querySelector('.offline-note')?.remove();
+  });
   const lightboxName = $('#lightboxName');
   const lightboxDesc = $('#lightboxDesc');
   const lightboxPrice = $('#lightboxPrice');
@@ -619,6 +589,7 @@
     if (!p) return;
     
     // Add cache-busting query string to force image refresh
+    lightboxImg.dataset.fallback = '';
     lightboxImg.src = `images/catalog/${p.file}?v=9`;
     lightboxImg.alt = `${p.name} artesanal`;
     lightboxName.textContent = p.name;
@@ -823,11 +794,7 @@
   /* ----- Testing / Node.js exports ----- */
   if (typeof module !== 'undefined' && module.exports) {
     module.exports = {
-      CART_TTL_MS,
-      calculateCartTotals,
       filterProductList,
-      loadCartData,
-      saveCartData,
       products,
       catMap,
       escapeHtml

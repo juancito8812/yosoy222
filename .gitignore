@@ -20,6 +20,15 @@ server.js
 __pycache__/
 *.py[cod]
 
+# Node
+node_modules/
+
+# Lighthouse
+*.report.html
+
 # Audit
 .readiness-audit/
+
+# Supabase CLI (estado local de login/proyecto)
+supabase/.temp/
 

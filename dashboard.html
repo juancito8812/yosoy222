@@ -11,8 +11,8 @@
     <style>html,body{background-color:#12100e!important;color:#f5ede4!important;color-scheme:dark!important;margin:0;padding:0;}</style>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/dashboard.css?v=19">
+    <link media="print" data-async-fonts href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/dashboard.css?v=34">
 </head>
 <body style="background-color: #12100e;">
 
@@ -388,13 +388,19 @@
 
             <form id="pwdForm" style="display: flex; flex-direction: column; gap: 0.85rem;">
                 <div class="auth-field">
+                    <label class="auth-label" for="currentPassword">Contraseña Actual</label>
+                    <input class="auth-input" type="password" id="currentPassword" required autocomplete="current-password" placeholder="Confirma tu contraseña vigente">
+                </div>
+                <div class="auth-field">
                     <label class="auth-label" for="newUsername">Usuario</label>
                     <input class="auth-input" type="text" id="newUsername" required placeholder="juancito">
                 </div>
                 <div class="auth-field">
                     <label class="auth-label" for="newPassword">Nueva Contraseña</label>
-                    <input class="auth-input" type="password" id="newPassword" required placeholder="Mínimo 8 caracteres">
+                    <input class="auth-input" type="password" id="newPassword" required autocomplete="new-password" placeholder="Mínimo 8 caracteres">
                 </div>
+
+                <div class="auth-error" id="pwdError" style="display: none;" role="alert"></div>
 
                 <div style="display: flex; justify-content: flex-end; gap: 0.5rem; margin-top: 0.75rem;">
                     <button type="button" class="btn-action" id="cancelPwdBtn">Cancelar</button>
@@ -404,6 +410,10 @@
         </div>
     </div>
 
-    <script src="js/dashboard.js?v=19"></script>
+    <script src="js/font-flip.js?v=34"></script>
+    <script src="js/config.js?v=34"></script>
+    <script src="js/shared.js?v=34"></script>
+    <script src="js/dashboard-view.js?v=34"></script>
+    <script src="js/dashboard.js?v=34"></script>
 </body>
 </html>

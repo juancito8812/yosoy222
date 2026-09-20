@@ -673,6 +673,12 @@ canvas {
   text-align: center;
 }
 
+.pwd-success {
+  background: rgba(74, 222, 128, 0.12);
+  border-color: rgba(74, 222, 128, 0.4);
+  color: #4ade80;
+}
+
 /* ============================================
    MODAL
    ============================================ */
@@ -726,4 +732,47 @@ canvas {
   .dash-header-inner { flex-direction: column; align-items: flex-start; }
   .dash-controls { width: 100%; justify-content: space-between; }
   .device-row { flex-direction: column; gap: 0.75rem; }
+}
+
+/* ============================================
+   TOASTS (confirmaciones no bloqueantes)
+   ============================================ */
+.toast-host {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  z-index: 10000;
+  max-width: min(360px, calc(100vw - 3rem));
+}
+
+.toast {
+  background: var(--bg-card-solid);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+  padding: 0.9rem 1rem;
+  color: var(--text);
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 0.25s var(--ease), transform 0.25s var(--ease);
+}
+
+.toast.toast-in {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.toast p {
+  margin: 0 0 0.75rem;
+  font-size: 0.85rem;
+  line-height: 1.45;
+}
+
+.toast-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
 }
