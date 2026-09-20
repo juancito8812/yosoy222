@@ -14,7 +14,7 @@
 - **Telemetría:** `js/analytics.js` — captura de visitas, detección de canales (Instagram, TikTok, Facebook, Google, WhatsApp, Directo), visualización de productos, carrito, búsquedas y clics a WhatsApp (compatible con GA4)
 - **Estilos:** `css/style.css` (~833 líneas) — paleta tierra crema (#faf6ef) con contraste WCAG AA (`--accent: #854f19`)
 - **Lógica:** `js/app.js` (~760 líneas) — catálogo inmutable, 44 productos, búsqueda con debounce, filtros, carrito seguro con TTL de 30 días, WhatsApp, lightbox, a11y focus trap
-- **PWA:** `manifest.json` (68 líneas) + `sw.js` (155 líneas, cache v16, Network-First para navegación, stale-while-revalidate para estáticos, query strings `?v=16`, `ignoreSearch: true`, auto-refresh en controllerchange, offline total)
+- **PWA:** `manifest.json` (68 líneas) + `sw.js` (168 líneas, cache v19, Network-First para navegación, stale-while-revalidate para estáticos, query strings `?v=N`, `ignoreSearch: true`, auto-refresh en controllerchange, offline total)
 - **Testing:** 13 pruebas unitarias y de seguridad nativas con `node:test` (`npm test`) en `tests/cart_and_filters.test.mjs`
 - **Imágenes:** `images/thumbs/` (63 archivos, máx 480px) + `images/catalog/` (60 archivos, máx 900px)
 - **Iconos:** `icons/` (11 archivos: 10 iconos PWA 72-512px + source_logo.jpg) — 8 any RGB plano + 2 maskable RGBA con fondo blanco sólido y Safe Zone del 80% (sin franjas negras en Android/iOS)
@@ -41,7 +41,7 @@
 ## Estado Actual
 
 - **Branch:** main
-- **Cache version:** yosoy222-v16
+- **Cache version:** yosoy222-v19
 - **Dashboard:** https://yosoy222.com/dashboard.html
 - **Productos:** 44 (25 velas, 5 collares, 6 pulseras, 7 franelas, 1 accesorio)
 - **Imágenes:** 63 thumbs, 60 catalog (incluye 4 decorativas y 15 variantes adicionales)
@@ -53,6 +53,6 @@
 
 ## Próximos Pasos / TODOs
 
-- [ ] Analytics: Integración Google Analytics 4 (GA4) opcional
+- [x] Analytics: Google Analytics 4 (GA4) integrado (G-Y9R0B5NH75) con eventos ecommerce (`view_item`, `add_to_cart`, `begin_checkout`, `generate_lead`, `search`) — completado 16 sep 2026
 - [ ] Search Console: Envío de sitemap.xml
 - [ ] UX: Selector de ordenamiento por precio y filtro por rango
