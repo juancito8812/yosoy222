@@ -29,3 +29,6 @@ node_modules/
 # Audit
 .readiness-audit/
 
+# Supabase CLI (estado local de login/proyecto)
+supabase/.temp/
+
