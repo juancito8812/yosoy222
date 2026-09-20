@@ -3,19 +3,20 @@
    Offline caching for PWA
    ============================================ */
 
-const CACHE_NAME = 'yosoy222-v22';
+const CACHE_NAME = 'yosoy222-v24';
 
 // Assets to precache on install (offline shell + LCP images)
 const PRECACHE_ASSETS = [
   '/',
   '/index.html',
   '/dashboard.html',
-  '/css/style.css?v=22',
-  '/css/dashboard.css?v=22',
-  '/js/config.js?v=22',
-  '/js/analytics.js?v=22',
-  '/js/app.js?v=22',
-  '/js/dashboard.js?v=22',
+  '/css/style.css?v=24',
+  '/css/dashboard.css?v=24',
+  '/js/config.js?v=24',
+  '/js/analytics.js?v=24',
+  '/js/app.js?v=24',
+  '/js/dashboard.js?v=24',
+  '/js/dashboard-view.js?v=24',
   '/manifest.json',
   '/icons/icon-192x192.png?v=15',
   '/icons/icon-512x512.png?v=15',
