@@ -110,6 +110,18 @@ def check_precache_assets(sw_version: int, sw_text: str, icon_versions: set, pro
             fail(f"sw.js: precache '{asset}' ?v={qm.group(1)} != CACHE_NAME v{sw_version}", problems)
 
 
+def check_docs(sw_version: int, problems: list) -> None:
+    """Los docs no deben anunciar una versión de caché MAYOR que la del SW.
+    Referencias a versiones menores son históricas (hitos del pasado) y son válidas."""
+    for doc in ("README.md", "AGENTS.md"):
+        path = REPO_ROOT / doc
+        if not path.exists():
+            continue
+        for n in {int(m.group(1)) for m in VERSION_RE.finditer(path.read_text(encoding="utf-8"))}:
+            if n > sw_version:
+                fail(f"{doc}: menciona Cache v{n} pero el SW está en v{sw_version} (¿bump incompleto?)", problems)
+
+
 def main() -> int:
     problems: list = []
     sw_text = read_sw_text(problems)
@@ -119,6 +131,7 @@ def main() -> int:
         check_manifest(sw_version, problems)
         check_script_tags(sw_version, problems)
         check_precache_assets(sw_version, sw_text, icon_versions, problems)
+        check_docs(sw_version, problems)
 
     print(f"Versión de caché del SW: yosoy222-v{sw_version}")
     if problems:
@@ -127,7 +140,7 @@ def main() -> int:
             print(" -", p)
         return 1
 
-    print("OK: versiones de caché coherentes (sw.js, manifest.json, script tags, precache)")
+    print("OK: versiones de caché coherentes (sw.js, manifest.json, script tags, precache, docs)")
     return 0
 
 
