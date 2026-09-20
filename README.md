@@ -62,10 +62,15 @@
   - Principio de mínimo privilegio en GitHub Workflows (`permissions: contents: read`).
   - Handler global defensivo ante errores no capturados (`window.onerror` y `unhandledrejection`).
 - **Accesibilidad WCAG AA:** Contraste de colores verificado (>6.2:1), navegación por teclado completa, trampas de foco en modal y drawer, atributos ARIA interactivos y respeto a `prefers-reduced-motion`.
-- **Rendimiento superior (Lighthouse 100/100):**
+- **Rendimiento superior (Lighthouse):**
   - Cero layout thrashing / forced reflows: Scroll spy implementado con `IntersectionObserver` y listeners pasivos.
   - Dimensiones explícitas (`width="480" height="480"`) y `aspect-ratio: 1/1` en todas las imágenes para CLS = 0.
   - Preconexión optimizada a Google Fonts.
+  - Historial PageSpeed: 99/100/100/100 (13 sep 2026). Re-auditoría 20 sep 2026: Accesibilidad 100 y SEO 100 se mantienen; Best Practices 92/100 por un script anti-bots que Cloudflare inyecta y la CSP estricta bloquea (decisión del dueño: aceptado, ver "Limitaciones conocidas"); Rendimiento no re-medible comparativamente ese día (cuota de PageSpeed API agotada; auditoría local sin throttle: 95/100, FCP/LCP 2.4s, TBT 0ms, CLS 0).
+
+### Limitaciones conocidas
+
+- **CSP estricta vs script anti-bots de Cloudflare (desde ~19 sep 2026):** Cloudflare inyecta en el HTML servido un script de bot-management (`__CF$cv$params`) cuyo contenido rota en cada respuesta y usa un iframe; la CSP (`script-src 'self'`, `default-src 'none'`) lo bloquea → 1 error de consola y Best Practices 92/100. Probado y descartado: hash CSP (el hash rota por request), `unsafe-inline` (anula la protección XSS). Estado: **aceptado por el dueño**; si se desea BP 100, desactivar Bot Fight Mode en el dashboard de Cloudflare.
 
 ### Categorías de productos (total: 44)
 

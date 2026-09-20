@@ -61,7 +61,8 @@ yosoy222/
 ├── css/dashboard.css              ← Estilos dedicados para el dashboard y gráficos
 ├── js/app.js                      ← Catálogo inmutable, filtros, carrito blindado, a11y focus trap
 ├── js/analytics.js                ← Motor de telemetría: GA4 + Supabase Cloud + localStorage
-├── js/dashboard.js                ← Motor del Dashboard: autenticación SHA-256, gráficos Bezier en Canvas
+├── js/dashboard.js                ← Motor del Dashboard: autenticación SHA-256, datos (Edge Function/local), estado
+├── js/dashboard-view.js           ← Vista del Dashboard (pura): gráficos Bezier en Canvas y render de KPIs/tablas
 ├── sw.js                          ← Service Worker (Cache v22, Network-First navegación)
 ├── supabase/
 │   ├── functions/dashboard-stats  ← Edge Function: login admin server-side + lectura con service_role (nunca expuesta)
@@ -101,6 +102,7 @@ yosoy222/
 5. **Mínimo Privilegio en Workflows (`SEC-04`):** Todo workflow en `.github/workflows/` debe declarar explícitamente `permissions: contents: read` salvo necesidad justificada.
 6. **Escape HTML Sistemático:** Toda inserción de datos dinámicos en el DOM debe utilizar `escapeHtml()` para prevenir ataques de Cross-Site Scripting (XSS).
 7. **Sin `eval()` ni inline scripts:** Cumplir con la Content Security Policy estricta (`script-src 'self'`).
+8. **Script anti-bots inyectado por Cloudflare (`__CF$cv$params`):** Cloudflare añade al HTML servido un script inline cuyo contenido **rota en cada respuesta** (verificado 20 sep 2026: hash distinto por request) → NO es compatible con CSP por hash, y su iframe choca con `default-src 'none'`. Genera 1 error de consola y BP Lighthouse 92/100. **Decisión del dueño: aceptarlo y documentarlo** — NO intentar "arreglarlo" con hashes (inviabile), `unsafe-inline` (destruye la protección XSS) ni cambiando la CSP.
 
 ---
 
