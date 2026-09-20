@@ -46,7 +46,7 @@ echo "HTTP $HTTP_CODE"
 cat /tmp/rls_response.json | head -c 500
 echo ""
 
-if [[ "$HTTP_CODE" == "200" ]]; then
+if [[ "$HTTP_CODE" == "200" || "$HTTP_CODE" == "201" ]]; then
   echo "== OK: SQL ejecutado. Verificando políticas resultantes =="
   curl -s -X POST "$API/v1/projects/$PROJECT_REF/database/query" \
     -H "Authorization: Bearer $SUPABASE_PAT" \
