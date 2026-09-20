@@ -29,17 +29,17 @@ def fail(msg: str, problems: list) -> None:
     problems.append(msg)
 
 
-def read_sw_cache_version(problems: list) -> int:
+def read_sw_text(problems: list) -> str | None:
+    """Lee sw.js una vez; None si no existe o no tiene versión de caché."""
     sw_path = REPO_ROOT / "sw.js"
     if not sw_path.exists():
         fail("no existe sw.js", problems)
-        return 0
+        return None
     text = sw_path.read_text(encoding="utf-8")
-    m = VERSION_RE.search(text)
-    if not m:
+    if not VERSION_RE.search(text):
         fail("sw.js: no encuentro CACHE_NAME con formato yosoy222-vN", problems)
-        return 0
-    return int(m.group(1))
+        return None
+    return text
 
 
 def check_manifest(sw_version: int, problems: list) -> None:
@@ -84,8 +84,7 @@ def get_manifest_icon_versions() -> set:
         return set()
 
 
-def check_precache_assets(sw_version: int, icon_versions: set, problems: list) -> None:
-    sw_text = (REPO_ROOT / "sw.js").read_text(encoding="utf-8")
+def check_precache_assets(sw_version: int, sw_text: str, icon_versions: set, problems: list) -> None:
     m = re.search(r"const PRECACHE_ASSETS = \[(.*?)\]", sw_text, re.S)
     if not m:
         fail("sw.js: no encuentro PRECACHE_ASSETS", problems)
@@ -113,12 +112,13 @@ def check_precache_assets(sw_version: int, icon_versions: set, problems: list) -
 
 def main() -> int:
     problems: list = []
-    sw_version = read_sw_cache_version(problems)
+    sw_text = read_sw_text(problems)
+    sw_version = int(VERSION_RE.search(sw_text).group(1)) if sw_text else 0
     if sw_version:
         icon_versions = get_manifest_icon_versions()
         check_manifest(sw_version, problems)
         check_script_tags(sw_version, problems)
-        check_precache_assets(sw_version, icon_versions, problems)
+        check_precache_assets(sw_version, sw_text, icon_versions, problems)
 
     print(f"Versión de caché del SW: yosoy222-v{sw_version}")
     if problems:

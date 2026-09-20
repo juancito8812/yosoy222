@@ -22,6 +22,7 @@
 // ============================================================
 
 import { createHash, createHmac, timingSafeEqual } from "node:crypto";
+import { Buffer } from "node:buffer";
 
 const CORS = (() => {
   const allowed = (Deno.env.get("ALLOWED_ORIGINS") ?? "")

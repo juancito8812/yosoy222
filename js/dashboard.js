@@ -105,6 +105,64 @@
     sessionStorage.removeItem('yosoy222_dash_session');
   }
 
+  // Referencias del formulario de auth (lazy: los helpers se usan solo en el submit)
+  const authErrorEl = document.getElementById('authError');
+  const authUserEl = document.getElementById('authUser');
+  const authPasswordEl = document.getElementById('authPassword');
+
+  // --- UI SWITCHER ---
+  function showAuthError(msg) {
+    authErrorEl.textContent = msg;
+    authErrorEl.style.display = 'block';
+  }
+
+  function acceptLogin(user, token = null) {
+    clearFailedAttempts();
+    createSession();
+    cloudAuth = token ? { user, token } : null;
+    authErrorEl.style.display = 'none';
+    authPasswordEl.value = '';
+    setDashboardVisible(true);
+  }
+
+  function rejectLogin() {
+    const failed = recordFailedAttempt();
+    const remaining = MAX_ATTEMPTS - failed.attempts;
+    showAuthError(remaining > 0
+      ? `Credenciales incorrectas. Te quedan ${remaining} intento(s).`
+      : `Demasiados intentos fallidos. Bloqueado por ${LOCKOUT_MINUTES} minutos.`);
+  }
+
+  // Login server-side vía Edge Function. Devuelve true si resolvió el login
+  // (éxito o error definitivo de la función); false si hay que caer al fallback local.
+  async function edgeLogin(user, pass) {
+    try {
+      const res = await fetch(STATS_FN, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'login', user, pass })
+      });
+      const payload = await res.json().catch(() => ({}));
+      if (res.ok && payload.ok && payload.token) {
+        acceptLogin(user.trim().toLowerCase(), payload.token);
+        return true;
+      }
+      if (res.status === 429) {
+        showAuthError(`Demasiados intentos fallidos. Bloqueado por ${payload.minutes || LOCKOUT_MINUTES} minuto(s).`);
+        return true;
+      }
+      if (res.status === 401) {
+        rejectLogin();
+        return true;
+      }
+      // Otro error (404 si aún no está desplegada, 5xx, CORS…): fallback local.
+      console.warn('Edge Function no disponible (' + res.status + '); usando autenticación local degradada.');
+    } catch (err) {
+      console.warn('Edge Function inaccesible; usando autenticación local degradada.', err);
+    }
+    return false;
+  }
+
   // --- UI SWITCHER ---
   function setDashboardVisible(authenticated) {
     const overlay = document.getElementById('authOverlay');
@@ -119,10 +177,8 @@
     } else {
       if (overlay) overlay.style.display = 'flex';
       if (content) content.style.display = 'none';
-      const err = document.getElementById('authError');
-      if (err) err.style.display = 'none';
-      const userInput = document.getElementById('authUser');
-      if (userInput) userInput.focus();
+      if (authErrorEl) authErrorEl.style.display = 'none';
+      if (authUserEl) authUserEl.focus();
     }
   }
 
@@ -757,83 +813,27 @@
 
     // Login Form
     const authForm = document.getElementById('authForm');
-    const authError = document.getElementById('authError');
 
     if (authForm) {
       authForm.addEventListener('submit', async (e) => {
         e.preventDefault();
-        const user = document.getElementById('authUser').value;
-        const pass = document.getElementById('authPassword').value;
+        const user = authUserEl.value;
+        const pass = authPasswordEl.value;
 
         const lock = getLockoutState();
         if (lock.lockUntil && Date.now() < lock.lockUntil) {
-          const remainingMins = Math.ceil((lock.lockUntil - Date.now()) / 60000);
-          authError.textContent = `Demasiados intentos fallidos. Bloqueado por ${remainingMins} minuto(s).`;
-          authError.style.display = 'block';
+          showAuthError(`Demasiados intentos fallidos. Bloqueado por ${Math.ceil((lock.lockUntil - Date.now()) / 60000)} minuto(s).`);
           return;
         }
 
-        // Autenticación server-side vía Edge Function (preferida):
-        // valida contra DASH_AUTH_HASH y devuelve token HMAC para leer stats.
-        if (STATS_FN) {
-          try {
-            const res = await fetch(STATS_FN, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ action: 'login', user, pass })
-            });
-            const payload = await res.json().catch(() => ({}));
-            if (res.ok && payload.ok && payload.token) {
-              clearFailedAttempts();
-              createSession();
-              cloudAuth = { user: user.trim().toLowerCase(), token: payload.token };
-              authError.style.display = 'none';
-              document.getElementById('authPassword').value = '';
-              setDashboardVisible(true);
-              return;
-            }
-            if (res.status === 429) {
-              authError.textContent = `Demasiados intentos fallidos. Bloqueado por ${payload.minutes || LOCKOUT_MINUTES} minuto(s).`;
-              authError.style.display = 'block';
-              return;
-            }
-            if (res.status === 401) {
-              const failed = recordFailedAttempt();
-              const remaining = MAX_ATTEMPTS - failed.attempts;
-              authError.textContent = remaining > 0
-                ? `Credenciales incorrectas. Te quedan ${remaining} intento(s).`
-                : `Demasiados intentos fallidos. Bloqueado por ${LOCKOUT_MINUTES} minutos.`;
-              authError.style.display = 'block';
-              return;
-            }
-            // Otro error de la función (404 si aún no está desplegada, 5xx, CORS…):
-            // continuar al fallback local con aviso.
-            console.warn('Edge Function no disponible (' + res.status + '); usando autenticación local degradada.');
-          } catch (err) {
-            console.warn('Edge Function inaccesible; usando autenticación local degradada.', err);
-          }
-        }
+        // Preferente: Edge Function (valida server-side). Si no está disponible, fallback local.
+        if (await edgeLogin(user, pass)) return;
 
         // Fallback local (modo degradado, misma lógica de siempre)
-        const inputHash = await computeHash(user, pass);
-        const targetHash = getActiveHash();
-
-        if (inputHash === targetHash) {
-          clearFailedAttempts();
-          createSession();
-          cloudAuth = null;
-          authError.style.display = 'none';
-          document.getElementById('authPassword').value = '';
-          setDashboardVisible(true);
+        if ((await computeHash(user, pass)) === getActiveHash()) {
+          acceptLogin(user.trim().toLowerCase());
         } else {
-          const failed = recordFailedAttempt();
-          const remaining = MAX_ATTEMPTS - failed.attempts;
-          if (remaining > 0) {
-            authError.textContent = `Credenciales incorrectas. Te quedan ${remaining} intento(s).`;
-          } else {
-            authError.textContent = `Demasiados intentos fallidos. Bloqueado por ${LOCKOUT_MINUTES} minutos.`;
-          }
-          authError.style.display = 'block';
+          rejectLogin();
         }
       });
     }
