@@ -62,7 +62,7 @@ yosoy222/
 ├── js/app.js                      ← Catálogo inmutable, filtros, carrito blindado, a11y focus trap
 ├── js/analytics.js                ← Motor de telemetría: GA4 + Supabase Cloud + localStorage
 ├── js/dashboard.js                ← Motor del Dashboard: autenticación SHA-256, gráficos Bezier en Canvas
-├── sw.js                          ← Service Worker (Cache v21, Network-First navegación)
+├── sw.js                          ← Service Worker (Cache v22, Network-First navegación)
 ├── supabase/
 │   ├── functions/dashboard-stats  ← Edge Function: login admin server-side + lectura con service_role (nunca expuesta)
 │   └── README.md                  ← Despliegue, secrets, smoke test y rotación

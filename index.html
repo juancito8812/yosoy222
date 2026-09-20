@@ -46,12 +46,16 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@400;500;600;700&display=swap">
-    <link rel="stylesheet" href="css/style.css?v=19">
+    <!-- Preload del hero (LCP) y de la primera fuente: arranca la descarga antes de parsear CSS -->
+    <link rel="preload" as="image" href="images/thumbs/hero-rosas-3.jpg" fetchpriority="high">
+    <link rel="preload" as="font" type="font/woff2" href="https://fonts.gstatic.com/s/playfairdisplay/v40/nuFRD-vYSZviVYUb_rj3ij__anPXDTnCjmHKM4nYO7KN_qiTXtXA-W2r.woff2" crossorigin>
+    <link rel="stylesheet" href="css/style.css?v=22">
 
-    <!-- Google tag (gtag.js) & Telemetry -->
+    <!-- Telemetry local (sync, es pequeño y configura gtag) -->
+    <script src="js/config.js?v=22"></script>
+    <script src="js/analytics.js?v=22"></script>
+    <!-- Google tag (gtag.js): async y al final del head para no competir con LCP -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-Y9R0B5NH75"></script>
-    <script src="js/config.js?v=21"></script>
-    <script src="js/analytics.js?v=21"></script>
 
     <!-- Schema.org Datos Estructurados -->
     <script type="application/ld+json">
@@ -948,6 +952,6 @@
         </div>
     </div>
 
-    <script src="js/app.js?v=21" defer></script>
+    <script src="js/app.js?v=22" defer></script>
 </body>
 </html>
