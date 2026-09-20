@@ -9,8 +9,9 @@
   'use strict';
 
   const AUTH_SALT = 'yosoy222_auth_salt_2026';
-  // Precomputed salted SHA-256 hash for default administrator authentication
-  const DEFAULT_HASH = '1549ba80a1e67b2423e6cdb96dbf8fbd9c98e3b166d996c1f7201a1006b3928a';
+  // Sin hash por defecto en el código: el hash válido solo existe en
+  // localStorage, persistido tras un login exitoso vía Edge Function
+  // (verificación server-side). El fallback local es fail-closed.
   const MAX_ATTEMPTS = 5;
   const LOCKOUT_MINUTES = 15;
   const SESSION_TTL_HOURS = 2;
@@ -46,7 +47,9 @@
   }
 
   function getActiveHash() {
-    return localStorage.getItem('yosoy222_auth_hash') || DEFAULT_HASH;
+    // Sin fallback: si no hay hash persistido (ningún login Edge previo en
+    // este navegador), la autenticación local no puede aceptar a nadie.
+    return localStorage.getItem('yosoy222_auth_hash');
   }
 
   function getActiveUser() {
