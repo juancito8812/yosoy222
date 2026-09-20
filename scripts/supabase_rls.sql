@@ -104,3 +104,14 @@ create policy "anon_insert_events"
 --   datos locales hasta implementar lectura autenticada.
 --   Opción B (correcta): Supabase Edge Function con service_role
 --   que valide una credencial de admin y sirva los agregados.
+-- ============================================================
+-- RESUELTO (20 sep 2026) — cierre del ciclo: tabla 100% service_role-only
+--   Tras el despliegue de cache v31 (ningún cliente usa ya la anon key),
+--   se ejecutó:  DROP POLICY IF EXISTS anon_insert_events ON public.yosoy222_events;
+--   Sondeos de verificación:
+--     1) pre-DROP:  anon INSERT → 201 (línea de fuego probada) + fila borrada
+--     2) post-DROP: anon INSERT → 401 (RLS bloquea; pg_policies = 0)
+--     3) post-DROP: anon SELECT → 200 con cuerpo [] (sin lectura de filas)
+--     4) Edge track → 200 y fila verificada en BD (service_role intacto)
+--   Estado final: pg_policies = 0, relrowsecurity = true.
+-- ============================================================
