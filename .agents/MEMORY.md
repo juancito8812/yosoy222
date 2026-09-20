@@ -14,12 +14,14 @@
 - **Telemetría:** `js/analytics.js` — captura de visitas, detección de canales (Instagram, TikTok, Facebook, Google, WhatsApp, Directo), visualización de productos, carrito, búsquedas y clics a WhatsApp (compatible con GA4)
 - **Estilos:** `css/style.css` (~833 líneas) — paleta tierra crema (#faf6ef) con contraste WCAG AA (`--accent: #854f19`)
 - **Lógica:** `js/app.js` (~760 líneas) — catálogo inmutable, 44 productos, búsqueda con debounce, filtros, carrito seguro con TTL de 30 días, WhatsApp, lightbox, a11y focus trap
-- **PWA:** `manifest.json` (68 líneas) + `sw.js` (168 líneas, cache v19, Network-First para navegación, stale-while-revalidate para estáticos, query strings `?v=N`, `ignoreSearch: true`, auto-refresh en controllerchange, offline total)
+- **PWA:** `manifest.json` (68 líneas) + `sw.js` (169 líneas, cache v20, Network-First para navegación, stale-while-revalidate para estáticos, query strings `?v=N`, `ignoreSearch: true`, auto-refresh en controllerchange, offline total)
 - **Testing:** 13 pruebas unitarias y de seguridad nativas con `node:test` (`npm test`) en `tests/cart_and_filters.test.mjs`
 - **Imágenes:** `images/thumbs/` (63 archivos, máx 480px) + `images/catalog/` (60 archivos, máx 900px)
 - **Iconos:** `icons/` (11 archivos: 10 iconos PWA 72-512px + source_logo.jpg) — 8 any RGB plano + 2 maskable RGBA con fondo blanco sólido y Safe Zone del 80% (sin franjas negras en Android/iOS)
 - **Watchdog:** Cron job ping cada 2m con alertas automáticas de caída a Telegram (Topic 393)
-- **Scripts:** `scripts/` (prerender_catalog.py, generate_icons.py, verify_icons.py, process_images.py, process_images_v2.py, IMAGE_GUIDE.md)
+- **Config compartida:** `js/config.js` — única fuente de claves de terceros (Supabase URL/anon + GA4), consumida por `js/analytics.js` y `js/dashboard.js`
+- **Lectura global del dashboard:** Edge Function `supabase/functions/dashboard-stats` (login server-side + token HMAC 2h + service_role nunca expuesta). El cliente ya NO hace SELECT directo con la clave anon; sin función desplegada, el panel cae a datos locales. Despliegue: `supabase/README.md`
+- **Scripts:** `scripts/` (prerender_catalog.py, generate_icons.py, verify_icons.py, verify_versions.py, process_images.py, process_images_v2.py, IMAGE_GUIDE.md)
 
 ## Decisiones Clave & Hitos
 
@@ -41,7 +43,7 @@
 ## Estado Actual
 
 - **Branch:** main
-- **Cache version:** yosoy222-v19
+- **Cache version:** yosoy222-v21
 - **Dashboard:** https://yosoy222.com/dashboard.html
 - **Productos:** 44 (25 velas, 5 collares, 6 pulseras, 7 franelas, 1 accesorio)
 - **Imágenes:** 63 thumbs, 60 catalog (incluye 4 decorativas y 15 variantes adicionales)
@@ -50,6 +52,12 @@
 - **Dominio:** yosoy222.com (Cloudflare proxy activado)
 - **Deploy:** GitHub Pages automático (~2 min) + purge Cloudflare automático (~30 seg)
 - **PageSpeed:** 99 Rendimiento, 100 Accesibilidad, 100 Prácticas recomendadas, 100 SEO
+
+## Hallazgos de Seguridad Abiertos
+
+- **[2026-09-20] Edge Function dashboard-stats creada:** autenticación server-side del admin (SHA-256 salted contra secret `DASH_AUTH_HASH`, rate limit 5/15min por IP, `timingSafeEqual`) y lectura de eventos con `service_role` solo dentro de la función; el navegador recibe un token HMAC efímero (2h). `js/dashboard.js` migrado: login intenta la función y cae a auth local degradada si no está desplegada; `fetchCloudData` SOLO lee vía función. Falta: desplegarla (ver `supabase/README.md`), aplicar `scripts/supabase_rls.sql` y borrar `SUPABASE_ANON` de `js/config.js` cuando ya no se necesite.
+- **[2026-09-20] Exposición RLS en Supabase (CRÍTICO, SIN RESOLVER):** la clave anon puede hacer SELECT de toda la tabla `yosoy222_events` (re-sondeo tras el primer intento de fix: 113 filas + count exacto) e INSERT (HTTP 201; filas de prueba de auditoría id=112 y id=114 quedaron en la tabla — borrarlas desde el Table Editor). UPDATE y DELETE sí están bloqueados (RLS activado, sin política para eso). El fix `scripts/supabase_rls.sql` (insert-only para anon) NO llegó a aplicarse efectivamente; el SQL incluye las causas probables (proyecto equivocado en el SQL Editor / transacción revertida). Criterio de cierre: sondeo de SELECT vía anon debe devolver `[]`. Tras resolverse, el dashboard cae a datos locales hasta implementar lectura autenticada (Edge Function con service_role).
+- **[2026-09-20] Auth del dashboard es client-side:** la sesión se puede falsificar desde sessionStorage (verificado en local); rate-limiting en localStorage es borrable. Hash por defecto + salt públicos en el repo = crackeo offline posible. Cambiar credenciales desde el panel (nota: el cambio de hash es por dispositivo).
 
 ## Próximos Pasos / TODOs
 

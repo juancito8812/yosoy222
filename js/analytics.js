@@ -13,12 +13,11 @@
   const MAX_EVENTS = 2000;
   const RETENTION_DAYS = 60;
 
-  // Google Analytics 4 Measurement ID
-  const GA_ID = 'G-Y9R0B5NH75';
+  const SUPABASE_URL = (window.YoSoyConfig && window.YoSoyConfig.SUPABASE_URL) || '';
+  const SUPABASE_ANON = (window.YoSoyConfig && window.YoSoyConfig.SUPABASE_ANON) || '';
 
-  // Supabase Cloud Ingestion
-  const SUPABASE_URL = 'https://gkekolsttfbiegyhvejy.supabase.co';
-  const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdrZWtvbHN0dGZiaWVneWh2ZWp5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk1NzY5NzIsImV4cCI6MjEwNTE1Mjk3Mn0.bzRsjLbjsUMarF3fyilr0koIz9ggt3mBdAYjJESDGXU';
+  // Google Analytics 4 Measurement ID
+  const GA_ID = (window.YoSoyConfig && window.YoSoyConfig.GA_ID) || '';
 
   // Initialize GA4 without inline scripts (100% CSP compliant)
   if (typeof window !== 'undefined' && GA_ID) {

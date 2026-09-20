@@ -15,9 +15,13 @@
   const LOCKOUT_MINUTES = 15;
   const SESSION_TTL_HOURS = 2;
 
-  // Supabase Cloud Configuration
-  const SUPABASE_URL = 'https://gkekolsttfbiegyhvejy.supabase.co';
-  const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdrZWtvbHN0dGZiaWVneWh2ZWp5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk1NzY5NzIsImV4cCI6MjEwNTE1Mjk3Mn0.bzRsjLbjsUMarF3fyilr0koIz9ggt3mBdAYjJESDGXU';
+  // Supabase Cloud Configuration (única fuente: js/config.js)
+  const SUPABASE_URL = (window.YoSoyConfig && window.YoSoyConfig.SUPABASE_URL) || '';
+  // Edge Function de lectura autenticada (service_role vive server-side)
+  const STATS_FN = `${SUPABASE_URL}/functions/v1/dashboard-stats`;
+
+  // Credenciales actuales del panel (usuario + token de la Edge Function)
+  let cloudAuth = null;
 
   let currentDays = 30;
   let cachedCloudData = null;
@@ -127,18 +131,30 @@
     if (!force && cachedCloudData && (Date.now() - lastCloudFetch < 15000)) {
       return cachedCloudData;
     }
-    if (!SUPABASE_URL || !SUPABASE_ANON) return null;
+    // Lectura global SOLO vía Edge Function autenticada (service_role server-side).
+    // Sin sesión válida en la nube → cae a datos locales (getLocalRawData).
+    if (!STATS_FN || !cloudAuth || !cloudAuth.token) return null;
 
     try {
-      const res = await fetch(`${SUPABASE_URL}/rest/v1/yosoy222_events?select=*&order=created_at.desc&limit=2500`, {
-        headers: {
-          'apikey': SUPABASE_ANON,
-          'Authorization': `Bearer ${SUPABASE_ANON}`
-        }
+      const res = await fetch(STATS_FN, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'stats',
+          user: cloudAuth.user,
+          token: cloudAuth.token,
+          limit: 2500
+        })
       });
+      if (res.status === 401 || res.status === 429) {
+        // Token expirado/inválido o rate limit: cerrar sesión en la nube
+        cloudAuth = null;
+        return null;
+      }
       if (res.ok) {
-        const rows = await res.json();
-        if (Array.isArray(rows) && rows.length > 0) {
+        const payload = await res.json();
+        const rows = Array.isArray(payload.rows) ? payload.rows : [];
+        if (rows.length > 0) {
           const events = rows.map(r => ({
             id: r.id,
             type: r.event_type,
@@ -757,12 +773,55 @@
           return;
         }
 
+        // Autenticación server-side vía Edge Function (preferida):
+        // valida contra DASH_AUTH_HASH y devuelve token HMAC para leer stats.
+        if (STATS_FN) {
+          try {
+            const res = await fetch(STATS_FN, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ action: 'login', user, pass })
+            });
+            const payload = await res.json().catch(() => ({}));
+            if (res.ok && payload.ok && payload.token) {
+              clearFailedAttempts();
+              createSession();
+              cloudAuth = { user: user.trim().toLowerCase(), token: payload.token };
+              authError.style.display = 'none';
+              document.getElementById('authPassword').value = '';
+              setDashboardVisible(true);
+              return;
+            }
+            if (res.status === 429) {
+              authError.textContent = `Demasiados intentos fallidos. Bloqueado por ${payload.minutes || LOCKOUT_MINUTES} minuto(s).`;
+              authError.style.display = 'block';
+              return;
+            }
+            if (res.status === 401) {
+              const failed = recordFailedAttempt();
+              const remaining = MAX_ATTEMPTS - failed.attempts;
+              authError.textContent = remaining > 0
+                ? `Credenciales incorrectas. Te quedan ${remaining} intento(s).`
+                : `Demasiados intentos fallidos. Bloqueado por ${LOCKOUT_MINUTES} minutos.`;
+              authError.style.display = 'block';
+              return;
+            }
+            // Otro error de la función (404 si aún no está desplegada, 5xx, CORS…):
+            // continuar al fallback local con aviso.
+            console.warn('Edge Function no disponible (' + res.status + '); usando autenticación local degradada.');
+          } catch (err) {
+            console.warn('Edge Function inaccesible; usando autenticación local degradada.', err);
+          }
+        }
+
+        // Fallback local (modo degradado, misma lógica de siempre)
         const inputHash = await computeHash(user, pass);
         const targetHash = getActiveHash();
 
         if (inputHash === targetHash) {
           clearFailedAttempts();
           createSession();
+          cloudAuth = null;
           authError.style.display = 'none';
           document.getElementById('authPassword').value = '';
           setDashboardVisible(true);
@@ -784,6 +843,7 @@
     if (logoutBtn) {
       logoutBtn.addEventListener('click', () => {
         destroySession();
+        cloudAuth = null;
         setDashboardVisible(false);
       });
     }
