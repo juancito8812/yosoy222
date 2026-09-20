@@ -8,15 +8,12 @@
 (function () {
   'use strict';
 
-  /* ----- Security: HTML escaping (idéntica a js/app.js) -----
+  /* ----- Security: HTML escaping (js/shared.js, única copia) -----
      Los eventos pueden contener datos inyectados por terceros
      (especialmente el histórico anterior al RLS insert-only). */
-  const escapeHtml = (str) => {
-    if (typeof str === 'number') return String(str);
-    if (typeof str !== 'string') return '';
-    const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
-    return str.replace(/[&<>"']/g, (c) => map[c]);
-  };
+  const YoSoySharedModule = (typeof window !== 'undefined' && window.YoSoyShared) || null;
+  if (!YoSoySharedModule) throw new Error('YoSoy222: js/shared.js debe cargarse antes que dashboard-view.js');
+  const { escapeHtml } = YoSoySharedModule;
 
   // Helper: Country Flags
   function getFlagEmoji(country) {

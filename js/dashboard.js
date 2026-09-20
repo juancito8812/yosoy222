@@ -49,6 +49,15 @@
     return localStorage.getItem('yosoy222_auth_hash') || DEFAULT_HASH;
   }
 
+  function getActiveUser() {
+    return localStorage.getItem('yosoy222_auth_user');
+  }
+
+  function setActiveCredentials(user, hash) {
+    localStorage.setItem('yosoy222_auth_user', user);
+    localStorage.setItem('yosoy222_auth_hash', hash);
+  }
+
   // --- BRUTE FORCE PROTECTION ---
   function getLockoutState() {
     try {
@@ -87,10 +96,19 @@
     }
   }
 
-  function createSession() {
+  function createSession(user = null) {
     const expires = Date.now() + (SESSION_TTL_HOURS * 60 * 60 * 1000);
     const token = Array.from(crypto.getRandomValues(new Uint8Array(24))).map(b => b.toString(16).padStart(2, '0')).join('');
-    sessionStorage.setItem('yosoy222_dash_session', JSON.stringify({ token, expires }));
+    sessionStorage.setItem('yosoy222_dash_session', JSON.stringify({ token, expires, user }));
+  }
+
+  function getSessionUser() {
+    try {
+      const sess = JSON.parse(sessionStorage.getItem('yosoy222_dash_session') || 'null');
+      return (sess && typeof sess.user === 'string') ? sess.user : null;
+    } catch {
+      return null;
+    }
   }
 
   function destroySession() {
@@ -110,7 +128,7 @@
 
   function acceptLogin(user, token = null) {
     clearFailedAttempts();
-    createSession();
+    createSession(user);
     cloudAuth = token ? { user, token } : null;
     authErrorEl.style.display = 'none';
     authPasswordEl.value = '';
@@ -136,6 +154,11 @@
       });
       const payload = await res.json().catch(() => ({}));
       if (res.ok && payload.ok && payload.token) {
+        // Persistir user+hash de las credenciales usadas: la verificación del modal
+        // de cambio de credenciales necesita una referencia local aunque el login haya sido vía Edge.
+        try {
+          setActiveCredentials(user.trim().toLowerCase(), await computeHash(user, pass));
+        } catch { /* sin crypto.subtle el modal pedirá re-login */ }
         acceptLogin(user.trim().toLowerCase(), payload.token);
         return true;
       }
@@ -153,6 +176,54 @@
       console.warn('Edge Function inaccesible; usando autenticación local degradada.', err);
     }
     return false;
+  }
+
+  // --- TOASTS (feedback no bloqueante; sustituye a confirm() nativo) ---
+  let toastHost = null;
+
+  function ensureToastHost() {
+    if (!toastHost) {
+      toastHost = document.createElement('div');
+      toastHost.className = 'toast-host';
+      document.body.appendChild(toastHost);
+    }
+    return toastHost;
+  }
+
+  // Devuelve Promise<boolean>; auto-descartar = cancelar. textContent siempre (XSS-safe).
+  function showConfirm(message, timeout = 10000) {
+    return new Promise((resolve) => {
+      const el = document.createElement('div');
+      el.className = 'toast';
+      el.setAttribute('role', 'alertdialog');
+
+      const text = document.createElement('p');
+      text.textContent = message;
+      const actions = document.createElement('div');
+      actions.className = 'toast-actions';
+      const yes = document.createElement('button');
+      yes.type = 'button';
+      yes.className = 'btn-action btn-action-primary';
+      yes.textContent = 'Confirmar';
+      const no = document.createElement('button');
+      no.type = 'button';
+      no.className = 'btn-action';
+      no.textContent = 'Cancelar';
+      actions.append(no, yes);
+      el.append(text, actions);
+      ensureToastHost().appendChild(el);
+      requestAnimationFrame(() => el.classList.add('toast-in'));
+
+      const done = (val) => {
+        yes.disabled = no.disabled = true;
+        el.classList.remove('toast-in');
+        setTimeout(() => el.remove(), 300);
+        resolve(val);
+      };
+      yes.addEventListener('click', () => done(true));
+      no.addEventListener('click', () => done(false));
+      setTimeout(() => done(false), timeout);
+    });
   }
 
   // --- UI SWITCHER ---
@@ -499,6 +570,7 @@
     }
 
     // Password Modal
+    const pwdErrorEl = document.getElementById('pwdError');
     const openPwdBtn = document.getElementById('openPwdBtn');
     const pwdModal = document.getElementById('pwdModal');
     const cancelPwdBtn = document.getElementById('cancelPwdBtn');
@@ -506,6 +578,8 @@
 
     if (openPwdBtn && pwdModal) {
       openPwdBtn.addEventListener('click', () => {
+        pwdErrorEl.classList.remove('pwd-success');
+        pwdErrorEl.style.display = 'none';
         pwdModal.style.display = 'flex';
       });
     }
@@ -516,21 +590,40 @@
       });
     }
 
+    function showPwdError(msg) {
+      pwdErrorEl.textContent = msg;
+      pwdErrorEl.style.display = 'block';
+    }
+
+    function showPwdSuccess(msg) {
+      pwdErrorEl.textContent = msg;
+      pwdErrorEl.style.display = 'block';
+      pwdErrorEl.classList.add('pwd-success');
+    }
+
     if (pwdForm) {
       pwdForm.addEventListener('submit', async (e) => {
         e.preventDefault();
+        const curP = document.getElementById('currentPassword').value;
         const newU = document.getElementById('newUsername').value;
         const newP = document.getElementById('newPassword').value;
 
-        if (newP.length < 6) {
-          alert('La contraseña debe tener al menos 6 caracteres.');
+        if (newP.length < 8) {
+          showPwdError('La nueva contraseña debe tener al menos 8 caracteres.');
           return;
         }
 
-        const newHash = await computeHash(newU, newP);
-        localStorage.setItem('yosoy222_auth_hash', newHash);
-        alert('Credenciales actualizadas exitosamente.');
-        pwdModal.style.display = 'none';
+        // Verificación de la contraseña vigente: sin ella nadie puede sobrescribir las credenciales.
+        const sessUser = getSessionUser();
+        const checkUser = (sessUser || getActiveUser() || '').trim().toLowerCase();
+        if (!checkUser || (await computeHash(checkUser, curP)) !== getActiveHash()) {
+          showPwdError('La contraseña actual no es correcta.');
+          return;
+        }
+
+        setActiveCredentials(newU.trim().toLowerCase(), await computeHash(newU, newP));
+        showPwdSuccess('Credenciales actualizadas exitosamente.');
+        setTimeout(() => { pwdModal.style.display = 'none'; }, 1200);
       });
     }
 
@@ -551,8 +644,8 @@
 
     const demoBtn = document.getElementById('demoBtn');
     if (demoBtn) {
-      demoBtn.addEventListener('click', () => {
-        if (confirm('¿Cargar datos de prueba para visualizar todos los gráficos del Dashboard?')) {
+      demoBtn.addEventListener('click', async () => {
+        if (await showConfirm('¿Cargar datos de prueba para visualizar todos los gráficos del Dashboard?')) {
           seedDemoData();
         }
       });
@@ -560,8 +653,8 @@
 
     const clearBtn = document.getElementById('clearBtn');
     if (clearBtn) {
-      clearBtn.addEventListener('click', () => {
-        if (confirm('¿Eliminar todos los datos locales de analítica?')) {
+      clearBtn.addEventListener('click', async () => {
+        if (await showConfirm('¿Eliminar todos los datos locales de analítica?')) {
           localStorage.removeItem('yosoy222_analytics');
           cachedCloudData = null;
           renderDashboard(false);

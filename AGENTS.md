@@ -59,11 +59,13 @@ yosoy222/
 ├── dashboard.html                 ← Panel de control privado con autenticación SHA-256
 ├── css/style.css                  ← Sistema de diseño, tokens en :root (contraste WCAG AA)
 ├── css/dashboard.css              ← Estilos dedicados para el dashboard y gráficos
-├── js/app.js                      ← Catálogo inmutable, filtros, carrito blindado, a11y focus trap
+├── js/shared.js                   ← Utilidades compartidas (window.YoSoyShared): escapeHtml canónica
+├── js/app.js                      ← Catálogo inmutable, filtros, carrito (UI/estado), a11y focus trap
+├── js/cart.js                     ← Lógica pura del carrito (window.YoSoyCart): totales, validación, TTL 30 días
 ├── js/analytics.js                ← Motor de telemetría: GA4 + Supabase Cloud + localStorage
 ├── js/dashboard.js                ← Motor del Dashboard: autenticación SHA-256, datos (Edge Function/local), estado
 ├── js/dashboard-view.js           ← Vista del Dashboard (pura): gráficos Bezier en Canvas y render de KPIs/tablas
-├── sw.js                          ← Service Worker (Cache v22, Network-First navegación)
+├── sw.js                          ← Service Worker (Cache v28, Network-First navegación)
 ├── supabase/
 │   ├── functions/dashboard-stats  ← Edge Function: login admin server-side + lectura con service_role (nunca expuesta)
 │   └── README.md                  ← Despliegue, secrets, smoke test y rotación

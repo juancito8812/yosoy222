@@ -1,16 +1,20 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import appModule from '../js/app.js';
+import cartModule from '../js/cart.js';
 
 const {
-  calculateCartTotals,
   filterProductList,
-  loadCartData,
-  saveCartData,
-  CART_TTL_MS,
   products,
   catMap
 } = appModule;
+
+const {
+  calculateCartTotals,
+  loadCartData,
+  saveCartData,
+  CART_TTL_MS
+} = cartModule;
 
 test('CART: calculateCartTotals correctly sums price and quantity', () => {
   const items = [
