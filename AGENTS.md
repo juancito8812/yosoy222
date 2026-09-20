@@ -65,7 +65,7 @@ yosoy222/
 ├── js/analytics.js                ← Motor de telemetría: GA4 (diferido) + Supabase Cloud + localStorage
 ├── js/dashboard.js                ← Motor del Dashboard: autenticación SHA-256 fail-closed (hash solo en localStorage, nace de login Edge), datos (Edge Function/local), estado
 ├── js/dashboard-view.js           ← Vista del Dashboard (pura): gráficos Bezier en Canvas y render de KPIs/tablas
-├── sw.js                          ← Service Worker (Cache v31, Network-First navegación)
+├── sw.js                          ← Service Worker (Cache v32, Network-First navegación)
 ├── supabase/
 │   ├── functions/dashboard-stats  ← Edge Function: login admin server-side + lectura con service_role (nunca expuesta)
 │   └── README.md                  ← Despliegue, secrets, smoke test y rotación
