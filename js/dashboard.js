@@ -604,24 +604,23 @@
     if (pwdForm) {
       pwdForm.addEventListener('submit', async (e) => {
         e.preventDefault();
-        const curP = document.getElementById('currentPassword').value;
-        const newU = document.getElementById('newUsername').value;
-        const newP = document.getElementById('newPassword').value;
+        const currentPassword = document.getElementById('currentPassword').value;
+        const newUsername = document.getElementById('newUsername').value;
+        const newPassword = document.getElementById('newPassword').value;
 
-        if (newP.length < 8) {
+        if (newPassword.length < 8) {
           showPwdError('La nueva contraseña debe tener al menos 8 caracteres.');
           return;
         }
 
         // Verificación de la contraseña vigente: sin ella nadie puede sobrescribir las credenciales.
-        const sessUser = getSessionUser();
-        const checkUser = (sessUser || getActiveUser() || '').trim().toLowerCase();
-        if (!checkUser || (await computeHash(checkUser, curP)) !== getActiveHash()) {
+        const checkUser = (getSessionUser() || getActiveUser() || '').trim().toLowerCase();
+        if (!checkUser || (await computeHash(checkUser, currentPassword)) !== getActiveHash()) {
           showPwdError('La contraseña actual no es correcta.');
           return;
         }
 
-        setActiveCredentials(newU.trim().toLowerCase(), await computeHash(newU, newP));
+        setActiveCredentials(newUsername.trim().toLowerCase(), await computeHash(newUsername, newPassword));
         showPwdSuccess('Credenciales actualizadas exitosamente.');
         setTimeout(() => { pwdModal.style.display = 'none'; }, 1200);
       });

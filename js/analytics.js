@@ -14,7 +14,8 @@
   const RETENTION_DAYS = 60;
 
   const SUPABASE_URL = (window.YoSoyConfig && window.YoSoyConfig.SUPABASE_URL) || '';
-  const SUPABASE_ANON = (window.YoSoyConfig && window.YoSoyConfig.SUPABASE_ANON) || '';
+  // Nota: la ingesta NO usa clave anon — va vía Edge Function (acción "track",
+  // sanitización + rate limit server-side). Ver js/config.js.
 
   // Google Analytics 4 Measurement ID
   const GA_ID = (window.YoSoyConfig && window.YoSoyConfig.GA_ID) || '';
@@ -29,12 +30,24 @@
       send_page_view: true
     });
 
-    // Asynchronously inject the official GTM script if not already in markup
+    // Carga diferida: gtag.js NO compite con el LCP. Se inyecta tras la
+    // primera interacción (el stub de arriba encola los eventos mientras
+    // tanto) o a los 8s como red de seguridad para sesiones sin interacción
+    // (rebotes y lectores silenciosos).
     if (!document.querySelector(`script[src*="${GA_ID}"]`)) {
-      const script = document.createElement('script');
-      script.async = true;
-      script.src = `https://www.googletagmanager.com/gtag/js?id=${GA_ID}`;
-      document.head.appendChild(script);
+      let ga4Loaded = false;
+      const loadGa4 = () => {
+        if (ga4Loaded) return;
+        ga4Loaded = true;
+        const script = document.createElement('script');
+        script.async = true;
+        script.src = `https://www.googletagmanager.com/gtag/js?id=${GA_ID}`;
+        document.head.appendChild(script);
+      };
+      ['pointerdown', 'keydown', 'touchstart'].forEach(evt =>
+        window.addEventListener(evt, loadGa4, { once: true, passive: true, capture: true })
+      );
+      setTimeout(loadGa4, 8000);
     }
   }
 
@@ -155,19 +168,15 @@
     saveAnalyticsData(data);
   }
 
-  // Cloud Sync to Supabase
+  // Cloud Sync to Supabase — vía Edge Function (service_role server-side).
+  // Reemplaza el INSERT directo con la clave anon (removida de config.js).
   function syncToSupabase(payload) {
-    if (!SUPABASE_URL || !SUPABASE_ANON) return;
+    if (!SUPABASE_URL) return;
     try {
-      fetch(`${SUPABASE_URL}/rest/v1/yosoy222_events`, {
+      fetch(`${SUPABASE_URL}/functions/v1/dashboard-stats`, {
         method: 'POST',
-        headers: {
-          'apikey': SUPABASE_ANON,
-          'Authorization': `Bearer ${SUPABASE_ANON}`,
-          'Content-Type': 'application/json',
-          'Prefer': 'return=minimal'
-        },
-        body: JSON.stringify(payload),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'track', ...payload }),
         keepalive: true
       }).catch(() => {});
     } catch {}

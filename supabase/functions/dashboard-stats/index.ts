@@ -75,6 +75,39 @@ function clearFails(ip: string): void {
   attempts.delete(ip);
 }
 
+// Rate limit de ingesta (acción "track"): ventana fija por IP
+const burst = new Map<string, { n: number; reset: number }>();
+const BURST_MAX = 30;        // eventos
+const BURST_WINDOW = 60_000; // por minuto
+
+function allowEvent(ip: string): boolean {
+  if (burst.size > 5000) {
+    const now = Date.now();
+    for (const [k, v] of burst) if (v.reset <= now) burst.delete(k);
+  }
+  const now = Date.now();
+  const b = burst.get(ip);
+  if (!b || now >= b.reset) {
+    burst.set(ip, { n: 1, reset: now + BURST_WINDOW });
+    return true;
+  }
+  if (b.n >= BURST_MAX) return false;
+  b.n += 1;
+  return true;
+}
+
+// Sanitización de la acción "track": whitelist de columnas, nunca raw.
+function strOrNull(v: unknown, max = 160): string | null {
+  if (typeof v !== "string") return null;
+  const s = v.trim().slice(0, max);
+  return s || null;
+}
+
+function numOrNull(v: unknown): number | null {
+  const n = Number(v);
+  return Number.isFinite(n) ? n : null;
+}
+
 // --- Utilidades criptográficas (formato idéntico al cliente) ---
 function sha256hex(s: string): string {
   return createHash("sha256").update(s, "utf8").digest("hex");
@@ -132,7 +165,26 @@ Deno.serve(async (req: Request) => {
     return json({ error: "server_misconfigured" }, 500, origin);
   }
 
-  let body: { action?: string; user?: string; pass?: string; token?: string; limit?: number };
+  let body: {
+    action?: string;
+    user?: string;
+    pass?: string;
+    token?: string;
+    limit?: number;
+    // Campos de la acción pública "track" (no-confiables: se sanitizan abajo)
+    event_type?: unknown;
+    session_id?: unknown;
+    source?: unknown;
+    device?: unknown;
+    country?: unknown;
+    city?: unknown;
+    product_name?: unknown;
+    product_price?: unknown;
+    product_cat?: unknown;
+    query?: unknown;
+    total_amount?: unknown;
+    items_count?: unknown;
+  };
   try {
     body = await req.json();
   } catch {
@@ -173,6 +225,46 @@ Deno.serve(async (req: Request) => {
     clearFails(ip);
     const token = mintToken(user, Date.now(), sessionSecret);
     return json({ ok: true, token, expiresInMs: SESSION_TTL_MS }, 200, origin);
+  }
+
+  // ---------- ACCIÓN: track (ingesta pública; reemplaza el INSERT con clave anon) ----------
+  if (body.action === "track") {
+    if (!allowEvent(ip)) {
+      return json({ error: "rate_limited" }, 429, origin);
+    }
+
+    const eventType = strOrNull(body.event_type, 40);
+    if (!eventType) return json({ error: "invalid_event" }, 400, origin);
+
+    const row: Record<string, string | number | null> = {
+      event_type: eventType,
+      session_id: strOrNull(body.session_id, 64) ?? crypto.randomUUID(),
+      source: strOrNull(body.source, 80),
+      device: strOrNull(body.device, 40),
+      country: strOrNull(body.country, 80) ?? "Venezuela",
+      city: strOrNull(body.city, 80) ?? "Caracas",
+      product_name: strOrNull(body.product_name),
+      product_price: numOrNull(body.product_price),
+      product_cat: strOrNull(body.product_cat, 80),
+      query: strOrNull(body.query, 120),
+      total_amount: numOrNull(body.total_amount),
+      items_count: numOrNull(body.items_count),
+    };
+
+    const res = await fetch(`${supabaseUrl}/rest/v1/yosoy222_events`, {
+      method: "POST",
+      headers: {
+        apikey: serviceRole,
+        Authorization: `Bearer ${serviceRole}`,
+        "Content-Type": "application/json",
+        Prefer: "return=minimal",
+      },
+      body: JSON.stringify(row),
+    });
+    if (!res.ok) {
+      return json({ error: "upstream_error", status: res.status }, 502, origin);
+    }
+    return json({ ok: true }, 200, origin);
   }
 
   // ---------- ACCIÓN: stats (requiere token) ----------

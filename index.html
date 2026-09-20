@@ -49,13 +49,13 @@
     <!-- Preload del hero (LCP) y de la primera fuente: arranca la descarga antes de parsear CSS -->
     <link rel="preload" as="image" href="images/thumbs/hero-rosas-3.jpg" fetchpriority="high">
     <link rel="preload" as="font" type="font/woff2" href="https://fonts.gstatic.com/s/playfairdisplay/v40/nuFRD-vYSZviVYUb_rj3ij__anPXDTnCjmHKM4nYO7KN_qiTXtHA-Q.woff2" crossorigin>
-    <link rel="stylesheet" href="css/style.css?v=28">
+    <link rel="stylesheet" href="css/style.css?v=31">
 
-    <!-- Telemetry local (sync, es pequeño y configura gtag) -->
-    <script src="js/config.js?v=28"></script>
-    <script src="js/analytics.js?v=28"></script>
-    <!-- Google tag (gtag.js): async y al final del head para no competir con LCP -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Y9R0B5NH75"></script>
+    <!-- Telemetry local (sync, es pequeño y configura gtag). El script oficial
+         de GA4 se inyecta con carga diferida desde analytics.js (primera
+         interacción o fallback 8s) para no competir con el LCP. -->
+    <script src="js/config.js?v=31"></script>
+    <script src="js/analytics.js?v=31"></script>
 
     <!-- Schema.org Datos Estructurados -->
     <script type="application/ld+json">
@@ -952,8 +952,8 @@
         </div>
     </div>
 
-    <script src="js/shared.js?v=28"></script>
-    <script src="js/cart.js?v=28"></script>
-    <script src="js/app.js?v=28" defer></script>
+    <script src="js/shared.js?v=31"></script>
+    <script src="js/cart.js?v=31"></script>
+    <script src="js/app.js?v=31" defer></script>
 </body>
 </html>

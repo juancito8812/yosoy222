@@ -2,7 +2,7 @@
 
 > Tienda online de velas artesanales, pulseras, collares, franelas y accesorios.
 > Desplegada en **GitHub Pages** con dominio personalizado **yosoy222.com** bajo **Cloudflare**.
-> **PWA instalable** con soporte offline completo (Cache v20), catálogo prerenderizado para SEO (Schema.org), panel privado de analítica con Luxury Glassmorphism y backend en la nube (Supabase Cloud + GA4) y suite de pruebas automatizadas en CI/CD.
+> **PWA instalable** con soporte offline completo (Cache v31), catálogo prerenderizado para SEO (Schema.org), panel privado de analítica con Luxury Glassmorphism y backend en la nube (Supabase Cloud + GA4) y suite de pruebas automatizadas en CI/CD.
 
 **Repositorio:** https://github.com/juancito8812/yosoy222  
 **URL de producción:** https://yosoy222.com  
@@ -22,7 +22,7 @@
 7. [Cómo agregar un producto](#cómo-agregar-un-producto)
 8. [Cómo eliminar un producto](#cómo-eliminar-un-producto)
 9. [Procesamiento de imágenes (bordes blancos)](#procesamiento-de-imágenes-bordes-blancos)
-10. [PWA: instalar y funcionamiento offline (Cache v20)](#pwa-instalar-y-funcionamiento-offline-cache-v20)
+10. [PWA: instalar y funcionamiento offline (Cache v31)](#pwa-instalar-y-funcionamiento-offline-cache-v31)
 11. [Seguridad aplicada (Audit & Hardening)](#seguridad-aplicada-audit--hardening)
 12. [Calidad, Confiabilidad y Accesibilidad](#calidad-confiabilidad-y-accesibilidad)
 13. [Rendimiento y Core Web Vitals](#rendimiento-y-core-web-vitals)
@@ -54,8 +54,8 @@
   - Sanitización anti-prototype smuggling en la serialización.
 - **Checkout por WhatsApp:** Mensaje preformateado e itemizado (producto × cantidad — subtotal, y total final en USD).
 - **Número real de WhatsApp centralizado:** `+58 412 648 1628` — única fuente en `js/app.js` (`const WHATSAPP = '584126481628'`); todos los botones y enlaces del sitio se sincronizan con este valor.
-- **PWA Instalable (Cache v20):** Estrategia Network-First para navegación HTML (contenido siempre fresco con conexión) y Stale-While-Revalidate para recursos estáticos; precaching enfocado en shell, dashboard, iconos HD y miniaturas (`images/thumbs/`).
-- **Dashboard Privado de Analítica y Conversión:** Panel de control en `/dashboard.html` con estética *Luxury Glassmorphism*, gráficos de tendencias en curvas Bezier, desglose de canales (Instagram, TikTok, Facebook, Google, WhatsApp), embudo de conversión paso a paso, desglose por dispositivos, ranking de popularidad de productos, actividad en tiempo real, exportación CSV, sincronización en tiempo real con **Supabase Cloud** (`gkekolsttfbiegyhvejy.supabase.co`) con seguridad RLS, integración oficial con **Google Analytics 4** (`G-Y9R0B5NH75`) y autenticación criptográfica segura con Web Crypto SHA-256 salted hash y rate-limiting anti-fuerza bruta.
+- **PWA Instalable (Cache v31):** Estrategia Network-First para navegación HTML (contenido siempre fresco con conexión) y Stale-While-Revalidate para recursos estáticos; precaching enfocado en shell, dashboard, iconos HD y miniaturas (`images/thumbs/`).
+- **Dashboard Privado de Analítica y Conversión:** Panel de control en `/dashboard.html` con estética *Luxury Glassmorphism*, gráficos de tendencias en curvas Bezier, desglose de canales (Instagram, TikTok, Facebook, Google, WhatsApp), embudo de conversión paso a paso, desglose por dispositivos, ranking de popularidad de productos, actividad en tiempo real, exportación CSV, sincronización en tiempo real con **Supabase Cloud** (`gkekolsttfbiegyhvejy.supabase.co`) con ingesta vía **Edge Function** (`track`, sanitización whitelist server-side + rate limit), integración oficial con **Google Analytics 4** (`G-Y9R0B5NH75`, **carga diferida**: tras la primera interacción o a los 8s de fallback — nunca compite en el arranque) y autenticación criptográfica segura con Web Crypto SHA-256 salted hash y rate-limiting anti-fuerza bruta.
 - **Seguridad integral:**
   - Content Security Policy (CSP) estricto.
   - Cabeceras de seguridad servidas desde el Edge de Cloudflare (`X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`, `Permissions-Policy`, HSTS con preload).
@@ -66,7 +66,7 @@
   - Cero layout thrashing / forced reflows: Scroll spy implementado con `IntersectionObserver` y listeners pasivos.
   - Dimensiones explícitas (`width="480" height="480"`) y `aspect-ratio: 1/1` en todas las imágenes para CLS = 0.
   - Preconexión optimizada a Google Fonts.
-  - Historial PageSpeed: 99/100/100/100 (13 sep 2026). Re-auditoría 20 sep 2026: Accesibilidad 100 y SEO 100 se mantienen; Best Practices 92/100 por un script anti-bots que Cloudflare inyecta y la CSP estricta bloquea (decisión del dueño: aceptado, ver "Limitaciones conocidas"); Rendimiento no re-medible comparativamente ese día (cuota de PageSpeed API agotada; auditoría local sin throttle: 95/100, FCP/LCP 2.4s, TBT 0ms, CLS 0).
+  - Historial PageSpeed: 99/100/100/100 (13 sep 2026). Re-auditoría 20 sep 2026: Accesibilidad 100 y SEO 100 se mantienen; Best Practices 92/100 por un script anti-bots que Cloudflare inyecta y la CSP estricta bloquea (decisión del dueño: aceptado, ver "Limitaciones conocidas"); Rendimiento no re-medible comparativamente ese día (cuota de PageSpeed API agotada; auditoría local sin throttle: 95/100, FCP/LCP 2.4s, TBT 0ms, CLS 0). Re-auditoría 20 sep (2ª pasada, tras diferir GA4 en v31): **TBT 0ms en 3 rondas** y gtag.js fuera del arranque (traza sin throttle: solicitado @8.5s por el fallback de 8s).
 
 ### Limitaciones conocidas
 
@@ -109,10 +109,10 @@ yosoy222/
 │
 ├── js/
 │   ├── app.js                     ← Lógica de la tienda: catálogo inmutable, carrito blindado, filtros
-│   ├── analytics.js               ← Motor de telemetría: GA4 + Supabase Cloud + localStorage
+│   ├── analytics.js               ← Motor de telemetría: GA4 (diferido) + Supabase Cloud vía Edge Function + localStorage
 │   └── dashboard.js               ← Motor del Dashboard: autenticación SHA-256, gráficos Bezier en Canvas
 │
-├── sw.js                          ← Service Worker PWA (Cache v20)
+├── sw.js                          ← Service Worker PWA (Cache v31)
 │   ├── Estrategia Network-First con fallback a Cache para navegaciones (HTML siempre fresco)
 │   ├── Estrategia Stale-While-Revalidate con ignoreSearch para recursos estáticos
 │   ├── Precaching enfocado en miniaturas de imágenes para instalación ultrarrápida
@@ -165,7 +165,7 @@ yosoy222/
 | **Estilos** | CSS3 Vanilla | Custom properties (:root), Grid, Flexbox, sin preprocesadores |
 | **Interactividad** | ES6+ Vanilla | Zero runtime dependencies, carga diferida (`defer`), módulos nativos |
 | **Pruebas** | Node.js Test Runner | `node --test` nativo (13 pruebas unitarias/seguridad sin librerías pesadas) |
-| **PWA & Offline** | Service Worker API | Cache v20, Network-First en navegación, manifest standalone |
+| **PWA & Offline** | Service Worker API | Cache v31, Network-First en navegación, manifest standalone |
 | **SEO & Datos** | JSON-LD / XML | Schema.org Store/ItemList, robots.txt, sitemap.xml canónico |
 | **Hosting & CI/CD** | GitHub Pages + Actions | Despliegue automático, CI de pruebas, Dependabot activo |
 | **CDN & DNS** | Cloudflare | Proxy edge, Cache Rules HTML (TTL 5 min), Transform Rules de seguridad |
@@ -314,7 +314,7 @@ Las imágenes de catálogo y miniaturas han sido procesadas para eliminar márge
 
 ---
 
-## PWA: INSTALAR Y FUNCIONAMIENTO OFFLINE (CACHE V19)
+## PWA: INSTALAR Y FUNCIONAMIENTO OFFLINE (CACHE V31)
 
 La PWA cumple con todos los estándares modernos de instalación y navegación offline:
 
@@ -559,7 +559,7 @@ Tokens principales en `:root` de [`css/style.css`](file:///home/debianserver/Doc
 | `js/app.js` | Lógica de catálogo, filtros, carrito seguro y eventos |
 | `js/analytics.js` | Motor de telemetría, eventos de conversión y compatibilidad GA4 |
 | `js/dashboard.js` | Renderizado de gráficos en Canvas, cálculo de KPIs y exportación CSV |
-| `sw.js` | Service Worker (Cache v20, Network-First navegación) |
+| `sw.js` | Service Worker (Cache v31, Network-First navegación) |
 | `manifest.json` | Configuración PWA e iconos |
 | `tests/cart_and_filters.test.mjs` | Suite de 13 pruebas unitarias y de seguridad |
 | `.github/workflows/` | Automatización de CI y purga de caché con smoke test |

@@ -11,7 +11,7 @@
   /* ----- Security: HTML escaping (js/shared.js, única copia) -----
      Los eventos pueden contener datos inyectados por terceros
      (especialmente el histórico anterior al RLS insert-only). */
-  const YoSoySharedModule = (typeof window !== 'undefined' && window.YoSoyShared) || null;
+  const YoSoySharedModule = typeof window !== 'undefined' && window.YoSoyShared;
   if (!YoSoySharedModule) throw new Error('YoSoy222: js/shared.js debe cargarse antes que dashboard-view.js');
   const { escapeHtml } = YoSoySharedModule;
 
