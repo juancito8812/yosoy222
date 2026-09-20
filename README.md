@@ -2,7 +2,7 @@
 
 > Tienda online de velas artesanales, pulseras, collares, franelas y accesorios.
 > Desplegada en **GitHub Pages** con dominio personalizado **yosoy222.com** bajo **Cloudflare**.
-> **PWA instalable** con soporte offline completo (Cache v33), catálogo prerenderizado para SEO (Schema.org), panel privado de analítica con Luxury Glassmorphism y backend en la nube (Supabase Cloud + GA4) y suite de pruebas automatizadas en CI/CD.
+> **PWA instalable** con soporte offline completo (Cache v34), catálogo prerenderizado para SEO (Schema.org), panel privado de analítica con Luxury Glassmorphism y backend en la nube (Supabase Cloud + GA4) y suite de pruebas automatizadas en CI/CD.
 
 **Repositorio:** https://github.com/juancito8812/yosoy222  
 **URL de producción:** https://yosoy222.com  
@@ -22,7 +22,7 @@
 7. [Cómo agregar un producto](#cómo-agregar-un-producto)
 8. [Cómo eliminar un producto](#cómo-eliminar-un-producto)
 9. [Procesamiento de imágenes (bordes blancos)](#procesamiento-de-imágenes-bordes-blancos)
-10. [PWA: instalar y funcionamiento offline (Cache v33)](#pwa-instalar-y-funcionamiento-offline-cache-v33)
+10. [PWA: instalar y funcionamiento offline (Cache v34)](#pwa-instalar-y-funcionamiento-offline-cache-v34)
 11. [Seguridad aplicada (Audit & Hardening)](#seguridad-aplicada-audit--hardening)
 12. [Calidad, Confiabilidad y Accesibilidad](#calidad-confiabilidad-y-accesibilidad)
 13. [Rendimiento y Core Web Vitals](#rendimiento-y-core-web-vitals)
@@ -54,7 +54,7 @@
   - Sanitización anti-prototype smuggling en la serialización.
 - **Checkout por WhatsApp:** Mensaje preformateado e itemizado (producto × cantidad — subtotal, y total final en USD).
 - **Número real de WhatsApp centralizado:** `+58 412 648 1628` — única fuente en `js/app.js` (`const WHATSAPP = '584126481628'`); todos los botones y enlaces del sitio se sincronizan con este valor.
-- **PWA Instalable (Cache v33):** Estrategia Network-First para navegación HTML (contenido siempre fresco con conexión) y Stale-While-Revalidate para recursos estáticos; precaching enfocado en shell, dashboard, iconos HD y miniaturas (`images/thumbs/`).
+- **PWA Instalable (Cache v34):** Estrategia Network-First para navegación HTML (contenido siempre fresco con conexión) y Stale-While-Revalidate para recursos estáticos; precaching enfocado en shell, dashboard, iconos HD y miniaturas (`images/thumbs/`).
 - **Dashboard Privado de Analítica y Conversión:** Panel de control en `/dashboard.html` con estética *Luxury Glassmorphism*, gráficos de tendencias en curvas Bezier, desglose de canales (Instagram, TikTok, Facebook, Google, WhatsApp), embudo de conversión paso a paso, desglose por dispositivos, ranking de popularidad de productos, actividad en tiempo real, exportación CSV, sincronización en tiempo real con **Supabase Cloud** (`gkekolsttfbiegyhvejy.supabase.co`) con ingesta vía **Edge Function** (`track`, sanitización whitelist server-side + rate limit), integración oficial con **Google Analytics 4** (`G-Y9R0B5NH75`, **carga diferida**: tras la primera interacción o a los 8s de fallback — nunca compite en el arranque) y autenticación criptográfica segura con Web Crypto SHA-256 salted hash y rate-limiting anti-fuerza bruta.
 - **Seguridad integral:**
   - Content Security Policy (CSP) estricto.
@@ -112,7 +112,7 @@ yosoy222/
 │   ├── analytics.js               ← Motor de telemetría: GA4 (diferido) + Supabase Cloud vía Edge Function + localStorage
 │   └── dashboard.js               ← Motor del Dashboard: autenticación SHA-256, gráficos Bezier en Canvas
 │
-├── sw.js                          ← Service Worker PWA (Cache v33)
+├── sw.js                          ← Service Worker PWA (Cache v34)
 │   ├── Estrategia Network-First con fallback a Cache para navegaciones (HTML siempre fresco)
 │   ├── Estrategia Stale-While-Revalidate con ignoreSearch para recursos estáticos
 │   ├── Precaching enfocado en miniaturas de imágenes para instalación ultrarrápida
@@ -165,7 +165,7 @@ yosoy222/
 | **Estilos** | CSS3 Vanilla | Custom properties (:root), Grid, Flexbox, sin preprocesadores |
 | **Interactividad** | ES6+ Vanilla | Zero runtime dependencies, carga diferida (`defer`), módulos nativos |
 | **Pruebas** | Node.js Test Runner | `node --test` nativo (13 pruebas unitarias/seguridad sin librerías pesadas) |
-| **PWA & Offline** | Service Worker API | Cache v33, Network-First en navegación, manifest standalone |
+| **PWA & Offline** | Service Worker API | Cache v34, Network-First en navegación, manifest standalone |
 | **SEO & Datos** | JSON-LD / XML | Schema.org Store/ItemList, robots.txt, sitemap.xml canónico |
 | **Hosting & CI/CD** | GitHub Pages + Actions | Despliegue automático, CI de pruebas, Dependabot activo |
 | **CDN & DNS** | Cloudflare | Proxy edge, Cache Rules HTML (TTL 5 min), Transform Rules de seguridad |
@@ -314,21 +314,26 @@ Las imágenes de catálogo y miniaturas han sido procesadas para eliminar márge
 
 ---
 
-## PWA: INSTALAR Y FUNCIONAMIENTO OFFLINE (CACHE V33)
+## PWA: INSTALAR Y FUNCIONAMIENTO OFFLINE (CACHE V34)
 
 La PWA cumple con todos los estándares modernos de instalación y navegación offline:
 
-### Arquitectura de Caché en `sw.js` (Versión 18)
+### Arquitectura de Caché en `sw.js` (Cache v34)
 1. **Navegación Network-First:**
    Para solicitudes de documentos HTML (`event.request.mode === 'navigate'`), el Service Worker consulta primero la red para obtener la versión más reciente del catálogo y, en caso de estar desconectado o con señal inestable, responde con la copia en caché.
 2. **Stale-While-Revalidate para Recursos Estáticos:**
-   CSS, fuentes, JS e imágenes secundarias se sirven de inmediato desde la caché mientras se actualizan en segundo plano con control de versión `?v=18`.
+   CSS, fuentes, JS e imágenes secundarias se sirven de inmediato desde la caché mientras se actualizan en segundo plano. La coherencia de versiones (`?v=N` en HTML y `PRECACHE_ASSETS` en el SW) la garantiza `scripts/verify_versions.py` en CI.
 3. **Precache Integral & Resiliencia Offline:**
-   Durante la instalación, el Service Worker descarga de forma controlada el shell de la aplicación, el panel de dashboard y las 44 miniaturas (`images/thumbs/`), garantizando que la navegación visual funcione offline desde el primer instante sin agotar datos móviles del usuario. Las imágenes grandes del lightbox se descargan y cachean bajo demanda.
+   Durante la instalación, el Service Worker descarga de forma controlada el shell de la aplicación, el panel de dashboard y las miniaturas del catálogo (46 archivos: 44 productos + 2 hero, en lotes de 6), garantizando que la navegación visual funcione offline desde el primer instante sin agotar datos móviles del usuario. El precache del catálogo lo dispara la página en cada carga vía mensaje `PRECACHE_IMAGES` (idempotente por marcador dentro de la caché versionada) — sin ventana de pérdida aunque el SW se active sin pestañas abiertas. Las imágenes grandes del lightbox se descargan y cachean bajo demanda.
 4. **Invalidación Inmediata de Versiones Anteriores:**
-   Al publicarse una nueva versión (`CACHE_NAME = 'yosoy222-v20'`), el evento `activate` purga de forma determinista cualquier almacenamiento obsoleto y el evento `controllerchange` refresca la vista del catálogo automáticamente.
+   Al publicarse una nueva versión (`CACHE_NAME = 'yosoy222-v34'`), el evento `activate` purga de forma determinista cualquier almacenamiento obsoleto y el evento `controllerchange` refresca la vista del catálogo automáticamente.
 5. **Iconos PWA de Alta Definición:**
    10 variantes (incluyendo formatos maskable con padding seguro del 15% para Android/iOS sin franjas negras) validadas con `scripts/verify_icons.py`.
+
+### UX Offline (Cache v34)
+- **Lightbox con degradación elegante:** si la imagen ampliada (`images/catalog/`) no está en caché y la red no responde, el manejador `error` intercambia automáticamente la miniatura precacheada y muestra una nota informativa; al restablecerse la conexión, la imagen grande vuelve a cargar y la nota desaparece sola.
+- **Checkout WhatsApp consciente de la red:** con el navegador offline, el panel del carrito muestra un aviso no bloqueante ("tu carrito queda guardado") que se elimina al reconectar y re-renderizar.
+- **Fuentes asíncronas (v33):** el CSS de Google Fonts carga con `media="print"` + flip en `js/font-flip.js` (el texto pinta en fallback serif y hace swap) — FCP ×8 más rápido medido en bisect controlado; combinado con GA4 diferido mantiene TBT 0ms.
 
 ---
 
@@ -338,13 +343,13 @@ La tienda y el panel de analítica cuentan con un sistema de telemetría híbrid
 
 ### 1. Ingesta Global con Supabase Cloud
 - **Endpoint:** `gkekolsttfbiegyhvejy.supabase.co` (`public.yosoy222_events`).
-- **Seguridad RLS:** ✅ **RESUELTO y verificado (20 sep 2026)**. El fix `scripts/supabase_rls.sql` fue aplicado vía Management API (`scripts/apply_rls.sh`). Matriz final probada: `SELECT` de anon → `[]` (bloqueado), `INSERT` → HTTP 201 (la ingesta sigue viva), `UPDATE`/`DELETE` → bloqueados. Única política restante: `anon_insert_events`. Nota técnica: la ingesta usa `Prefer: return=minimal`; con `return=representation` el INSERT daría 401 porque RLS impide leer lo insertado. La lectura global del dashboard ahora requiere la Edge Function autenticada (pendiente de desplegar — `supabase/README.md`).
+- **Seguridad RLS:** ✅ **Elevado a service_role-only total (20 sep 2026)**. RLS activado y **cero políticas** en `public.yosoy222_events`: la key anon (eliminada del cliente desde v30) no puede INSERT (401), ni leer filas (SELECT devuelve cuerpo vacío), ni borrar. Matriz probada con sondeos: anon INSERT 401, anon SELECT `[]`, Edge `track` 200, `relrowsecurity: true`. SQL canónico: `scripts/supabase_rls.sql`. Toda lectura y escritura pasa por la Edge Function `dashboard-stats` con `service_role` nunca expuesta al navegador.
 - **Sincronización Asíncrona:** Cada evento (`page_view`, `view_item`, `add_to_cart`, `whatsapp_checkout`, `search`) se envía mediante `fetch` con `keepalive: true` en segundo plano sin ralentizar la navegación.
 - **Dashboard en Tiempo Real:** `/dashboard.html` consulta los eventos globales **vía Edge Function autenticada** (`supabase/functions/dashboard-stats`): login server-side (SHA-256 salted contra secret, rate limit 5/15min por IP) que devuelve un token HMAC efímero (2h), y lectura con `service_role` **nunca expuesta al navegador**. Grafica visitas, carritos y pedidos en vivo de todos los clientes con auto-refresco cada 30 segundos. Si la función no está desplegada, el login cae a autenticación local degradada y el panel muestra datos del navegador. Despliegue y secrets: `supabase/README.md`.
 
 ### 2. Integración Oficial de Google Analytics 4 (GA4)
 - **ID de Medición:** `G-Y9R0B5NH75`.
-- **Cero errores CSP:** Inicialización modular sincronizada en `<head>` sin necesidad de bloques inline inseguros.
+- **Carga diferida (v31):** `gtag.js` se inyecta tras la primera interacción del usuario (o a los 8s como fallback) — nunca compite con el LCP; TBT 0ms verificado en producción con Lighthouse. Inicialización modular sin bloques inline (CSP sin `'unsafe-inline'`).
 - **Eventos de E-commerce:** Envío estructurado de `view_item`, `add_to_cart`, `begin_checkout`, `generate_lead` y `search`.
 
 ---
@@ -398,7 +403,7 @@ El proyecto cuenta con un esquema de seguridad multicapa validado mediante audit
 - **Eliminación de Forced Reflows (`PERF-01`):** El seguimiento de navegación y scroll spy utiliza la API nativa `IntersectionObserver` con listeners de scroll pasivos (`{ passive: true }`), eliminando bloqueos del hilo principal.
 - **Debounce en Búsqueda (`PERF-04`):** Retardo de 150 ms en el input de filtrado para amortiguar eventos repetitivos de escritura en dispositivos móviles.
 - **Prevención de CLS:** Todas las imágenes del catálogo y miniaturas cuentan con dimensiones fijas (`width="480" height="480"`), evitando desplazamientos acumulativos durante la carga.
-- **Optimización de Recursos Críticos:** Preconexión prioritaria a `fonts.googleapis.com` y `fonts.gstatic.com` ubicada al inicio de `<head>`, carga asíncrona de imágenes (`decoding="async"`) y script principal marcado con `defer`.
+- **Optimización de Recursos Críticos:** CSS de Google Fonts cargado **async** (`media="print"` + flip en `js/font-flip.js` — FCP ×8 más rápido medido en bisect), carga asíncrona de imágenes (`decoding="async"`), script principal con `defer`, hero con `fetchpriority="high"` y GA4 diferido (TBT 0ms).
 
 ---
 
@@ -406,7 +411,7 @@ El proyecto cuenta con un esquema de seguridad multicapa validado mediante audit
 
 1. **Pre-renderizado de Catálogo:** Las 44 tarjetas de productos se encuentran presentes en el código fuente HTML original. Los motores de búsqueda que no ejecutan JavaScript indexan de inmediato todos los títulos, descripciones y precios.
 2. **Schema.org JSON-LD:** Bloque estructurado con tipado `Store` y lista ordenada `ItemList` que describe detalladamente cada vela, collar, pulsera o franela, su moneda (USD), precio y disponibilidad (`InStock`).
-3. **Indexación y Rastreo:** Archivos [`robots.txt`](file:///home/debianserver/Documentos/programacion/yosoy222/robots.txt) y [`sitemap.xml`](file:///home/debianserver/Documentos/programacion/yosoy222/sitemap.xml) canónicos configurados.
+3. **Indexación y Rastreo:** Archivos [`robots.txt`](robots.txt) y [`sitemap.xml`](sitemap.xml) canónicos configurados.
 4. **Metadatos Sociales:** Integración completa de Open Graph (`og:title`, `og:image`, `og:description`, `og:url`) y Twitter Cards con URL canónica `https://yosoy222.com/`.
 
 ---
@@ -527,7 +532,7 @@ curl -sI https://yosoy222.com/ | grep -E "HTTP|server|strict-transport|x-frame|c
 
 ## GUÍA DE ESTILOS CSS
 
-Tokens principales en `:root` de [`css/style.css`](file:///home/debianserver/Documentos/programacion/yosoy222/css/style.css):
+Tokens principales en `:root` de [`css/style.css`](css/style.css):
 
 ```css
 :root {
@@ -553,18 +558,24 @@ Tokens principales en `:root` de [`css/style.css`](file:///home/debianserver/Doc
 | Archivo / Directorio | Propósito |
 |----------------------|-----------|
 | `index.html` | Estructura web, metadatos, Schema.org y catálogo prerenderizado |
-| `dashboard.html` | Panel privado de analítica con autenticación criptográfica (SHA-256 + anti-bruteforce) |
+| `dashboard.html` | Panel privado de analítica con autenticación criptográfica (SHA-256 fail-closed + anti-bruteforce) |
 | `css/style.css` | Sistema de diseño responsive y tokens de color |
 | `css/dashboard.css` | Estilos dedicados para el dashboard y gráficos |
-| `js/app.js` | Lógica de catálogo, filtros, carrito seguro y eventos |
-| `js/analytics.js` | Motor de telemetría, eventos de conversión y compatibilidad GA4 |
-| `js/dashboard.js` | Renderizado de gráficos en Canvas, cálculo de KPIs y exportación CSV |
-| `sw.js` | Service Worker (Cache v33, Network-First navegación) |
+| `js/config.js` | Única configuración cliente: `SUPABASE_URL`, `GA_ID` y flip de fuentes async |
+| `js/shared.js` | Utilidades compartidas (`window.YoSoyShared`): `escapeHtml` canónica |
+| `js/font-flip.js` | Aplica el CSS de Google Fonts cargado async (`media=print` → `all`) |
+| `js/app.js` | Lógica de catálogo, filtros, carrito (UI/estado), UX offline y eventos |
+| `js/cart.js` | Lógica pura del carrito (`window.YoSoyCart`): totales, validación, TTL 30 días |
+| `js/analytics.js` | Motor de telemetría: GA4 diferido, ingesta vía Edge Function y fallback localStorage |
+| `js/dashboard.js` | Motor del Dashboard: autenticación, datos (Edge Function/local) y estado |
+| `js/dashboard-view.js` | Vista del Dashboard (pura): gráficos Bezier en Canvas y render de KPIs/tablas |
+| `sw.js` | Service Worker (Cache v34, Network-First navegación) |
 | `manifest.json` | Configuración PWA e iconos |
 | `tests/cart_and_filters.test.mjs` | Suite de 13 pruebas unitarias y de seguridad |
 | `.github/workflows/` | Automatización de CI y purga de caché con smoke test |
 | `.github/dependabot.yml` | Configuración de actualización de dependencias y acciones |
-| `scripts/` | Herramientas auxiliares de prerenderizado, iconos e imágenes |
+| `scripts/` | Prerenderizado, iconos (`verify_icons.py`), versiones (`verify_versions.py`), SQL canónico (`supabase_rls.sql`, `supabase_rate_limit.sql`) e imágenes |
+| `supabase/` | Edge Function `dashboard-stats` (login admin, lectura global, ingesta `track`) + README de despliegue |
 | `robots.txt` / `sitemap.xml` | Indexación y SEO para motores de búsqueda |
 | `_headers` | Cabeceras de seguridad HTTP y HSTS |
 | `CNAME` | Dominio personalizado para GitHub Pages |
@@ -609,4 +620,4 @@ gh run list --limit 3
 
 ---
 
-*Documentación técnica actualizada al 13 de septiembre de 2026. Proyecto 100% verificado en pruebas unitarias (13/13 pasadas), CI/CD, auditoría de producción y despliegue activo en https://yosoy222.com.*
+*Documentación técnica actualizada al 20 de septiembre de 2026. Proyecto 100% verificado en pruebas unitarias (13/13 pasadas), CI/CD, auditoría de producción y despliegue activo en https://yosoy222.com.*

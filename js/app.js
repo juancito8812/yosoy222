@@ -453,6 +453,20 @@
       `Hola YoSoy222 👋\n\nMe gustaría hacer este pedido:\n\n${lines.join('\n')}\n\n*Total: $${total.toFixed(2)} USD*\n\n¡Gracias! 🕯️`
     );
     cartWhatsapp.href = `https://wa.me/${WHATSAPP}?text=${msg}`;
+
+    // Aviso no bloqueante cuando no hay conexión: el carrito no se pierde
+    const existingNote = document.getElementById('offline-checkout-note');
+    if (navigator.onLine === false) {
+      if (!existingNote) {
+        const note = document.createElement('p');
+        note.id = 'offline-checkout-note';
+        note.className = 'offline-note';
+        note.textContent = 'Sin conexión ahora mismo — tu carrito queda guardado; envía el pedido cuando recuperes internet.';
+        cartFooter.insertAdjacentElement('beforeend', note);
+      }
+    } else if (existingNote) {
+      existingNote.remove();
+    }
   }
 
   /* ============================================
@@ -478,6 +492,24 @@
      ============================================ */
   const lightbox = $('#lightbox');
   const lightboxImg = $('#lightboxImg');
+  const lightboxInfo = $('.lightbox-info');
+
+  // Offline: la imagen grande nunca se precachea (solo miniaturas) — recupera con la miniatura
+  lightboxImg.addEventListener('error', () => {
+    const p = visibleProducts[currentLightboxIndex];
+    if (!p || lightboxImg.dataset.fallback) return;
+    lightboxImg.dataset.fallback = '1';
+    lightboxImg.src = `images/thumbs/${p.file}?v=9`;
+    if (lightboxInfo && !lightboxInfo.querySelector('.offline-note')) lightboxInfo.insertAdjacentHTML('afterbegin',
+      '<p class="offline-note">Sin conexión: se muestra la miniatura. La foto ampliada cargará cuando vuelva internet.</p>');
+  });
+
+  // Vuelve la conexión y la imagen grande carga — la nota queda obsoleta
+  // (el load de la miniatura de respaldo también dispara load: se distingue por el src)
+  lightboxImg.addEventListener('load', () => {
+    if (lightboxImg.src.includes('/thumbs/')) return;
+    lightboxInfo?.querySelector('.offline-note')?.remove();
+  });
   const lightboxName = $('#lightboxName');
   const lightboxDesc = $('#lightboxDesc');
   const lightboxPrice = $('#lightboxPrice');
@@ -515,6 +547,7 @@
     if (!p) return;
     
     // Add cache-busting query string to force image refresh
+    lightboxImg.dataset.fallback = '';
     lightboxImg.src = `images/catalog/${p.file}?v=9`;
     lightboxImg.alt = `${p.name} artesanal`;
     lightboxName.textContent = p.name;

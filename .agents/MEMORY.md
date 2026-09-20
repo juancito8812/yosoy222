@@ -4,8 +4,8 @@
 
 - **Propósito:** Tienda online de velas artesanales, pulseras, collares, franelas y accesorios con PWA offline, checkout por WhatsApp y dashboard de analítica privada
 - **Stack:** HTML5 + CSS3 + JavaScript vanilla (sin frameworks), PWA (manifest.json + sw.js), GitHub Pages, Cloudflare CDN
-- **Última sesión:** 16 de septiembre de 2026
-- **Versión de memoria:** 8
+- **Última sesión:** 20 de septiembre de 2026
+- **Versión de memoria:** 9
 
 ## Arquitectura
 
@@ -25,6 +25,7 @@
 
 ## Decisiones Clave & Hitos
 
+- **20 sep 2026** — **UX Offline Completa & Cache v34:** auditoría en modo avión (simulacro con SW activo y red muerta) del ciclo catálogo→carrito→checkout. Hallazgos: el lightbox carga `images/catalog/` (nunca precacheado) **sin handler `onerror`** → imagen rota offline; y el checkout por WhatsApp falla en silencio sin conexión. Corregido en `js/app.js`: fallback automático a miniatura + nota informativa no bloqueante (`.offline-note`), aviso de carrito guardado en checkout offline (se elimina al reconectar), y eliminación de la nota cuando la imagen grande recupera. Analytics/geo/sync ya estaban blindados con `.catch()`. Ciclo completo verificado E2E (fallback, sin duplicación, recuperación, imagen grande).
 - **16 sep 2026** — **Conexión Supabase Cloud Analytics (Fase 20):** proyecto dedicado `gkekolsttfbiegyhvejy.supabase.co` para ingesta global de eventos (`yosoy222_events`) sin intermediarios, sincronización en segundo plano y visualización en tiempo real en `/dashboard.html`.
 - **16 sep 2026** — **Integración Google Analytics 4 (GA4 G-Y9R0B5NH75, Fase 19):** telemetría de eventos e-commerce (`view_item`, `add_to_cart`, `begin_checkout`, `generate_lead`, `search`) sincronizada con GA4 en `<head>`.
 - **16 sep 2026** — **Rediseño Luxury Glassmorphism & Cache v16 (Fase 18):** rediseño visual de alta gama en `/dashboard.html` con tema Warm Charcoal & Gold, gráficos Bezier con gradientes luminosos, selector de rango rápido (`[Hoy] [7D] [30D] [60D] [Todo]`), desglose de dispositivos móvil/escritorio, unificación de textos en catálogo y bump a Cache v16.
@@ -59,7 +60,7 @@
 ## Estado Actual
 
 - **Branch:** main
-- **Cache version:** yosoy222-v22
+- **Cache version:** yosoy222-v34
 - **Dashboard:** https://yosoy222.com/dashboard.html
 - **Productos:** 44 (25 velas, 5 collares, 6 pulseras, 7 franelas, 1 accesorio)
 - **Imágenes:** 63 thumbs, 60 catalog (incluye 4 decorativas y 15 variantes adicionales)
@@ -71,12 +72,17 @@
 
 ## Hallazgos de Seguridad Abiertos
 
-- **[2026-09-20] Ingesta migrada a Edge Function + SUPABASE_ANON eliminada del cliente (cache v30):** nueva acción `track` en `dashboard-stats` (whitelist estricta de columnas — nada crudo llega a la BD, probado con payload `<script>` que quedó sanitizado —, rate limit 30/min por IP, insert con service_role). `analytics.js` envía a la función; `config.js` ya solo tiene `SUPABASE_URL` y `GA_ID`. E2E: page_view + view_item llegaron vía función con la sesión correcta. Filas de auditoría limpiadas. **Pendiente deliberado:** la política `anon_insert_events` sigue viva porque la producción aún sirve v29 (con anon) — soltarla antes del deploy de v30 perdería eventos de visitantes reales; tras desplegar v30 puede caerse. Otro pendiente: revocar el PAT viejo. deploy vía CLI (`--no-verify-jwt` — la función hace su propia auth) con secrets `DASH_AUTH_SALT`, `DASH_AUTH_HASH`, `SESSION_SECRET` (usuario `admin`, contraseña fuerte generada y entregada al dueño — no vive en el repo ni en este chat más allá de la entrega) y `ALLOWED_ORIGINS` (localhost dev). Smoke tests: preflight 200, credenciales malas → 401, login → token HMAC 2h, stats → 158 filas. E2E en navegador: login real → pill "En Vivo (Supabase Cloud)", KPIs con datos globales (104 vistas, $6.70), feed de eventos con mapeo `event_type` correcto. Hash local del dashboard re-alineado vía el propio modal (v25). Hallazgo de debugging: `sw.js` usa `caches.match(..., { ignoreSearch: true })` → cualquier GET same-origin con query distinto puede recibir copia stale (un cache-buster en la URL NO invalida; hubo que servir el archivo con otro nombre). Pendiente restante del ciclo: borrar `SUPABASE_ANON` de `js/config.js` cuando ya no se necesite y revocar el PAT viejo.
-- **[2026-09-20] Exposición RLS en Supabase — RESUELTO y VERIFICADO:** el fix `scripts/supabase_rls.sql` fue aplicado vía Management API (`scripts/apply_rls.sh`, acepta HTTP 201 como éxito). Matriz final probada con sondeos: SELECT anon → `[]` (bloqueado), INSERT anon → 201 con `return=minimal` (ingesta viva; con `return=representation` da 401 por diseño de RLS), UPDATE/DELETE → bloqueados (filas de prueba intactas tras intentar borrarlas). Única política: `anon_insert_events`. Filas de auditoría (112, 114, 128) eliminadas con service_role. Pendiente relacionado: desplegar la Edge Function `dashboard-stats` para recuperar la lectura global del panel.
-- **[2026-09-20] Auth del dashboard es client-side:** la sesión se puede falsificar desde sessionStorage (verificado en local); rate-limiting en localStorage es borrable. Hash por defecto + salt públicos en el repo = crackeo offline posible. Cambiar credenciales desde el panel exige la contraseña vigente (fix 20 sep, v25 — antes permitía sobrescribir sin verificarla); nota: el cambio de hash sigue siendo por dispositivo.
+> Sección reorganizada el 20 sep 2026: los hallazgos resueltos se marcan con ✅ y su fix; los abiertos quedan al final. Histórico completo sin recortes.
+
+- **[2026-09-20] ✅ RESUELTO — Ingesta migrada a Edge Function + SUPABASE_ANON eliminada del cliente (cache v30):** nueva acción `track` en `dashboard-stats` (whitelist estricta de columnas — nada crudo llega a la BD, probado con payload `<script>` que quedó sanitizado —, rate limit 30/min por IP, insert con service_role). `analytics.js` envía a la función; `config.js` ya solo tiene `SUPABASE_URL` y `GA_ID`. E2E: page_view + view_item llegaron vía función con la sesión correcta. Filas de auditoría limpiadas. deploy vía CLI (`--no-verify-jwt` — la función hace su propia auth) con secrets `DASH_AUTH_SALT`, `DASH_AUTH_HASH`, `SESSION_SECRET` (usuario `admin`, contraseña fuerte generada y entregada al dueño — no vive en el repo ni en este chat más allá de la entrega) y `ALLOWED_ORIGINS` (localhost dev). Smoke tests: preflight 200, credenciales malas → 401, login → token HMAC 2h, stats → 158 filas. E2E en navegador: login real → pill "En Vivo (Supabase Cloud)", KPIs con datos globales (104 vistas, $6.70), feed de eventos con mapeo `event_type` correcto. Hash local del dashboard re-alineado vía el propio modal (v25). Hallazgo de debugging: `sw.js` usa `caches.match(..., { ignoreSearch: true })` → cualquier GET same-origin con query distinto puede recibir copia stale (un cache-buster en la URL NO invalida; hubo que servir el archivo con otro nombre).
+- **[2026-09-20] ✅ RESUELTO — Exposición RLS en Supabase (elevado a service_role-only total):** el fix `scripts/supabase_rls.sql` fue aplicado vía Management API (`scripts/apply_rls.sh`, acepta HTTP 201 como éxito). Ciclo completo: RLS insert-only primero (anon INSERT 201 con `return=minimal`; con `return=representation` da 401 por diseño de RLS), luego la política `anon_insert_events` fue eliminada tras desplegar v30 en producción. Estado final probado con sondeos: **cero políticas** en `public.yosoy222_events`, anon INSERT → 401, anon SELECT → cuerpo vacío, `relrowsecurity: true`, Edge `track` → 200 con fila verificada y limpiada. Filas de auditoría (112, 114, 128) eliminadas con service_role.
+- **[2026-09-20] ⚠️ PARCIALMENTE RESUELTO — Auth del dashboard es client-side:** la sesión se puede falsificar desde sessionStorage (verificado en local) y el rate-limiting en localStorage es borrable — limitación de diseño aceptada: los datos que protege son agregados sin PII, la frontera real es la Edge Function (auth server-side contra secret, token HMAC efímero 2h, rate limit durable en Postgres). Hash por defecto + salt públicos en el repo: **eliminado en v32** (fail-closed — el hash válido solo existe en localStorage, nacido de un login Edge exitoso; hallazgo crítico de la auditoría final). Cambiar credenciales exige la contraseña vigente (fix 20 sep, v25 — antes permitía sobrescribir sin verificarla); nota: el cambio de hash sigue siendo por dispositivo.
 
 ## Próximos Pasos / TODOs
 
-- [x] Analytics: Google Analytics 4 (GA4) integrado (G-Y9R0B5NH75) con eventos ecommerce (`view_item`, `add_to_cart`, `begin_checkout`, `generate_lead`, `search`) — completado 16 sep 2026
+- [x] Analytics: Google Analytics 4 (GA4) integrado (G-Y9R0B5NH75) con eventos ecommerce (`view_item`, `add_to_cart`, `begin_checkout`, `generate_lead`, `search`) — completado 16 sep 2026; carga diferida tras primera interacción (v31) con TBT 0ms verificado en producción 20 sep 2026
+- [x] Seguridad: RLS de `yosoy222_events` service_role-only + Edge Function desplegada + ingesta sin anon key (v30) + hash por defecto eliminado (v32) + rate limit durable en Postgres — ciclo cerrado 20 sep 2026
+- [x] UX Offline: lightbox con fallback a miniatura + avisos no bloqueantes en checkout (v34) — verificado E2E 20 sep 2026
+- [ ] ⚠️ **ACCIÓN DEL DUEÑO: revocar el PAT de Supabase** `sbp_04f3…` en https://supabase.com/dashboard/account/tokens — sigue activo; ya no se necesita para nada (último uso: SQL del rate limit durable)
 - [ ] Search Console: Envío de sitemap.xml
 - [ ] UX: Selector de ordenamiento por precio y filtro por rango

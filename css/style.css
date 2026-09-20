@@ -855,6 +855,17 @@ a:focus-visible, button:focus-visible, input:focus-visible {
   .lightbox-price { font-size: 1.2rem; }
 }
 
+/* --- Offline UX: aviso no bloqueante (lightbox y checkout) --- */
+.offline-note {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  background: var(--bg-raised);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 0.45rem 0.6rem;
+  margin: 0.4rem 0;
+}
+
 /* ============================================
    SCROLLBAR
    ============================================ */
