@@ -4,446 +4,46 @@
     {
       "parameters": {
         "httpMethod": "POST",
-        "path": "yosoy222-whatsapp",
+        "path": "yosoy222-whatsapp/messages-upsert",
+        "responseMode": "noResponse",
         "options": {}
       },
       "name": "Webhook Evolution API",
       "type": "n8n-nodes-base.webhook",
-      "typeVersion": 1,
-      "position": [
-        250,
-        300
-      ],
-      "id": "webhook-yosoy222"
+      "typeVersion": 1.1,
+      "position": [250, 300],
+      "id": "ee2c9cf2-45f4-4999-b298-4c7940aa4736",
+      "webhookId": "yosoy222-whatsapp"
     },
     {
       "parameters": {
-        "jsCode": "// Extraer y normalizar mensaje de WhatsApp desde Evolution API\nconst data = $input.first().json;\n\n// Filtrar mensajes propios o de estado\nif (data.data?.key?.fromMe || data.event !== 'messages.upsert') {\n  return [];\n}\n\nconst msg = data.data?.message;\nconst senderJid = data.data?.key?.remoteJid || '';\nconst senderNumber = senderJid.replace('@s.whatsapp.net', '').replace('@g.us', '');\nconst pushName = data.data?.pushName || 'Cliente';\n\n// Extraer texto (conversacion normal o extendida)\nconst text = (msg?.conversation || msg?.extendedTextMessage?.text || msg?.imageMessage?.caption || '').trim();\n\nif (!text || senderJid.includes('@g.us')) {\n  return []; // Ignorar grupos o mensajes sin texto\n}\n\n// Deteccion de intencion\nconst lower = text.toLowerCase();\nlet intent = 'general';\n\nif (lower.includes('asesor') || lower.includes('humano') || lower.includes('persona') || lower.includes('hablar con alguien') || lower.includes('ayuda') || lower.includes('operador')) {\n  intent = 'human_escalation';\n} else if (lower.includes('pedido') || lower.includes('total: $') || lower.includes('me gustaría hacer este pedido')) {\n  intent = 'order_received';\n} else if (lower.includes('pago') || lower.includes('cuenta') || lower.includes('pago movil') || lower.includes('zelle') || lower.includes('dolares') || lower.includes('transferencia')) {\n  intent = 'payment_info';\n} else if (lower.includes('catalogo') || lower.includes('catálogo') || lower.includes('precio') || lower.includes('modelos')) {\n  intent = 'catalog_info';\n} else if (lower.includes('hola') || lower.includes('buenas') || lower.includes('buenos dias') || lower.includes('buenas tardes')) {\n  intent = 'welcome';\n}\n\nreturn [{\n  json: {\n    senderJid,\n    senderNumber,\n    pushName,\n    text,\n    intent,\n    timestamp: new Date().toLocaleTimeString('es-VE', { hour: '2-digit', minute: '2-digit' }),\n    centralNumber: '584126481628',\n    agents: ['584129922399', '584242162538']\n  }\n}];"
+        "jsCode": "const mensaje = items[0].json.data?.message?.conversation || items[0].json.data?.key?.remoteJid || 'Sin mensaje';\n\nconst respuesta = {\n  phone: items[0].json.data?.key?.remoteJid,\n  text: `Recibido: ${mensaje}`\n};\n\nreturn [respuesta];"
       },
-      "name": "Parse & Route Intent",
+      "name": "Procesar Mensaje",
       "type": "n8n-nodes-base.code",
-      "typeVersion": 1,
-      "position": [
-        480,
-        300
-      ],
-      "id": "parse-intent"
+      "typeVersion": 2,
+      "position": [550, 300],
+      "id": "process-msg"
     },
     {
       "parameters": {
-        "rules": {
-          "values": [
-            {
-              "conditions": {
-                "string": [
-                  {
-                    "value1": "={{ $json.intent }}",
-                    "value2": "order_received"
-                  }
-                ]
-              }
-            },
-            {
-              "conditions": {
-                "string": [
-                  {
-                    "value1": "={{ $json.intent }}",
-                    "value2": "human_escalation"
-                  }
-                ]
-              }
-            },
-            {
-              "conditions": {
-                "string": [
-                  {
-                    "value1": "={{ $json.intent }}",
-                    "value2": "payment_info"
-                  }
-                ]
-              }
-            },
-            {
-              "conditions": {
-                "string": [
-                  {
-                    "value1": "={{ $json.intent }}",
-                    "value2": "welcome"
-                  }
-                ]
-              }
-            },
-            {
-              "conditions": {
-                "string": [
-                  {
-                    "value1": "={{ $json.intent }}",
-                    "value2": "catalog_info"
-                  }
-                ]
-              }
-            }
-          ]
-        }
+        "operation": "send",
+        "documentId": "b7d2a4fb-31d1-4367-99a6-75f0c8c95e3c",
+        "to": "={{ $json.phone }}",
+        "text": "={{ $json.text }}",
+        "instanceId": "5a43ba4c-0654-4a41-b62d-90ede0c033fd",
+        "apiVersion": "v19.0.0",
+        "ignoreQueued": false
       },
-      "name": "Switch Intent",
-      "type": "n8n-nodes-base.switch",
-      "typeVersion": 1,
-      "position": [
-        720,
-        300
-      ],
-      "id": "switch-intent"
-    },
-    {
-      "parameters": {
-        "requestMethod": "POST",
-        "url": "http://agency-evolution-api:8080/message/sendText/yosoy222_bot",
-        "options": {},
-        "headerParametersUi": {
-          "parameter": [
-            {
-              "name": "apikey",
-              "value": "={{ $env.EVOLUTION_API_KEY }}"
-            }
-          ]
-        },
-        "bodyParametersUi": {
-          "parameter": [
-            {
-              "name": "number",
-              "value": "={{ $json.senderNumber }}"
-            },
-            {
-              "name": "text",
-              "value": "=¡Hola {{ $json.pushName }}! ✨🕯️\n\n¡Hemos recibido tu pedido de *YoSoy222* con éxito! 🛍️\n\nUno de nuestros asesores está confirmando la disponibilidad de tus piezas y te enviará los datos de pago en breve.\n\nSi deseas coordinar algo específico, solo responde a este mensaje. ¡Gracias por elegirnos!"
-            }
-          ]
-        }
-      },
-      "name": "Reply Order Received",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.1,
-      "position": [
-        1000,
-        150
-      ],
-      "id": "reply-order"
-    },
-    {
-      "parameters": {
-        "requestMethod": "POST",
-        "url": "http://agency-evolution-api:8080/message/sendText/yosoy222_bot",
-        "options": {},
-        "headerParametersUi": {
-          "parameter": [
-            {
-              "name": "apikey",
-              "value": "={{ $env.EVOLUTION_API_KEY }}"
-            }
-          ]
-        },
-        "bodyParametersUi": {
-          "parameter": [
-            {
-              "name": "number",
-              "value": "584129922399"
-            },
-            {
-              "name": "text",
-              "value": "=🛍️ *NUEVO PEDIDO RECIBIDO — YoSoy222*\n\n• *Cliente:* {{ $json.pushName }}\n• *Teléfono:* +{{ $json.senderNumber }}\n• *Detalle:* {{ $json.text }}\n• *Hora:* {{ $json.timestamp }}\n\n👉 *Abrir chat:* https://wa.me/{{ $json.senderNumber }}"
-            }
-          ]
-        }
-      },
-      "name": "Notify Agent 1 Order",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.1,
-      "position": [
-        1250,
-        100
-      ],
-      "id": "notify-agent-1-order"
-    },
-    {
-      "parameters": {
-        "requestMethod": "POST",
-        "url": "http://agency-evolution-api:8080/message/sendText/yosoy222_bot",
-        "options": {},
-        "headerParametersUi": {
-          "parameter": [
-            {
-              "name": "apikey",
-              "value": "={{ $env.EVOLUTION_API_KEY }}"
-            }
-          ]
-        },
-        "bodyParametersUi": {
-          "parameter": [
-            {
-              "name": "number",
-              "value": "584242162538"
-            },
-            {
-              "name": "text",
-              "value": "=🛍️ *NUEVO PEDIDO RECIBIDO — YoSoy222*\n\n• *Cliente:* {{ $json.pushName }}\n• *Teléfono:* +{{ $json.senderNumber }}\n• *Detalle:* {{ $json.text }}\n• *Hora:* {{ $json.timestamp }}\n\n👉 *Abrir chat:* https://wa.me/{{ $json.senderNumber }}"
-            }
-          ]
-        }
-      },
-      "name": "Notify Agent 2 Order",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.1,
-      "position": [
-        1250,
-        200
-      ],
-      "id": "notify-agent-2-order"
-    },
-    {
-      "parameters": {
-        "requestMethod": "POST",
-        "url": "http://agency-evolution-api:8080/message/sendText/yosoy222_bot",
-        "options": {},
-        "headerParametersUi": {
-          "parameter": [
-            {
-              "name": "apikey",
-              "value": "={{ $env.EVOLUTION_API_KEY }}"
-            }
-          ]
-        },
-        "bodyParametersUi": {
-          "parameter": [
-            {
-              "name": "number",
-              "value": "={{ $json.senderNumber }}"
-            },
-            {
-              "name": "text",
-              "value": "=👋 ¡Hola {{ $json.pushName }}! Te estamos transfiriendo de inmediato con nuestro equipo humano para atenderte personalmente. Un momento por favor... ⏳"
-            }
-          ]
-        }
-      },
-      "name": "Notify Customer Escalation",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.1,
-      "position": [
-        1000,
-        350
-      ],
-      "id": "notify-customer-escalation"
-    },
-    {
-      "parameters": {
-        "requestMethod": "POST",
-        "url": "http://agency-evolution-api:8080/message/sendText/yosoy222_bot",
-        "options": {},
-        "headerParametersUi": {
-          "parameter": [
-            {
-              "name": "apikey",
-              "value": "={{ $env.EVOLUTION_API_KEY }}"
-            }
-          ]
-        },
-        "bodyParametersUi": {
-          "parameter": [
-            {
-              "name": "number",
-              "value": "584129922399"
-            },
-            {
-              "name": "text",
-              "value": "=🚨 *ATENCIÓN HUMANA REQUERIDA — YoSoy222*\n\n• *Cliente:* {{ $json.pushName }}\n• *Teléfono:* +{{ $json.senderNumber }}\n• *Mensaje:* \"{{ $json.text }}\"\n• *Hora:* {{ $json.timestamp }}\n\n👉 *Responder al cliente:* https://wa.me/{{ $json.senderNumber }}"
-            }
-          ]
-        }
-      },
-      "name": "Alert Agent 1 Human Needed",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.1,
-      "position": [
-        1250,
-        300
-      ],
-      "id": "alert-agent-1"
-    },
-    {
-      "parameters": {
-        "requestMethod": "POST",
-        "url": "http://agency-evolution-api:8080/message/sendText/yosoy222_bot",
-        "options": {},
-        "headerParametersUi": {
-          "parameter": [
-            {
-              "name": "apikey",
-              "value": "={{ $env.EVOLUTION_API_KEY }}"
-            }
-          ]
-        },
-        "bodyParametersUi": {
-          "parameter": [
-            {
-              "name": "number",
-              "value": "584242162538"
-            },
-            {
-              "name": "text",
-              "value": "=🚨 *ATENCIÓN HUMANA REQUERIDA — YoSoy222*\n\n• *Cliente:* {{ $json.pushName }}\n• *Teléfono:* +{{ $json.senderNumber }}\n• *Mensaje:* \"{{ $json.text }}\"\n• *Hora:* {{ $json.timestamp }}\n\n👉 *Responder al cliente:* https://wa.me/{{ $json.senderNumber }}"
-            }
-          ]
-        }
-      },
-      "name": "Alert Agent 2 Human Needed",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.1,
-      "position": [
-        1250,
-        400
-      ],
-      "id": "alert-agent-2"
-    },
-    {
-      "parameters": {
-        "requestMethod": "POST",
-        "url": "http://agency-evolution-api:8080/message/sendText/yosoy222_bot",
-        "options": {},
-        "headerParametersUi": {
-          "parameter": [
-            {
-              "name": "apikey",
-              "value": "={{ $env.EVOLUTION_API_KEY }}"
-            }
-          ]
-        },
-        "bodyParametersUi": {
-          "parameter": [
-            {
-              "name": "number",
-              "value": "={{ $json.senderNumber }}"
-            },
-            {
-              "name": "text",
-              "value": "=💳 *Métodos de Pago YoSoy222*:\n\n• *Pago Móvil (Bs):* Banesco / Mercantil (Tasa BCV)\n• *Zelle / Efectivo USD* (Entregas personales)\n• *Binance Pay (USDT)*\n\nPor favor indícanos cuál método prefieres para enviarte los datos exactos. ✨"
-            }
-          ]
-        }
-      },
-      "name": "Reply Payment Info",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.1,
-      "position": [
-        1000,
-        500
-      ],
-      "id": "reply-payment"
-    },
-    {
-      "parameters": {
-        "requestMethod": "POST",
-        "url": "http://agency-evolution-api:8080/message/sendText/yosoy222_bot",
-        "options": {},
-        "headerParametersUi": {
-          "parameter": [
-            {
-              "name": "apikey",
-              "value": "={{ $env.EVOLUTION_API_KEY }}"
-            }
-          ]
-        },
-        "bodyParametersUi": {
-          "parameter": [
-            {
-              "name": "number",
-              "value": "={{ $json.senderNumber }}"
-            },
-            {
-              "name": "text",
-              "value": "=¡Hola {{ $json.pushName }}! ✨ Bienvenido/a a *YoSoy222* — Velas artesanales y accesorios hechos a mano.\n\n¿En qué podemos ayudarte hoy?\n\n1️⃣ Ver catálogo: https://yosoy222.com\n2️⃣ Métodos de pago y envíos\n3️⃣ Hablar con un asesor humano\n\nEscribe el número de tu opción o tu consulta directa. 🕯️"
-            }
-          ]
-        }
-      },
-      "name": "Reply Welcome",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.1,
-      "position": [
-        1000,
-        650
-      ],
-      "id": "reply-welcome"
-    },
-    {
-      "parameters": {
-        "requestMethod": "POST",
-        "url": "http://agency-evolution-api:8080/message/sendText/yosoy222_bot",
-        "options": {},
-        "headerParametersUi": {
-          "parameter": [
-            {
-              "name": "apikey",
-              "value": "={{ $env.EVOLUTION_API_KEY }}"
-            }
-          ]
-        },
-        "bodyParametersUi": {
-          "parameter": [
-            {
-              "name": "number",
-              "value": "={{ $json.senderNumber }}"
-            },
-            {
-              "name": "text",
-              "value": "=📍 *Catálogo YoSoy222*\n\nConsulta nuestro catálogo completo con 44 productos en:\nhttps://yosoy222.com\n\nVelas ritualistas · Wax Melts · Franelas con intención · Dijes y pulseras\n\n¿Te interesa alguna pieza en particular? ¡Pregútanos sin compromiso! 🕯️"
-            }
-          ]
-        }
-      },
-      "name": "Reply Catalog Info",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.1,
-      "position": [
-        1000,
-        250
-      ],
-      "id": "reply-catalog"
-    },
-    {
-      "parameters": {
-        "requestMethod": "POST",
-        "url": "http://agency-evolution-api:8080/message/sendText/yosoy222_bot",
-        "options": {},
-        "headerParametersUi": {
-          "parameter": [
-            {
-              "name": "apikey",
-              "value": "={{ $env.EVOLUTION_API_KEY }}"
-            }
-          ]
-        },
-        "bodyParametersUi": {
-          "parameter": [
-            {
-              "name": "number",
-              "value": "={{ $json.senderNumber }}"
-            },
-            {
-              "name": "text",
-              "value": "=🕯️ Hola! Gracias por escribir a *YoSoy222*.\n\nNo entendí tu consulta, pero uno de nuestros asesores humanos revisará tu mensaje y te responderá a la brevedad posible. \n\nMientras tanto, puedes:\n• Ver nuestro catálogo: https://yosoy222.com\n• Preguntar por precios o productos"
-            }
-          ]
-        }
-      },
-      "name": "Reply General Fallback",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.1,
-      "position": [
-        1000,
-        50
-      ],
-      "id": "reply-general"
+      "name": "Responde WhatsApp",
+      "type": "n8n-nodes-base.whatsapp",
+      "typeVersion": 1.1,
+      "position": [850, 300],
+      "id": "send-wa",
+      "connection": {
+        "id": "yosoy222_bot",
+        "name": "YoSoy222 Bot"
+      }
     }
   ],
   "connections": {
@@ -451,101 +51,36 @@
       "main": [
         [
           {
-            "node": "Parse & Route Intent",
+            "node": "Procesar Mensaje",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Parse & Route Intent": {
+    "Procesar Mensaje": {
       "main": [
         [
           {
-            "node": "Switch Intent",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Switch Intent": {
-      "main": [
-        [
-          {
-            "node": "Reply Order Received",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "Notify Customer Escalation",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "Reply Payment Info",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "Reply Welcome",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "Reply Catalog Info",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "Reply General Fallback",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Reply Order Received": {
-      "main": [
-        [
-          {
-            "node": "Notify Agent 1 Order",
-            "type": "main",
-            "index": 0
-          },
-          {
-            "node": "Notify Agent 2 Order",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Notify Customer Escalation": {
-      "main": [
-        [
-          {
-            "node": "Alert Agent 1 Human Needed",
-            "type": "main",
-            "index": 0
-          },
-          {
-            "node": "Alert Agent 2 Human Needed",
+            "node": "Responde WhatsApp",
             "type": "main",
             "index": 0
           }
         ]
       ]
     }
-  }
+  },
+  "meta": {
+    "templateCredentials": {
+      "resource": "whatsapp",
+      "service": "whatsapp"
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "id": "a8gQDFG9bYJEwpsA",
+  "updatedAt": "2026-09-19T12:00:00.000Z",
+  "versionId": "v1",
+  "name": "YoSoy222 — WhatsApp Automation & Human Escalation"
 }
