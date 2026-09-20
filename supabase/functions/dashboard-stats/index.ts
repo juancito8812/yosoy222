@@ -75,12 +75,15 @@ function clearFails(ip: string): void {
   attempts.delete(ip);
 }
 
-// Rate limit de ingesta (acción "track"): ventana fija por IP
+// Rate limit de ingesta (acción "track"): ventana fija por IP.
+// Primario: RPC durable en Postgres (private.consume_rate_limit) — compartida
+// entre isolates, atómica y con limpieza automática vía pg_cron. Fallback:
+// mapa en memoria (por-isolate) solo si la RPC no está disponible.
 const burst = new Map<string, { n: number; reset: number }>();
 const BURST_MAX = 30;        // eventos
 const BURST_WINDOW = 60_000; // por minuto
 
-function allowEvent(ip: string): boolean {
+function allowEventMemory(ip: string): boolean {
   if (burst.size > 5000) {
     const now = Date.now();
     for (const [k, v] of burst) if (v.reset <= now) burst.delete(k);
@@ -94,6 +97,29 @@ function allowEvent(ip: string): boolean {
   if (b.n >= BURST_MAX) return false;
   b.n += 1;
   return true;
+}
+
+async function allowEvent(ip: string, supabaseUrl: string, serviceRole: string): Promise<boolean> {
+  try {
+    const res = await fetch(`${supabaseUrl}/rest/v1/rpc/consume_rate_limit`, {
+      method: "POST",
+      headers: {
+        apikey: serviceRole,
+        Authorization: `Bearer ${serviceRole}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        p_key: `track:${ip}`,
+        p_max: BURST_MAX,
+        p_window_seconds: 60,
+      }),
+    });
+    if (res.ok) return (await res.json()) === true;
+    console.warn(`rate limit RPC ${res.status}; usando fallback en memoria`);
+  } catch (err) {
+    console.warn("rate limit RPC inaccesible; usando fallback en memoria", err);
+  }
+  return allowEventMemory(ip);
 }
 
 // Sanitización de la acción "track": whitelist de columnas, nunca raw.
@@ -229,7 +255,7 @@ Deno.serve(async (req: Request) => {
 
   // ---------- ACCIÓN: track (ingesta pública; reemplaza el INSERT con clave anon) ----------
   if (body.action === "track") {
-    if (!allowEvent(ip)) {
+    if (!(await allowEvent(ip, supabaseUrl, serviceRole))) {
       return json({ error: "rate_limited" }, 429, origin);
     }
 

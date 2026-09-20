@@ -14,6 +14,13 @@ dashboard.html ──2──▶ POST {action:"stats", user, token}
                        │  verifica HMAC (sin estado, 2h)
                        │  lee con SUPABASE_SERVICE_ROLE_KEY (nunca sale al cliente)
                        ◀── { ok, rows: [...] }
+tienda (analytics.js) ──▶ POST {action:"track", event_type, ...}
+                       │  whitelist de columnas + sanitización server-side
+                       │  rate limit 30/min por IP — DURABLE: RPC
+                       │  public.consume_rate_limit (service_role only) sobre
+                       │  private.rate_limit_buckets; limpieza pg_cron cada 10 min;
+                       │  fallback en memoria por-isolate si la RPC falla
+                       ◀── { ok: true } | 429 rate_limited
 ```
 
 La clave `service_role` vive **solo en los secrets de la función**. El navegador
