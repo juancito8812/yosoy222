@@ -8,27 +8,27 @@
 
 :root {
   /* Earth palette: warm white → cream */
-  --bg: #faf6ef;
-  --bg-raised: #f1eadb;
-  --bg-card: #fffdf8;
-  --bg-card-hover: #f7f0e3;
-  --surface: #f3ebdd;
-  --border: rgba(120,90,55,0.14);
-  --border-strong: rgba(120,90,55,0.26);
+  --bg: #F3EDE4;
+  --bg-raised: #FAF9F6;
+  --bg-card: #FAF9F6;
+  --bg-card-hover: #F3EDE4;
+  --surface: #F0E8DF;
+  --border: rgba(211,178,131,0.14);
+  --border-strong: rgba(211,178,131,0.26);
 
   /* Text */
   --text: #3b3125;
-  --text-muted: #6b5a42;
-  --text-faint: #65543c;
+  --text-muted: #D8D5D0;
+  --text-faint: #D8D5D0;
 
   /* New palette: gold matte for titles/ritual phrases, pearl gray for body */
-  --gold-matte: #c9b47a;
-  --pearl-gray: #766f65;
+  --gold-matte: #C9A878;
+  --pearl-gray: #D8D5D0;
 
   /* Accent (earth amber, candle flame) */
-  --accent: #854f19;
-  --accent-hover: #6e3e10;
-  --accent-glow: rgba(133,79,25,0.22);
+  --accent: #C9A878;
+  --accent-hover: #A88A5A;
+  --accent-glow: rgba(201,168,120,0.22);
 
   /* Functional */
   --whatsapp: #25d366;
@@ -39,8 +39,8 @@
   --radius: 14px;
   --radius-sm: 8px;
   --radius-full: 999px;
-  --shadow: 0 6px 24px rgba(101,71,35,0.10);
-  --shadow-lg: 0 12px 40px rgba(101,71,35,0.15);
+  --shadow: 0 6px 24px rgba(201,168,120,0.10);
+  --shadow-lg: 0 12px 40px rgba(201,168,120,0.15);
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
   --duration: 0.28s;
 }
@@ -110,13 +110,13 @@ em { font-style: italic; color: var(--gold-matte); font-family: 'Playfair Displa
    ============================================ */
 .header {
   position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-  background: rgba(250,246,239,0.88);
+  background: rgba(243,237,228,0.88);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
   border-bottom: 1px solid var(--border);
   transition: background var(--duration) var(--ease), box-shadow var(--duration) var(--ease);
 }
-.header.scrolled { background: rgba(250,246,239,0.97); box-shadow: 0 2px 20px rgba(101,71,35,0.12); }
+.header.scrolled { background: rgba(243,237,228,0.97); box-shadow: 0 2px 20px rgba(101,71,35,0.12); }
 
 .header .container {
   display: flex; align-items: center; justify-content: space-between;
@@ -275,7 +275,7 @@ em { font-style: italic; color: var(--gold-matte); font-family: 'Playfair Displa
   padding: 2.5rem 0 3.5rem;
 }
 .manifiesto-card {
-  background: linear-gradient(135deg, #fdfbf7 0%, #f4ece0 100%);
+  background: linear-gradient(135deg, #FAF9F6 0%, #F3EDE4 100%);
   border: 1px solid var(--border);
   border-radius: 20px;
   padding: 3rem 2rem;
@@ -309,7 +309,7 @@ em { font-style: italic; color: var(--gold-matte); font-family: 'Playfair Displa
 }
 .manifiesto-item {
   padding: 1.85rem 1.25rem;
-  background: rgba(255, 255, 255, 0.75);
+  background: rgba(243,237,228,0.85);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   border-radius: var(--radius);
@@ -380,7 +380,7 @@ em { font-style: italic; color: var(--gold-matte); font-family: 'Playfair Displa
 .pilar-card:hover {
   transform: translateY(-4px);
   border-color: var(--border-strong);
-  box-shadow: 0 12px 32px rgba(101,71,35,0.10);
+  box-shadow: 0 12px 32px rgba(201,168,120,0.10);
 }
 .pilar-num {
   font-family: 'Playfair Display', serif;
@@ -650,7 +650,7 @@ em { font-style: italic; color: var(--gold-matte); font-family: 'Playfair Displa
   background: rgba(169,111,45,0.1);
   color: var(--accent-hover);
   font-size: 0.75rem; font-weight: 600;
-  border: 1px solid rgba(169,111,45,0.25);
+  border: 1px solid rgba(201,168,120,0.25);
   transition: all var(--duration) var(--ease);
 }
 .add-cart-btn:hover {
@@ -694,7 +694,7 @@ em { font-style: italic; color: var(--gold-matte); font-family: 'Playfair Displa
 .step-num {
   display: inline-flex; align-items: center; justify-content: center;
   width: 40px; height: 40px; border-radius: 50%;
-  background: rgba(169,111,45,0.12); color: var(--gold-matte);
+  background: rgba(201,168,120,0.12); color: var(--gold-matte);
   font-family: 'Playfair Display', serif; font-weight: 700;
   font-size: 1.1rem; margin-bottom: 0.75rem;
 }
@@ -976,7 +976,7 @@ em { font-style: italic; color: var(--gold-matte); font-family: 'Playfair Displa
   padding-bottom: 2.5rem;
 }
 .footer-brand p {
-  color: var(--text-muted); font-size: 0.85rem;
+  color: var(--pearl-gray); font-size: 0.85rem;
   margin-top: 0.5rem; max-width: 260px; line-height: 1.6;
 }
 .footer-col h3, .footer-col h4 {
@@ -1190,5 +1190,5 @@ a:focus-visible, button:focus-visible, input:focus-visible {
    ============================================ */
 ::-webkit-scrollbar { width: 5px; }
 ::-webkit-scrollbar-track { background: var(--bg); }
-::-webkit-scrollbar-thumb { background: rgba(169,111,45,0.25); border-radius: 3px; }
+::-webkit-scrollbar-thumb { background: rgba(201,168,120,0.25); border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: rgba(169,111,45,0.4); }
