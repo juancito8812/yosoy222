@@ -33,8 +33,9 @@
      Este módulo (core) posee auth, datos y estado; obtiene las
      stats y delega el pintado. Firma original intacta. */
   async function renderDashboard(forceCloud = false) {
-    const cloud = await fetchCloudData(forceCloud);
-    const stats = computeStats(currentDays, cloud);
+    await fetchCloudData(forceCloud);
+    // Historia completa: fusión cloud (global) + local del navegador (era pre-Supabase)
+    const stats = computeStats(currentDays, getMergedRawData());
     return YoSoyDashView.renderDashboard(stats);
   }
 
@@ -335,6 +336,26 @@
     }
   }
 
+  // Historia completa: cloud (global, desde el 17 sep) + local de este navegador
+  // (las semanas previas, antes de que existiera la ingesta a Supabase). Los
+  // eventos locales no tienen id y sus timestamps difieren de los de la BD
+  // (latencia de sync), así que la frontera es temporal: se suman los locales
+  // ANTERIORES al primer evento cloud — los posteriores ya están en cloud y se
+  // excluyen para no contarlos doble. El historial local se conserva mientras
+  // la retención (60 días) lo permita; presérvalo con el botón Exportar CSV.
+  function getMergedRawData() {
+    const cloud = cachedCloudData;
+    const local = getLocalRawData();
+    if (!cloud || !cloud.events.length) return local;
+    const cloudStart = Math.min(...cloud.events.map(e => e.t || 0)) || 0;
+    const esHistoriaVieja = e => (e.t || 0) > 0 && (e.t || 0) < cloudStart;
+    return {
+      sessions: [...cloud.sessions, ...local.sessions.filter(esHistoriaVieja)],
+      events: [...cloud.events, ...local.events.filter(esHistoriaVieja)],
+      isCloud: true
+    };
+  }
+
   function filterByDays(items, days) {
     if (days === 0) return items;
     const cutoff = Date.now() - (days * 24 * 60 * 60 * 1000);
@@ -342,7 +363,7 @@
   }
 
   function computeStats(days, dataSource) {
-    const raw = dataSource || getLocalRawData();
+    const raw = dataSource || getMergedRawData();
     const sessions = filterByDays(raw.sessions || [], days);
     const events = filterByDays(raw.events || [], days);
 
@@ -454,7 +475,7 @@
 
   // --- CSV EXPORT ---
   function exportCSV() {
-    const raw = cachedCloudData || getLocalRawData();
+    const raw = getMergedRawData();
     const rows = [
       ['Timestamp', 'Fecha', 'Tipo de Evento', 'Detalle / Producto / Busqueda', 'Precio/Total', 'Origen / Fuente', 'Dispositivo', 'Pais', 'Ciudad']
     ];

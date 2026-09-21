@@ -4,8 +4,8 @@
 
 - **Propósito:** Tienda online de velas artesanales, pulseras, collares, franelas y accesorios con PWA offline, checkout por WhatsApp y dashboard de analítica privada
 - **Stack:** HTML5 + CSS3 + JavaScript vanilla (sin frameworks), PWA (manifest.json + sw.js), GitHub Pages, Cloudflare CDN
-- **Última sesión:** 20 de septiembre de 2026
-- **Versión de memoria:** 9
+- **Última sesión:** 21 de septiembre de 2026
+- **Versión de memoria:** 10
 
 ## Arquitectura
 
@@ -25,7 +25,9 @@
 
 ## Decisiones Clave & Hitos
 
-- **20 sep 2026** — **UX Offline Completa & Cache v34:** auditoría en modo avión (simulacro con SW activo y red muerta) del ciclo catálogo→carrito→checkout. Hallazgos: el lightbox carga `images/catalog/` (nunca precacheado) **sin handler `onerror`** → imagen rota offline; y el checkout por WhatsApp falla en silencio sin conexión. Corregido en `js/app.js`: fallback automático a miniatura + nota informativa no bloqueante (`.offline-note`), aviso de carrito guardado en checkout offline (se elimina al reconectar), y eliminación de la nota cuando la imagen grande recupera. Analytics/geo/sync ya estaban blindados con `.catch()`. Ciclo completo verificado E2E (fallback, sin duplicación, recuperación, imagen grande).
+- **21 sep 2026 — Dashboard con historia completa: fusión cloud+local (cache v35):** hallazgo del dueño: "el dashboard perdió la información más vieja". Diagnóstico con datos: la BD NO perdió nada (237 filas, 17 sep→hoy, verificado por SQL y por la Edge Function devolviendo las 237); lo que pasaba es que desde v30 el dashboard pisa los datos locales del navegador con los cloud (que solo existen desde que arrancó la ingesta a Supabase) — la era de analítica local pre-16-sep seguía en localStorage pero no se mostraba. Fix: `getMergedRawData()` en `js/dashboard.js` suma cloud + los eventos locales ANTERIORES al primer evento cloud (frontera temporal: los eventos locales no tienen id y sus timestamps difieren por latencia de sync; los posteriores ya están en cloud y se excluyen para no contar doble). Cableado: `renderDashboard` ahora pasa `getMergedRawData()` a `computeStats` (el `||` anterior solo fusionaba al CAER sin cloud) y `exportCSV` exporta la historia completa (vía de respaldo antes de que la retención local de 60 días la borre). E2E verificado con login real: sembradas 4 sesiones viejas + 8 eventos (10-15 sep) → KPI Visitas 174 = 170 cloud + 4 locales, ciudades históricas visibles, sin duplicados, pill "En Vivo (Supabase Cloud)". Lección: el `||` como fusionador silencioso es una trampa — el call site siempre pasaba dataSource y el fallback nunca corría. Nota honesta: la historia local de CADA navegador solo se ve en ese navegador (es el límite de la era pre-Supabase); el CSV es el respaldo universal.
+- **21 sep 2026 — Rotación de credenciales del dashboard (server-side, sin deploy):** rotados juntos `DASH_AUTH_SALT` (aleatorio nuevo), `DASH_AUTH_HASH` y `SESSION_SECRET` en los secrets del proyecto vía API de Management (`POST /v1/projects/{ref}/secrets`). Toda sesión activa previa murió al instante (el HMAC no verifica contra el secret viejo). Verificación completa contra producción: login con las credenciales nuevas ✓ (token 120 min), `stats` con el token ✓ (235 filas), control negativo 401 ✓. Lecciones: los secrets son **write-only** por API — no se pueden leer para computar un hash contra el salt vigente, por lo que salt+hash deben rotarse SIEMPRE juntos (el primer intento falló al computar el hash con el salt público del cliente: ese `AUTH_SALT` de `js/dashboard.js` NO es el salt del server y son dominios deliberadamente distintos — el hash local del modal de cambio de credenciales es auto-consistente y no depende del server). La contraseña vive solo en poder del dueño (no en repo, ni en claro en secrets, ni en este archivo). Pendiente relacionado: revocar el PAT de Management usado.
+- **20 sep 2026** — **UX Offline Completa & Cache v35:** auditoría en modo avión (simulacro con SW activo y red muerta) del ciclo catálogo→carrito→checkout. Hallazgos: el lightbox carga `images/catalog/` (nunca precacheado) **sin handler `onerror`** → imagen rota offline; y el checkout por WhatsApp falla en silencio sin conexión. Corregido en `js/app.js`: fallback automático a miniatura + nota informativa no bloqueante (`.offline-note`), aviso de carrito guardado en checkout offline (se elimina al reconectar), y eliminación de la nota cuando la imagen grande recupera. Analytics/geo/sync ya estaban blindados con `.catch()`. Ciclo completo verificado E2E (fallback, sin duplicación, recuperación, imagen grande).
 - **16 sep 2026** — **Conexión Supabase Cloud Analytics (Fase 20):** proyecto dedicado `gkekolsttfbiegyhvejy.supabase.co` para ingesta global de eventos (`yosoy222_events`) sin intermediarios, sincronización en segundo plano y visualización en tiempo real en `/dashboard.html`.
 - **16 sep 2026** — **Integración Google Analytics 4 (GA4 G-Y9R0B5NH75, Fase 19):** telemetría de eventos e-commerce (`view_item`, `add_to_cart`, `begin_checkout`, `generate_lead`, `search`) sincronizada con GA4 en `<head>`.
 - **16 sep 2026** — **Rediseño Luxury Glassmorphism & Cache v16 (Fase 18):** rediseño visual de alta gama en `/dashboard.html` con tema Warm Charcoal & Gold, gráficos Bezier con gradientes luminosos, selector de rango rápido (`[Hoy] [7D] [30D] [60D] [Todo]`), desglose de dispositivos móvil/escritorio, unificación de textos en catálogo y bump a Cache v16.
@@ -60,7 +62,7 @@
 ## Estado Actual
 
 - **Branch:** main
-- **Cache version:** yosoy222-v34
+- **Cache version:** yosoy222-v35
 - **Dashboard:** https://yosoy222.com/dashboard.html
 - **Productos:** 44 (25 velas, 5 collares, 6 pulseras, 7 franelas, 1 accesorio)
 - **Imágenes:** 63 thumbs, 60 catalog (incluye 4 decorativas y 15 variantes adicionales)
@@ -83,6 +85,6 @@
 - [x] Analytics: Google Analytics 4 (GA4) integrado (G-Y9R0B5NH75) con eventos ecommerce (`view_item`, `add_to_cart`, `begin_checkout`, `generate_lead`, `search`) — completado 16 sep 2026; carga diferida tras primera interacción (v31) con TBT 0ms verificado en producción 20 sep 2026
 - [x] Seguridad: RLS de `yosoy222_events` service_role-only + Edge Function desplegada + ingesta sin anon key (v30) + hash por defecto eliminado (v32) + rate limit durable en Postgres — ciclo cerrado 20 sep 2026
 - [x] UX Offline: lightbox con fallback a miniatura + avisos no bloqueantes en checkout (v34) — verificado E2E 20 sep 2026
-- [ ] ⚠️ **ACCIÓN DEL DUEÑO: revocar el PAT de Supabase** `sbp_04f3…` en https://supabase.com/dashboard/account/tokens — sigue activo; ya no se necesita para nada (último uso: SQL del rate limit durable)
+- [x] ✅ **RESUELTO (21 sep) — PAT de Supabase revocado:** el dueño revocó `sbp_04f3…` (creado ~20 sep) en Account → Access Tokens. Verificado por sondeo `GET /v1/projects/{ref}` con el token → **401** (21 sep). No había dependencias: CI no lo usa (0 referencias en workflows) y `scripts/apply_rls.sh` solo lo pide por variable de entorno para ejecuciones manuales — quien lo necesite, genera un token nuevo en el mismo panel. El token estuvo expuesto en la conversación y en poder del agente ~1 día; todo lo ejecutado con él quedó documentado en las entradas del 20-21 sep.
 - [ ] Search Console: Envío de sitemap.xml
 - [ ] UX: Selector de ordenamiento por precio y filtro por rango
