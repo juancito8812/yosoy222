@@ -60,7 +60,8 @@ input { font-family: inherit; }
 
 .container { max-width: 1140px; margin: 0 auto; padding: 0 1.5rem; }
 .accent { color: var(--accent); }
-em { font-style: italic; color: var(--accent); }
+/* Serif elegante Cursiva para frases */
+em { font-style: italic; color: var(--accent); font-family: 'Playfair Display', Georgia, serif; }
 
 /* --- Eyebrow (small section label) --- */
 .eyebrow {

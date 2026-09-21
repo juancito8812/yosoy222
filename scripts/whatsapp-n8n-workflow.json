@@ -5,7 +5,7 @@
       "parameters": {
         "httpMethod": "POST",
         "path": "yosoy222-whatsapp",
-        "responseMode": "noResponse",
+        "responseMode": "onReceived",
         "options": {}
       },
       "name": "Webhook Evolution API",
@@ -17,7 +17,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const mensaje = items[0].json.data?.message?.conversation || items[0].json.data?.key?.remoteJid || 'Sin mensaje';\n\nconst respuesta = {\n  phone: items[0].json.data?.key?.remoteJid,\n  text: `Recibido: ${mensaje}`\n};\n\nreturn [respuesta];"
+        "jsCode": "const body = items[0].json.body || items[0].json;\nconst data = body.data || body;\n\nconst remoteJid = data?.key?.remoteJid || '';\nconst numero = remoteJid.replace(/[^0-9]/g, '');\n\nconst mensaje = data?.message?.conversation ||\n  data?.message?.extendedTextMessage?.text || '';\n\nreturn [{ json: {\n  phone: numero,\n  text: `¡Hola! 🤖 Soy tu asistente virtual de YoSoy222.\n\nGracias por escribir. Un momento por favor...`\n}}];"
       },
       "name": "Procesar Mensaje",
       "type": "n8n-nodes-base.code",
@@ -27,23 +27,30 @@
     },
     {
       "parameters": {
-        "operation": "send",
-        "documentId": "b7d2a4fb-31d1-4367-99a6-75f0c8c95e3c",
-        "to": "={{ $json.phone }}",
-        "text": "={{ $json.text }}",
-        "instanceId": "5a43ba4c-0654-4a41-b62d-90ede0c033fd",
-        "apiVersion": "v19.0.0",
-        "ignoreQueued": false
+        "method": "POST",
+        "url": "http://100.77.200.34:8081/message/sendText/yosoy222_bot",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "AgenciaSecreta2026"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"number\": \"{{ $json.phone }}\",\n  \"text\": \"{{ $json.text }}\"\n}"
       },
-      "name": "Responde WhatsApp",
-      "type": "n8n-nodes-base.whatsapp",
-      "typeVersion": 1.1,
+      "name": "Enviar Mensaje WhatsApp",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
       "position": [850, 300],
-      "id": "send-wa",
-      "connection": {
-        "id": "yosoy222_bot",
-        "name": "YoSoy222 Bot"
-      }
+      "id": "send-wa"
     }
   ],
   "connections": {
@@ -62,7 +69,7 @@
       "main": [
         [
           {
-            "node": "Responde WhatsApp",
+            "node": "Enviar Mensaje WhatsApp",
             "type": "main",
             "index": 0
           }
@@ -80,7 +87,6 @@
     "executionOrder": "v1"
   },
   "id": "a8gQDFG9bYJEwpsA",
-  "updatedAt": "2026-09-19T12:00:00.000Z",
-  "versionId": "v1",
+  "versionId": "52194a54-456e-459c-b847-31c37c8007de",
   "name": "YoSoy222 — WhatsApp Automation & Human Escalation"
 }
