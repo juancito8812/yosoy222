@@ -8,13 +8,13 @@
 
 :root {
   /* Earth palette: warm white → cream */
-  --bg: #F3EDE4;
+  --bg: #FAD4BC;
   --bg-raised: #FAF9F6;
   --bg-card: #FAF9F6;
   --bg-card-hover: #F3EDE4;
   --surface: #F0E8DF;
-  --border: rgba(211,178,131,0.14);
-  --border-strong: rgba(211,178,131,0.26);
+  --border: rgba(211,178,131,0.10);
+  --border-strong: rgba(211,178,131,0.18);
 
   /* Text */
   --text: #3b3125;
@@ -28,7 +28,7 @@
   /* Accent (earth amber, candle flame) */
   --accent: #C9A878;
   --accent-hover: #A88A5A;
-  --accent-glow: rgba(201,168,120,0.22);
+  --accent-glow: rgba(201,168,120,0.14);
 
   /* Functional */
   --whatsapp: #25d366;
@@ -39,8 +39,8 @@
   --radius: 14px;
   --radius-sm: 8px;
   --radius-full: 999px;
-  --shadow: 0 6px 24px rgba(201,168,120,0.10);
-  --shadow-lg: 0 12px 40px rgba(201,168,120,0.15);
+  --shadow: 0 6px 24px rgba(201,168,120,0.08);
+  --shadow-lg: 0 12px 40px rgba(201,168,120,0.09);
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
   --duration: 0.28s;
 }
@@ -116,7 +116,7 @@ em { font-style: italic; color: var(--gold-matte); font-family: 'Playfair Displa
   border-bottom: 1px solid var(--border);
   transition: background var(--duration) var(--ease), box-shadow var(--duration) var(--ease);
 }
-.header.scrolled { background: rgba(243,237,228,0.97); box-shadow: 0 2px 20px rgba(101,71,35,0.12); }
+.header.scrolled { background: rgba(250,212,188,0.97); box-shadow: 0 2px 20px rgba(101,71,35,0.12); }
 
 .header .container {
   display: flex; align-items: center; justify-content: space-between;
@@ -235,7 +235,7 @@ em { font-style: italic; color: var(--gold-matte); font-family: 'Playfair Displa
   color: var(--accent);
   background: var(--bg-card-hover);
   transform: translateY(-2px);
-  box-shadow: 0 4px 14px rgba(133,79,25,0.12);
+  box-shadow: 0 4px 14px rgba(133,79,25,0.08);
 }
 .hero-actions { display: flex; gap: 0.75rem; flex-wrap: wrap; }
 
@@ -275,7 +275,7 @@ em { font-style: italic; color: var(--gold-matte); font-family: 'Playfair Displa
   padding: 2.5rem 0 3.5rem;
 }
 .manifiesto-card {
-  background: linear-gradient(135deg, #FAF9F6 0%, #F3EDE4 100%);
+  background: linear-gradient(135deg, #FAF9F6 0%, #FAD4BC 100%);
   border: 1px solid var(--border);
   border-radius: 20px;
   padding: 3rem 2rem;
@@ -380,7 +380,7 @@ em { font-style: italic; color: var(--gold-matte); font-family: 'Playfair Displa
 .pilar-card:hover {
   transform: translateY(-4px);
   border-color: var(--border-strong);
-  box-shadow: 0 12px 32px rgba(201,168,120,0.10);
+  box-shadow: 0 12px 32px rgba(201,168,120,0.08);
 }
 .pilar-num {
   font-family: 'Playfair Display', serif;
@@ -452,7 +452,7 @@ em { font-style: italic; color: var(--gold-matte); font-family: 'Playfair Displa
 .ritual-card:hover {
   transform: translateY(-4px);
   border-color: var(--accent);
-  box-shadow: 0 14px 36px rgba(101,71,35,0.12);
+  box-shadow: 0 14px 36px rgba(101,71,35,0.08);
 }
 .ritual-num {
   font-family: 'Playfair Display', serif;
@@ -584,7 +584,7 @@ em { font-style: italic; color: var(--gold-matte); font-family: 'Playfair Displa
 .product-card:hover {
   transform: translateY(-3px);
   border-color: var(--border-strong);
-  box-shadow: 0 8px 28px rgba(101,71,35,0.14);
+  box-shadow: 0 8px 28px rgba(101,71,35,0.10);
 }
 .product-card.hidden { display: none; }
 
@@ -694,7 +694,7 @@ em { font-style: italic; color: var(--gold-matte); font-family: 'Playfair Displa
 .step-num {
   display: inline-flex; align-items: center; justify-content: center;
   width: 40px; height: 40px; border-radius: 50%;
-  background: rgba(201,168,120,0.12); color: var(--gold-matte);
+  background: rgba(201,168,120,0.09); color: var(--gold-matte);
   font-family: 'Playfair Display', serif; font-weight: 700;
   font-size: 1.1rem; margin-bottom: 0.75rem;
 }
