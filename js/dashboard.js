@@ -100,10 +100,22 @@
     }
   }
 
-  function createSession(user = null) {
+  function createSession(user = null, cloudToken = null) {
     const expires = Date.now() + (SESSION_TTL_HOURS * 60 * 60 * 1000);
     const token = Array.from(crypto.getRandomValues(new Uint8Array(24))).map(b => b.toString(16).padStart(2, '0')).join('');
-    sessionStorage.setItem('yosoy222_dash_session', JSON.stringify({ token, expires, user }));
+    // cloudToken dentro de la sesión: mismo TTL de 2h que emite la Edge Function.
+    // Así el refresh NO degrada a "En Vivo (Local)": el token cloud sobrevive
+    // mientras la sesión viva y muere con ella (Salir lo borra todo).
+    sessionStorage.setItem('yosoy222_dash_session', JSON.stringify({ token, expires, user, cloudToken }));
+  }
+
+  function restoreCloudAuth() {
+    try {
+      const sess = JSON.parse(sessionStorage.getItem('yosoy222_dash_session') || 'null');
+      if (sess && sess.cloudToken && sess.user) {
+        cloudAuth = { user: sess.user, token: sess.cloudToken };
+      }
+    } catch { /* sin sesión cloud persistida */ }
   }
 
   function getSessionUser() {
@@ -132,7 +144,7 @@
 
   function acceptLogin(user, token = null) {
     clearFailedAttempts();
-    createSession(user);
+    createSession(user, token);
     cloudAuth = token ? { user, token } : null;
     authErrorEl.style.display = 'none';
     authPasswordEl.value = '';
@@ -551,6 +563,17 @@
   // --- INITIALIZATION & EVENTS ---
   document.addEventListener('DOMContentLoaded', () => {
     if (isSessionValid()) {
+      // Restaurar el token cloud persistido: el refresh mantiene "En Vivo (Supabase Cloud)"
+      restoreCloudAuth();
+      // Restaurar el rango elegido en la visita anterior (default 30D)
+      const savedRange = parseInt(localStorage.getItem('yosoy222_dash_range') || '30', 10);
+      if (![1, 7, 30, 60, 0].includes(savedRange)) {
+        currentDays = 30;
+      } else {
+        currentDays = savedRange;
+        document.querySelectorAll('.range-btn').forEach(b =>
+          b.classList.toggle('active', parseInt(b.dataset.days, 10) === savedRange));
+      }
       setDashboardVisible(true);
     } else {
       setDashboardVisible(false);
@@ -657,6 +680,7 @@
         rangeBtns.forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         currentDays = parseInt(btn.dataset.days, 10);
+        try { localStorage.setItem('yosoy222_dash_range', String(currentDays)); } catch {}
         renderDashboard(false);
       });
     });
