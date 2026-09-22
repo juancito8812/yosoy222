@@ -2,7 +2,7 @@
 
 > Tienda online de velas artesanales, pulseras, collares, franelas y accesorios.
 > Desplegada en **GitHub Pages** con dominio personalizado **yosoy222.com** bajo **Cloudflare**.
-> **PWA instalable** con soporte offline completo (Cache v38), catálogo prerenderizado para SEO (Schema.org), panel privado de analítica con Luxury Glassmorphism y backend en la nube (Supabase Cloud + GA4) y suite de pruebas automatizadas en CI/CD.
+> **PWA instalable** con soporte offline completo (Cache v39), catálogo prerenderizado para SEO (Schema.org), panel privado de analítica con Luxury Glassmorphism y backend en la nube (Supabase Cloud + GA4) y suite de pruebas automatizadas en CI/CD.
 
 **Repositorio:** https://github.com/juancito8812/yosoy222  
 **URL de producción:** https://yosoy222.com  
@@ -22,7 +22,7 @@
 7. [Cómo agregar un producto](#cómo-agregar-un-producto)
 8. [Cómo eliminar un producto](#cómo-eliminar-un-producto)
 9. [Procesamiento de imágenes (bordes blancos)](#procesamiento-de-imágenes-bordes-blancos)
-10. [PWA: instalar y funcionamiento offline (Cache v38)](#pwa-instalar-y-funcionamiento-offline-cache-v34)
+10. [PWA: instalar y funcionamiento offline (Cache v39)](#pwa-instalar-y-funcionamiento-offline-cache-v34)
 11. [Seguridad aplicada (Audit & Hardening)](#seguridad-aplicada-audit--hardening)
 12. [Calidad, Confiabilidad y Accesibilidad](#calidad-confiabilidad-y-accesibilidad)
 13. [Rendimiento y Core Web Vitals](#rendimiento-y-core-web-vitals)
@@ -54,7 +54,7 @@
   - Sanitización anti-prototype smuggling en la serialización.
 - **Checkout por WhatsApp:** Mensaje preformateado e itemizado (producto × cantidad — subtotal, y total final en USD).
 - **Número real de WhatsApp centralizado:** `+58 412 648 1628` — única fuente en `js/app.js` (`const WHATSAPP = '584126481628'`); todos los botones y enlaces del sitio se sincronizan con este valor.
-- **PWA Instalable (Cache v38):** Estrategia Network-First para navegación HTML (contenido siempre fresco con conexión) y Stale-While-Revalidate para recursos estáticos; precaching enfocado en shell, dashboard, iconos HD y miniaturas (`images/thumbs/`).
+- **PWA Instalable (Cache v39):** Estrategia Network-First para navegación HTML (contenido siempre fresco con conexión) y Stale-While-Revalidate para recursos estáticos; precaching enfocado en shell, dashboard, iconos HD y miniaturas (`images/thumbs/`).
 - **Dashboard Privado de Analítica y Conversión:** Panel de control en `/dashboard.html` con estética *Luxury Glassmorphism*, gráficos de tendencias en curvas Bezier, desglose de canales (Instagram, TikTok, Facebook, Google, WhatsApp), embudo de conversión paso a paso, desglose por dispositivos, ranking de popularidad de productos, actividad en tiempo real, exportación CSV, sincronización en tiempo real con **Supabase Cloud** (`gkekolsttfbiegyhvejy.supabase.co`) con ingesta vía **Edge Function** (`track`, sanitización whitelist server-side + rate limit), integración oficial con **Google Analytics 4** (`G-Y9R0B5NH75`, **carga diferida**: tras la primera interacción o a los 8s de fallback — nunca compite en el arranque) y autenticación criptográfica segura con Web Crypto SHA-256 salted hash y rate-limiting anti-fuerza bruta.
 - **Seguridad integral:**
   - Content Security Policy (CSP) estricto.
@@ -112,7 +112,7 @@ yosoy222/
 │   ├── analytics.js               ← Motor de telemetría: GA4 (diferido) + Supabase Cloud vía Edge Function + localStorage
 │   └── dashboard.js               ← Motor del Dashboard: autenticación SHA-256, gráficos Bezier en Canvas
 │
-├── sw.js                          ← Service Worker PWA (Cache v38)
+├── sw.js                          ← Service Worker PWA (Cache v39)
 │   ├── Estrategia Network-First con fallback a Cache para navegaciones (HTML siempre fresco)
 │   ├── Estrategia Stale-While-Revalidate con ignoreSearch para recursos estáticos
 │   ├── Precaching enfocado en miniaturas de imágenes para instalación ultrarrápida
@@ -165,7 +165,7 @@ yosoy222/
 | **Estilos** | CSS3 Vanilla | Custom properties (:root), Grid, Flexbox, sin preprocesadores |
 | **Interactividad** | ES6+ Vanilla | Zero runtime dependencies, carga diferida (`defer`), módulos nativos |
 | **Pruebas** | Node.js Test Runner | `node --test` nativo (13 pruebas unitarias/seguridad sin librerías pesadas) |
-| **PWA & Offline** | Service Worker API | Cache v38, Network-First en navegación, manifest standalone |
+| **PWA & Offline** | Service Worker API | Cache v39, Network-First en navegación, manifest standalone |
 | **SEO & Datos** | JSON-LD / XML | Schema.org Store/ItemList, robots.txt, sitemap.xml canónico |
 | **Hosting & CI/CD** | GitHub Pages + Actions | Despliegue automático, CI de pruebas, Dependabot activo |
 | **CDN & DNS** | Cloudflare | Proxy edge, Cache Rules HTML (TTL 5 min), Transform Rules de seguridad |
@@ -318,7 +318,7 @@ Las imágenes de catálogo y miniaturas han sido procesadas para eliminar márge
 
 La PWA cumple con todos los estándares modernos de instalación y navegación offline:
 
-### Arquitectura de Caché en `sw.js` (Cache v38)
+### Arquitectura de Caché en `sw.js` (Cache v39)
 1. **Navegación Network-First:**
    Para solicitudes de documentos HTML (`event.request.mode === 'navigate'`), el Service Worker consulta primero la red para obtener la versión más reciente del catálogo y, en caso de estar desconectado o con señal inestable, responde con la copia en caché.
 2. **Stale-While-Revalidate para Recursos Estáticos:**
@@ -330,7 +330,7 @@ La PWA cumple con todos los estándares modernos de instalación y navegación o
 5. **Iconos PWA de Alta Definición:**
    10 variantes (incluyendo formatos maskable con padding seguro del 15% para Android/iOS sin franjas negras) validadas con `scripts/verify_icons.py`.
 
-### UX Offline (Cache v38)
+### UX Offline (Cache v39)
 - **Lightbox con degradación elegante:** si la imagen ampliada (`images/catalog/`) no está en caché y la red no responde, el manejador `error` intercambia automáticamente la miniatura precacheada y muestra una nota informativa; al restablecerse la conexión, la imagen grande vuelve a cargar y la nota desaparece sola.
 - **Checkout WhatsApp consciente de la red:** con el navegador offline, el panel del carrito muestra un aviso no bloqueante ("tu carrito queda guardado") que se elimina al reconectar y re-renderizar.
 - **Fuentes asíncronas (v33):** el CSS de Google Fonts carga con `media="print"` + flip en `js/font-flip.js` (el texto pinta en fallback serif y hace swap) — FCP ×8 más rápido medido en bisect controlado; combinado con GA4 diferido mantiene TBT 0ms.
@@ -569,7 +569,7 @@ Tokens principales en `:root` de [`css/style.css`](css/style.css):
 | `js/analytics.js` | Motor de telemetría: GA4 diferido, ingesta vía Edge Function y fallback localStorage |
 | `js/dashboard.js` | Motor del Dashboard: autenticación, datos (Edge Function/local) y estado |
 | `js/dashboard-view.js` | Vista del Dashboard (pura): gráficos Bezier en Canvas y render de KPIs/tablas |
-| `sw.js` | Service Worker (Cache v38, Network-First navegación) |
+| `sw.js` | Service Worker (Cache v39, Network-First navegación) |
 | `manifest.json` | Configuración PWA e iconos |
 | `tests/cart_and_filters.test.mjs` | Suite de 13 pruebas unitarias y de seguridad |
 | `.github/workflows/` | Automatización de CI y purga de caché con smoke test |

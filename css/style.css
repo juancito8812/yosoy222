@@ -116,7 +116,7 @@ em { font-style: italic; color: var(--gold-matte); font-family: 'Playfair Displa
   border-bottom: 1px solid var(--border);
   transition: background var(--duration) var(--ease), box-shadow var(--duration) var(--ease);
 }
-.header.scrolled { background: rgba(250,212,188,0.97); box-shadow: 0 2px 20px rgba(101,71,35,0.12); }
+.header.scrolled { background: rgba(250,249,246,0.97); box-shadow: 0 2px 20px rgba(101,71,35,0.12); }
 
 .header .container {
   display: flex; align-items: center; justify-content: space-between;
