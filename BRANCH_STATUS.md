@@ -1,23 +1,23 @@
 # 🌿 Estado de la rama `redesign-ritual` — Handoff para agentes
 
 > **Documento de trabajo de la rama.** Si estás retomando el trabajo del rediseño, empieza aquí.
-> Última actualización: **22 de septiembre de 2026** (sincronización con main).
+> Última actualización: **22 de septiembre de 2026** (sincronización con main + QA gate completo aprobado).
 
 ---
 
 ## 1. Dónde estamos (una frase)
 
-Rediseño integral ritualista (paleta beige-dorado, tipografía serif, taxonomía de productos nueva) en la rama `redesign-ritual`, **v39, sincronizada con main al 22-sep (merge `9d9043f`: bot v2 final + docs + v35-v37), NO mergeado a main** — el dueño quiere mergear solo cuando esté 100% listo y lo autorice explícitamente.
+Rediseño integral ritualista (paleta beige-dorado, tipografía serif, taxonomía de productos nueva) en la rama `redesign-ritual`, **v40, sincronizada con main al 22-sep (merge `9d9043f`: bot v2 final + docs + v35-v37) y con el QA gate completo aprobado, NO mergeado a main** — el dueño quiere mergear solo cuando lo autorice explícitamente; el único pendiente real es su aprobación visual.
 
 ## 2. Estado exacto
 
 | Qué | Valor |
 |---|---|
 | Rama | `redesign-ritual` (remota sincronizada: local = origin) |
-| Versión de caché en la rama | **v39** |
-| Últimos commits | `9d9043f` (sync con main 22-sep) · `e76e732` (cabecera scroll sin rosado) · `93c2526` (fondo #F3EDE4 + contraste AA) |
-| Tests | 13/13 · `verify_versions.py` OK (v39 coherente en la rama) |
-| Base de la rama | **Sincronizada con main al `2f4091b`** (22 sep): incluye v35/v36/v37 (fusión cloud+local, persistencia de token, verificador en CI, purga 401), el workflow del bot v2 final (memoria + expiración 24h, sin apikey hardcodeada) y toda la documentación nueva. El desajuste v37-vs-v39 quedó resuelto: la rama documenta su v39 y main la suya; al merge futuro se recomienda renombrar la versión final a v40 |
+| Versión de caché en la rama | **v40** (bump hecho en la rama antes del merge: numeración monótona main 37 → rama 40) |
+| Últimos commits | `b63e1db` (QA: contraste AA + responsive móvil + v40) · `ce66d33` (restaurar prerender pisado en el sync) · `9d9043f` (sync con main) |
+| Tests | 13/13 · `verify_versions.py` OK (v40) · `verify_icons.py` OK |
+| Base de la rama | **Sincronizada con main al `2f4091b`** (22 sep): incluye v35/v36/v37 (fusión cloud+local, persistencia de token, verificador en CI, purga 401), el workflow del bot v2 final (memoria + expiración 24h, sin apikey hardcodeada) y toda la documentación nueva. El desajuste v37-vs-v39 quedó resuelto y el bump a v40 ya se aplicó en la rama: el merge no necesita renombrar nada |
 | Resolución del merge | `sw.js`/`manifest`/HTMLs/dashboard → main (solo diferían en `?v=`); `whatsapp-n8n-workflow.json` → main (v2 final, mata la apikey `AgenciaSecreta2026` de la rama); docs → combinados (hitos de ambas sesiones, v39 en la rama); PLAN → main |
 
 ## 3. Qué se hizo (resumen por sesión)
@@ -33,25 +33,31 @@ Rediseño integral ritualista (paleta beige-dorado, tipografía serif, taxonomí
 - `93c2526` (v38): corregido degradado del manifiesto que terminaba en `#FAD4BC` (rosado); tokens de texto secundario `#D8D5D0` (gris ilegible 1.26:1 sobre beige, heredado del dashboard oscuro) → `#66584A` (5.90:1) y `#75684F` (4.69:1), ambos AA verificados por cálculo WCAG
 - `e76e732` (v39): cabecera al hacer scroll usaba `rgba(250,212,188,.97)` = el mismo rosado; → `rgba(250,249,246,.97)` (blanco cálido de tarjetas)
 
+**Sesión 22-sep (QA gate):**
+- `9d9043f` + `ce66d33`: sync con main y **restauración del `index.html` prerenderizado del rediseño** (el sync lo había pisado por un error de resolución — detectado en QA visual por los chips de la taxonomía vieja)
+- `b63e1db` (v40): **contraste AA real del dorado** — los títulos `#C9A878` medían 1.93:1 sobre crema (falla WCAG incluso para texto grande) → `--gold-matte: #7A6134` (4.83–5.56:1 en las tres superficies, cubre los `<em>` de 20px) y `--accent` recupera el ámbar canónico pre-rediseño `#854f19` (5.77:1; botones con blanco 6.60:1, Lighthouse 100 documentado); `--text-faint` → `#71654B` (surface 4.72:1); **responsive móvil**: los grids de manifiesto/pilares/rituales quedaban a 3 columnas fijas (overflow de 173px a 375px) → 1 columna ≤900px, scrollW 370 < vw 375 verificado en DOM
+
 ## 4. Cómo verificarlo tú mismo
 
 ```bash
 git fetch origin && git worktree add /tmp/redesign-review origin/redesign-ritual
 cd /tmp/redesign-review && npm test                      # 13/13
-python3 scripts/verify_versions.py                       # OK (v39)
+python3 scripts/verify_versions.py                       # OK (v40)
 python3 -m http.server 8092 --bind 0.0.0.0               # y abrir el navegador
 ```
 
-Flujos ya verificados E2E (21-sep): filtros nuevos suman 44/44 exactos · carrito → drawer → checkout wa.me/584126481628 ✓ · lightbox 1/44 con fallback v34 intacto · `addToCart` sigue resolviendo precio desde `products[]` (SEC-01) ✓ · fixes offline v34 presentes (5 matches).
+Flujos verificados E2E (22-sep, v40): filtros 22/3/12/7 = 44 exactos · búsqueda + empty state + clear ✓ · carrito → drawer → checkout wa.me/584126481628 (total y línea correctos) ✓ · lightbox ✓ · menú móvil ✓ · 21 pares color/fondo auditados AA con alfa compuesto (única excepción: botón WhatsApp verde, decisión de marca preexistente) · consola limpia (solo CORS esperado del Edge de telemetría desde localhost) · `addToCart` sigue resolviendo precio desde `products[]` (SEC-01) ✓ · fixes offline v34 presentes.
 
 ## 5. Pendientes para continuar (orden sugerido)
 
-1. **Barrido anti-rosado completo:** grep de `FAD4BC|250,212,188|rosado|durazno` en css + screenshots de todas las secciones (hero ✓, manifiesto ✓, cabecera ✓, catálogo ✓ — faltan rituales, cómo-comprar, nosotros, contacto y footer)
-2. **QA gate de la skill `cloudflare-preview-gate`** (instalada en `~/.agents/skills/`): tests + verificadores + consola limpia + sin secretos en el diff → solo entonces hablar de merge
-3. ~~**Asegurar la apikey n8n**~~ **RESUELTA (22 sep):** el sync con main trajo el workflow v2 final sin ninguna apikey hardcodeada (todo vía `$env.*` en n8n). Rotar la clave `AgenciaSecreta2026` en el panel de n8n si se usó en algún otro lugar (ya no existe en el repo)
-4. **Auditoría móvil (375px):** el dueño navega por móvil; el hero y el carrito se vieron bien pero falta pase sistemático
-5. **Sync con main:** main va v37 y trae 4 commits que la rama no tiene (dashboard v35/v36/v37: fusión cloud+local, persistencia de token cloud, verificador en CI, purga del 401). Al mergear: resolver choques de `verify_versions` (la rama documentará v39+), y replantear los script tags de `index.html` (la rama los reescribió)
-6. **Decisión de versión de caché post-merge:** recomendado saltar a v40 en el commit de merge para que la numeración sea monótona en ambos linajes
+1. ~~Barrido anti-rosado completo~~ **HECHO (22-sep):** grep estático limpio + barrido computado de backgrounds en las 14 secciones del DOM (0 residuos; el detector habría cazado `#FAD4BC`)
+2. ~~QA gate de la skill `cloudflare-preview-gate`~~ **HECHO (22-sep):** tests 13/13 + `verify_versions` + `verify_icons` + consola limpia + 0 secretos en el diff
+3. ~~Asegurar la apikey n8n~~ **RESUELTA (22 sep):** workflow v2 final sin secretos (todo vía `$env.*` en n8n)
+4. ~~Auditoría móvil (375px)~~ **HECHA (22-sep):** overflow detectado y corregido (grids 3-col → 1-col ≤900px); smoke completo en viewport 375×812
+5. ~~Sync con main~~ **HECHO (22-sep):** merge `9d9043f` + restauración `ce66d33`
+6. ~~Decisión de versión post-merge~~ **RESUELTA:** la rama ya va **v40** — el merge puede mantener v40 sin renombrar
+
+**Único pendiente real: aprobación visual del dueño.** Preview para el cliente en §7. Al merge: verificar que main no haya recibido commits nuevos desde `2f4091b` y re-ejecutar el QA rápido (tests + verify_versions).
 
 ## 6. Deudas de seguridad de la rama
 
