@@ -1,369 +1,489 @@
 {
-  "name": "YoSoy222 — WhatsApp Automation & Human Escalation",
+  "updatedAt": "2026-09-22T13:05:58.000Z",
+  "createdAt": "2026-09-21T02:47:19.736Z",
+  "id": "Iwg02lASI9CEFic",
+  "name": "YoSoy222 - WhatsApp Automation v2",
+  "description": null,
+  "active": true,
+  "isArchived": false,
   "nodes": [
     {
       "parameters": {
         "httpMethod": "POST",
         "path": "yosoy222-whatsapp",
+        "responseMode": "onReceived",
         "options": {}
       },
       "name": "Webhook Evolution API",
       "type": "n8n-nodes-base.webhook",
-      "typeVersion": 1,
+      "typeVersion": 1.1,
       "position": [
-        250,
-        300
-      ],
-      "id": "webhook-yosoy222"
-    },
-    {
-      "parameters": {
-        "jsCode": "// Extraer y normalizar mensaje de WhatsApp desde Evolution API\nconst data = $input.first().json;\n\n// Filtrar mensajes propios o de estado\nif (data.data?.key?.fromMe || data.event !== 'messages.upsert') {\n  return [];\n}\n\nconst msg = data.data?.message;\nconst senderJid = data.data?.key?.remoteJid || '';\nconst senderNumber = senderJid.replace('@s.whatsapp.net', '').replace('@g.us', '');\nconst pushName = data.data?.pushName || 'Cliente';\n\n// Extraer texto (conversacion normal o extendida)\nconst text = (msg?.conversation || msg?.extendedTextMessage?.text || msg?.imageMessage?.caption || '').trim();\n\nif (!text || senderJid.includes('@g.us')) {\n  return []; // Ignorar grupos o mensajes sin texto\n}\n\n// Deteccion de intencion\nconst lower = text.toLowerCase();\nlet intent = 'general';\n\nif (lower.includes('asesor') || lower.includes('humano') || lower.includes('persona') || lower.includes('hablar con alguien') || lower.includes('ayuda') || lower.includes('operador')) {\n  intent = 'human_escalation';\n} else if (lower.includes('pedido') || lower.includes('total: $') || lower.includes('me gustaría hacer este pedido')) {\n  intent = 'order_received';\n} else if (lower.includes('pago') || lower.includes('cuenta') || lower.includes('pago movil') || lower.includes('zelle') || lower.includes('dolares') || lower.includes('transferencia')) {\n  intent = 'payment_info';\n} else if (lower.includes('catalogo') || lower.includes('catálogo') || lower.includes('precio') || lower.includes('modelos')) {\n  intent = 'catalog_info';\n} else if (lower.includes('hola') || lower.includes('buenas') || lower.includes('buenos dias') || lower.includes('buenas tardes')) {\n  intent = 'welcome';\n}\n\nreturn [{\n  json: {\n    senderJid,\n    senderNumber,\n    pushName,\n    text,\n    intent,\n    timestamp: new Date().toLocaleTimeString('es-VE', { hour: '2-digit', minute: '2-digit' }),\n    agents: ['584129922399', '584242162538']\n  }\n}];"
-      },
-      "name": "Parse & Route Intent",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 1,
-      "position": [
-        480,
-        300
-      ],
-      "id": "parse-intent"
-    },
-    {
-      "parameters": {
-        "rules": {
-          "values": [
-            {
-              "conditions": {
-                "string": [
-                  {
-                    "value1": "={{ $json.intent }}",
-                    "value2": "order_received"
-                  }
-                ]
-              }
-            },
-            {
-              "conditions": {
-                "string": [
-                  {
-                    "value1": "={{ $json.intent }}",
-                    "value2": "human_escalation"
-                  }
-                ]
-              }
-            },
-            {
-              "conditions": {
-                "string": [
-                  {
-                    "value1": "={{ $json.intent }}",
-                    "value2": "payment_info"
-                  }
-                ]
-              }
-            },
-            {
-              "conditions": {
-                "string": [
-                  {
-                    "value1": "={{ $json.intent }}",
-                    "value2": "welcome"
-                  }
-                ]
-              }
-            }
-          ]
-        }
-      },
-      "name": "Switch Intent",
-      "type": "n8n-nodes-base.switch",
-      "typeVersion": 1,
-      "position": [
-        720,
-        300
-      ],
-      "id": "switch-intent"
-    },
-    {
-      "parameters": {
-        "requestMethod": "POST",
-        "url": "http://agency-evolution-api:8080/message/sendText/yosoy222_bot",
-        "options": {},
-        "headerParametersUi": {
-          "parameter": [
-            {
-              "name": "apikey",
-              "value": "AgenciaSecreta2026"
-            }
-          ]
-        },
-        "bodyParametersUi": {
-          "parameter": [
-            {
-              "name": "number",
-              "value": "={{ $json.senderNumber }}"
-            },
-            {
-              "name": "text",
-              "value": "=¡Hola {{ $json.pushName }}! ✨🕯️\n\n¡Hemos recibido tu pedido de *YoSoy222* con éxito! 🛍️\n\nUno de nuestros asesores está confirmando la disponibilidad de tus piezas y te enviará los datos de pago en breve.\n\nSi deseas coordinar algo específico, solo responde a este mensaje. ¡Gracias por elegirnos!"
-            }
-          ]
-        }
-      },
-      "name": "Reply Order Received",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.1,
-      "position": [
-        1000,
-        150
-      ],
-      "id": "reply-order"
-    },
-    {
-      "parameters": {
-        "requestMethod": "POST",
-        "url": "http://agency-evolution-api:8080/message/sendText/yosoy222_bot",
-        "options": {},
-        "headerParametersUi": {
-          "parameter": [
-            {
-              "name": "apikey",
-              "value": "AgenciaSecreta2026"
-            }
-          ]
-        },
-        "bodyParametersUi": {
-          "parameter": [
-            {
-              "name": "number",
-              "value": "584129922399"
-            },
-            {
-              "name": "text",
-              "value": "=🛍️ *NUEVO PEDIDO RECIBIDO — YoSoy222*\n\n• *Cliente:* {{ $json.pushName }}\n• *Teléfono:* +{{ $json.senderNumber }}\n• *Detalle:* {{ $json.text }}\n• *Hora:* {{ $json.timestamp }}\n\n👉 *Abrir chat:* https://wa.me/{{ $json.senderNumber }}"
-            }
-          ]
-        }
-      },
-      "name": "Notify Agent 1 Order",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.1,
-      "position": [
-        1250,
-        100
-      ],
-      "id": "notify-agent-1-order"
-    },
-    {
-      "parameters": {
-        "requestMethod": "POST",
-        "url": "http://agency-evolution-api:8080/message/sendText/yosoy222_bot",
-        "options": {},
-        "headerParametersUi": {
-          "parameter": [
-            {
-              "name": "apikey",
-              "value": "AgenciaSecreta2026"
-            }
-          ]
-        },
-        "bodyParametersUi": {
-          "parameter": [
-            {
-              "name": "number",
-              "value": "584242162538"
-            },
-            {
-              "name": "text",
-              "value": "=🛍️ *NUEVO PEDIDO RECIBIDO — YoSoy222*\n\n• *Cliente:* {{ $json.pushName }}\n• *Teléfono:* +{{ $json.senderNumber }}\n• *Detalle:* {{ $json.text }}\n• *Hora:* {{ $json.timestamp }}\n\n👉 *Abrir chat:* https://wa.me/{{ $json.senderNumber }}"
-            }
-          ]
-        }
-      },
-      "name": "Notify Agent 2 Order",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.1,
-      "position": [
-        1250,
-        200
-      ],
-      "id": "notify-agent-2-order"
-    },
-    {
-      "parameters": {
-        "requestMethod": "POST",
-        "url": "http://agency-evolution-api:8080/message/sendText/yosoy222_bot",
-        "options": {},
-        "headerParametersUi": {
-          "parameter": [
-            {
-              "name": "apikey",
-              "value": "AgenciaSecreta2026"
-            }
-          ]
-        },
-        "bodyParametersUi": {
-          "parameter": [
-            {
-              "name": "number",
-              "value": "={{ $json.senderNumber }}"
-            },
-            {
-              "name": "text",
-              "value": "=👋 ¡Hola {{ $json.pushName }}! Te estamos transfiriendo de inmediato con nuestro equipo humano para atenderte personalmente. Un momento por favor... ⏳"
-            }
-          ]
-        }
-      },
-      "name": "Notify Customer Escalation",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.1,
-      "position": [
-        1000,
-        350
-      ],
-      "id": "notify-customer-escalation"
-    },
-    {
-      "parameters": {
-        "requestMethod": "POST",
-        "url": "http://agency-evolution-api:8080/message/sendText/yosoy222_bot",
-        "options": {},
-        "headerParametersUi": {
-          "parameter": [
-            {
-              "name": "apikey",
-              "value": "AgenciaSecreta2026"
-            }
-          ]
-        },
-        "bodyParametersUi": {
-          "parameter": [
-            {
-              "name": "number",
-              "value": "584129922399"
-            },
-            {
-              "name": "text",
-              "value": "=🚨 *ATENCIÓN HUMANA REQUERIDA — YoSoy222*\n\n• *Cliente:* {{ $json.pushName }}\n• *Teléfono:* +{{ $json.senderNumber }}\n• *Mensaje:* \"{{ $json.text }}\"\n• *Hora:* {{ $json.timestamp }}\n\n👉 *Responder al cliente:* https://wa.me/{{ $json.senderNumber }}"
-            }
-          ]
-        }
-      },
-      "name": "Alert Agent 1 Human Needed",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.1,
-      "position": [
-        1250,
-        300
-      ],
-      "id": "alert-agent-1"
-    },
-    {
-      "parameters": {
-        "requestMethod": "POST",
-        "url": "http://agency-evolution-api:8080/message/sendText/yosoy222_bot",
-        "options": {},
-        "headerParametersUi": {
-          "parameter": [
-            {
-              "name": "apikey",
-              "value": "AgenciaSecreta2026"
-            }
-          ]
-        },
-        "bodyParametersUi": {
-          "parameter": [
-            {
-              "name": "number",
-              "value": "584242162538"
-            },
-            {
-              "name": "text",
-              "value": "=🚨 *ATENCIÓN HUMANA REQUERIDA — YoSoy222*\n\n• *Cliente:* {{ $json.pushName }}\n• *Teléfono:* +{{ $json.senderNumber }}\n• *Mensaje:* \"{{ $json.text }}\"\n• *Hora:* {{ $json.timestamp }}\n\n👉 *Responder al cliente:* https://wa.me/{{ $json.senderNumber }}"
-            }
-          ]
-        }
-      },
-      "name": "Alert Agent 2 Human Needed",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.1,
-      "position": [
-        1250,
-        400
-      ],
-      "id": "alert-agent-2"
-    },
-    {
-      "parameters": {
-        "requestMethod": "POST",
-        "url": "http://agency-evolution-api:8080/message/sendText/yosoy222_bot",
-        "options": {},
-        "headerParametersUi": {
-          "parameter": [
-            {
-              "name": "apikey",
-              "value": "AgenciaSecreta2026"
-            }
-          ]
-        },
-        "bodyParametersUi": {
-          "parameter": [
-            {
-              "name": "number",
-              "value": "={{ $json.senderNumber }}"
-            },
-            {
-              "name": "text",
-              "value": "=💳 *Métodos de Pago YoSoy222*:\n\n• *Pago Móvil (Bs):* Banesco / Mercantil (Tasa BCV)\n• *Zelle / Efectivo USD* (Entregas personales)\n• *Binance Pay (USDT)*\n\nPor favor indícanos cuál método prefieres para enviarte los datos exactos. ✨"
-            }
-          ]
-        }
-      },
-      "name": "Reply Payment Info",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.1,
-      "position": [
-        1000,
+        200,
         500
       ],
-      "id": "reply-payment"
+      "id": "webhook-evolution",
+      "webhookId": "yosoy222-whatsapp"
     },
     {
       "parameters": {
-        "requestMethod": "POST",
-        "url": "http://agency-evolution-api:8080/message/sendText/yosoy222_bot",
-        "options": {},
-        "headerParametersUi": {
-          "parameter": [
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "const body = items[0].json.body || items[0].json;\nconst data = body.data || body;\nconst fromMe = data?.key?.fromMe === true;\nconst remoteJid = data?.key?.remoteJid || '';\nconst id = data?.key?.id || '';\nconst text = (data?.message?.conversation) ||\n  (data?.message?.extendedTextMessage?.text) ||\n  (data?.message?.imageMessage?.caption) || '';\nif (fromMe || !text || !remoteJid || remoteJid.includes('@g.us')) return []; // ignorar grupos (anti-baneo)\nconst STAFF = ['584129922399', '584242162538'];\nconst digits = remoteJid.replace(/[^0-9]/g, '');\nconst isStaff = STAFF.includes(digits);\nreturn [{ json: {\n  remoteJid,\n  id,\n  text: String(text).slice(0, 2000),\n  isStaff,\n  digits\n}}];"
+      },
+      "id": "parse-msg",
+      "name": "Parsing",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        400,
+        500
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "rules",
+        "dataType": "boolean",
+        "value1": "={{ $json.isStaff }}",
+        "rules": {
+          "rules": [
             {
-              "name": "apikey",
-              "value": "AgenciaSecreta2026"
+              "operation": "equal",
+              "value2": true,
+              "outputKey": "staff"
+            },
+            {
+              "operation": "equal",
+              "value2": false,
+              "outputKey": "cliente"
             }
           ]
         },
-        "bodyParametersUi": {
-          "parameter": [
+        "fallbackOutput": -1
+      },
+      "id": "switch-origen",
+      "name": "Switch Origen",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 2,
+      "position": [
+        620,
+        500
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "const it = items[0].json;\nconst text = String(it.text || '').trim();\nlet cmd = 'relay';\nlet number = null;\nconst mAtender = text.match(/^atender\\s+([0-9]{7,15})/i);\nif (mAtender) { cmd = 'atender'; number = mAtender[1]; }\nelse if (/^fin\\b/i.test(text)) { cmd = 'fin'; }\nreturn [{ json: { remoteJid: it.remoteJid, text, cmd, number, isStaff: it.isStaff } }];"
+      },
+      "id": "comandos-staff",
+      "name": "Comandos Staff",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        840,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "// Devuelve la acción a ejecutar; el nodo HTTP siguiente la llama.\nconst it = items[0].json;\nif (it.cmd === 'atender' && it.number) {\n  return [{ json: { action: 'set', method: 'POST',\n    body: { action: 'session_set',\n      client_jid: it.remoteJid,\n      estado: 'puente',\n      handoff_hilo: { [it.remoteJid.replace(/[^0-9]/g,'')]: it.number + '@s.whatsapp.net' } } } }];\n}\nif (it.cmd === 'fin') {\n  return [{ json: { action: 'set', method: 'POST',\n    body: { action: 'session_set', client_jid: it.remoteJid, estado: 'IA', handoff_hilo: {} } } }];\n}\nreturn [{ json: { action: 'relay' } }];"
+      },
+      "id": "ejecutar-paso",
+      "name": "Ejecutar Paso",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1060,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "method": "={{ $json.method || 'POST' }}",
+        "url": "={{ $json.action === 'relay' ? '' : $env.SUPABASE_FN_URL }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
             {
-              "name": "number",
-              "value": "={{ $json.senderNumber }}"
+              "name": "x-bot-key",
+              "value": "={{ $env.SUPABASE_BOT_KEY }}"
             },
             {
-              "name": "text",
-              "value": "=¡Hola {{ $json.pushName }}! ✨ Bienvenido/a a *YoSoy222* — Velas artesanales y accesorios hechos a mano.\n\n¿En qué podemos ayudarte hoy?\n\n1️⃣ Ver catálogo: https://yosoy222.com\n2️⃣ Métodos de pago y envíos\n3️⃣ Hablar con un asesor humano\n\nEscribe el número de tu opción o tu consulta directa. 🕯️"
+              "name": "Content-Type",
+              "value": "application/json"
             }
           ]
-        }
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $json.body || '' }}",
+        "options": {}
       },
-      "name": "Reply Welcome",
+      "id": "envio-aviso-staff",
+      "name": "Enviar Aviso Staff",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.1,
       "position": [
-        1000,
-        650
+        1280,
+        160
       ],
-      "id": "reply-welcome"
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "const prev = items[0].json;\nlet estado = 'IA';\nlet paso = null;\nlet datos = null;\nlet handoffHilo = null;\nlet handoffMotivo = null;\nlet readErr = null;\nlet updatedAt = null;\ntry {\n  const res = await this.helpers.httpRequest({\n    method: 'POST',\n    url: $env.SUPABASE_FN_URL,\n    headers: { 'content-type': 'application/json', 'x-bot-key': $env.SUPABASE_BOT_KEY },\n    body: { action: 'session_get', client_jid: prev.remoteJid }\n  });\n  const s = (res && res.session) || {};\n  estado = s.estado || 'IA';\n  paso = s.paso || null;\n  datos = s.datos_parciales || null;\n  if (typeof datos === 'string') { try { datos = JSON.parse(datos); } catch (e) { datos = null; } }\n  handoffHilo = s.handoff_hilo || null;\n  handoffMotivo = s.handoff_motivo || null;\n  updatedAt = s.updated_at || null;\n} catch (e) { readErr = String((e && e.message) || e); }\nlet historialFull = [];\nif (datos && Array.isArray(datos.historial)) historialFull = datos.historial;\n// Expiración de sesión: 24h sin actividad del CLIENTE → conversación nueva\n// (evita heredar pedidos viejos o puentes abandonados). Sello: ultima_actividad\n// (escrito por Procesar IA en cada turno del cliente); respaldo para sesiones\n// legacy: updated_at de la fila.\nlet expirada = false;\ntry {\n  let stampMs = (datos && datos.ultima_actividad) ? (typeof datos.ultima_actividad === 'number' ? datos.ultima_actividad : Date.parse(datos.ultima_actividad)) : NaN;\n  if (!Number.isFinite(stampMs) && updatedAt) stampMs = Date.parse(updatedAt);\n  if (Number.isFinite(stampMs) && Date.now() - stampMs > 24 * 60 * 60 * 1000) {\n    expirada = true;\n    estado = 'IA';\n    paso = null;\n    datos = {};\n    historialFull = [];\n  }\n} catch (e) {}\nconst ultimos = historialFull.slice(-6);\nconst historial = ultimos.map((t) => [t.u ? 'Cliente: ' + t.u : null, t.b ? 'Bot: ' + t.b : null].filter(Boolean).join(' | ')).join('\\n');\nlet datosSin = {};\nif (datos && typeof datos === 'object') { const { historial: _h, ...resto } = datos; datosSin = resto; }\nreturn [{ json: { ...prev, estado, paso, datos: datosSin, historial, historialFull, handoffHilo, handoffMotivo, readErr, expirada } }];"
+      },
+      "id": "leer-sesion",
+      "name": "Leer Sesión",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        840,
+        500
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "rules",
+        "dataType": "string",
+        "value1": "={{ $json.estado }}",
+        "rules": {
+          "rules": [
+            {
+              "operation": "equal",
+              "value2": "puente",
+              "outputKey": "puente"
+            },
+            {
+              "operation": "equal",
+              "value2": "IA",
+              "outputKey": "IA"
+            }
+          ]
+        },
+        "fallbackOutput": -1
+      },
+      "id": "switch-estado",
+      "name": "Switch Estado",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 2,
+      "position": [
+        1060,
+        500
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "const it = items[0].json;\nconst texto = String(it.text || '').toLowerCase();\nconst comercial = /\\b(precio|cuesta|cu[áa]nto|comprar|pedido|pedir|disponible|cat[áa]logo|producto|pulsera|vela|franela|collar|gargantilla|accesorio|dije|piedras|aura|armon[ií]a|infinito|san benito|ojito)\\b/.test(texto);\nif (!comercial) {\n  const base = { ...it, clasif: 'handoff' };\n  const STAFF = ['584129922399@s.whatsapp.net', '584242162538@s.whatsapp.net'];\n  const aviso = '📩 Cliente en puente (' + (it.remoteJid || '') + '):\\n' + (it.text || '');\n  return STAFF.map((j) => ({ json: { ...base, target_jid: j, text: aviso } }));\n}\ntry {\n  await this.helpers.httpRequest({\n    method: 'POST',\n    url: $env.SUPABASE_FN_URL,\n    headers: { 'content-type': 'application/json', 'x-bot-key': $env.SUPABASE_BOT_KEY },\n    body: { action: 'session_set', client_jid: it.remoteJid, estado: 'IA', handoff_hilo: {}, handoff_motivo: null }\n  });\n} catch (e) {}\nreturn [{ json: { ...it, clasif: 'nuevo', replyText: 'Hola de nuevo ✨ El hilo vuelve a estar conmigo. ¿En qué te ayudo?' } }];"
+      },
+      "id": "clasificar-mano-humana",
+      "name": "Clasificar Mano Humana",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1280,
+        380
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "rules",
+        "dataType": "string",
+        "value1": "={{ $json.clasif }}",
+        "rules": {
+          "rules": [
+            {
+              "operation": "equal",
+              "value2": "nuevo",
+              "outputKey": "nuevo"
+            },
+            {
+              "operation": "equal",
+              "value2": "handoff",
+              "outputKey": "handoff"
+            }
+          ]
+        },
+        "fallbackOutput": -1
+      },
+      "id": "switch-clasif",
+      "name": "Switch Clasif",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 2,
+      "position": [
+        1500,
+        380
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "chat",
+        "operation": "complete",
+        "model": "openrouter/nvidia/nemotron-3-super-120b-a12b:free",
+        "prompt": {
+          "messages": [
+            {
+              "role": "system",
+              "content": "\nSos el asistente virtual de YoSoy222 (yosoy222.com), marca venezolana de Caracas de velas artesanales de cera de soja, pulseras, collares, franelas y accesorios hechos a mano con amor. Tu tono refleja la marca: calma, intención y calidez. Atendés pedidos y consultas por WhatsApp.\n\nCÓMO SE COMPRA: no hay pasarela ni registro; el cliente elige del catálogo, escribe por WhatsApp, se confirma disponibilidad y se coordina envío (retirar o entrega) y pago (transferencia, pago móvil o contraentrega).\n\nCATÁLOGO (precios EXACTOS en dólares USD — usá SOLO estos precios):\n\n— Velas —\n  • Rosa — USD $7.00. Vela artesanal de 79grs. en forma de Rosa, Elaborada con Cera de Soja en blanco, rosa claro, rosa oscuro. Aroma Coco, Lavanda, Jazmin.\n  • Mini Corazones — USD $0.17. Vela artesanal de 1grs. en forma de Mini corazón, Elaborada con Cera de Soja en blanco, rosa, rojo. Aroma Coco, Jazmin\n  • Rosa Pequeña — USD $4.50. Vela artesanal de 23grs. en forma de Rosa pequeña presentada en palito decorativo. Elaborada con cera de soja en blanco, rosa, amarillo rosa claro. Aroma: Coco Vainilla\n  • Mini Margarita — USD $1.70. Wax Melts 6grs. en forma de Mini Margarita. Elaborada con cera de soja en blanco, rosa, amarillo rosa claro. Aroma: Coco Vainilla, Canela\n  • Margarita Pequeña — USD $3.00. Vela artesanal de 16grs. en forma de Margarita pequeña presentada en palito decorativo. Elaborada con cera de soja en blanco, rosa, amarillo rosa claro. Aroma: Coco Vainilla\n  • Tulipán Pequeña — USD $5.00. Vela artesanal de 33grs. en forma deTulipan pequeña presentada en palito decorativo. Elaborada con cera de soja en blanco, rosa, amarillo rosa claro. Aroma: Coco Vainilla, Jazmin\n  • Bouquet Tulipán — USD $8.50. Vela artesanal de 83grs. en forma de Buquet Tulipan. Elaborada con cera de soja en blanco, rojo, amarillo, rosa claro. Aroma: Lavanda, Café\n  • Espiral — USD $9.50. Vela artesanal de 104grs. en forma de Espiral. Elaborada con cera de soja en blanco, verde, amarillo, azul. Aroma: Lavanda, Jazmin.\n  • Sagrada Familia — USD $7.00. Vela artesanal de 75grs. en forma de Sagrada Familia. Elaborada con cera de soja en blanco, verde, amarillo, azul, rosa, beige, rojo Aroma: Lavanda, Jazmin. Coco Vainilla\n  • Buda — USD $6.50. Vela artesanal de 20grs. en forma de Buda. Elaborada con cera de soja en blanco, verde, amarillo, azul, rosa, Beige Aroma: Lavanda. Coco Vainilla.\n  • Mano Hamsa — USD $8.00. Vela artesanal de 75grs. en forma de Mano Hamsa. Elaborada con cera de soja en blanco, verde, rosa, beige Aroma: Coco Vainilla. Canela\n  • Corazón — USD $13.50. Vela artesanal de 182grs. en forma de Corazón. Elaborada con cera de soja en blanco, rosa, rojo Aroma: Coco Vainilla. Lavanda, Limon Fresh.\n  • Cruz con Paloma — USD $7.00. Vela artesanal de 52grs. en forma de Cruz con palomita. Elaborada con cera de soja en blanco con rosa, amarillo, azul Aroma: Coco Vainilla. Jazmin\n  • Cubo — USD $7.00. Vela artesanal de 40grs. en forma de Cubo. Elaborada con cera de soja en blanco, amarillo, azul, rosa Aroma: Coco Vainilla. Canela\n  • Virgen del Carmen — USD $7.00. Vela artesanal de 42grs. en forma de Virgen del Carmen. Elaborada con cera de soja en blanco y dorado Aroma: Coco Vainilla. Canela\n  • Mini Petit — USD $7.50. Vela artesanal de 123grs. Elaborado en envase de vidrio transparente, con tapa metalica dorada. Contiene una base de cera de soja blanca. Aroma: Coco Vainilla\n  • Mandala — USD $9.00. Vela artesanal de 98grs. Elaborada en envase de metal decorativo. Contiene cera blanca. Aroma: limón Fresh\n  • Vintage — USD $9.50. Vela artesanal de 165grs. Elaborado en envase de vidrio transparente, con tapa de corcho. Contiene una base de cera de soja en tonalidades blanco y rosado. Decorado con mecatillo y detalles florales en tono crema. Aroma: Jazmin\n  • Petit — USD $11.00. Vela artesanal de 171grs. Elaborado en envase de vidrio transparente, con tapa metalica dorada. Contiene una base de cera de soja blanca decorada con corazones rojos en superficie. Aroma: Limón Fresh\n  • Estrella — USD $12.00. Vela artesanal de 285grs. Elaborado en envase de vidrio transparente, en forma de estrella. Contiene una base de cera de soja blanca y roja. Aroma: Coco, Café, Jasmin\n  • Aura Rosa — USD $17.00. Vela artesanal de 342grs. Elaborado en envase de vidrio transparente con tapa de madera. Contiene una base de cera de soja blanca, con rosa pequeña en superficie. Aroma: Jazmin\n  • Aura Tulipán — USD $17.00. Vela artesanal de 335grs. Elaborado en envase de vidrio transparente con tapa de madera. Contiene una base de cera de soja blanca, con tulipan pequeña en superficie. Aroma: Coco Vainilla\n  • Aura Corazones — USD $20.00. Vela artesanal de 418grs. Elaborado en envase de vidrio transparente con tapa de madera. Contiene una base de cera de soja marmoleada con blanco y rosa con corazones rojos en superficie. Aroma: Coco Vainilla\n  • Armonía Canela — USD $22.00. Vela artesanal de 508grs. Elaborado en envase de vidrio opaco con tapa de MDF. Contiene una base de cera de soja color canela y mecha de madera. Aroma: Canela\n  • Armonía Coco — USD $23.00. Vela artesanal de 516grs. Elaborado en envase de vidrio opaco con tapa de MDF. Contiene una base de cera de soja blanca. Aroma: Coco\n— Collares —\n  • Gargantilla G-01 — USD $20.00. Gargantilla de Gold-Filled bañada en oro. Cuenta con broche estilo langosta. Dije de piedra natural a tu elección y un mini dije complementario. Mide 25cm de largo y tiene un grosor de 1,5mm\n  • Gargantilla G-02 — USD $25.00. Gargantilla de Gold-Filled bañada en oro. Cuenta con broche estilo ancla para un cierre seguro y estetico. Dije de piedra natural a tu elección y un mini dije complementario. Mide 25cm de largo y tiene un grosor de 3mm\n  • Collar Medio C.M-01 — USD $25.00. Collar Medio de Gold-Filled bañada en oro. Cuenta con broche estilo ancla para un cierre seguro y estetico. Dije de piedra natural a tu elección y un mini dije complementario. Mide 29cm de largo y tiene un grosor de 3mm\n  • Collar Medio C.M-02 — USD $30.00. Collar Medio de Gold-Filled bañada en oro. Cuenta con broche estilo ancla para un cierre seguro y estetico. Dije de piedra natural a tu elección y un mini dije complementario. Mide 34cm de largo y tiene un grosor sólido de 4mm\n  • Collar Largo C.L-01 — USD $32.00. Collar Largo de Gold-Filled bañada en oro. Cuenta con broche estilo ancla para un cierre seguro y estetico. Dije de piedra natural a tu elección y un mini dije complementario. Mide 40cm de largo y tiene un grosor sólido de 4mm\n— Pulseras —\n  • Pulsera Infinito Azul — USD $8.00. Pulsera Infinito simboliza conexión y propósito. Acompaña tu energía. Trenzado en hilo chino fino. Un amuleto para recordar que todo lo que mereces, permanece.\n  • Pulsera Infinito Beige — USD $8.00. Pulsera Infinito simboliza conexión y propósito. Acompaña tu energía. Trenzado en hilo chino fino. Un amuleto para recordar que todo lo que mereces, permanece.\n  • Pulsera Infinito Roja — USD $8.00. Pulsera Infinito simboliza conexión y propósito. Acompaña tu energía. Trenzado en hilo chino fino. Un amuleto para recordar que todo lo que mereces, permanece.\n  • Pulsera San Benito — USD $8.00. Pulsera San Benito conecta intención y protección. Trenzado en hilo rojo y un dije que acompaña tú energia.\n  • Pulsera Perla — USD $6.00. Pulsera Perla irradia calma y claridad. Trenzado sutil y un centro que refleja luz y quilibrio.\n  • Pulsera Ojito — USD $6.00. Pulsera Ojito protege y equilibra tu energia. Trenzado en hilo rojo, y un ojo que acompaña tu camino.\n— Accesorios —\n  • Piedras Naturales — USD $7.00. Dijes Piedras Naturales. Cada una vibra con intención, protección, claridad, fuerza o calma.\n— Franelas —\n  • F-01 Loto Sagrado — USD $16.00. Franela que une intención y estilo. El Loto renace, el Om eleva. Tela suave y resistente para acompañar tus días con calma y proposito.\n  • F-02 Loto Sagrado — USD $16.00. Franela que une intención y estilo. El Loto renace, el Om eleva. Tela suave y resistente para acompañar tus días con calma y proposito.\n  • F-03 Loto Sagrado — USD $16.00. Franela que une intención y estilo. El Loto renace, el Om eleva. Tela suave y resistente para acompañar tus días con calma y proposito.\n  • F-04 Ser Feliz — USD $14.00. Franela para mujeres que eligen calma sobre exigencia. Tela suave y diseño minimalista que acompaña tu bienestar. La felicidad es un plan que se viste.\n  • F-05 Hazte Caso — USD $14.00. Franela que honra tu intuición. Tela suave y diseño minimalista para acompañar tu energia.\n  • F-06 Cool — USD $14.00. Franela que afirma tu valor. Diseño limpio, tela suave y diseño minimalista que eleva tu energia.\n  • F-07 El Amor — USD $14.00. Franela que honra el poder del amor. Tela suave, diseño minimalista y un mensaje que ilumina tu energia. El amor da sentido y se siente.\n\nREGLAS:\n- Precios exactos del catálogo; NUNCA inventes precios ni fechas de entrega; nunca prometas envíos.\n- Si algo no está en el catálogo o dudás, decí que se confirma disponibilidad y precio por este canal.\n- Mayoreo o velas personalizadas: decí que se les pasa cotización con una asesora.\n- Respondé breve, cálido y en español.\n\nCAPTURA GUIADA (si el cliente pidió algo del catálogo, guialo por estos pasos; podés saltar los que ya dio):\n1) Producto(s) y cantidad. 2) Nombre. 3) Zona de entrega o \"retiro\". 4) Método de pago (transferencia, pago móvil, contraentrega). 5) Confirmación del resumen.\nPedido completo = products (nombres EXACTOS del catálogo con qty), client_name, delivery_zone y payment_method.\n\nPASAR A HUMANO (handoff) cuando:\n- El cliente lo pide (\"hablar con una persona\", \"agente\", etc.).\n- El pedido ya está completo al 100 %.\n- No sabés responder (mayoreo, personalizadas, dudas complejas).\n- Situación delicada (tono agresivo, quejas).\n\nFORMATO DE SALIDA: respondé SOLO un JSON válido, sin texto extra:\n{\"action\":\"reply\"|\"handoff\"|\"order\",\"text\":\"mensaje breve y cálido\",\"pedido\":{\"products\":[{\"name\":\"exacto del catálogo\",\"qty\":N}],\"client_name\":\"...\",\"delivery_zone\":\"...\",\"payment_method\":\"...\"},\"handoff_by\":\"pedido\"|\"human\"|\"cant\"|\"agresivo\",\"session\":{\"products\":[{\"name\":\"...\",\"qty\":0}],\"client_name\":\"...\",\"delivery_zone\":\"...\",\"payment_method\":\"...\"}}\n- reply: respuesta normal en \"text\".\n- handoff: text = lo que se le dice al cliente al pasar el hilo; handoff_by = motivo.\n- order: pedido completo con pedido.products (nombres EXACTOS), client_name, delivery_zone, payment_method; handoff_by = \"pedido\".\n\nREGLAS DE SEGURIDAD (obligatorias): NUNCA incluyas enlaces (http, https, wa.me, www) ni menciones números de teléfono distintos al de la tienda en tus respuestas. Solo texto plano, breve y cálido.\n- session: estado acumulado del pedido EN CURSO: {\"products\":[{\"name\":\"exacto del catalogo\",\"qty\":N}],\"client_name\":\"...\",\"delivery_zone\":\"...\",\"payment_method\":\"...\"}. Incluilo SIEMPRE que existan datos, acumulando todo lo que el cliente ya dio en 'Conversación reciente' o 'Pedido hasta ahora' (nunca borres datos previos ni vuelvas a preguntar lo ya respondido). Si no hay nada, mandá los datos existentes sin cambios o {}."
+            },
+            {
+              "role": "user",
+              "content": "={{ ($json.historial ? 'Conversación reciente:\\n' + $json.historial + '\\n\\n' : '') + ($json.paso ? 'Paso de captura: ' + $json.paso + '\\n' : '') + ($json.datos ? 'Pedido hasta ahora: ' + JSON.stringify($json.datos) + '\\n' : '') + 'Cliente: ' + $json.text }}"
+            }
+          ]
+        },
+        "simplifyOutput": true,
+        "options": {
+          "maxTokens": 2048
+        }
+      },
+      "type": "n8n-nodes-base.openAi",
+      "typeVersion": 1,
+      "onError": "continueRegularOutput",
+      "credentials": {
+        "openAiApi": {
+          "id": "68b08fc8-1f8b-4651-bc0e-dcd2b55ec602",
+          "name": "OmniRoute-LLM"
+        }
+      },
+      "id": "ia-omniroute",
+      "name": "IA OmniRoute",
+      "position": [
+        1280,
+        640
+      ],
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 3000
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "const prev = $('Leer Sesión').first().json;\nlet raw = String(items[0].json?.message?.content ?? '').replace(/```(?:json)?/gi, '').trim();\nlet parsed = null;\nconst m = raw.match(/\\{[\\s\\S]*\\}/);\nif (m) { try { parsed = JSON.parse(m[0]); } catch (e) {} }\nif (!parsed && m) {\n  const start = raw.indexOf('{');\n  let depth = 0, end = -1;\n  for (let i = start; i < raw.length; i++) {\n    if (raw[i] === '{') depth++;\n    else if (raw[i] === '}') { depth--; if (depth === 0) { end = i; break; } }\n  }\n  if (end > start) { try { parsed = JSON.parse(raw.slice(start, end + 1)); } catch (e) {} }\n}\nif (!parsed) parsed = { action: 'reply', text: raw.split('{')[0].trim().slice(0, 1000) || 'Un segundo, en breve te respondo ✨' };\nif (typeof parsed.text === 'string' && /^\\s*\\{/.test(parsed.text)) {\n  try { const inner = JSON.parse(parsed.text); if (inner && inner.text) parsed = { ...inner, action: inner.action || parsed.action }; } catch (e) {}\n}\nconst action = ['reply','handoff','order'].includes(parsed.action) ? parsed.action : 'reply';\nconst text = String(parsed.text || parsed.reply || '').slice(0, 1000);\nconst base = { ...prev, ia: parsed, action, replyText: text, pedido: parsed.pedido || null, handoffBy: parsed.handoff_by || 'cant' };\nif (action === 'reply' && !base.replyText) base.replyText = 'Un segundo, en breve te respondo ✨';\n\n// ── Memoria de conversación: acumular datos del pedido + historial en la sesión ──\nlet sessErr = null;\ntry {\n  const sessIn = (parsed.session && typeof parsed.session === 'object' && !Array.isArray(parsed.session)) ? { ...parsed.session } : {};\n  delete sessIn.historial;\n  const datosPrev = (prev.datos && typeof prev.datos === 'object' && !Array.isArray(prev.datos)) ? prev.datos : {};\n  let datosNuevos;\n  let estado;\n  if (action === 'order') {\n    datosNuevos = {};      // el pedido se consume al crearse\n    estado = 'puente';     // el staff toma el hilo del pedido\n  } else {\n    datosNuevos = { ...datosPrev, ...sessIn };\n    estado = action === 'handoff' ? 'puente' : 'IA';\n  }\n  datosNuevos.historial = [...(prev.historialFull || []), { u: String(prev.text || '').slice(0, 300), b: String(text || '').slice(0, 300) }].slice(-20);\n  datosNuevos.ultima_actividad = new Date().toISOString();\n  await this.helpers.httpRequest({\n    method: 'POST',\n    url: $env.SUPABASE_FN_URL,\n    headers: { 'content-type': 'application/json', 'x-bot-key': $env.SUPABASE_BOT_KEY },\n    body: { action: 'session_set', client_jid: prev.remoteJid, estado, datos_parciales: datosNuevos }\n  });\n} catch (e) { sessErr = String((e && e.message) || e); }\nbase.sessErr = sessErr;\n\nif (action === 'handoff') {\n  const STAFF = ['584129922399@s.whatsapp.net', '584242162538@s.whatsapp.net'];\n  const aviso = (text ? text + '\\n\\n' : '') + 'Cliente: ' + (prev.remoteJid || '') + '\\nAtiende con: atender ' + (prev.digits || '');\n  const cliente = { json: { ...base, pedido: null, action: 'reply', replyText: text || 'Con gusto, te comunico con una persona de la tienda ✨ Un momento, por favor.' } };\n  const avisos = STAFF.map((j) => ({ json: { ...base, pedido: null, target_jid: j, text: aviso, replyText: '', remoteJid: j, digits: String(j).replace(/[^0-9]/g, '') } }));\n  return [cliente, ...avisos];\n}\nreturn [{ json: base }];"
+      },
+      "id": "procesar-ia",
+      "name": "Procesar IA",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1500,
+        640
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "rules",
+        "dataType": "string",
+        "value1": "={{ $json.action }}",
+        "rules": {
+          "rules": [
+            {
+              "operation": "equal",
+              "value2": "reply",
+              "outputKey": "reply"
+            },
+            {
+              "operation": "equal",
+              "value2": "handoff",
+              "outputKey": "handoff"
+            },
+            {
+              "operation": "equal",
+              "value2": "order",
+              "outputKey": "order"
+            }
+          ]
+        },
+        "fallbackOutput": -1
+      },
+      "id": "switch-action",
+      "name": "Switch Action",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 2,
+      "position": [
+        1760,
+        640
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "\n// Validación server-side del pedido contra el catálogo empotrado.\nconst it = items[0].json;\nconst pedido = (it && it.pedido) || {};\nconst products = Array.isArray(pedido.products) ? pedido.products : [];\nconst PRICES = {\"Rosa\": 7.0, \"Mini Corazones\": 0.17, \"Rosa Peque\\u00f1a\": 4.5, \"Mini Margarita\": 1.7, \"Margarita Peque\\u00f1a\": 3.0, \"Tulip\\u00e1n Peque\\u00f1a\": 5.0, \"Bouquet Tulip\\u00e1n\": 8.5, \"Espiral\": 9.5, \"Sagrada Familia\": 7.0, \"Buda\": 6.5, \"Mano Hamsa\": 8.0, \"Coraz\\u00f3n\": 13.5, \"Cruz con Paloma\": 7.0, \"Cubo\": 7.0, \"Virgen del Carmen\": 7.0, \"Mini Petit\": 7.5, \"Mandala\": 9.0, \"Vintage\": 9.5, \"Petit\": 11.0, \"Estrella\": 12.0, \"Aura Rosa\": 17.0, \"Aura Tulip\\u00e1n\": 17.0, \"Aura Corazones\": 20.0, \"Armon\\u00eda Canela\": 22.0, \"Armon\\u00eda Coco\": 23.0, \"Gargantilla G-01\": 20.0, \"Gargantilla G-02\": 25.0, \"Collar Medio C.M-01\": 25.0, \"Collar Medio C.M-02\": 30.0, \"Collar Largo C.L-01\": 32.0, \"Pulsera Infinito Azul\": 8.0, \"Pulsera Infinito Beige\": 8.0, \"Pulsera Infinito Roja\": 8.0, \"Pulsera San Benito\": 8.0, \"Pulsera Perla\": 6.0, \"Pulsera Ojito\": 6.0, \"Piedras Naturales\": 7.0, \"F-01 Loto Sagrado\": 16.0, \"F-02 Loto Sagrado\": 16.0, \"F-03 Loto Sagrado\": 16.0, \"F-04 Ser Feliz\": 14.0, \"F-05 Hazte Caso\": 14.0, \"F-06 Cool\": 14.0, \"F-07 El Amor\": 14.0};\nconst lineas = [];\nconst invalidos = [];\nfor (const linea of products) {\n  const name = String((linea && linea.name) || '').trim();\n  const qty = Number(linea && linea.qty);\n  if (!(name in PRICES) || !Number.isFinite(qty) || qty <= 0) { invalidos.push(name || '(sin nombre)'); continue; }\n  lineas.push({ name: name, qty: Math.floor(qty), price: PRICES[name] });\n}\nif (invalidos.length || lineas.length === 0) {\n  const reply = 'Ups, no puedo confirmar: ' + (invalidos.join(', ') || 'sin líneas válidas') + '. Escribime los productos del catálogo y la cantidad, y en breve te confirmo ✨';\n  return [{ json: { ...it, action: 'reply', pedido: null, pedidoRpc: null, replyText: reply } }];\n}\nlet totalUsd = 0;\nfor (const l of lineas) totalUsd += l.price * l.qty;\ntotalUsd = Math.round(totalUsd * 100) / 100;\nconst resumen = '✨ Tu pedido:\\n' +\n  lineas.map((l) => '• ' + l.qty + ' x ' + l.name + ' — USD $' + l.price.toFixed(2)).join('\\n') +\n  '\\nTotal: USD $' + totalUsd.toFixed(2) +\n  '\\nZona: ' + (pedido.delivery_zone || 'retiro') +\n  '\\nPago: ' + (pedido.payment_method || 'por confirmar') +\n  '\\n\\nAnotado ✨ Nuestra asesora te escribe para coordinar la entrega.';\nconst payload = {\n  id: it.id || '',\n  client_name: String(pedido.client_name || 'Cliente').slice(0, 120),\n  client_jid: it.remoteJid || '',\n  products: lineas,\n  total_usd: totalUsd,\n  delivery_zone: pedido.delivery_zone || 'retiro',\n  payment_method: pedido.payment_method || '',\n  handoff_by: it.handoffBy || 'pedido',\n  notes: (pedido.notes || '')\n};\nconst rpc = {\n  action: 'pedido_create',\n  client_name: payload.client_name,\n  client_jid: payload.client_jid,\n  products: payload.products,\n  total_usd: payload.total_usd,\n  delivery_zone: payload.delivery_zone,\n  payment_method: payload.payment_method,\n  handoff_by: payload.handoff_by,\n  notes: payload.notes\n};\nreturn [{ json: { ...it, replyText: resumen, pedido: payload, pedidoRpc: rpc, totalUsd: totalUsd } }];"
+      },
+      "id": "calcular-total",
+      "name": "Calcular Total",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1980,
+        700
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $json.pedidoRpc ? $env.SUPABASE_FN_URL : '' }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-bot-key",
+              "value": "={{ $env.SUPABASE_BOT_KEY }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $json.pedidoRpc || '' }}",
+        "options": {}
+      },
+      "id": "crear-pedido",
+      "name": "Crear Pedido",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        2200,
+        700
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "\nconst resumen = $('Calcular Total').first().json;\nconst p = (resumen && resumen.pedido) || {};\nconst productos = (p.products || []).map((l) => '• ' + l.qty + ' x ' + l.name).join('\\n');\nconst jid = resumen.remoteJid || '';\nconst total = Number(resumen.totalUsd || 0);\n// Contexto para el staff: últimos 3 turnos (historial previo + turno actual del pedido)\nconst turnos = [...(Array.isArray(resumen.historialFull) ? resumen.historialFull : []), { u: resumen.text, b: resumen.replyText }]\n  .filter((t) => t && (t.u || t.b))\n  .slice(-3);\nconst contexto = turnos\n  .map((t) => [t.u ? 'Cliente: ' + String(t.u).slice(0, 120) : null, t.b ? 'Bot: ' + String(t.b).slice(0, 120) : null].filter(Boolean).join('\\n'))\n  .join('\\n');\nconst aviso = '📦 *Nuevo pedido YoSoy222*\\n\\n' + (productos || '—') +\n  '\\nTotal: USD $' + total.toFixed(2) +\n  '\\nCliente: ' + (p.client_name || 'Cliente') + ' (' + jid + ')' +\n  '\\nZona: ' + (p.delivery_zone || 'retiro') +\n  '\\nPago: ' + (p.payment_method || 'por confirmar') +\n  (contexto ? '\\n\\nÚltimos mensajes:\\n' + contexto : '') +\n  '\\n\\nAtiende con: atender ' + String(jid).replace(/[^0-9]/g, '');\nconst STAFF = ['584129922399@s.whatsapp.net', '584242162538@s.whatsapp.net'];\nasync function notificar(j) {\n  return this.helpers.httpRequest({\n    method: 'POST',\n    url: 'http://100.77.200.34:8081/message/sendText/yosoy222_bot',\n    headers: { 'content-type': 'application/json', apikey: $env.EVOLUTION_API_KEY },\n    body: { number: j, text: aviso }\n  });\n}\ntry { await Promise.all(STAFF.map((j) => notificar.call(this, j))); } catch (e) {}\nreturn items;"
+      },
+      "id": "avisar-humanos2",
+      "name": "Avisar Humanos2",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2420,
+        700
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://100.77.200.34:8081/message/sendText/yosoy222_bot",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $env.EVOLUTION_API_KEY }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ number: $json.target_jid, text: String($json.text).replace(/[\\r\\n\\t]+/g, ' ') }) }}",
+        "options": {}
+      },
+      "id": "avisar-humanos",
+      "name": "Avisar Humanos",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        1980,
+        560
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://100.77.200.34:8081/message/sendText/yosoy222_bot",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $env.EVOLUTION_API_KEY }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ number: $json.target_jid, text: String($json.text).replace(/[\\r\\n\\t]+/g, ' ') }) }}",
+        "options": {}
+      },
+      "id": "envio-aviso-staff2",
+      "name": "Enviar Aviso Staff2",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        1760,
+        180
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://100.77.200.34:8081/message/sendText/yosoy222_bot",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $env.EVOLUTION_API_KEY }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ number: $json.remoteJid, text: String($json.replyText ? $json.replyText : ($json.text ? $json.text : 'Un segundo, en breve te respondo ✨')).replace(/[\\r\\n\\t]+/g, ' ') }) }}",
+        "options": {}
+      },
+      "id": "enviar-mensaje-whatsapp",
+      "name": "Enviar Mensaje WhatsApp",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        2240,
+        420
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "resume": "timeInterval",
+        "amount": "={{ 2 + Math.floor(Math.random() * 13) }}",
+        "unit": "seconds"
+      },
+      "id": "f7c2a9d1-4b6e-4d3a-9c11-yosoy222delay",
+      "name": "Delay Humano",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        2110,
+        420
+      ]
     }
   ],
   "connections": {
@@ -371,87 +491,243 @@
       "main": [
         [
           {
-            "node": "Parse & Route Intent",
+            "node": "Parsing",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Parse & Route Intent": {
+    "Parsing": {
       "main": [
         [
           {
-            "node": "Switch Intent",
+            "node": "Switch Origen",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Switch Intent": {
+    "Switch Origen": {
       "main": [
         [
           {
-            "node": "Reply Order Received",
+            "node": "Comandos Staff",
             "type": "main",
             "index": 0
           }
         ],
         [
           {
-            "node": "Notify Customer Escalation",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "Reply Payment Info",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "Reply Welcome",
+            "node": "Leer Sesión",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Reply Order Received": {
+    "Comandos Staff": {
       "main": [
         [
           {
-            "node": "Notify Agent 1 Order",
+            "node": "Ejecutar Paso",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ejecutar Paso": {
+      "main": [
+        [
+          {
+            "node": "Enviar Aviso Staff",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Leer Sesión": {
+      "main": [
+        [
+          {
+            "node": "Switch Estado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch Estado": {
+      "main": [
+        [
+          {
+            "node": "Clasificar Mano Humana",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "IA OmniRoute",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Clasificar Mano Humana": {
+      "main": [
+        [
+          {
+            "node": "Switch Clasif",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch Clasif": {
+      "main": [
+        [
+          {
+            "node": "Delay Humano",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Enviar Aviso Staff2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IA OmniRoute": {
+      "main": [
+        [
+          {
+            "node": "Procesar IA",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Procesar IA": {
+      "main": [
+        [
+          {
+            "node": "Switch Action",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch Action": {
+      "main": [
+        [
+          {
+            "node": "Delay Humano",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Avisar Humanos",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Calcular Total",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calcular Total": {
+      "main": [
+        [
+          {
+            "node": "Delay Humano",
             "type": "main",
             "index": 0
           },
           {
-            "node": "Notify Agent 2 Order",
+            "node": "Crear Pedido",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Notify Customer Escalation": {
+    "Crear Pedido": {
       "main": [
         [
           {
-            "node": "Alert Agent 1 Human Needed",
+            "node": "Avisar Humanos2",
             "type": "main",
             "index": 0
-          },
+          }
+        ]
+      ]
+    },
+    "Delay Humano": {
+      "main": [
+        [
           {
-            "node": "Alert Agent 2 Human Needed",
+            "node": "Enviar Mensaje WhatsApp",
             "type": "main",
             "index": 0
           }
         ]
       ]
     }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": null,
+  "nodeGroups": [],
+  "pinData": null,
+  "versionId": "bf3ef227-b437-4adb-9470-7f76a4e85482",
+  "activeVersionId": "bf3ef227-b437-4adb-9470-7f76a4e85482",
+  "versionCounter": 6,
+  "triggerCount": 1,
+  "sourceWorkflowId": null,
+  "tags": [],
+  "shared": [
+    {
+      "updatedAt": "2026-09-21T02:47:19.739Z",
+      "createdAt": "2026-09-21T02:47:19.739Z",
+      "role": "workflow:owner",
+      "workflowId": "Iwg02lASI9CEFic",
+      "projectId": "H5aWkyaR2EtLTVau",
+      "project": {
+        "updatedAt": "2026-08-31T02:01:33.635Z",
+        "createdAt": "2026-08-31T01:59:35.395Z",
+        "id": "H5aWkyaR2EtLTVau",
+        "name": "Juan Raudel Sanchez Payan <juanraudel170@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "customTelemetryTags": [],
+        "creatorId": "969ac913-e0f8-430c-ab03-aa093d096487"
+      }
+    }
+  ],
+  "versionMetadata": {
+    "name": null,
+    "description": null
   }
 }
