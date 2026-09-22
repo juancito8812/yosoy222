@@ -5,7 +5,8 @@
 - **Propósito:** Tienda online de velas artesanales, pulseras, collares, franelas y accesorios con PWA offline, checkout por WhatsApp y dashboard de analítica privada
 - **Stack:** HTML5 + CSS3 + JavaScript vanilla (sin frameworks), PWA (manifest.json + sw.js), GitHub Pages, Cloudflare CDN
 - **Última sesión:** 21 de septiembre de 2026
-- **Versión de memoria:** 11
+- **Versión de memoria:** 12
+- **🌿 Rama activa:** `redesign-ritual` lleva el rediseño ritualista del sitio (NO mergeado a main, decisión del dueño) — su estado, pendientes y handoff completo viven en **`BRANCH_STATUS.md` en la raíz de esa rama** (v39, 21 sep). Al retomar el rediseño: `git fetch origin && git worktree add /tmp/redesign-review origin/redesign-ritual` y leer ese archivo primero
 
 ## Arquitectura
 
@@ -24,6 +25,8 @@
 - **Scripts:** `scripts/` (prerender_catalog.py, generate_icons.py, verify_icons.py, verify_versions.py, process_images.py, process_images_v2.py, IMAGE_GUIDE.md)
 
 ## Decisiones Clave & Hitos
+
+- **21 sep 2026 — Rama `redesign-ritual` activa con rediseño integral (v39, sin merge):** el dueño abrió rama de rediseño ritualista (paleta beige-dorado, tipografía serif, taxonomía nueva: velas/melts/dijes-pulseras/franelas, flujo n8n WhatsApp). Sesión del 21 en la rama: fondo global #F3EDE4 + contraste AA + barrido de residuos rosados (commits `93c2526`, `e76e732`, handoff `2a4c137`). Deudas conocidas: apikey n8n hardcodeada (en esta rama Y en main: `AgenciaSecreta2026` en `scripts/whatsapp-n8n-workflow.json`), sync pendiente con los v35-v37 de main, QA gate antes de merge. **Todo el detalle en `BRANCH_STATUS.md` de la rama.**
 
 - **21 sep 2026 — Pase post-auditoría: verificador en CI + purga del token muerto (cache v37):** hallazgos de la auditoría 4D aplicados: (1) `ci.yml` ejecuta ahora `python3 scripts/verify_versions.py` tras los tests — el detector del drift documental (4 incidentes esta sesión) deja de depender de la memoria humana; (2) corregida en README la frase que afirmaba la garantía "en CI" que no existía; (3) en el 401/429 de `fetchCloudData`, el token muerto se purga de la sesión persistida — antes quedaba y cada refresh lo restauraba (`restoreCloudAuth`) repasando por un fetch condenado hasta re-login. Bump v36→v37.
 - **21 sep 2026 — El refresh no degrada a "En Vivo (Local)" (cache v36):** reporte del dueño con captura: al recargar el dashboard, la pill pasaba de "En Vivo (Supabase Cloud)" a "EN VIVO (LOCAL)" y los KPIs caían de ~170 a 13 (solo local). Causa: `cloudAuth` (token de la Edge Function) vivía solo en memoria; `acceptLogin` lo recibía pero `createSession` no lo guardaba, y el arranque (`DOMContentLoaded`) solo validaba la sesión local — el token cloud moría en cada refresh aunque la sesión siguiera viva. Fix: (1) `createSession(user, cloudToken)` persiste el token dentro de la sesión sessionStorage (mismo TTL de 2h que emite la Edge; "Salir" lo borra todo) + `restoreCloudAuth()` en el arranque; (2) el rango elegido se recuerda en localStorage (`yosoy222_dash_range`) y el arranque lo restaura con su botón activo (antes el refresh volvía siempre a 30D). Bump v35→v36.
