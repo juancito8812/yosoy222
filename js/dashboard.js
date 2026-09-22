@@ -33,8 +33,9 @@
      Este módulo (core) posee auth, datos y estado; obtiene las
      stats y delega el pintado. Firma original intacta. */
   async function renderDashboard(forceCloud = false) {
-    const cloud = await fetchCloudData(forceCloud);
-    const stats = computeStats(currentDays, cloud);
+    await fetchCloudData(forceCloud);
+    // Historia completa: fusión cloud (global) + local del navegador (era pre-Supabase)
+    const stats = computeStats(currentDays, getMergedRawData());
     return YoSoyDashView.renderDashboard(stats);
   }
 
@@ -99,10 +100,22 @@
     }
   }
 
-  function createSession(user = null) {
+  function createSession(user = null, cloudToken = null) {
     const expires = Date.now() + (SESSION_TTL_HOURS * 60 * 60 * 1000);
     const token = Array.from(crypto.getRandomValues(new Uint8Array(24))).map(b => b.toString(16).padStart(2, '0')).join('');
-    sessionStorage.setItem('yosoy222_dash_session', JSON.stringify({ token, expires, user }));
+    // cloudToken dentro de la sesión: mismo TTL de 2h que emite la Edge Function.
+    // Así el refresh NO degrada a "En Vivo (Local)": el token cloud sobrevive
+    // mientras la sesión viva y muere con ella (Salir lo borra todo).
+    sessionStorage.setItem('yosoy222_dash_session', JSON.stringify({ token, expires, user, cloudToken }));
+  }
+
+  function restoreCloudAuth() {
+    try {
+      const sess = JSON.parse(sessionStorage.getItem('yosoy222_dash_session') || 'null');
+      if (sess && sess.cloudToken && sess.user) {
+        cloudAuth = { user: sess.user, token: sess.cloudToken };
+      }
+    } catch { /* sin sesión cloud persistida */ }
   }
 
   function getSessionUser() {
@@ -131,7 +144,7 @@
 
   function acceptLogin(user, token = null) {
     clearFailedAttempts();
-    createSession(user);
+    createSession(user, token);
     cloudAuth = token ? { user, token } : null;
     authErrorEl.style.display = 'none';
     authPasswordEl.value = '';
@@ -269,8 +282,17 @@
         })
       });
       if (res.status === 401 || res.status === 429) {
-        // Token expirado/inválido o rate limit: cerrar sesión en la nube
+        // Token expirado/inválido o rate limit: cerrar sesión en la nube.
+        // También purgarlo de la sesión persistida: si no, cada refresh lo
+        // restauraría (restoreCloudAuth) y repasaría por un fetch condenado.
         cloudAuth = null;
+        try {
+          const sess = JSON.parse(sessionStorage.getItem('yosoy222_dash_session') || 'null');
+          if (sess && sess.cloudToken) {
+            delete sess.cloudToken;
+            sessionStorage.setItem('yosoy222_dash_session', JSON.stringify(sess));
+          }
+        } catch { /* sesión ausente o corrupta: nada que purgar */ }
         return null;
       }
       if (res.ok) {
@@ -335,6 +357,26 @@
     }
   }
 
+  // Historia completa: cloud (global, desde el 17 sep) + local de este navegador
+  // (las semanas previas, antes de que existiera la ingesta a Supabase). Los
+  // eventos locales no tienen id y sus timestamps difieren de los de la BD
+  // (latencia de sync), así que la frontera es temporal: se suman los locales
+  // ANTERIORES al primer evento cloud — los posteriores ya están en cloud y se
+  // excluyen para no contarlos doble. El historial local se conserva mientras
+  // la retención (60 días) lo permita; presérvalo con el botón Exportar CSV.
+  function getMergedRawData() {
+    const cloud = cachedCloudData;
+    const local = getLocalRawData();
+    if (!cloud || !cloud.events.length) return local;
+    const cloudStart = Math.min(...cloud.events.map(e => e.t || 0)) || 0;
+    const esHistoriaVieja = e => (e.t || 0) > 0 && (e.t || 0) < cloudStart;
+    return {
+      sessions: [...cloud.sessions, ...local.sessions.filter(esHistoriaVieja)],
+      events: [...cloud.events, ...local.events.filter(esHistoriaVieja)],
+      isCloud: true
+    };
+  }
+
   function filterByDays(items, days) {
     if (days === 0) return items;
     const cutoff = Date.now() - (days * 24 * 60 * 60 * 1000);
@@ -342,7 +384,7 @@
   }
 
   function computeStats(days, dataSource) {
-    const raw = dataSource || getLocalRawData();
+    const raw = dataSource || getMergedRawData();
     const sessions = filterByDays(raw.sessions || [], days);
     const events = filterByDays(raw.events || [], days);
 
@@ -454,7 +496,7 @@
 
   // --- CSV EXPORT ---
   function exportCSV() {
-    const raw = cachedCloudData || getLocalRawData();
+    const raw = getMergedRawData();
     const rows = [
       ['Timestamp', 'Fecha', 'Tipo de Evento', 'Detalle / Producto / Busqueda', 'Precio/Total', 'Origen / Fuente', 'Dispositivo', 'Pais', 'Ciudad']
     ];
@@ -530,6 +572,17 @@
   // --- INITIALIZATION & EVENTS ---
   document.addEventListener('DOMContentLoaded', () => {
     if (isSessionValid()) {
+      // Restaurar el token cloud persistido: el refresh mantiene "En Vivo (Supabase Cloud)"
+      restoreCloudAuth();
+      // Restaurar el rango elegido en la visita anterior (default 30D)
+      const savedRange = parseInt(localStorage.getItem('yosoy222_dash_range') || '30', 10);
+      if (![1, 7, 30, 60, 0].includes(savedRange)) {
+        currentDays = 30;
+      } else {
+        currentDays = savedRange;
+        document.querySelectorAll('.range-btn').forEach(b =>
+          b.classList.toggle('active', parseInt(b.dataset.days, 10) === savedRange));
+      }
       setDashboardVisible(true);
     } else {
       setDashboardVisible(false);
@@ -636,6 +689,7 @@
         rangeBtns.forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         currentDays = parseInt(btn.dataset.days, 10);
+        try { localStorage.setItem('yosoy222_dash_range', String(currentDays)); } catch {}
         renderDashboard(false);
       });
     });

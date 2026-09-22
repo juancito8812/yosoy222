@@ -11,6 +11,7 @@ Tienda online de velas artesanales, pulseras, collares, franelas y accesorios.
 - **Repositorio:** https://github.com/juancito8812/yosoy222
 - **WhatsApp Oficial:** `+58 412 648 1628` (`584126481628`)
 - **Agentes Humanos de Respaldo:** Agente 1 (`+58 412 992 2399`), Agente 2 (`+58 424 216 2538`)
+- **Bot de WhatsApp:** activo sobre el número oficial vía n8n + Evolution API (Baileys) autohospedados en `debianm700` (Tailscale `100.77.200.34`, stack Docker `/home/debianserver/marketing-agency`). El espejo saneado del workflow vive en `scripts/whatsapp-n8n-workflow.json` (la fuente viva es la instancia n8n de debianm700). Reglas anti-baneo vigentes: el bot solo responde (nunca inicia), delay humano 2-14s, sin enlaces en primer contacto, sin grupos. **Memoria de conversación por cliente** (historial 20 turnos + pedido acumulado en sesión Supabase vía Edge `session_get`/`session_set`; **expira a las 24h sin actividad del cliente** — sello `ultima_actividad` en `datos_parciales`, respaldo `updated_at` — evita heredar pedidos viejos o puentes abandonados): el bot no reinicia la conversación en cada mensaje. Estados de sesión: `IA` (bot responde) y `puente` (humanos atienden; preguntas comerciales devuelven el hilo al bot con reset, mensajes no-comerciales se reenvían al staff). **Importante para n8n 2.x:** los Code nodes corren en task runner aislado SIN `process.env` — usar siempre `$env.*`. Despliegue del workflow: `import:workflow` (desactiva) + `publish:workflow --id` + `docker restart agency-n8n` (backup previo).
 - **Hosting:** GitHub Pages con proxy, DNS y CDN bajo Cloudflare.
 - **Arquitectura:** PWA instalable con catálogo pre-renderizado para SEO (Schema.org), panel de analítica privada con Luxury Glassmorphism, telemetría en la nube (Supabase Cloud + GA4) y soporte offline (Service Worker Cache v39).
 
@@ -86,7 +87,10 @@ yosoy222/
 │   ├── prerender_catalog.py       ← Generador de tarjetas HTML estáticas para index.html
 │   ├── generate_icons.py          ← Generador de iconos desde source_logo.jpg
 │   ├── verify_icons.py            ← Validador de especificación de iconos contra manifest.json
+│   ├── verify_versions.py         ← Verificador de coherencia de versiones (sw ↔ manifest ↔ HTML ↔ precache)
 │   ├── process_images_v2.py       ← Eliminación de bordes blancos y recorte 1:1
+│   ├── whatsapp-n8n-workflow.json ← Espejo saneado del workflow del bot (fuente viva: n8n en debianm700)
+│   ├── supabase_rls.sql / supabase_rate_limit.sql ← SQL canónico de seguridad de la BD
 │   └── IMAGE_GUIDE.md             ← Guía de requerimientos visuales
 ├── icons/                         ← 10 iconos PWA HD (fondo blanco sólido, 80% Safe Zone) + source_logo.jpg
 └── images/
@@ -106,6 +110,7 @@ yosoy222/
 6. **Escape HTML Sistemático:** Toda inserción de datos dinámicos en el DOM debe utilizar `escapeHtml()` para prevenir ataques de Cross-Site Scripting (XSS).
 7. **Sin `eval()` ni inline scripts:** Cumplir con la Content Security Policy estricta (`script-src 'self'`).
 8. **Script anti-bots inyectado por Cloudflare (`__CF$cv$params`):** Cloudflare añade al HTML servido un script inline cuyo contenido **rota en cada respuesta** (verificado 20 sep 2026: hash distinto por request) → NO es compatible con CSP por hash, y su iframe choca con `default-src 'none'`. Genera 1 error de consola y BP Lighthouse 92/100. **Decisión del dueño: aceptarlo y documentarlo** — NO intentar "arreglarlo" con hashes (inviabile), `unsafe-inline` (destruye la protección XSS) ni cambiando la CSP.
+9. **Política de ramas — merge SOLO con autorización del dueño:** `main` es producción (todo push despliega). La rama `redesign-ritual` **NUNCA se mergea a main, ni se abre PR de merge, ni se pushea su contenido a main** sin que el dueño lo autorice explícitamente Y la rama esté 100% lista (QA gate completo + visto bueno del cliente). Su handoff vive en `BRANCH_STATUS.md` en la raíz de esa rama.
 
 ---
 
@@ -131,10 +136,13 @@ Al modificar, agregar o eliminar productos del catálogo:
 
 Antes de reportar una tarea como completa:
 1. Ejecutar `npm test` y confirmar que las 13 pruebas pasan al 100%.
-2. Ejecutar `git status` para verificar que no queden archivos temporales o cambios sin registrar.
-3. Tras hacer `git push`, monitorear con `gh run list --limit 3` y confirmar que tanto `CI Tests` como `Purge Cloudflare Cache` concluyan en verde (`✓`).
-4. Al cambiar credenciales o desplegar la Edge Function, seguir `supabase/README.md` (secrets + smoke test).
+2. Ejecutar `python3 scripts/verify_versions.py` si se tocó cualquier versión o asset precacheado.
+3. Ejecutar `git status` para verificar que no queden archivos temporales o cambios sin registrar.
+4. Tras hacer `git push`, monitorear CI (`gh run list --limit 3` o API de check-runs) y confirmar que `CI Tests` y `Purge Cloudflare Cache` concluyan en verde (`✓`).
+5. Al cambiar credenciales o desplegar la Edge Function, seguir `supabase/README.md` (secrets + smoke test).
+6. Al modificar el workflow del bot: backup previo en debianm700, desplegar con `import:workflow` + `publish:workflow --id` + `docker restart agency-n8n`, verificar E2E (memoria, pedido, handoff, puente) y actualizar el espejo del repo.
+7. **Verificar la rama activa antes de commitear:** `git branch --show-current` — en `main` solo va producción; el rediseño vive exclusivamente en `redesign-ritual` (ver regla 9).
 
 ---
 
-*Documento actualizado al 20 de septiembre de 2026.*
+*Documento actualizado al 22 de septiembre de 2026.*

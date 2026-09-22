@@ -125,7 +125,15 @@ aplicar `scripts/supabase_rls.sql`.
 
 ## Rotación (credenciales del dashboard)
 
-- **Contraseña comprometida:** generar `DASH_AUTH_HASH` nuevo con la misma `DASH_AUTH_SALT`
-  y actualizar el secret. Los tokens previos siguen válidos hasta expirar (máx 2h) porque
-  el HMAC no depende del hash de login; para revocarlos al instante, rota `SESSION_SECRET`.
+- **Contraseña comprometida:** rotar **salt + hash juntos** — generar `DASH_AUTH_SALT`
+  nuevo y `DASH_AUTH_HASH` recalculado, y actualizar ambos secrets. Los secrets son
+  write-only por API (no se pueden leer para computar un hash contra el salt vigente);
+  y el salt público del cliente (`AUTH_SALT` en `js/dashboard.js`) NO debe igualarse
+  al del server: son dominios distintos. Los tokens previos siguen válidos hasta
+  expirar (máx 2h) porque el HMAC no depende del hash de login; para revocarlos al
+  instante, rota `SESSION_SECRET` en la misma pasada.
 - **SESSION_SECRET rotado:** todas las sesiones activas mueren al instante (los tokens no verifican).
+- **Historial:** 21 sep 2026 — rotados juntos `DASH_AUTH_SALT` + `DASH_AUTH_HASH` +
+  `SESSION_SECRET` vía API de Management (`POST /v1/projects/{ref}/secrets`); verificado:
+  login con credenciales nuevas ✓ (token 120 min), `stats` con token ✓ (235 filas),
+  control negativo 401 ✓. La contraseña no queda registrada en ningún archivo.

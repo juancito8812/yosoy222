@@ -28,13 +28,15 @@
 13. [Rendimiento y Core Web Vitals](#rendimiento-y-core-web-vitals)
 14. [SEO, Indexabilidad y Datos Estructurados](#seo-indexabilidad-y-datos-estructurados)
 15. [Suite de Tests y CI/CD (GitHub Actions)](#suite-de-tests-y-cicd-github-actions)
-16. [Deploy a GitHub Pages y Cloudflare](#deploy-a-github-pages-y-cloudflare)
-17. [Configurar dominio personalizado](#configurar-dominio-personalizado)
-18. [Tabla de productos completa](#tabla-de-productos-completa)
-19. [Guía de estilos CSS](#guía-de-estilos-css)
-20. [Estructura de archivos](#estructura-de-archivos)
-21. [Comandos git útiles](#comandos-git-útiles)
-22. [Troubleshooting](#troubleshooting)
+16. [Bot de WhatsApp (n8n + Evolution API)](#bot-de-whatsapp-n8n--evolution-api)
+17. [Ramas de trabajo y política de merge](#ramas-de-trabajo-y-política-de-merge)
+18. [Deploy a GitHub Pages y Cloudflare](#deploy-a-github-pages-y-cloudflare)
+19. [Configurar dominio personalizado](#configurar-dominio-personalizado)
+20. [Tabla de productos completa](#tabla-de-productos-completa)
+21. [Guía de estilos CSS](#guía-de-estilos-css)
+22. [Estructura de archivos](#estructura-de-archivos)
+23. [Comandos git útiles](#comandos-git-útiles)
+24. [Troubleshooting](#troubleshooting)
 
 ---
 
@@ -152,7 +154,7 @@ yosoy222/
 ├── _headers                       ← Directivas de cabeceras HTTP y HSTS para edge/CDNs
 ├── CNAME                          ← Dominio personalizado (yosoy222.com)
 ├── AGENTS.md                      ← Guía operativa para agentes de inteligencia artificial
-└── PLAN_IMPLEMENTACION.md         ← Roadmap de fases y registro de evolución
+└── PLAN_IMPLEMENTACION.md         ← Registro histórico congelado (fases 1-24)
 ```
 
 ---
@@ -314,7 +316,7 @@ Las imágenes de catálogo y miniaturas han sido procesadas para eliminar márge
 
 ---
 
-## PWA: INSTALAR Y FUNCIONAMIENTO OFFLINE (CACHE V34)
+## PWA: INSTALAR Y FUNCIONAMIENTO OFFLINE (CACHE V37)
 
 La PWA cumple con todos los estándares modernos de instalación y navegación offline:
 
@@ -322,11 +324,11 @@ La PWA cumple con todos los estándares modernos de instalación y navegación o
 1. **Navegación Network-First:**
    Para solicitudes de documentos HTML (`event.request.mode === 'navigate'`), el Service Worker consulta primero la red para obtener la versión más reciente del catálogo y, en caso de estar desconectado o con señal inestable, responde con la copia en caché.
 2. **Stale-While-Revalidate para Recursos Estáticos:**
-   CSS, fuentes, JS e imágenes secundarias se sirven de inmediato desde la caché mientras se actualizan en segundo plano. La coherencia de versiones (`?v=N` en HTML y `PRECACHE_ASSETS` en el SW) la garantiza `scripts/verify_versions.py` en CI.
+   CSS, fuentes, JS e imágenes secundarias se sirven de inmediato desde la caché mientras se actualizan en segundo plano. La coherencia de versiones (`?v=N` en HTML y `PRECACHE_ASSETS` en el SW) la verifica `scripts/verify_versions.py`, que se ejecuta automáticamente en CI junto a los tests.
 3. **Precache Integral & Resiliencia Offline:**
    Durante la instalación, el Service Worker descarga de forma controlada el shell de la aplicación, el panel de dashboard y las miniaturas del catálogo (46 archivos: 44 productos + 2 hero, en lotes de 6), garantizando que la navegación visual funcione offline desde el primer instante sin agotar datos móviles del usuario. El precache del catálogo lo dispara la página en cada carga vía mensaje `PRECACHE_IMAGES` (idempotente por marcador dentro de la caché versionada) — sin ventana de pérdida aunque el SW se active sin pestañas abiertas. Las imágenes grandes del lightbox se descargan y cachean bajo demanda.
 4. **Invalidación Inmediata de Versiones Anteriores:**
-   Al publicarse una nueva versión (`CACHE_NAME = 'yosoy222-v34'`), el evento `activate` purga de forma determinista cualquier almacenamiento obsoleto y el evento `controllerchange` refresca la vista del catálogo automáticamente.
+   Al publicarse una nueva versión (`CACHE_NAME = 'yosoy222-v37'`), el evento `activate` purga de forma determinista cualquier almacenamiento obsoleto y el evento `controllerchange` refresca la vista del catálogo automáticamente.
 5. **Iconos PWA de Alta Definición:**
    10 variantes (incluyendo formatos maskable con padding seguro del 15% para Android/iOS sin franjas negras) validadas con `scripts/verify_icons.py`.
 
@@ -354,7 +356,58 @@ La tienda y el panel de analítica cuentan con un sistema de telemetría híbrid
 
 ---
 
-## SEGURIDAD APLICADA (AUDIT & HARDENING)
+## BOT DE WHATSAPP (N8N + EVOLUTION API)
+
+El checkout de la tienda apunta al número oficial `+58 412 648 1628`, que atiende un **bot automático** con escalada a humanos:
+
+- **Infraestructura (autohospedada 24/7):** VM `debianm700` en Tailscale (`100.77.200.34`, SSH ya configurado en `~/.ssh/config` de los equipos de trabajo), stack Docker en `/home/debianserver/marketing-agency`: `agency-n8n` (n8n 2.36.8, puerto 5678), `agency-evolution-api` (puerto 8081), `agency-postgres-evo` y `agency-redis-evo`. La instancia `yosoy222_bot` está conectada por WhatsApp (Baileys) al número principal — decisión del dueño.
+- **Workflow:** espejo saneado en `scripts/whatsapp-n8n-workflow.json` (ID `Iwg02lASI9CEFic`, 20 nodos, cero secretos — todo vía `$env.*`). La **fuente viva** es la instancia n8n de debianm700; el espejo es el respaldo reproducible.
+- **Capacidades verificadas E2E (22 sep 2026):**
+  - **Memoria de conversación:** historial de 20 turnos + pedido acumulado en sesión Supabase (Edge `session_get`/`session_set`); el prompt de la IA recibe los últimos 6 turnos — el cliente no repite datos.
+  - **Expiración 24h:** sin actividad del cliente (sello `ultima_actividad`), la sesión resetea a conversación nueva — no hereda pedidos viejos ni puentes abandonados.
+  - **IA:** `nemotron-3-super-120b-a12b:free` vía OmniRoute (router LLM local de debianm700 en `:20128` → OpenRouter free tier, costo $0) con fallback + reintentos ×3.
+  - **Delay humano 2-14s** antes de responder al cliente (anti-baneo); avisos internos instantáneos.
+  - **Pedidos:** validación server-side contra catálogo empotrado con precios, cálculo de total USD, y aviso "📦 Nuevo pedido" a los 2 agentes **con los últimos 3 turnos de contexto**.
+  - **Escalada (handoff):** confirmación al cliente + avisos simultáneos a Agente 1 (`+58 412 992 2399`) y Agente 2 (`+58 424 216 2538`).
+  - **Modo puente:** tras pedido/handoff la sesión pasa a `puente` — el bot calla, el staff atiende con `atender <número>`; pregunta comercial devuelve el hilo al bot (reset), mensaje no-comercial se reenvía al staff; `fin` cierra la atención.
+  - **Anti-baneo:** el bot nunca inicia conversación, sin enlaces en respuestas, filtro de grupos `@g.us`.
+- **Despliegue del workflow (reproducible):**
+  ```bash
+  # 1. Backup del workflow vivo en debianm700
+  ssh debianm700 'mkdir -p ~/workflows_backup_$(date +%F)'
+  # 2. Importar el espejo del repo (upsert por ID — DESACTIVA el workflow)
+  scp scripts/whatsapp-n8n-workflow.json debianm700:/tmp/wf.json
+  ssh debianm700 'docker cp /tmp/wf.json agency-n8n:/tmp/wf.json && \
+    docker exec agency-n8n n8n import:workflow --input=/tmp/wf.json && \
+    docker exec agency-n8n n8n publish:workflow --id=Iwg02lASI9CEFic && \
+    docker restart agency-n8n'   # el restart es OBLIGATORIO en n8n 2.x
+  # 3. Health check
+  ssh debianm700 'curl -s -o /dev/null -w "%{http_code}" http://localhost:5678/healthz'
+  ```
+- **Regla crítica de n8n 2.x:** los Code nodes corren en task runner aislado **SIN `process.env`** — usar siempre `$env.*` (secretos: `EVOLUTION_API_KEY`, `SUPABASE_FN_URL`, `SUPABASE_BOT_KEY` en el `.env` del stack).
+
+---
+
+## RAMAS DE TRABAJO Y POLÍTICA DE MERGE
+
+| Rama | Estado | Propósito |
+|------|--------|-----------|
+| `main` | **Producción** | Todo push despliega automáticamente a yosoy222.com (CI + Pages + Purge). Única rama protegida por el pipeline completo. |
+| `redesign-ritual` | **En desarrollo — NO mergeada** | Rediseño ritualista (fondo beige #F3EDE4, tipografía serif, taxonomía velas/melts/dijes/franelas). Su estado completo vive en `BRANCH_STATUS.md` en la raíz de la rama. |
+
+> 🔒 **POLÍTICA DE MERGE (decisión del dueño, inviolable):** `redesign-ritual` **solo se mergea a `main` cuando el dueño lo autorice explícitamente Y la rama esté 100% lista** (QA gate completo: barrido visual anti-rosado, auditoría móvil 375px, tests en verde, sync con main resuelto, y visto bueno del cliente). Ningún agente debe mergear, abrir PR de merge ni pushear a main contenido de la rama sin esa autorización explícita.
+
+### Reproducir la rama para trabajar o mostrar al cliente
+
+```bash
+# Montar la rama en un worktree aislado (no interrumpe main)
+git fetch origin && git worktree add /tmp/redesign-review origin/redesign-ritual
+cd /tmp/redesign-review && cat BRANCH_STATUS.md   # handoff completo: qué falta, cómo verificar
+python3 -m http.server 8092                       # http://localhost:8092
+
+# Preview pública temporal para el cliente (túnel efímero)
+cloudflared tunnel --url http://localhost:8092    # devuelve una URL https://*.trycloudflare.com
+```
 
 El proyecto cuenta con un esquema de seguridad multicapa validado mediante auditoría exhaustiva:
 
@@ -574,13 +627,14 @@ Tokens principales en `:root` de [`css/style.css`](css/style.css):
 | `tests/cart_and_filters.test.mjs` | Suite de 13 pruebas unitarias y de seguridad |
 | `.github/workflows/` | Automatización de CI y purga de caché con smoke test |
 | `.github/dependabot.yml` | Configuración de actualización de dependencias y acciones |
-| `scripts/` | Prerenderizado, iconos (`verify_icons.py`), versiones (`verify_versions.py`), SQL canónico (`supabase_rls.sql`, `supabase_rate_limit.sql`) e imágenes |
-| `supabase/` | Edge Function `dashboard-stats` (login admin, lectura global, ingesta `track`) + README de despliegue |
+| `scripts/` | Prerenderizado, iconos (`verify_icons.py`), versiones (`verify_versions.py`), SQL canónico (`supabase_rls.sql`, `supabase_rate_limit.sql`), imágenes y **espejo del workflow del bot** (`whatsapp-n8n-workflow.json`) |
+| `supabase/` | Edge Functions `dashboard-stats` (login admin, lectura global, ingesta `track`) y `session_get`/`session_set` (sesión del bot) + README de despliegue |
 | `robots.txt` / `sitemap.xml` | Indexación y SEO para motores de búsqueda |
 | `_headers` | Cabeceras de seguridad HTTP y HSTS |
 | `CNAME` | Dominio personalizado para GitHub Pages |
 | `AGENTS.md` | Instrucciones de ingeniería para agentes AI |
 | `PLAN_IMPLEMENTACION.md` | Registro histórico y hoja de ruta |
+| `BRANCH_STATUS.md` | (solo en la rama `redesign-ritual`) Handoff completo del rediseño: estado, pendientes y QA gate |
 
 ---
 
@@ -620,4 +674,4 @@ gh run list --limit 3
 
 ---
 
-*Documentación técnica actualizada al 20 de septiembre de 2026. Proyecto 100% verificado en pruebas unitarias (13/13 pasadas), CI/CD, auditoría de producción y despliegue activo en https://yosoy222.com.*
+*Documentación técnica actualizada al 22 de septiembre de 2026. Proyecto 100% verificado en pruebas unitarias (13/13 pasadas), CI/CD, auditoría de producción, bot de WhatsApp verificado E2E y despliegue activo en https://yosoy222.com.*
