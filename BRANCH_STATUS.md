@@ -1,23 +1,24 @@
 # 🌿 Estado de la rama `redesign-ritual` — Handoff para agentes
 
 > **Documento de trabajo de la rama.** Si estás retomando el trabajo del rediseño, empieza aquí.
-> Última actualización: **21 de septiembre de 2026** (sesión del 21, tarde).
+> Última actualización: **22 de septiembre de 2026** (sincronización con main).
 
 ---
 
 ## 1. Dónde estamos (una frase)
 
-Rediseño integral ritualista (paleta beige-dorado, tipografía serif, taxonomía de productos nueva) en la rama `redesign-ritual`, **v39, 2 commits de la sesión 21-sep pusheados, NO mergeado a main** — el dueño quiere mergear solo cuando esté 100% listo.
+Rediseño integral ritualista (paleta beige-dorado, tipografía serif, taxonomía de productos nueva) en la rama `redesign-ritual`, **v39, sincronizada con main al 22-sep (merge `9d9043f`: bot v2 final + docs + v35-v37), NO mergeado a main** — el dueño quiere mergear solo cuando esté 100% listo y lo autorice explícitamente.
 
 ## 2. Estado exacto
 
 | Qué | Valor |
 |---|---|
 | Rama | `redesign-ritual` (remota sincronizada: local = origin) |
-| Versión de caché en la rama | **v39** (ojo: main va por v37 — el merge necesitará resolver el salto) |
-| Últimos commits | `e76e732` (cabecera scroll sin rosado) · `93c2526` (fondo #F3EDE4 + contraste AA) |
-| Tests | 13/13 · `verify_versions.py` OK |
-| Base de la rama | Sync con main hasta `cd8d4c9` (v34) — **NO incluye** v35/v36/v37 de main (fusión cloud+local, persistencia de token, verificador en CI, purga 401) |
+| Versión de caché en la rama | **v39** |
+| Últimos commits | `9d9043f` (sync con main 22-sep) · `e76e732` (cabecera scroll sin rosado) · `93c2526` (fondo #F3EDE4 + contraste AA) |
+| Tests | 13/13 · `verify_versions.py` OK (v39 coherente en la rama) |
+| Base de la rama | **Sincronizada con main al `2f4091b`** (22 sep): incluye v35/v36/v37 (fusión cloud+local, persistencia de token, verificador en CI, purga 401), el workflow del bot v2 final (memoria + expiración 24h, sin apikey hardcodeada) y toda la documentación nueva. El desajuste v37-vs-v39 quedó resuelto: la rama documenta su v39 y main la suya; al merge futuro se recomienda renombrar la versión final a v40 |
+| Resolución del merge | `sw.js`/`manifest`/HTMLs/dashboard → main (solo diferían en `?v=`); `whatsapp-n8n-workflow.json` → main (v2 final, mata la apikey `AgenciaSecreta2026` de la rama); docs → combinados (hitos de ambas sesiones, v39 en la rama); PLAN → main |
 
 ## 3. Qué se hizo (resumen por sesión)
 
@@ -47,14 +48,14 @@ Flujos ya verificados E2E (21-sep): filtros nuevos suman 44/44 exactos · carrit
 
 1. **Barrido anti-rosado completo:** grep de `FAD4BC|250,212,188|rosado|durazno` en css + screenshots de todas las secciones (hero ✓, manifiesto ✓, cabecera ✓, catálogo ✓ — faltan rituales, cómo-comprar, nosotros, contacto y footer)
 2. **QA gate de la skill `cloudflare-preview-gate`** (instalada en `~/.agents/skills/`): tests + verificadores + consola limpia + sin secretos en el diff → solo entonces hablar de merge
-3. **Asegurar la apikey n8n:** `scripts/whatsapp-n8n-workflow.json` tiene `AgenciaSecreta2026` hardcodeada (también en main, 8 apariciones). Mover a variable de entorno del flujo n8n y rotar la clave. El commit `caa9a29` de la rama ya la redujo de 8 a 1 — eliminar la última
+3. ~~**Asegurar la apikey n8n**~~ **RESUELTA (22 sep):** el sync con main trajo el workflow v2 final sin ninguna apikey hardcodeada (todo vía `$env.*` en n8n). Rotar la clave `AgenciaSecreta2026` en el panel de n8n si se usó en algún otro lugar (ya no existe en el repo)
 4. **Auditoría móvil (375px):** el dueño navega por móvil; el hero y el carrito se vieron bien pero falta pase sistemático
 5. **Sync con main:** main va v37 y trae 4 commits que la rama no tiene (dashboard v35/v36/v37: fusión cloud+local, persistencia de token cloud, verificador en CI, purga del 401). Al mergear: resolver choques de `verify_versions` (la rama documentará v39+), y replantear los script tags de `index.html` (la rama los reescribió)
 6. **Decisión de versión de caché post-merge:** recomendado saltar a v40 en el commit de merge para que la numeración sea monótona en ambos linajes
 
 ## 6. Deudas de seguridad de la rama
 
-- `AgenciaSecreta2026` (apikey n8n): vive en el JSON del repo **y en main**. Rotarla en n8n y usar credenciales de entorno del workflow
+- ~~`AgenciaSecreta2026` (apikey n8n)~~ RESUELTA 22-sep: el JSON del repo ya no lleva secretos (v2 final vía `$env.*`); rotar la clave en el panel de n8n solo si se reutiliza en otro lado
 - El PAT de GitHub usado en la sesión (`github_pat_11BC6…`) quedó expuesto en chat: **el dueño debe revocarlo** en github.com/settings/personal-access-tokens cuando la sesión de trabajo termine
 
 ## 7. Infra de preview (efímera, recreable)
