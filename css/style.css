@@ -19,16 +19,16 @@
   /* Text */
   --text: #3b3125;
   --text-muted: #66584A;
-  --text-faint: #75684F;
+  --text-faint: #71654B;
 
-  /* New palette: gold matte for titles/ritual phrases, pearl gray for body */
-  --gold-matte: #C9A878;
+  /* New palette: gold bronze AA for titles/ritual phrases, pearl gray for body */
+  --gold-matte: #7A6134;
   --pearl-gray: #66584A;
 
-  /* Accent (earth amber, candle flame) */
-  --accent: #C9A878;
-  --accent-hover: #A88A5A;
-  --accent-glow: rgba(201,168,120,0.14);
+  /* Accent (earth amber, candle flame) — canónico pre-rediseño, AA 5.77:1 sobre crema */
+  --accent: #854f19;
+  --accent-hover: #6e3e10;
+  --accent-glow: rgba(133,79,25,0.16);
 
   /* Functional */
   --whatsapp: #25d366;
@@ -647,8 +647,8 @@ em { font-style: italic; color: var(--gold-matte); font-family: 'Playfair Displa
 .add-cart-btn {
   padding: 0.4rem 0.85rem;
   border-radius: var(--radius-full);
-  background: rgba(169,111,45,0.1);
-  color: var(--accent-hover);
+  background: rgba(133,79,25,0.10);
+  color: var(--accent);
   font-size: 0.75rem; font-weight: 600;
   border: 1px solid rgba(201,168,120,0.25);
   transition: all var(--duration) var(--ease);
@@ -694,7 +694,7 @@ em { font-style: italic; color: var(--gold-matte); font-family: 'Playfair Displa
 .step-num {
   display: inline-flex; align-items: center; justify-content: center;
   width: 40px; height: 40px; border-radius: 50%;
-  background: rgba(201,168,120,0.09); color: var(--gold-matte);
+  background: rgba(133,79,25,0.06); color: var(--gold-matte);
   font-family: 'Playfair Display', serif; font-weight: 700;
   font-size: 1.1rem; margin-bottom: 0.75rem;
 }
@@ -1020,6 +1020,24 @@ em { font-style: italic; color: var(--gold-matte); font-family: 'Playfair Displa
 
   .nosotros-inner { grid-template-columns: 1fr; }
   .nosotros-imgs { order: -1; }
+
+  .manifiesto-grid {
+    grid-template-columns: 1fr;
+    max-width: 480px;
+    gap: 1rem;
+  }
+  .pilares-grid {
+    grid-template-columns: 1fr;
+    max-width: 480px;
+    margin-inline: auto;
+    gap: 1rem;
+  }
+  .rituales-grid {
+    grid-template-columns: 1fr;
+    max-width: 480px;
+    margin-inline: auto;
+    gap: 1rem;
+  }
 
   .footer-inner { grid-template-columns: 1fr; gap: 1.5rem; }
 }
