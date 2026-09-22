@@ -1,7 +1,7 @@
 # 🌿 Estado de la rama `redesign-ritual` — Handoff para agentes
 
 > **Documento de trabajo de la rama.** Si estás retomando el trabajo del rediseño, empieza aquí.
-> Última actualización: **22 de septiembre de 2026** (sincronización con main + QA gate completo aprobado).
+> Última actualización: **22 de septiembre de 2026** (sincronización con main + QA gate completo + auditoría Lighthouse comparativa).
 
 ---
 
@@ -15,8 +15,9 @@ Rediseño integral ritualista (paleta beige-dorado, tipografía serif, taxonomí
 |---|---|
 | Rama | `redesign-ritual` (remota sincronizada: local = origin) |
 | Versión de caché en la rama | **v40** (bump hecho en la rama antes del merge: numeración monótona main 37 → rama 40) |
-| Últimos commits | `b63e1db` (QA: contraste AA + responsive móvil + v40) · `ce66d33` (restaurar prerender pisado en el sync) · `9d9043f` (sync con main) |
+| Últimos commits | `f1fbd3e` (handoff QA actualizado) · `b63e1db` (QA: contraste AA + responsive móvil + v40) · `ce66d33` (restaurar prerender pisado en el sync) · `9d9043f` (sync con main) |
 | Tests | 13/13 · `verify_versions.py` OK (v40) · `verify_icons.py` OK |
+| Lighthouse (22-sep, 4 corridas: túnel vs producción × móvil/desktop) | Performance **idéntica a producción: 92 móvil / 99 desktop** (CLS 0.003 vs 0.023 prod — el rediseño mejora; TBT ~0). SEO 69 y A11y 96 del preview son artefactos, no defectos (detalle en §5) |
 | Base de la rama | **Sincronizada con main al `2f4091b`** (22 sep): incluye v35/v36/v37 (fusión cloud+local, persistencia de token, verificador en CI, purga 401), el workflow del bot v2 final (memoria + expiración 24h, sin apikey hardcodeada) y toda la documentación nueva. El desajuste v37-vs-v39 quedó resuelto y el bump a v40 ya se aplicó en la rama: el merge no necesita renombrar nada |
 | Resolución del merge | `sw.js`/`manifest`/HTMLs/dashboard → main (solo diferían en `?v=`); `whatsapp-n8n-workflow.json` → main (v2 final, mata la apikey `AgenciaSecreta2026` de la rama); docs → combinados (hitos de ambas sesiones, v39 en la rama); PLAN → main |
 
@@ -58,6 +59,8 @@ Flujos verificados E2E (22-sep, v40): filtros 22/3/12/7 = 44 exactos · búsqued
 6. ~~Decisión de versión post-merge~~ **RESUELTA:** la rama ya va **v40** — el merge puede mantener v40 sin renombrar
 
 **Único pendiente real: aprobación visual del dueño.** Preview para el cliente en §7. Al merge: verificar que main no haya recibido commits nuevos desde `2f4091b` y re-ejecutar el QA rápido (tests + verify_versions).
+
+**Auditoría Lighthouse comparativa (22-sep, 4 corridas — reportes en `/tmp/lh/`, efímeros):** preview del túnel vs producción, móvil + desktop. Performance **92/99 idéntica** (FCP/LCP 2.7s en ambos; CLS 0.003 vs 0.023 a favor del rediseño; TTI 4.3s vs 5.9s). Las dos brechas de score del preview son artefactos, no defectos: **SEO 69** = cabecera `X-Robots-Tag: none` que Cloudflare inyecta a TODOS los túneles trycloudflare (noindex del entorno; al merge el SEO vuelve a 100); **A11y 96** = el botón WhatsApp (verde + texto blanco, 1.98:1), defecto latente idéntico en producción que ahí Lighthouse nunca evaluó (botón oculto en carga inicial; el CTA grande de contacto es nuevo del rediseño). Best Practices 96 vs 92 a favor del preview (producción suma el error del anti-bots de Cloudflare). Conclusión: **nada en la auditoría se opone al merge**; si algún día se quiere A11y 100 con evidencia, oscurecer el texto del botón WhatsApp.
 
 ## 6. Deudas de seguridad de la rama
 

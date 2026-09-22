@@ -232,4 +232,4 @@
 
 ---
 
-*Estado actual: Proyecto en producción, 100% operativo, auditado, seguro, testeado y desplegado en https://yosoy222.com, con bot de WhatsApp verificado E2E. Documento congelado como registro histórico — última actualización: 22 de septiembre de 2026. La rama `redesign-ritual` permanece activa y NO se mergea a main hasta autorización expresa del dueño (rama 100% lista).*
+*Estado actual: Proyecto en producción, 100% operativo, auditado, seguro, testeado y desplegado en https://yosoy222.com, con bot de WhatsApp verificado E2E. Documento congelado como registro histórico — última actualización: 22 de septiembre de 2026. La rama `redesign-ritual` permanece activa y NO se mergea a main hasta autorización expresa del dueño (QA gate completo + Lighthouse comparativo aprobados el 22 sep — único pendiente: su aprobación visual).*
