@@ -5,8 +5,9 @@
 - **Propósito:** Tienda online de velas artesanales, pulseras, collares, franelas y accesorios con PWA offline, checkout por WhatsApp y dashboard de analítica privada
 - **Stack:** HTML5 + CSS3 + JavaScript vanilla (sin frameworks), PWA (manifest.json + sw.js), GitHub Pages, Cloudflare CDN
 - **Última sesión:** 22 de septiembre de 2026
-- **Versión de memoria:** 13
-- **🌿 Rama activa:** `redesign-ritual` lleva el rediseño ritualista del sitio (NO mergeado a main, decisión del dueño) — su estado, pendientes y handoff completo viven en **`BRANCH_STATUS.md` en la raíz de esa rama** (v39, 21 sep). Al retomar el rediseño: `git fetch origin && git worktree add /tmp/redesign-review origin/redesign-ritual` y leer ese archivo primero
+- **Versión de memoria:** 14
+- **🌿 Política de ramas (REGLA DEL DUEÑO, inviolable):** `main` es producción y se despliega con cada push. La rama `redesign-ritual` (rediseño ritualista, v39) **SOLO se mergea a main cuando el dueño lo autorice explícitamente Y esté 100% lista** — ningún agente debe mergear, abrir PR de merge ni pushear su contenido a main por iniciativa propia. Su estado, pendientes y QA gate viven en **`BRANCH_STATUS.md` en la raíz de esa rama**. Al retomar el rediseño: `git fetch origin && git worktree add /tmp/redesign-review origin/redesign-ritual` y leer ese archivo primero. Preview para el cliente: servidor + túnel cloudflared (comandos en BRANCH_STATUS.md y README).
+- **🤖 Bot WhatsApp (estado vivo):** workflow v2 final desplegado y verificado E2E en debianm700 (ID `Iwg02lASI9CEFic`, espejo saneado en `scripts/whatsapp-n8n-workflow.json`). Capacidades: memoria de conversación (20 turnos + pedido acumulado), expiración 24h, avisos de pedido con contexto, escalada a los 2 agentes, modo puente, delay 2-14s, IA `nemotron-3-super:free` vía OmniRoute ($0). Detalle completo en las entradas del 21-22 sep y en AGENTS.md §1.
 
 ## Arquitectura
 
