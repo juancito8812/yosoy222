@@ -18,12 +18,12 @@
 
   /* Text */
   --text: #3b3125;
-  --text-muted: #D8D5D0;
-  --text-faint: #D8D5D0;
+  --text-muted: #66584A;
+  --text-faint: #75684F;
 
   /* New palette: gold matte for titles/ritual phrases, pearl gray for body */
   --gold-matte: #C9A878;
-  --pearl-gray: #D8D5D0;
+  --pearl-gray: #66584A;
 
   /* Accent (earth amber, candle flame) */
   --accent: #C9A878;
@@ -275,7 +275,7 @@ em { font-style: italic; color: var(--gold-matte); font-family: 'Playfair Displa
   padding: 2.5rem 0 3.5rem;
 }
 .manifiesto-card {
-  background: linear-gradient(135deg, #FAF9F6 0%, #FAD4BC 100%);
+  background: linear-gradient(135deg, #FAF9F6 0%, #F3EDE4 100%);
   border: 1px solid var(--border);
   border-radius: 20px;
   padding: 3rem 2rem;

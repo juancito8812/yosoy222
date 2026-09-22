@@ -60,7 +60,7 @@
 ## Estado Actual
 
 - **Branch:** main
-- **Cache version:** yosoy222-v34
+- **Cache version: yosoy222-v38
 - **Dashboard:** https://yosoy222.com/dashboard.html
 - **Productos:** 44 (25 velas, 5 collares, 6 pulseras, 7 franelas, 1 accesorio)
 - **Imágenes:** 63 thumbs, 60 catalog (incluye 4 decorativas y 15 variantes adicionales)
