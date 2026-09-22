@@ -393,7 +393,7 @@ El checkout de la tienda apunta al número oficial `+58 412 648 1628`, que atien
 | Rama | Estado | Propósito |
 |------|--------|-----------|
 | `main` | **Producción** | Todo push despliega automáticamente a yosoy222.com (CI + Pages + Purge). Única rama protegida por el pipeline completo. |
-| `redesign-ritual` | **En desarrollo — NO mergeada** | Rediseño ritualista (fondo beige #F3EDE4, tipografía serif, taxonomía velas/melts/dijes/franelas). Su estado completo vive en `BRANCH_STATUS.md` en la raíz de la rama. |
+| `redesign-ritual` | **QA gate aprobado — NO mergeada (v40)** | Rediseño ritualista (fondo beige #F3EDE4, tipografía serif, taxonomía velas/melts/dijes-pulseras/franelas). Al 22-sep: sincronizada con main (merge `9d9043f`), QA gate completo (contraste AA del dorado, overflow móvil corregido, smoke E2E, tests 13/13) y Lighthouse comparativo (performance idéntica a producción: 92 móvil / 99 desktop; el SEO 69 y A11y 96 del preview son artefactos del túnel, no del código). **Único pendiente: aprobación visual del dueño.** Su estado completo vive en `BRANCH_STATUS.md` en la raíz de la rama. |
 
 > 🔒 **POLÍTICA DE MERGE (decisión del dueño, inviolable):** `redesign-ritual` **solo se mergea a `main` cuando el dueño lo autorice explícitamente Y la rama esté 100% lista** (QA gate completo: barrido visual anti-rosado, auditoría móvil 375px, tests en verde, sync con main resuelto, y visto bueno del cliente). Ningún agente debe mergear, abrir PR de merge ni pushear a main contenido de la rama sin esa autorización explícita.
 
