@@ -1,6 +1,6 @@
 # 🕯️ Plan de Implementación — YoSoy222
 
-> Plan por fases del sitio **yosoy222.com**. Documentación histórica y hoja de ruta técnica sincronizada al **13 de septiembre de 2026**.
+> Plan por fases del sitio **yosoy222.com**. **Documento histórico congelado:** las narrativas de las Fases 1-14 registran el plan original ejecutado y quedan congeladas al 13 de septiembre de 2026. Todo lo posterior se registra únicamente en la tabla de resumen del final y en `.agents/MEMORY.md` (la fuente viva del proyecto). No se amplían las narrativas por fase.
 
 ---
 
@@ -207,6 +207,8 @@
 
 ## 📊 RESUMEN HISTÓRICO DE PROGRESO
 
+*Registro cronológico completo. Las Fases 1-14 tienen narrativa detallada arriba; de la 15 en adelante el detalle vivo de cada hito (causa, fix, verificación y lecciones) vive en `.agents/MEMORY.md`.*
+
 | Fase | Estado | Hito Principal |
 |------|--------|----------------|
 | Fase 1-3 | ✅ COMPLETADA | Catálogo de 44 productos, sincronización con Excel y base visual |
@@ -222,7 +224,11 @@
 | Fase 18 | ✅ COMPLETADA | Rediseño Luxury Glassmorphism del Dashboard, curvas Bezier con gradientes, unificación de textos de catálogo y Cache v16 |
 | Fase 19 | ✅ COMPLETADA | Integración completa de Google Analytics 4 (GA4 G-Y9R0B5NH75) con telemetría de eventos e-commerce |
 | Fase 20 | ✅ COMPLETADA | Conexión global de analítica con Supabase Cloud (`gkekolsttfbiegyhvejy.supabase.co`), ingesta en tiempo real, sincronización en segundo plano con keepalive y visualización centralizada en Dashboard |
+| Fase 21 | ✅ COMPLETADA | Endurecimiento del dashboard: autenticación SHA-256 con salt validada server-side contra Edge Function, rate limit, export CSV, rangos de fecha, pase XSS (escapeHtml) y extracción de módulos (`dashboard-view.js`, `cart.js`, `shared.js`, `config.js`) |
+| Fase 22 | ✅ COMPLETADA | Ciclo de seguridad de punta a punta: RLS service_role-only (0 políticas, anon rechazado), Edge Function `dashboard-stats` (HMAC + rate limit durable en Postgres con buckets y pg_cron), eliminación de credenciales por defecto (fail-closed, v32) y rotación de SECRETS (salt+hash+SESSION_SECRET, 21 sep) |
+| Fase 23 | ✅ COMPLETADA | Rendimiento y PWA: GA4 diferido tras primera interacción (TBT 0ms verificado en producción), ingesta vía Edge Function sin anon key en el cliente, fuentes async (FCP ×8 en bisect) y UX offline completa (fallback de lightbox y checkout consciente de la red, v34) |
+| Fase 24 | ✅ COMPLETADA | Mantenimiento verificado: `verify_versions.py` en CI, fusión cloud+local de la era pre-Supabase (v35), persistencia del token cloud y del rango elegido en refresh (v36), purga del token expirado (v37), revocación del PAT de Management y documentación integral (README, AGENTS, MEMORY, supabase) |
 
 ---
 
-*Estado actual: Proyecto en producción, 100% operativo, auditado, seguro, testeado y desplegado en https://yosoy222.com.*
+*Estado actual: Proyecto en producción, 100% operativo, auditado, seguro, testeado y desplegado en https://yosoy222.com. Documento congelado como registro histórico — última actualización: 21 de septiembre de 2026.*

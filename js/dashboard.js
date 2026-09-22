@@ -282,8 +282,17 @@
         })
       });
       if (res.status === 401 || res.status === 429) {
-        // Token expirado/inválido o rate limit: cerrar sesión en la nube
+        // Token expirado/inválido o rate limit: cerrar sesión en la nube.
+        // También purgarlo de la sesión persistida: si no, cada refresh lo
+        // restauraría (restoreCloudAuth) y repasaría por un fetch condenado.
         cloudAuth = null;
+        try {
+          const sess = JSON.parse(sessionStorage.getItem('yosoy222_dash_session') || 'null');
+          if (sess && sess.cloudToken) {
+            delete sess.cloudToken;
+            sessionStorage.setItem('yosoy222_dash_session', JSON.stringify(sess));
+          }
+        } catch { /* sesión ausente o corrupta: nada que purgar */ }
         return null;
       }
       if (res.ok) {

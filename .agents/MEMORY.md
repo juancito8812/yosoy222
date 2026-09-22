@@ -5,7 +5,7 @@
 - **Propósito:** Tienda online de velas artesanales, pulseras, collares, franelas y accesorios con PWA offline, checkout por WhatsApp y dashboard de analítica privada
 - **Stack:** HTML5 + CSS3 + JavaScript vanilla (sin frameworks), PWA (manifest.json + sw.js), GitHub Pages, Cloudflare CDN
 - **Última sesión:** 21 de septiembre de 2026
-- **Versión de memoria:** 10
+- **Versión de memoria:** 11
 
 ## Arquitectura
 
@@ -25,6 +25,7 @@
 
 ## Decisiones Clave & Hitos
 
+- **21 sep 2026 — Pase post-auditoría: verificador en CI + purga del token muerto (cache v37):** hallazgos de la auditoría 4D aplicados: (1) `ci.yml` ejecuta ahora `python3 scripts/verify_versions.py` tras los tests — el detector del drift documental (4 incidentes esta sesión) deja de depender de la memoria humana; (2) corregida en README la frase que afirmaba la garantía "en CI" que no existía; (3) en el 401/429 de `fetchCloudData`, el token muerto se purga de la sesión persistida — antes quedaba y cada refresh lo restauraba (`restoreCloudAuth`) repasando por un fetch condenado hasta re-login. Bump v36→v37.
 - **21 sep 2026 — El refresh no degrada a "En Vivo (Local)" (cache v36):** reporte del dueño con captura: al recargar el dashboard, la pill pasaba de "En Vivo (Supabase Cloud)" a "EN VIVO (LOCAL)" y los KPIs caían de ~170 a 13 (solo local). Causa: `cloudAuth` (token de la Edge Function) vivía solo en memoria; `acceptLogin` lo recibía pero `createSession` no lo guardaba, y el arranque (`DOMContentLoaded`) solo validaba la sesión local — el token cloud moría en cada refresh aunque la sesión siguiera viva. Fix: (1) `createSession(user, cloudToken)` persiste el token dentro de la sesión sessionStorage (mismo TTL de 2h que emite la Edge; "Salir" lo borra todo) + `restoreCloudAuth()` en el arranque; (2) el rango elegido se recuerda en localStorage (`yosoy222_dash_range`) y el arranque lo restaura con su botón activo (antes el refresh volvía siempre a 30D). Bump v35→v36.
 - **21 sep 2026 — Dashboard con historia completa: fusión cloud+local (cache v35):** hallazgo del dueño: "el dashboard perdió la información más vieja". Diagnóstico con datos: la BD NO perdió nada (237 filas, 17 sep→hoy, verificado por SQL y por la Edge Function devolviendo las 237); lo que pasaba es que desde v30 el dashboard pisa los datos locales del navegador con los cloud (que solo existen desde que arrancó la ingesta a Supabase) — la era de analítica local pre-16-sep seguía en localStorage pero no se mostraba. Fix: `getMergedRawData()` en `js/dashboard.js` suma cloud + los eventos locales ANTERIORES al primer evento cloud (frontera temporal: los eventos locales no tienen id y sus timestamps difieren por latencia de sync; los posteriores ya están en cloud y se excluyen para no contar doble). Cableado: `renderDashboard` ahora pasa `getMergedRawData()` a `computeStats` (el `||` anterior solo fusionaba al CAER sin cloud) y `exportCSV` exporta la historia completa (vía de respaldo antes de que la retención local de 60 días la borre). E2E verificado con login real: sembradas 4 sesiones viejas + 8 eventos (10-15 sep) → KPI Visitas 174 = 170 cloud + 4 locales, ciudades históricas visibles, sin duplicados, pill "En Vivo (Supabase Cloud)". Lección: el `||` como fusionador silencioso es una trampa — el call site siempre pasaba dataSource y el fallback nunca corría. Nota honesta: la historia local de CADA navegador solo se ve en ese navegador (es el límite de la era pre-Supabase); el CSV es el respaldo universal.
 - **21 sep 2026 — Rotación de credenciales del dashboard (server-side, sin deploy):** rotados juntos `DASH_AUTH_SALT` (aleatorio nuevo), `DASH_AUTH_HASH` y `SESSION_SECRET` en los secrets del proyecto vía API de Management (`POST /v1/projects/{ref}/secrets`). Toda sesión activa previa murió al instante (el HMAC no verifica contra el secret viejo). Verificación completa contra producción: login con las credenciales nuevas ✓ (token 120 min), `stats` con el token ✓ (235 filas), control negativo 401 ✓. Lecciones: los secrets son **write-only** por API — no se pueden leer para computar un hash contra el salt vigente, por lo que salt+hash deben rotarse SIEMPRE juntos (el primer intento falló al computar el hash con el salt público del cliente: ese `AUTH_SALT` de `js/dashboard.js` NO es el salt del server y son dominios deliberadamente distintos — el hash local del modal de cambio de credenciales es auto-consistente y no depende del server). La contraseña vive solo en poder del dueño (no en repo, ni en claro en secrets, ni en este archivo). Pendiente relacionado: revocar el PAT de Management usado.
@@ -63,7 +64,7 @@
 ## Estado Actual
 
 - **Branch:** main
-- **Cache version:** yosoy222-v36
+- **Cache version:** yosoy222-v37
 - **Dashboard:** https://yosoy222.com/dashboard.html
 - **Productos:** 44 (25 velas, 5 collares, 6 pulseras, 7 franelas, 1 accesorio)
 - **Imágenes:** 63 thumbs, 60 catalog (incluye 4 decorativas y 15 variantes adicionales)
