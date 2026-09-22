@@ -4,8 +4,9 @@
 
 - **Propósito:** Tienda online de velas artesanales, pulseras, collares, franelas y accesorios con PWA offline, checkout por WhatsApp y dashboard de analítica privada
 - **Stack:** HTML5 + CSS3 + JavaScript vanilla (sin frameworks), PWA (manifest.json + sw.js), GitHub Pages, Cloudflare CDN
-- **Última sesión:** 20 de septiembre de 2026
-- **Versión de memoria:** 9
+- **Última sesión:** 21 de septiembre de 2026 (rediseño en esta rama)
+- **Versión de memoria:** 12
+- **⚠️ Trabajo activo:** esta rama lleva el rediseño ritualista NO mergeado a main — leer `BRANCH_STATUS.md` en la raíz para el estado completo, pendientes y deudas
 
 ## Arquitectura
 
@@ -24,6 +25,8 @@
 - **Scripts:** `scripts/` (prerender_catalog.py, generate_icons.py, verify_icons.py, verify_versions.py, process_images.py, process_images_v2.py, IMAGE_GUIDE.md)
 
 ## Decisiones Clave & Hitos
+
+- **21 sep 2026 — Fondo beige crema #F3EDE4 + barrido anti-rosado en la rama (cache v38→v39):** pedido del dueño para el rediseño: fondo global #F3EDE4 ("no grisáceo ni rosado", contraste perfecto, sin tocar textos/tipografía/botones/estructura). Corregidos tres focos de color residual: degradado del manifiesto que terminaba en #FAD4BC (durazno) → ahora #F3EDE4; tokens de texto secundario #D8D5D0 (gris heredado del dashboard oscuro, 1.26:1 sobre beige = ilegible y "grisáceo") → #66584A (5.90:1) y #75684F (4.69:1), AA verificado; cabecera scrolled rgba(250,212,188,.97) (el mismo rosado) → rgba(250,249,246,.97). Verificado E2E en navegador: filtros 22+3+12+7=44 exactos, carrito→drawer→checkout wa.me ✓, lightbox con fallback v34 ✓, SEC-01 intacto. Preview al cliente vía túnel cloudflared (skill cloudflare-preview-gate instalada). Pendientes y handoff completo: **`BRANCH_STATUS.md`**.
 
 - **20 sep 2026** — **UX Offline Completa & Cache v34:** auditoría en modo avión (simulacro con SW activo y red muerta) del ciclo catálogo→carrito→checkout. Hallazgos: el lightbox carga `images/catalog/` (nunca precacheado) **sin handler `onerror`** → imagen rota offline; y el checkout por WhatsApp falla en silencio sin conexión. Corregido en `js/app.js`: fallback automático a miniatura + nota informativa no bloqueante (`.offline-note`), aviso de carrito guardado en checkout offline (se elimina al reconectar), y eliminación de la nota cuando la imagen grande recupera. Analytics/geo/sync ya estaban blindados con `.catch()`. Ciclo completo verificado E2E (fallback, sin duplicación, recuperación, imagen grande).
 - **16 sep 2026** — **Conexión Supabase Cloud Analytics (Fase 20):** proyecto dedicado `gkekolsttfbiegyhvejy.supabase.co` para ingesta global de eventos (`yosoy222_events`) sin intermediarios, sincronización en segundo plano y visualización en tiempo real en `/dashboard.html`.
