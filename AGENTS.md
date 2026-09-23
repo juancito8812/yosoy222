@@ -11,7 +11,7 @@ Tienda online de velas artesanales, pulseras, collares, franelas y accesorios.
 - **Repositorio:** https://github.com/juancito8812/yosoy222
 - **WhatsApp Oficial:** `+58 412 648 1628` (`584126481628`)
 - **Agentes Humanos de Respaldo:** Agente 1 (`+58 412 992 2399`), Agente 2 (`+58 424 216 2538`)
-- **Bot de WhatsApp:** activo sobre el número oficial vía n8n + Evolution API (Baileys) autohospedados en `debianm700` (Tailscale `100.77.200.34`, stack Docker `/home/debianserver/marketing-agency`). El espejo saneado del workflow vive en `scripts/whatsapp-n8n-workflow.json` (la fuente viva es la instancia n8n de debianm700). Reglas anti-baneo vigentes: el bot solo responde (nunca inicia), delay humano 2-14s, sin enlaces en primer contacto, sin grupos. **Memoria de conversación por cliente** (historial 20 turnos + pedido acumulado en sesión Supabase vía Edge `session_get`/`session_set`; **expira a las 24h sin actividad del cliente** — sello `ultima_actividad` en `datos_parciales`, respaldo `updated_at` — evita heredar pedidos viejos o puentes abandonados): el bot no reinicia la conversación en cada mensaje. Estados de sesión: `IA` (bot responde) y `puente` (humanos atienden; preguntas comerciales devuelven el hilo al bot con reset, mensajes no-comerciales se reenvían al staff). **Importante para n8n 2.x:** los Code nodes corren en task runner aislado SIN `process.env` — usar siempre `$env.*`. Despliegue del workflow: `import:workflow` (desactiva) + `publish:workflow --id` + `docker restart agency-n8n` (backup previo).
+- **Bot de WhatsApp:** activo sobre el número oficial vía n8n + Evolution API (Baileys) autohospedados en `debianm700` (Tailscale `100.77.200.34`, stack Docker `/home/debianserver/marketing-agency`). El espejo saneado del workflow vive en `scripts/whatsapp-n8n-workflow.json` (la fuente viva es la instancia n8n de debianm700). Reglas anti-baneo vigentes: el bot solo responde (nunca inicia), delay humano 2-14s, sin enlaces en primer contacto, sin grupos. **Memoria de conversación por cliente** (historial 20 turnos + pedido acumulado en sesión Supabase vía Edge `session_get`/`session_set`; **expira a las 24h sin actividad del cliente** — sello `ultima_actividad` en `datos_parciales`, respaldo `updated_at` — evita heredar pedidos viejos o puentes abandonados): el bot no reinicia la conversación en cada mensaje. Estados de sesión: `IA` (bot responde) y `puente` (humanos atienden; preguntas comerciales devuelven el hilo al bot con reset, mensajes no-comerciales se reenvían al staff). **Respuestas del staff desde el número principal (22 sep 2026):** el agente escribe desde su propio WhatsApp y el bot reenvía su texto **saliendo del número oficial** — `>tu mensaje` (va al cliente que tenga asignado) o `>número tu mensaje` (destinatario explícito); todo lo que no empiece con `>` es nota interna y no sale a nadie. `atender <número>` fija el cliente asignado (en `datos_parciales.cliente_actual` de la fila del agente; `handoff_hilo` quedó deprecado) y `fin [número]` libera el hilo devolviéndolo a la IA. Cada reenvío confirma al agente el destinatario y deja el mensaje en el historial del cliente, para que la IA conserve el contexto si el hilo vuelve. **Importante para n8n 2.x:** los Code nodes corren en task runner aislado SIN `process.env` — usar siempre `$env.*`. Despliegue del workflow: `import:workflow` (desactiva) + `publish:workflow --id` + `docker restart agency-n8n` (backup previo).
 - **Hosting:** GitHub Pages con proxy, DNS y CDN bajo Cloudflare.
 - **Arquitectura:** PWA instalable con catálogo pre-renderizado para SEO (Schema.org), panel de analítica privada con Luxury Glassmorphism, telemetría en la nube (Supabase Cloud + GA4) y soporte offline (Service Worker Cache v37).
 
@@ -34,7 +34,7 @@ Tienda online de velas artesanales, pulseras, collares, franelas y accesorios.
 # 1. Ejecutar servidor local de desarrollo (NUNCA usar file://)
 python3 -m http.server 8080
 
-# 2. Ejecutar la suite de pruebas automatizadas (13 pruebas de carrito, filtros y seguridad)
+# 2. Ejecutar la suite de pruebas automatizadas (24: carrito, filtros, seguridad y bot)
 npm test
 
 # 3. Sincronizar catálogo estático prerenderizado tras modificar js/app.js
@@ -77,7 +77,8 @@ yosoy222/
 ├── _headers                       ← Cabeceras HTTP de seguridad (HSTS, CSP, X-Frame-Options)
 ├── CNAME                          ← Dominio yosoy222.com
 ├── tests/
-│   └── cart_and_filters.test.mjs  ← 13 pruebas unitarias y de seguridad sin dependencias
+│   ├── cart_and_filters.test.mjs  ← 13 pruebas de carrito, filtros y seguridad sin dependencias
+│   └── bot_relay.test.mjs         ← 11 pruebas del camino del staff del bot (comandos, atender/fin, relay)
 ├── .github/
 │   ├── dependabot.yml             ← Dependabot para GitHub Actions y npm
 │   └── workflows/
@@ -135,12 +136,12 @@ Al modificar, agregar o eliminar productos del catálogo:
 ## 7. Protocolo de Verificación Antes de Finalizar Tareas
 
 Antes de reportar una tarea como completa:
-1. Ejecutar `npm test` y confirmar que las 13 pruebas pasan al 100%.
+1. Ejecutar `npm test` y confirmar que las 24 pruebas pasan al 100%.
 2. Ejecutar `python3 scripts/verify_versions.py` si se tocó cualquier versión o asset precacheado.
 3. Ejecutar `git status` para verificar que no queden archivos temporales o cambios sin registrar.
 4. Tras hacer `git push`, monitorear CI (`gh run list --limit 3` o API de check-runs) y confirmar que `CI Tests` y `Purge Cloudflare Cache` concluyan en verde (`✓`).
 5. Al cambiar credenciales o desplegar la Edge Function, seguir `supabase/README.md` (secrets + smoke test).
-6. Al modificar el workflow del bot: backup previo en debianm700, desplegar con `import:workflow` + `publish:workflow --id` + `docker restart agency-n8n`, verificar E2E (memoria, pedido, handoff, puente) y actualizar el espejo del repo.
+6. Al modificar el workflow del bot: backup previo en debianm700, desplegar con `import:workflow` + `publish:workflow --id` + `docker restart agency-n8n`, verificar E2E (memoria, pedido, handoff, puente, **respuesta del staff por el número principal**) y actualizar el espejo del repo. Para ejercitar el camino del staff sin tocar clientes reales: inyectar payloads sintéticos al webhook `POST /webhook/yosoy222-whatsapp` con el jid de un agente como emisor y el propio número de la tienda como cliente.
 7. **Verificar la rama activa antes de commitear:** `git branch --show-current` — en `main` solo va producción; el rediseño vive exclusivamente en `redesign-ritual` (ver regla 9).
 
 ---

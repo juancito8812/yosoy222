@@ -121,17 +121,22 @@ yosoy222/
 │   └── Activación con limpieza automática de versiones de caché anteriores
 │
 ├── tests/
-│   └── cart_and_filters.test.mjs  ← Suite de 13 pruebas unitarias y de seguridad
-│       ├── Cálculos matemáticos y subtotales
-│       ├── Filtrado por categoría y búsqueda textual insensible a mayúsculas
-│       ├── Migración de datos legados y expiración TTL de 30 días
-│       ├── Resistencia ante JSON corrupto, NaN e inyecciones maliciosas
-│       └── Protección anti-prototype smuggling
+│   ├── cart_and_filters.test.mjs  ← 13 pruebas del sitio: carrito, filtros y seguridad
+│   │   ├── Cálculos matemáticos y subtotales
+│   │   ├── Filtrado por categoría y búsqueda textual insensible a mayúsculas
+│   │   ├── Migración de datos legados y expiración TTL de 30 días
+│   │   ├── Resistencia ante JSON corrupto, NaN e inyecciones maliciosas
+│   │   └── Protección anti-prototype smuggling
+│   └── bot_relay.test.mjs         ← 11 pruebas del bot: comandos del staff, atender/fin y relay
+│       ├── Parser de comandos (`atender`, `fin`, `>` y nota interna)
+│       ├── Toma y cierre del hilo (estado puente ↔ IA)
+│       ├── Reenvío de la respuesta humana saliendo del número principal
+│       └── Guardas: destinatario inválido, sin asignación, fallo de envío
 │
 ├── .github/
 │   ├── dependabot.yml             ← Actualizaciones automáticas para GitHub Actions y npm
 │   └── workflows/
-│       ├── ci.yml                 ← CI automático: ejecuta las 13 pruebas en cada push/PR
+│       ├── ci.yml                 ← CI automático: ejecuta las 24 pruebas en cada push/PR
 │       └── purge-cache.yml        ← Despliegue: Smoke test (origen 200) + Purge Cloudflare
 │
 ├── scripts/
@@ -166,7 +171,7 @@ yosoy222/
 | **Frontend** | HTML5 semántico | Prerenderizado estático, ARIA interactivo, microdatos Schema.org |
 | **Estilos** | CSS3 Vanilla | Custom properties (:root), Grid, Flexbox, sin preprocesadores |
 | **Interactividad** | ES6+ Vanilla | Zero runtime dependencies, carga diferida (`defer`), módulos nativos |
-| **Pruebas** | Node.js Test Runner | `node --test` nativo (13 pruebas unitarias/seguridad sin librerías pesadas) |
+| **Pruebas** | Node.js Test Runner | `node --test` nativo (24 pruebas: sitio + camino del staff del bot, sin librerías pesadas) |
 | **PWA & Offline** | Service Worker API | Cache v37, Network-First en navegación, manifest standalone |
 | **SEO & Datos** | JSON-LD / XML | Schema.org Store/ItemList, robots.txt, sitemap.xml canónico |
 | **Hosting & CI/CD** | GitHub Pages + Actions | Despliegue automático, CI de pruebas, Dependabot activo |
@@ -195,7 +200,7 @@ npx serve .
 
 ### 2. Ejecutar la suite de pruebas automatizadas
 
-El proyecto incluye 13 pruebas unitarias y de seguridad con el runner nativo de Node.js:
+El proyecto incluye 24 pruebas con el runner nativo de Node.js (13 del sitio + 11 del bot):
 
 ```bash
 # Ejecutar con npm
@@ -369,8 +374,20 @@ El checkout de la tienda apunta al número oficial `+58 412 648 1628`, que atien
   - **Delay humano 2-14s** antes de responder al cliente (anti-baneo); avisos internos instantáneos.
   - **Pedidos:** validación server-side contra catálogo empotrado con precios, cálculo de total USD, y aviso "📦 Nuevo pedido" a los 2 agentes **con los últimos 3 turnos de contexto**.
   - **Escalada (handoff):** confirmación al cliente + avisos simultáneos a Agente 1 (`+58 412 992 2399`) y Agente 2 (`+58 424 216 2538`).
-  - **Modo puente:** tras pedido/handoff la sesión pasa a `puente` — el bot calla, el staff atiende con `atender <número>`; pregunta comercial devuelve el hilo al bot (reset), mensaje no-comercial se reenvía al staff; `fin` cierra la atención.
+  - **Modo puente:** tras pedido/handoff la sesión pasa a `puente` — el bot calla; pregunta comercial devuelve el hilo al bot (reset) y mensaje no-comercial se reenvía a los agentes.
+  - **Respuesta del staff desde el número principal:** el agente **no sale de su WhatsApp personal** — escribe al número de la tienda y el bot reenvía el texto **como número oficial**. Cada reenvío confirma el destinatario al agente y deja el mensaje en el historial del cliente (la IA conserva el contexto si el hilo vuelve a ella).
   - **Anti-baneo:** el bot nunca inicia conversación, sin enlaces en respuestas, filtro de grupos `@g.us`.
+- **Comandos del staff** (el agente los escribe **desde su WhatsApp personal** al número de la tienda; el número oficial es el que responde al cliente):
+
+  | El agente escribe | Qué pasa |
+  |---|---|
+  | `>Hola Juan, tu pedido ya salió ✨` | Se reenvía al cliente que tenga asignado — **sale del número oficial** |
+  | `>584126481628 Hola Juan` | Se reenvía a ese cliente explícitamente (útil con varios hilos abiertos) |
+  | `atender 584126481628` | Toma el hilo: fija el cliente asignado y pone la sesión del cliente en `puente` (el bot calla) |
+  | `fin` / `fin 584126481628` | Libera el hilo: la sesión del cliente vuelve a `IA` y el bot retoma la conversación |
+  | Cualquier otro texto | Nota interna entre agentes: no se envía a ningún cliente |
+
+  Cada `>mensaje` produce un `✅ Enviado a <número> desde el número de la tienda` de vuelta al agente (su mensaje no aparece en el chat del agente con la tienda) y un aviso si no se puede enviar. El reenvío es **solo texto**: para fotos, audios o notas de voz la alternativa es vincular WhatsApp Web/Escritorio al número principal (consume uno de los 4 dispositivos vinculados; el teléfono del chip debe estar a mano para el QR).
 - **Despliegue del workflow (reproducible):**
   ```bash
   # 1. Backup del workflow vivo en debianm700
@@ -624,7 +641,8 @@ Tokens principales en `:root` de [`css/style.css`](css/style.css):
 | `js/dashboard-view.js` | Vista del Dashboard (pura): gráficos Bezier en Canvas y render de KPIs/tablas |
 | `sw.js` | Service Worker (Cache v37, Network-First navegación) |
 | `manifest.json` | Configuración PWA e iconos |
-| `tests/cart_and_filters.test.mjs` | Suite de 13 pruebas unitarias y de seguridad |
+| `tests/cart_and_filters.test.mjs` | 13 pruebas del sitio: carrito, filtros y seguridad |
+| `tests/bot_relay.test.mjs` | 11 pruebas del bot: comandos del staff, atender/fin y relay desde el número principal |
 | `.github/workflows/` | Automatización de CI y purga de caché con smoke test |
 | `.github/dependabot.yml` | Configuración de actualización de dependencias y acciones |
 | `scripts/` | Prerenderizado, iconos (`verify_icons.py`), versiones (`verify_versions.py`), SQL canónico (`supabase_rls.sql`, `supabase_rate_limit.sql`), imágenes y **espejo del workflow del bot** (`whatsapp-n8n-workflow.json`) |
@@ -674,4 +692,4 @@ gh run list --limit 3
 
 ---
 
-*Documentación técnica actualizada al 22 de septiembre de 2026. Proyecto 100% verificado en pruebas unitarias (13/13 pasadas), CI/CD, auditoría de producción, bot de WhatsApp verificado E2E y despliegue activo en https://yosoy222.com.*
+*Documentación técnica actualizada al 22 de septiembre de 2026. Proyecto 100% verificado en pruebas unitarias (24/24 pasadas), CI/CD, auditoría de producción, bot de WhatsApp verificado E2E y despliegue activo en https://yosoy222.com.*
