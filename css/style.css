@@ -1173,6 +1173,33 @@ a:focus-visible, button:focus-visible, input:focus-visible {
   margin-bottom: 1rem;
 }
 
+/* --- Variantes de color: selector circular dentro del lightbox --- */
+.variant-dots {
+  display: flex; gap: 0.5rem; justify-content: center; align-items: center;
+  margin: 0 auto 0.9rem; flex-wrap: wrap;
+}
+.variant-dot {
+  width: 44px; height: 44px; padding: 0;
+  border-radius: 50%; overflow: hidden; cursor: pointer;
+  border: 2px solid rgba(255,255,255,0.35);
+  background: transparent;
+  transition: border-color var(--duration) var(--ease), transform var(--duration) var(--ease);
+}
+.variant-dot img {
+  width: 100%; height: 100%; object-fit: cover; display: block;
+}
+.variant-dot:hover { border-color: rgba(255,255,255,0.7); transform: translateY(-2px); }
+.variant-dot:focus-visible {
+  outline: 2px solid #fff; outline-offset: 2px; border-color: #fff;
+}
+.variant-dot.active {
+  border-color: #c9a878;
+  box-shadow: 0 0 0 2px rgba(255,255,255,0.55);
+}
+@media (max-width: 600px) {
+  .variant-dot { width: 38px; height: 38px; }
+}
+
 .lightbox-whatsapp {
   display: inline-flex; align-items: center; gap: 0.5rem;
   background: var(--whatsapp); color: #fff;

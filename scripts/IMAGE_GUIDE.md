@@ -128,6 +128,55 @@ Antes de commitear una imagen, verificar:
 
 ---
 
+## Variantes de color (misma vela, varios colores)
+
+Cuando una misma vela se fotografía en varios colores, **no se crean productos
+nuevos**: el catálogo mantiene UN producto y la foto extra se agrega como
+*variante*. El cliente las corre desde el lightbox (puntitos bajo la descripción).
+
+### Convención de nombres (obligatoria)
+
+El color principal conserva SIEMPRE el `file:` exacto del producto en
+`js/app.js`. Los demás colores agregan el sufijo `-v2`, `-v3`, … **antes de la
+extensión**, en AMBAS carpetas:
+
+```
+images/thumbs/VM-ROSA_vela_rosa_79g.jpg          ← principal (el file: del catálogo)
+images/thumbs/VM-ROSA_vela_rosa_79g-v2.jpg       ← color 2 (ej. rosa claro)
+images/thumbs/VM-ROSA_vela_rosa_79g-v3.jpg       ← color 3 (ej. blanco)
+images/catalog/VM-ROSA_vela_rosa_79g-v2.jpg      ← misma foto a 900px
+images/catalog/VM-ROSA_vela_rosa_79g-v3.jpg
+```
+
+Reglas:
+- La variante es una foto DEL MISMO producto: mismo encuadre y procesado
+  (modo guía), lo único que cambia es el color de la cera.
+- Sin huecos: si existen `-v2` y `-v4` pero no `-v3`, renombrar para que sean
+  correlativos (el orden de los puntos = orden de los colores).
+- Cada variante debe existir en `thumbs/` Y en `catalog/` con el mismo nombre.
+
+### Registro y validación
+
+```bash
+# Después de copiar las variantes a images/:
+python3 scripts/build_variants.py            # regenera js/variants.json
+python3 scripts/build_variants.py --check    # solo valida (lo usa el test)
+```
+
+`build_variants.py` escanea las carpetas y genera `js/variants.json` (mapa
+`file principal → [variantes]`). `js/app.js` lo carga perezosamente y pinta los
+puntos en el lightbox; sin ese archivo, o si falla, la web funciona igual con
+una sola foto por producto.
+
+**Obligatorio antes de commitear variantes nuevas:** ejecutar
+`python3 scripts/build_variants.py --check` y `npm test` (el test
+`tests/variants.test.mjs` valida la convención y que los files existan).
+Si agregaste archivos de imagen, sube también el `?v=` de imágenes en
+`js/app.js` + `scripts/prerender_catalog.py` y `CACHE_NAME` en `sw.js`
+(mismo circuito que cualquier imagen).
+
+---
+
 ## Errores comunes
 
 | Error | Causa | Solución |

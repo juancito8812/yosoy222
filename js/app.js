@@ -21,6 +21,24 @@
   // Si cambia el número, editar SOLO esta línea; no copiar el número en index.html.
   const WHATSAPP = '584126481628';
 
+  // Variantes de color por producto (generado por scripts/build_variants.py).
+  // Mapa file principal -> [files de variantes]. Si falla el fetch, cada
+  // producto simplemente queda con su imagen única (cero impacto).
+  let colorVariants = {};
+  fetch('js/variants.json?v=10', { cache: 'no-cache' })
+    .then((r) => { if (r.ok) return r.json(); return {}; })
+    .then((data) => {
+      colorVariants = data || {};
+      if (Object.keys(colorVariants).length) {
+        precacheVariantThumbs();
+        if (lightbox && lightbox.classList.contains('active')) updateLightboxContent();
+      }
+    })
+    .catch(() => { /* sin variantes = comportamiento actual */ });
+
+  const imgVer = 10;
+  const imgUrl = (file, kind) => `images/${kind}/${file}?v=${imgVer}`;
+
   /* ----- Product data (synced from Catalogo.xlsx) ----- */
     const products = [
   // === VELAS MOLDES (hoja: Velas Moldes) ===
@@ -541,7 +559,9 @@
     const p = visibleProducts[currentLightboxIndex];
     if (!p || lightboxImg.dataset.fallback) return;
     lightboxImg.dataset.fallback = '1';
-    lightboxImg.src = `images/thumbs/${p.file}?v=10`;
+    // Si el error es de una variante, recupera con SU miniatura; si es la principal, con la de ella
+    const shown = lightboxImg.src.split('/').pop().split('?')[0];
+    lightboxImg.src = imgUrl(shown, 'thumbs');
     if (lightboxInfo && !lightboxInfo.querySelector('.offline-note')) lightboxInfo.insertAdjacentHTML('afterbegin',
       '<p class="offline-note">Sin conexión: se muestra la miniatura. La foto ampliada cargará cuando vuelva internet.</p>');
   });
@@ -560,6 +580,7 @@
   const lightboxClose = $('#lightboxClose');
   const lightboxPrev = $('#lightboxPrev');
   const lightboxNext = $('#lightboxNext');
+  const variantDots = $('#variantDots');
 
   function openLightbox(index) {
     // `index` points into `products`; map it to its position among the visible products
@@ -590,15 +611,86 @@
     
     // Add cache-busting query string to force image refresh
     lightboxImg.dataset.fallback = '';
-    lightboxImg.src = `images/catalog/${p.file}?v=10`;
+    lightboxImg.src = imgUrl(p.file, 'catalog');
     lightboxImg.alt = `${p.name} artesanal`;
     lightboxName.textContent = p.name;
     lightboxDesc.textContent = p.desc;
     lightboxPrice.textContent = `$${p.price.toFixed(2)}`;
     lightboxCounter.textContent = `${currentLightboxIndex + 1} / ${visibleProducts.length}`;
+    renderVariantDots(p);
     
     const noun = catNouns[p.cat] || 'este producto';
     lightboxWhatsapp.href = `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(`Hola! Me interesa ${noun} ${p.name}`)}`;
+  }
+
+  /* ============================================
+     VARIANTES DE COLOR (mismo producto, otros colores)
+     Convención: files extra con sufijo -v2, -v3… indexados en js/variants.json
+     ============================================ */
+  let currentVariantIndex = -1;   // -1 = foto principal
+
+  function variantFiles(p) {
+    const extras = colorVariants[p.file] || [];
+    return [p.file, ...extras];
+  }
+
+  function renderVariantDots(p) {
+    if (!variantDots) return;
+    const files = variantFiles(p);
+    currentVariantIndex = 0;
+    if (files.length < 2) {
+      variantDots.hidden = true;
+      variantDots.innerHTML = '';
+      return;
+    }
+    variantDots.hidden = false;
+    variantDots.innerHTML = files.map((f, i) =>
+      `<button type="button" class="variant-dot${i === 0 ? ' active' : ''}"`
+      + ` role="tab" aria-selected="${i === 0}"`
+      + ` aria-label="Ver color ${i + 1} de ${p.name}"`
+      + ` data-vfile="${f.replace(/"/g, '&quot;')}">`
+      + `<img src="${imgUrl(f, 'thumbs')}" alt="" loading="lazy" decoding="async">`
+      + `</button>`
+    ).join('');
+  }
+
+  function selectVariant(dot) {
+    const file = dot.dataset.vfile;
+    if (!file) return;
+    variantDots.querySelectorAll('.variant-dot').forEach((d) => {
+      const on = d === dot;
+      d.classList.toggle('active', on);
+      d.setAttribute('aria-selected', on);
+    });
+    currentVariantIndex = Array.from(variantDots.children).indexOf(dot);
+    // La variante grande vive en catalog/ con el mismo nombre
+    lightboxImg.dataset.fallback = '';
+    lightboxImg.src = imgUrl(file, 'catalog');
+  }
+
+  if (variantDots) {
+    variantDots.addEventListener('click', (e) => {
+      const dot = e.target.closest('.variant-dot');
+      if (dot) selectVariant(dot);
+    });
+    // Teclado: ← → dentro del selector si tiene foco
+    variantDots.addEventListener('keydown', (e) => {
+      if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+      const dots = Array.from(variantDots.querySelectorAll('.variant-dot'));
+      if (!dots.length) return;
+      const cur = dots.findIndex((d) => d.classList.contains('active'));
+      const next = (cur + (e.key === 'ArrowRight' ? 1 : -1) + dots.length) % dots.length;
+      dots[next].focus();
+      selectVariant(dots[next]);
+      e.preventDefault();
+    });
+  }
+
+  function precacheVariantThumbs() {
+    if (!('serviceWorker' in navigator) || !navigator.serviceWorker.controller) return;
+    const urls = Object.values(colorVariants).flat()
+      .map((f) => imgUrl(f, 'thumbs'));
+    if (urls.length) navigator.serviceWorker.controller.postMessage({ type: 'PRECACHE_IMAGES', urls });
   }
 
   function lightboxPrevFn() {
@@ -705,8 +797,13 @@
     }
 
     if (lightboxActive) {
-      if (e.key === 'ArrowLeft') lightboxPrevFn();
-      if (e.key === 'ArrowRight') lightboxNextFn();
+      // Si el foco está en el selector de variantes, sus flechas mandan (no cambia de producto)
+      const onVariant = variantDots && variantDots.contains(document.activeElement)
+        && document.activeElement.classList.contains('variant-dot');
+      if (!onVariant) {
+        if (e.key === 'ArrowLeft') lightboxPrevFn();
+        if (e.key === 'ArrowRight') lightboxNextFn();
+      }
     }
 
     if (e.key !== 'Tab') return;
@@ -746,7 +843,10 @@
      ============================================ */
   function catalogUrls() {
     // Only precache thumbnails for offline browsing; catalog full images load on-demand
-    return products.map(p => `images/thumbs/${p.file}?v=10`);
+    const urls = products.map(p => imgUrl(p.file, 'thumbs'));
+    // + miniaturas de variantes de color ya cargadas (o las que lleguen después vía precacheVariantThumbs)
+    Object.values(colorVariants).flat().forEach((f) => urls.push(imgUrl(f, 'thumbs')));
+    return urls;
   }
 
   function requestCatalogPrecache(reg) {
