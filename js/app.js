@@ -184,7 +184,7 @@
     grid.innerHTML = products.map((p, i) => `
           <article class="product-card" data-index="${i}">
           <button type="button" class="product-image" data-name="${escapeHtml(p.name)}" aria-label="Ampliar imagen de ${escapeHtml(p.name)}">
-            <img src="images/thumbs/${escapeHtml(p.file)}?v=9" alt="${escapeHtml(p.name)} artesanal" width="480" height="480" loading="lazy" decoding="async">
+            <img src="images/thumbs/${escapeHtml(p.file)}?v=10" alt="${escapeHtml(p.name)} artesanal" width="480" height="480" loading="lazy" decoding="async">
           </button>
           <div class="product-info">
             <h3>${escapeHtml(p.name)}</h3>
@@ -541,7 +541,7 @@
     const p = visibleProducts[currentLightboxIndex];
     if (!p || lightboxImg.dataset.fallback) return;
     lightboxImg.dataset.fallback = '1';
-    lightboxImg.src = `images/thumbs/${p.file}?v=9`;
+    lightboxImg.src = `images/thumbs/${p.file}?v=10`;
     if (lightboxInfo && !lightboxInfo.querySelector('.offline-note')) lightboxInfo.insertAdjacentHTML('afterbegin',
       '<p class="offline-note">Sin conexión: se muestra la miniatura. La foto ampliada cargará cuando vuelva internet.</p>');
   });
@@ -590,7 +590,7 @@
     
     // Add cache-busting query string to force image refresh
     lightboxImg.dataset.fallback = '';
-    lightboxImg.src = `images/catalog/${p.file}?v=9`;
+    lightboxImg.src = `images/catalog/${p.file}?v=10`;
     lightboxImg.alt = `${p.name} artesanal`;
     lightboxName.textContent = p.name;
     lightboxDesc.textContent = p.desc;
@@ -746,7 +746,7 @@
      ============================================ */
   function catalogUrls() {
     // Only precache thumbnails for offline browsing; catalog full images load on-demand
-    return products.map(p => `images/thumbs/${p.file}?v=9`);
+    return products.map(p => `images/thumbs/${p.file}?v=10`);
   }
 
   function requestCatalogPrecache(reg) {
