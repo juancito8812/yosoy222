@@ -25,7 +25,7 @@
   // Mapa file principal -> [files de variantes]. Si falla el fetch, cada
   // producto simplemente queda con su imagen única (cero impacto).
   let colorVariants = {};
-  fetch('js/variants.json?v=11', { cache: 'no-cache' })
+  fetch('js/variants.json?v=12', { cache: 'no-cache' })
     .then((r) => { if (r.ok) return r.json(); return {}; })
     .then((data) => {
       colorVariants = data || {};
@@ -36,7 +36,7 @@
     })
     .catch(() => { /* sin variantes = comportamiento actual */ });
 
-  const imgVer = 11;
+  const imgVer = 12;
   const imgUrl = (file, kind) => `images/${kind}/${file}?v=${imgVer}`;
 
   /* ----- Product data (synced from Catalogo.xlsx) ----- */
