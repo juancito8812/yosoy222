@@ -155,6 +155,18 @@ Reglas:
   correlativos (el orden de los puntos = orden de los colores).
 - Cada variante debe existir en `thumbs/` Y en `catalog/` con el mismo nombre.
 
+### Portada del álbum (obligatoria para series multicolor)
+
+La foto principal (el `file:` del producto) debe ser la **foto de grupo**: la
+toma donde se ven TODAS las variedades/colores de la vela juntas — es la
+primera imagen que ve el cliente en la tarjeta y al abrir el lightbox, y
+resume el producto mejor que cualquier color individual. Las tomas de un solo
+color van después, como `-v2`, `-v3`…
+
+Ayuda práctica (sesión 24-sep): la foto de grupo se puede detectar contando
+objetos separados contra el fondo; si el detector duda (stickers, colores
+pasteles), decidir a ojo. Queda registro en el handoff de la rama.
+
 ### Registro y validación
 
 ```bash
@@ -174,6 +186,19 @@ una sola foto por producto.
 Si agregaste archivos de imagen, sube también el `?v=` de imágenes en
 `js/app.js` + `scripts/prerender_catalog.py` y `CACHE_NAME` en `sw.js`
 (mismo circuito que cualquier imagen).
+
+---
+
+## Sesión 24-sep: álbum de velas montado (referencia)
+
+- 123 fotos HEIC nuevas (iPhone). 100 procesadas al estándar (modo guía) para
+  24 velas/melts; **Cruz con Paloma no tuvo foto nueva** (conserva la actual).
+- Portada de grupo + variantes montadas con la convención de arriba; 22
+  productos quedaron con álbum (76 fotos extra), respaldados por
+  `scripts/build_variants.py --check` y `tests/variants.test.mjs`.
+- Al montar se subió `imgVer` (10→11) y `CACHE_NAME` (v42) — misma URL de
+  imagen = mismo cache-busting requerido.
+- Backups de las fotos reemplazadas: `~/Imágenes/velas-guia-para-revisar/backups/`.
 
 ---
 

@@ -1,22 +1,22 @@
 # 🌿 Estado de la rama `redesign-ritual` — Handoff para agentes
 
 > **Documento de trabajo de la rama.** Si estás retomando el trabajo del rediseño, empieza aquí.
-> Última actualización: **22 de septiembre de 2026** (sincronización con main + QA gate completo + auditoría Lighthouse comparativa).
+> Última actualización: **24 de septiembre de 2026** (álbum de variantes de color de velas con la nueva sesión fotográfica + docs v42).
 
 ---
 
 ## 1. Dónde estamos (una frase)
 
-Rediseño integral ritualista (paleta beige-dorado, tipografía serif, taxonomía de productos nueva) en la rama `redesign-ritual`, **v40, sincronizada con main al 22-sep (merge `9d9043f`: bot v2 final + docs + v35-v37) y con el QA gate completo aprobado, NO mergeado a main** — el dueño quiere mergear solo cuando lo autorice explícitamente; el único pendiente real es su aprobación visual.
+Rediseño integral ritualista (paleta beige-dorado, tipografía serif, taxonomía de productos nueva) en la rama `redesign-ritual`, **v42, sincronizada con main al 22-sep, QA gate aprobado y con el álbum de variantes de color de velas montado (24-sep), NO mergeada a main** — el dueño quiere mergear solo cuando lo autorice explícitamente; el único pendiente real es su aprobación visual (ahora incluye revisar el álbum nuevo).
 
 ## 2. Estado exacto
 
 | Qué | Valor |
 |---|---|
 | Rama | `redesign-ritual` (remota sincronizada: local = origin) |
-| Versión de caché en la rama | **v40** (bump hecho en la rama antes del merge: numeración monótona main 37 → rama 40) |
-| Últimos commits | `f1fbd3e` (handoff QA actualizado) · `b63e1db` (QA: contraste AA + responsive móvil + v40) · `ce66d33` (restaurar prerender pisado en el sync) · `9d9043f` (sync con main) |
-| Tests | 13/13 · `verify_versions.py` OK (v40) · `verify_icons.py` OK |
+| Versión de caché en la rama | **v42** (v40 QA gate → v41 visor de variantes + fotos Rosa/Mini Corazones → v42 álbum completo con la sesión del 24-sep) |
+| Últimos commits | `1d94c58` (visor de variantes: puntitos en el lightbox) · `6e61283` (fotos nuevas Rosa/Mini Corazones + v41) · `f1fbd3e`/`b63e1db` (QA gate v40) · **este commit** (álbum completo: 100 fotos, portada de grupo de primera, docs v42) |
+| Tests | 16/16 (incluye `variants.test.mjs`) · `verify_versions.py` OK (v42) · `build_variants.py --check` OK (22 productos, 76 variantes) |
 | Lighthouse (22-sep, 4 corridas: túnel vs producción × móvil/desktop) | Performance **idéntica a producción: 92 móvil / 99 desktop** (CLS 0.003 vs 0.023 prod — el rediseño mejora; TBT ~0). SEO 69 y A11y 96 del preview son artefactos, no defectos (detalle en §5) |
 | Base de la rama | **Sincronizada con main al `2f4091b`** (22 sep): incluye v35/v36/v37 (fusión cloud+local, persistencia de token, verificador en CI, purga 401), el workflow del bot v2 final (memoria + expiración 24h, sin apikey hardcodeada) y toda la documentación nueva. El desajuste v37-vs-v39 quedó resuelto y el bump a v40 ya se aplicó en la rama: el merge no necesita renombrar nada |
 | Resolución del merge | `sw.js`/`manifest`/HTMLs/dashboard → main (solo diferían en `?v=`); `whatsapp-n8n-workflow.json` → main (v2 final, mata la apikey `AgenciaSecreta2026` de la rama); docs → combinados (hitos de ambas sesiones, v39 en la rama); PLAN → main |
@@ -34,6 +34,15 @@ Rediseño integral ritualista (paleta beige-dorado, tipografía serif, taxonomí
 - `93c2526` (v38): corregido degradado del manifiesto que terminaba en `#FAD4BC` (rosado); tokens de texto secundario `#D8D5D0` (gris ilegible 1.26:1 sobre beige, heredado del dashboard oscuro) → `#66584A` (5.90:1) y `#75684F` (4.69:1), ambos AA verificados por cálculo WCAG
 - `e76e732` (v39): cabecera al hacer scroll usaba `rgba(250,212,188,.97)` = el mismo rosado; → `rgba(250,249,246,.97)` (blanco cálido de tarjetas)
 
+**Sesión 24-sep (álbum de velas con la nueva sesión fotográfica):**
+- Llegaron 123 fotos HEIC nuevas (iPhone, 3024px). Procesadas 100 al estándar del sitio (modo guía: producto centrado sobre fondo difuminado; thumbs 480 q78, catalog 900 q80)
+- El dueño renombró las fotos con el nombre real del producto en `~/Imágenes/velas-guia-para-revisar/catalog/`; el pareo foto→producto se hizo por nombre (24 de 25 velas/melts; **Cruz con Paloma no tuvo foto nueva y conserva la anterior**)
+- Portada de cada serie = **foto de grupo (todos los colores juntos)**: elegida por detector (conteo de objetos separados) y **corregible a ojo** por el dueño en `.image-review/series_check.html` (flujo clic→portada, sin overrides pendientes al momento del commit)
+- Montaje: portada → `file` principal del producto; resto → `-v2, -v3…` en ambas carpetas (convención de `scripts/IMAGE_GUIDE.md`), con backups de las fotos anteriores en `~/Imágenes/velas-guia-para-revisar/backups/worktree-anterior/`
+- `js/variants.json` regenerado con `scripts/build_variants.py`: **22 productos con álbum, 76 fotos extra**. El precache del SW incluye las miniaturas de variantes
+- Bump v41→v42 + `imgVer` 10→11 (las imágenes comparten URL con las viejas) + prerender regenerado (44 tarjetas `?v=11`) + docs actualizados (README/AGENTS/IMAGE_GUIDE)
+- Nota pendiente menor: 7 fotos de vela quedaron sin renombrar (#014, #099–105) y 17 fotos de pulseras/collares (#107–123) aún no se mapean a sus productos
+
 **Sesión 22-sep (QA gate):**
 - `9d9043f` + `ce66d33`: sync con main y **restauración del `index.html` prerenderizado del rediseño** (el sync lo había pisado por un error de resolución — detectado en QA visual por los chips de la taxonomía vieja)
 - `b63e1db` (v40): **contraste AA real del dorado** — los títulos `#C9A878` medían 1.93:1 sobre crema (falla WCAG incluso para texto grande) → `--gold-matte: #7A6134` (4.83–5.56:1 en las tres superficies, cubre los `<em>` de 20px) y `--accent` recupera el ámbar canónico pre-rediseño `#854f19` (5.77:1; botones con blanco 6.60:1, Lighthouse 100 documentado); `--text-faint` → `#71654B` (surface 4.72:1); **responsive móvil**: los grids de manifiesto/pilares/rituales quedaban a 3 columnas fijas (overflow de 173px a 375px) → 1 columna ≤900px, scrollW 370 < vw 375 verificado en DOM
@@ -42,12 +51,15 @@ Rediseño integral ritualista (paleta beige-dorado, tipografía serif, taxonomí
 
 ```bash
 git fetch origin && git worktree add /tmp/redesign-review origin/redesign-ritual
-cd /tmp/redesign-review && npm test                      # 13/13
-python3 scripts/verify_versions.py                       # OK (v40)
+cd /tmp/redesign-review && npm test                      # 16/16
+python3 scripts/verify_versions.py                       # OK (v42)
+python3 scripts/build_variants.py --check                # OK (22 productos, 76 variantes)
 python3 -m http.server 8092 --bind 0.0.0.0               # y abrir el navegador
 ```
 
 Flujos verificados E2E (22-sep, v40): filtros 22/3/12/7 = 44 exactos · búsqueda + empty state + clear ✓ · carrito → drawer → checkout wa.me/584126481628 (total y línea correctos) ✓ · lightbox ✓ · menú móvil ✓ · 21 pares color/fondo auditados AA con alfa compuesto (única excepción: botón WhatsApp verde, decisión de marca preexistente) · consola limpia (solo CORS esperado del Edge de telemetría desde localhost) · `addToCart` sigue resolviendo precio desde `products[]` (SEC-01) ✓ · fixes offline v34 presentes.
+
+Flujos verificados E2E (24-sep, v42): lightbox de Buda abre con 6 puntos de variantes ✓ · clic en un punto cambia la imagen grande (`-v4` verificado) ✓ · dots activos con estado y teclado ←→ ✓ · 139 thumbs / 136 catalog en disco, 0 imágenes rotas en las verificaciones del navegador ✓ · `variants.json` servido con 22 productos ✓ · tests 16/16 + `verify_versions` + `build_variants --check` en verde.
 
 ## 5. Pendientes para continuar (orden sugerido)
 
@@ -56,9 +68,12 @@ Flujos verificados E2E (22-sep, v40): filtros 22/3/12/7 = 44 exactos · búsqued
 3. ~~Asegurar la apikey n8n~~ **RESUELTA (22 sep):** workflow v2 final sin secretos (todo vía `$env.*` en n8n)
 4. ~~Auditoría móvil (375px)~~ **HECHA (22-sep):** overflow detectado y corregido (grids 3-col → 1-col ≤900px); smoke completo en viewport 375×812
 5. ~~Sync con main~~ **HECHO (22-sep):** merge `9d9043f` + restauración `ce66d33`
-6. ~~Decisión de versión post-merge~~ **RESUELTA:** la rama ya va **v40** — el merge puede mantener v40 sin renombrar
+6. ~~Decisión de versión post-merge~~ **RESUELTA:** la rama ya va **v42** — el merge puede mantener v42 sin renombrar
+7. **Pulseras y collares (nueva sesión, 24-sep):** 17 fotos (#107–123) sin mapear a sus 11 productos — usar el mismo flujo: renombrar → pareo → montaje como variantes
+8. **7 fotos de velas sin renombrar** (#014, #099–105): quedaron fuera del álbum; revisar si alguna es mejor toma o foto de grupo de alguna serie
+9. **Revisar portadas del álbum con el cliente:** `series_check.html` permite corregir a ojo la foto de grupo elegida por el detector (clic = portada)
 
-**Único pendiente real: aprobación visual del dueño.** Preview para el cliente en §7. Al merge: verificar que main no haya recibido commits nuevos desde `2f4091b` y re-ejecutar el QA rápido (tests + verify_versions).
+**Único pendiente real para el merge: aprobación visual del dueño (ahora incluye revisar el álbum de variantes).** Preview para el cliente en §7. Al merge: verificar que main no haya recibido commits nuevos desde `2f4091b` y re-ejecutar el QA rápido (tests + verify_versions + build_variants --check).
 
 **Auditoría Lighthouse comparativa (22-sep, 4 corridas — reportes en `/tmp/lh/`, efímeros):** preview del túnel vs producción, móvil + desktop. Performance **92/99 idéntica** (FCP/LCP 2.7s en ambos; CLS 0.003 vs 0.023 a favor del rediseño; TTI 4.3s vs 5.9s). Las dos brechas de score del preview son artefactos, no defectos: **SEO 69** = cabecera `X-Robots-Tag: none` que Cloudflare inyecta a TODOS los túneles trycloudflare (noindex del entorno; al merge el SEO vuelve a 100); **A11y 96** = el botón WhatsApp (verde + texto blanco, 1.98:1), defecto latente idéntico en producción que ahí Lighthouse nunca evaluó (botón oculto en carga inicial; el CTA grande de contacto es nuevo del rediseño). Best Practices 96 vs 92 a favor del preview (producción suma el error del anti-bots de Cloudflare). Conclusión: **nada en la auditoría se opone al merge**; si algún día se quiere A11y 100 con evidencia, oscurecer el texto del botón WhatsApp.
 

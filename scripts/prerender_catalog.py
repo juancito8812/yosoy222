@@ -67,7 +67,7 @@ def main():
         card = (
             f'          <article class="product-card" data-index="{i}">\n'
             f'          <button type="button" class="product-image" data-name="{escape_html(name)}" aria-label="Ampliar imagen de {escape_html(name)}">\n'
-            f'            <img src="images/thumbs/{escape_html(file)}?v=10" alt="{escape_html(name)} artesanal" width="480" height="480" loading="lazy" decoding="async">\n'
+            f'            <img src="images/thumbs/{escape_html(file)}?v=11" alt="{escape_html(name)} artesanal" width="480" height="480" loading="lazy" decoding="async">\n'
             f'          </button>\n'
             f'          <div class="product-info">\n'
             f'            <h3>{escape_html(name)}</h3>\n'
