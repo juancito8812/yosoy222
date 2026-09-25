@@ -1,21 +1,22 @@
 # 🌿 Estado de la rama `redesign-ritual` — Handoff para agentes
 
 > **Documento de trabajo de la rama.** Si estás retomando el trabajo del rediseño, empieza aquí.
-> Última actualización: **24 de septiembre de 2026** (álbum de variantes de color de velas con la nueva sesión fotográfica + docs v42).
+> Última actualización: **25 de septiembre de 2026** (push a `origin` — rama respaldada en GitHub + preview efímero rearmado para el cliente).
 
 ---
 
 ## 1. Dónde estamos (una frase)
 
-Rediseño integral ritualista (paleta beige-dorado, tipografía serif, taxonomía de productos nueva) en la rama `redesign-ritual`, **v42, sincronizada con main al 22-sep, QA gate aprobado y con el álbum de variantes de color de velas montado (24-sep), NO mergeada a main** — el dueño quiere mergear solo cuando lo autorice explícitamente; el único pendiente real es su aprobación visual (ahora incluye revisar el álbum nuevo).
+Rediseño integral ritualista (paleta beige-dorado, tipografía serif, taxonomía de productos nueva) en la rama `redesign-ritual`, **v42, sincronizada con main al 22-sep, QA gate aprobado y con el álbum de variantes de color de velas montado (24-sep), NO mergeada a main** y **respaldada en `origin/redesign-ritual` (`da8ea11`, push del 25-sep)** — el dueño quiere mergear solo cuando lo autorice explícitamente; el único pendiente real es su aprobación visual (ahora incluye revisar el álbum nuevo).
 
 ## 2. Estado exacto
 
 | Qué | Valor |
 |---|---|
 | Rama | `redesign-ritual` (remota sincronizada: local = origin) |
+| Respaldo remoto | **Push 25-sep** `431c355..da8ea11` a `origin/redesign-ritual` (fast-forward). `origin/main` intacta en `02783cb`. **CI no corre en esta rama** (`ci.yml` solo en push/PR a `main`): la verificación (tests 16/16 + `verify_versions` + `build_variants --check`) es gate local del worktree |
 | Versión de caché en la rama | **v42** (v40 QA gate → v41 visor de variantes + fotos Rosa/Mini Corazones → v42 álbum completo con la sesión del 24-sep) |
-| Últimos commits | `1d94c58` (visor de variantes: puntitos en el lightbox) · `6e61283` (fotos nuevas Rosa/Mini Corazones + v41) · `f1fbd3e`/`b63e1db` (QA gate v40) · **este commit** (álbum completo: 100 fotos, portada de grupo de primera, docs v42) |
+| Últimos commits | `1d94c58` (visor de variantes: puntitos en el lightbox) · `6e61283` (fotos nuevas Rosa/Mini Corazones + v41) · `f1fbd3e`/`b63e1db` (QA gate v40) · `da8ea11` (álbum completo: 100 fotos, portada de grupo de primera, docs v42 — **en `origin` desde el 25-sep**) |
 | Tests | 16/16 (incluye `variants.test.mjs`) · `verify_versions.py` OK (v42) · `build_variants.py --check` OK (22 productos, 76 variantes) |
 | Lighthouse (22-sep, 4 corridas: túnel vs producción × móvil/desktop) | Performance **idéntica a producción: 92 móvil / 99 desktop** (CLS 0.003 vs 0.023 prod — el rediseño mejora; TBT ~0). SEO 69 y A11y 96 del preview son artefactos, no defectos (detalle en §5) |
 | Base de la rama | **Sincronizada con main al `2f4091b`** (22 sep): incluye v35/v36/v37 (fusión cloud+local, persistencia de token, verificador en CI, purga 401), el workflow del bot v2 final (memoria + expiración 24h, sin apikey hardcodeada) y toda la documentación nueva. El desajuste v37-vs-v39 quedó resuelto y el bump a v40 ya se aplicó en la rama: el merge no necesita renombrar nada |
@@ -52,6 +53,8 @@ Rediseño integral ritualista (paleta beige-dorado, tipografía serif, taxonomí
 ```bash
 git fetch origin && git worktree add /tmp/redesign-review origin/redesign-ritual
 cd /tmp/redesign-review && npm test                      # 16/16
+# alternativa sin worktree: clonar la rama ya respaldada
+#   git clone -b redesign-ritual https://github.com/juancito8812/yosoy222.git
 python3 scripts/verify_versions.py                       # OK (v42)
 python3 scripts/build_variants.py --check                # OK (22 productos, 76 variantes)
 python3 -m http.server 8092 --bind 0.0.0.0               # y abrir el navegador
@@ -84,10 +87,10 @@ Flujos verificados E2E (24-sep, v42): lightbox de Buda abre con 6 puntos de vari
 
 ## 7. Infra de preview (efímera, recreable)
 
+- **Preview permanente `preview.yosoy222.com` (debianm700): actualizado con todo, confirmado por el dueño el 25-sep** — sirve el estado actual de la rama (v42 con álbum). Actualizarlo tras cambios futuros: recrear el espejo con tar (excluir `.git`, `.agents`, `BRANCH_STATUS.md`, `PLAN_IMPLEMENTACION.md`, `tests`, `scripts`, `supabase`, `package*.json`) hacia `~/yosoy222-preview/site/` y purgar la URL en Cloudflare
+- **Preview efímero de respaldo (25-sep):** worktree real `~/Documentos/programacion/yosoy222-redesign` con `python3 -m http.server 8123 --bind 127.0.0.1` + túnel `~/.local/bin/cloudflared tunnel --url http://localhost:8123` (URL trycloudflare en `/tmp/tunel-preview.log`; **cambia al reiniciar el túnel**). Verificado E2E por el túnel: 44 tarjetas `?v=11`, álbum navegable en el lightbox, imágenes 480/900px OK
 - Skill `cloudflare-preview-gate` instalada en `~/.agents/skills/` con workflow completo (túnel + template cliente + QA + cleanup)
 - `cloudflared` 2026.5.0 en `~/.local/bin/`
-- Recrear preview: `cd /tmp/redesign-review && nohup setsid python3 -m http.server 8092 --bind 0.0.0.0 &` y `~/.local/bin/cloudflared tunnel --url http://localhost:8092` → URL trycloudflare en el log `/tmp/tunel-preview.log`
-- Alternativa privada del dueño: Tailscale `http://<ip-tailnet>:8092` (la IP era 100.74.11.61; verificar con `tailscale ip -4`)
 
 ## 8. Convenciones que hay que respetar en esta rama
 

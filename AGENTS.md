@@ -146,4 +146,4 @@ Antes de reportar una tarea como completa:
 
 ---
 
-*Documento actualizado al 22 de septiembre de 2026.*
+*Documento actualizado al 25 de septiembre de 2026. Rama `redesign-ritual` en v42 (álbum de variantes de color de velas), respaldada en `origin/redesign-ritual` (`da8ea11`) — merge a main solo con autorización expresa del dueño (regla 9).*

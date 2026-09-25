@@ -4,9 +4,9 @@
 
 - **Propósito:** Tienda online de velas artesanales, pulseras, collares, franelas y accesorios con PWA offline, checkout por WhatsApp y dashboard de analítica privada
 - **Stack:** HTML5 + CSS3 + JavaScript vanilla (sin frameworks), PWA (manifest.json + sw.js), GitHub Pages, Cloudflare CDN
-- **Última sesión:** 24 de septiembre de 2026
-- **Versión de memoria:** 16
-- **🌿 Política de ramas (REGLA DEL DUEÑO, inviolable):** `main` es producción y se despliega con cada push. La rama `redesign-ritual` (rediseño ritualista, v42, con álbum de variantes de color de velas) **SOLO se mergea a main cuando el dueño lo autorice explícitamente Y esté 100% lista** — ningún agente debe mergear, abrir PR de merge ni pushear su contenido a main por iniciativa propia. Su estado, pendientes y QA gate viven en **`BRANCH_STATUS.md` en la raíz de esa rama**. Al retomar el rediseño: `git fetch origin && git worktree add /tmp/redesign-review origin/redesign-ritual` y leer ese archivo primero. Preview para el cliente: servidor + túnel cloudflared (comandos en BRANCH_STATUS.md y README).
+- **Última sesión:** 25 de septiembre de 2026
+- **Versión de memoria:** 17
+- **🌿 Política de ramas (REGLA DEL DUEÑO, inviolable):** `main` es producción y se despliega con cada push. La rama `redesign-ritual` (rediseño ritualista, v42, con álbum de variantes de color de velas, **respaldada en `origin/redesign-ritual` desde el 25-sep, commit `da8ea11`**) **SOLO se mergea a main cuando el dueño lo autorice explícitamente Y esté 100% lista** — ningún agente debe mergear, abrir PR de merge ni pushear su contenido a main por iniciativa propia. Su estado, pendientes y QA gate viven en **`BRANCH_STATUS.md` en la raíz de esa rama**. Al retomar el rediseño: `git fetch origin && git worktree add /tmp/redesign-review origin/redesign-ritual` y leer ese archivo primero. Preview para el cliente: servidor + túnel cloudflared (comandos en BRANCH_STATUS.md y README).
 - **🤖 Bot WhatsApp (estado vivo):** workflow v2 final desplegado y verificado E2E en debianm700 (ID `Iwg02lASI9CEFic`, espejo saneado en `scripts/whatsapp-n8n-workflow.json`). Capacidades: memoria de conversación (20 turnos + pedido acumulado), expiración 24h, avisos de pedido con contexto, escalada a los 2 agentes, modo puente, delay 2-14s, IA `nemotron-3-super:free` vía OmniRoute ($0). Detalle completo en las entradas del 21-22 sep y en AGENTS.md §1.
 
 ## Arquitectura
@@ -26,6 +26,8 @@
 - **Scripts:** `scripts/` (prerender_catalog.py, generate_icons.py, verify_icons.py, verify_versions.py, build_variants.py, process_images.py, process_images_v2.py, IMAGE_GUIDE.md)
 
 ## Decisiones Clave & Hitos
+
+- **25 sep 2026 — Respaldo de la rama en GitHub + preview al cliente:** `redesign-ritual` empujada a `origin/redesign-ritual` (`431c355..da8ea11`, fast-forward; `origin/main` intacta en `02783cb`). CI no corre en la rama (`ci.yml` solo dispara en push/PR a `main`) — la verificación es gate local del worktree (tests 16/16 + `verify_versions` v42 + `build_variants --check`). Preview efímero rearmado desde el worktree real (`~/Documentos/programacion/yosoy222-redesign`, http.server 8123 + túnel cloudflared; la URL trycloudflare cambia al reiniciar), verificado E2E: álbum navegable en el lightbox, imágenes por túnel OK. El espejo permanente `preview.yosoy222.com` (debianm700) sigue en v40 — resincronizar si se quiere el álbum ahí. Documentación puesta al día en ambos lados (main y rama) para que cualquier agente sepa dónde está el proyecto.
 
 - **24 sep 2026 — Álbum de variantes de color de velas poblado con la nueva sesión fotográfica (rama v42):** llegaron 123 fotos HEIC de iPhone; 100 procesadas al estándar (modo guía) para 24 velas/melts — el dueño renombró los archivos con el nombre real del producto y el pareo foto→producto se hizo por nombre (solo **Cruz con Paloma** quedó sin foto nueva, conserva la anterior). Portada de cada álbum = **foto de grupo con todos los colores juntos** (detector de objetos separados + corrección a ojo del dueño en `.image-review/series_check.html`); el resto de tomas entran como `-v2, -v3…` según la convención de `scripts/IMAGE_GUIDE.md`. `js/variants.json` regenerado: 22 productos, 76 fotos extra; el precache del SW añadió las miniaturas de variantes. Bump v41→v42 + `imgVer` 10→11 + prerender regenerado. Verificación: tests 16/16, `verify_versions` OK, `build_variants --check` OK, lightbox E2E en navegador (Buda: 6 dots, cambio de imagen grande OK). Backups de fotos reemplazadas en `~/Imágenes/velas-guia-para-revisar/backups/worktree-anterior/`. Pendiente: 17 fotos de pulseras/collares (#107–123) sin mapear y 7 velas sin renombrar (#014, #099–105).
 - **22 sep 2026 — Expiración de sesión del bot a 24h (E2E verificado):** los pedidos a medio armar y los puentes abandonados ya no se heredan: `Leer Sesión` compara el sello `ultima_actividad` (que `Procesar IA` estampa en `datos_parciales` en cada turno del cliente) contra 24h y, si venció, resetea la conversación (estado→IA, pedido e historial borrados). Respaldo para sesiones legacy sin sello: `updated_at` de la fila (el Edge lo actualiza en cada `session_set`, incluidos comandos de staff). E2E: sesión sembrada con 25h + pedido 2×Buda + estado puente → siguiente mensaje del cliente arrancó conversación nueva (products: [], 1 turno, estado IA); sesión fresca sin regresión (memoria intacta, sello presente).
@@ -76,8 +78,8 @@
 
 ## Estado Actual
 
-- **Branch:** main
-- **Cache version:** yosoy222-v41 (rama `redesign-ritual`; main va en v37)
+- **Branch:** `redesign-ritual` (worktree `~/Documentos/programacion/yosoy222-redesign`; producción sigue en `main` v37)
+- **Cache version:** yosoy222-v42 (rama `redesign-ritual`, **en `origin` desde el 25-sep**; main va en v37 — el árbol de trabajo de main además tiene el bloque legal v38 sin commitear)
 - **Dashboard:** https://yosoy222.com/dashboard.html
 - **Productos:** 44 (25 velas, 5 collares, 6 pulseras, 7 franelas, 1 accesorio)
 - **Imágenes:** 63 thumbs, 60 catalog (incluye 4 decorativas y 15 variantes adicionales)
@@ -96,6 +98,11 @@
 - **[2026-09-20] ⚠️ PARCIALMENTE RESUELTO — Auth del dashboard es client-side:** la sesión se puede falsificar desde sessionStorage (verificado en local) y el rate-limiting en localStorage es borrable — limitación de diseño aceptada: los datos que protege son agregados sin PII, la frontera real es la Edge Function (auth server-side contra secret, token HMAC efímero 2h, rate limit durable en Postgres). Hash por defecto + salt públicos en el repo: **eliminado en v32** (fail-closed — el hash válido solo existe en localStorage, nacido de un login Edge exitoso; hallazgo crítico de la auditoría final). Cambiar credenciales exige la contraseña vigente (fix 20 sep, v25 — antes permitía sobrescribir sin verificarla); nota: el cambio de hash sigue siendo por dispositivo.
 
 ## Próximos Pasos / TODOs
+
+- [ ] **Pulseras y collares (17 fotos #107–123):** mapear a sus 11 productos con el mismo flujo de las velas (renombrar → pareo → montaje como variantes). Las fotos están en `~/Imágenes/velas-guia-para-revisar`
+- [ ] **7 fotos de velas sin renombrar** (#014, #099–105): quedaron fuera del álbum; revisar si alguna es mejor toma o foto de grupo
+- [ ] **Revisión de portadas del álbum con el cliente:** `series_check.html` permite corregir a ojo la foto de grupo (clic = portada); revisar especialmente Armonía Canela (el sticker arcoíris confundió al detector)
+- [ ] **(Main, aparte) Publicar el bloque legal v38** — pendiente desde el 22-sep, ver memoria de main
 
 - [x] Analytics: Google Analytics 4 (GA4) integrado (G-Y9R0B5NH75) con eventos ecommerce (`view_item`, `add_to_cart`, `begin_checkout`, `generate_lead`, `search`) — completado 16 sep 2026; carga diferida tras primera interacción (v31) con TBT 0ms verificado en producción 20 sep 2026
 - [x] Seguridad: RLS de `yosoy222_events` service_role-only + Edge Function desplegada + ingesta sin anon key (v30) + hash por defecto eliminado (v32) + rate limit durable en Postgres — ciclo cerrado 20 sep 2026

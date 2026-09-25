@@ -396,7 +396,7 @@ El checkout de la tienda apunta al número oficial `+58 412 648 1628`, que atien
 | Rama | Estado | Propósito |
 |------|--------|-----------|
 | `main` | **Producción** | Todo push despliega automáticamente a yosoy222.com (CI + Pages + Purge). Única rama protegida por el pipeline completo. |
-| `redesign-ritual` | **En desarrollo — NO mergeada** | Rediseño ritualista (fondo beige #F3EDE4, tipografía serif, taxonomía velas/melts/dijes/franelas). Su estado completo vive en `BRANCH_STATUS.md` en la raíz de la rama. |
+| `redesign-ritual` | **En desarrollo — NO mergeada (v42, en `origin` desde el 25-sep)** | Rediseño ritualista (fondo beige #F3EDE4, tipografía serif, taxonomía velas/melts/dijes/franelas) con álbum de variantes de color de velas montado (24-sep). Su estado completo vive en `BRANCH_STATUS.md` en la raíz de la rama. |
 
 > 🔒 **POLÍTICA DE MERGE (decisión del dueño, inviolable):** `redesign-ritual` **solo se mergea a `main` cuando el dueño lo autorice explícitamente Y la rama esté 100% lista** (QA gate completo: barrido visual anti-rosado, auditoría móvil 375px, tests en verde, sync con main resuelto, y visto bueno del cliente). Ningún agente debe mergear, abrir PR de merge ni pushear a main contenido de la rama sin esa autorización explícita.
 
@@ -678,4 +678,4 @@ gh run list --limit 3
 
 ---
 
-*Documentación técnica actualizada al 24 de septiembre de 2026. Proyecto 100% verificado en pruebas unitarias (16/16 pasadas), CI/CD, auditoría de producción, bot de WhatsApp verificado E2E y despliegue activo en https://yosoy222.com.*
+*Documentación técnica actualizada al 25 de septiembre de 2026. Proyecto 100% verificado en pruebas unitarias (16/16 pasadas), CI/CD, auditoría de producción, bot de WhatsApp verificado E2E y despliegue activo en https://yosoy222.com. La rama `redesign-ritual` (v42, con álbum de variantes) está respaldada en `origin` y NO se mergea a main hasta autorización expresa del dueño.*
