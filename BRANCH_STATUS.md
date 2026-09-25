@@ -44,6 +44,11 @@ Rediseño integral ritualista (paleta beige-dorado, tipografía serif, taxonomí
 - Bump v41→v42 + `imgVer` 10→11 (las imágenes comparten URL con las viejas) + prerender regenerado (44 tarjetas `?v=11`) + docs actualizados (README/AGENTS/IMAGE_GUIDE)
 - Nota pendiente menor: 7 fotos de vela quedaron sin renombrar (#014, #099–105) y 17 fotos de pulseras/collares (#107–123) aún no se mapean a sus productos
 
+**Corrección de portadas (25-sep, cierre de la sesión fotográfica de velas):**
+- El dueño corrigió a ojo **14 portadas** en `series_check.html` (leídas del navegador, flujo clic=portada). Re-montadas: portada nueva → archivo principal, anterior → variante extra. Commit `1c87a58` + `imgVer` 11→12, prerender regenerado, tests 16/16 y verificadores en verde, push a `origin`
+- Destacadas: Armonía Canela → `armonia canela 2.jpg`, Rosa → `rosa4.jpg`, Sagrada Familia → `sagrada familia 6.jpg` (verificadas por md5 contra los archivos del dueño)
+- **La sesión fotográfica de velas queda CERRADA de punta a punta** (montaje → corrección visual → re-montaje → commit). Pendiente separado: joyas #107–123
+
 **Sesión 22-sep (QA gate):**
 - `9d9043f` + `ce66d33`: sync con main y **restauración del `index.html` prerenderizado del rediseño** (el sync lo había pisado por un error de resolución — detectado en QA visual por los chips de la taxonomía vieja)
 - `b63e1db` (v40): **contraste AA real del dorado** — los títulos `#C9A878` medían 1.93:1 sobre crema (falla WCAG incluso para texto grande) → `--gold-matte: #7A6134` (4.83–5.56:1 en las tres superficies, cubre los `<em>` de 20px) y `--accent` recupera el ámbar canónico pre-rediseño `#854f19` (5.77:1; botones con blanco 6.60:1, Lighthouse 100 documentado); `--text-faint` → `#71654B` (surface 4.72:1); **responsive móvil**: los grids de manifiesto/pilares/rituales quedaban a 3 columnas fijas (overflow de 173px a 375px) → 1 columna ≤900px, scrollW 370 < vw 375 verificado en DOM
@@ -74,7 +79,7 @@ Flujos verificados E2E (24-sep, v42): lightbox de Buda abre con 6 puntos de vari
 6. ~~Decisión de versión post-merge~~ **RESUELTA:** la rama ya va **v42** — el merge puede mantener v42 sin renombrar
 7. **Pulseras y collares (nueva sesión, 24-sep):** 17 fotos (#107–123) sin mapear a sus 11 productos — usar el mismo flujo: renombrar → pareo → montaje como variantes
 8. **7 fotos de velas sin renombrar** (#014, #099–105): quedaron fuera del álbum; revisar si alguna es mejor toma o foto de grupo de alguna serie
-9. **Revisar portadas del álbum con el cliente:** `series_check.html` permite corregir a ojo la foto de grupo elegida por el detector (clic = portada)
+9. ~~Revisar portadas del álbum con el cliente~~ **HECHO (25-sep):** 14 series corregidas por el dueño y montadas (`1c87a58`)
 
 **Único pendiente real para el merge: aprobación visual del dueño (ahora incluye revisar el álbum de variantes).** Preview para el cliente en §7. Al merge: verificar que main no haya recibido commits nuevos desde `2f4091b` y re-ejecutar el QA rápido (tests + verify_versions + build_variants --check).
 
