@@ -1,7 +1,11 @@
 # 🌿 Estado de la rama `redesign-ritual` — Handoff para agentes
 
-> **Documento de trabajo de la rama.** Si estás retomando el trabajo del rediseño, empieza aquí.
-> Última actualización: **25 de septiembre de 2026** (push a `origin` — rama respaldada en GitHub + preview efímero rearmado para el cliente).
+> ⚠️ **ESTADO: MERGEADA A `main` (27 sep 2026, commit `ee9c3b9`, con autorización expresa del dueño).**
+> Este documento queda como **registro histórico** del trabajo de la rama (v38→v43).
+> El estado vivo del proyecto (producción v50) vive en `.agents/MEMORY.md` y `AGENTS.md` en `main`.
+> La rama permanece en `origin` sin más desarrollo previsto.
+
+> Última actualización: **27 de septiembre de 2026** (banner de cierre; contenido congelado al 25-sep).
 
 ---
 

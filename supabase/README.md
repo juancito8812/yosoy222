@@ -100,7 +100,12 @@ curl -s -X POST "$FN" -H "Content-Type: application/json" \
 4. Verificar con los sondeos de `scripts/supabase_rls.sql` que SELECT anon → `[]`.
 5. Borrar del Table Editor las filas de auditoría `id=112` e `id=114`.
 
-## Rotación de la clave anon (mitigación mientras RLS queda pendiente)
+## Rotación de la clave anon (⚠️ HISTÓRICA — ya no aplicable)
+
+> **Estado 20 sep 2026:** la anon key fue **eliminada del cliente** (v30) y la tabla
+> `yosoy222_events` es **service_role-only** (RLS con cero políticas; anon INSERT 401,
+> anon SELECT vacío — ver `scripts/supabase_rls.sql`). Esta sección se conserva como
+> registro histórico del procedimiento; NO hay nada que rotar hoy en el flujo normal.
 
 La clave anon actual está expuesta públicamente (repo + navegador) y mientras la
 política SELECT siga abierta, cualquiera puede leer la tabla con ella. Rotarla
@@ -108,8 +113,11 @@ invalida la clave filtrada:
 
 1. Dashboard de Supabase → Project Settings → API → **Rotate anon key**
    (advertencia: invalida la anterior al instante; hacer el paso 3 rápido).
-2. Copiar la clave nueva y actualizar **solo** `js/config.js` → `SUPABASE_ANON`
-   (es el único lugar donde vive: verificado con grep en todo el repo).
+2. Copiar la clave nueva y actualizar el cliente — hoy `js/config.js` ya **no lleva
+   ninguna clave de BD** (solo `SUPABASE_URL` y `GA_ID`); la ingesta va vía Edge
+   Function. Este paso describía el estado anterior a v30 y solo aplicaría si se
+   reintrodujera acceso directo con anon key, algo que el endurecimiento actual
+   hace innecesario.
 3. Deploy a GitHub Pages (push a `main`) — la web deja de enviar la clave vieja.
 4. Verificar ingesta: abrir la tienda, generar un evento y confirmar HTTP 201 en
    la pestaña Network (o correr el sondeo INSERT de `scripts/supabase_rls.sql`).

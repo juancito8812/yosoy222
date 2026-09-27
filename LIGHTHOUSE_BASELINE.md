@@ -1,12 +1,10 @@
 # Baseline de Lighthouse — Producción YoSoy222
 
-> Registro oficial de rendimiento para detectar regresiones. Actualizado el 27 de septiembre de 2026 tras el despliegue de **v47**.
+> Registro oficial de rendimiento para detectar regresiones. Actualizado el 27 de septiembre de 2026 tras el despliegue de **v48**.
 
 ## Números de referencia (v48)
 
 Medidos contra `https://yosoy222.com/` con Lighthouse 12 (Chrome headless), producción real sirviendo `yosoy222-v48` (scripts del head a `defer`).
-
-Medidos contra `https://yosoy222.com/` con Lighthouse 12 (Chrome headless), producción real sirviendo `yosoy222-v47`.
 
 ### Categorías
 
@@ -35,7 +33,7 @@ Contexto del elemento LCP móvil: `images/thumbs/hero-rosas-3.jpg` (hero, precac
 | v38 (producción pre-rediseño) | — | ~96 | ~92 | Referencia previa al rediseño |
 | v45 (merge del rediseño) | 95–96 | 96 | 89 | Contraste botón WA 1.98:1, textos <12px |
 | **v47** | **97** | **100** | **93** | Contraste AAA (#075E36) + textos ≥12px |
-| **v48 (actual)** | **96–97** | **100** | **93** | Scripts del head a defer (sin render-blocking JS; eval de scripts 86→75 ms) |
+| **v48–v50 (actual)** | **96–97** | **100** | **93** | Scripts del head a defer (v48; eval 86→75 ms) y símbolo $ alineado (v50) — sin impacto en scores |
 
 El salto de Accessibility 96→100 vino de dos correcciones: icono del botón
 WhatsApp en `#075E36` (7.88:1 AAA) y todos los textos a ≥12px (`d49ba51`).
