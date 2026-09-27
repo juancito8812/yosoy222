@@ -437,7 +437,13 @@ El checkout de la tienda apunta al número oficial `+58 412 648 1628`, que atien
   # 3. Health check
   ssh debianm700 'curl -s -o /dev/null -w "%{http_code}" http://localhost:5678/healthz'
   ```
+- **Actualización del watchdog** (cambios en `scripts/whatsapp_bot_watchdog.py`):
+  ```bash
+  scp scripts/whatsapp_bot_watchdog.py \
+    debianm700:/home/debianserver/whatsapp-bot-watchdog/whatsapp_bot_watchdog.py
+  ```
 - **Diagnóstico (receta del 27-sep):** ejecuciones y payloads viven en el SQLite de n8n (`/home/node/.n8n/database.sqlite` dentro del contenedor — copiar DB+`-wal`+`-shm` con `docker cp` o los datos parecen viejos). El campo `data` de `execution_data` es JSON flattened con referencias tipo puntero y cíclicas. Chats de Evolution: `POST /chat/findChats/yosoy222_bot` y `POST /chat/findMessages/yosoy222_bot` con `{"remoteJid": ..., "limit": N}` (GET da 404). Para ejercitar el camino del staff sin clientes reales: POST sintético a `http://localhost:5678/webhook/yosoy222-whatsapp` con el jid de un agente como emisor y la tienda como cliente.
+- **Watchdog (27-sep):** `scripts/whatsapp_bot_watchdog.py` (fuente canónica en el repo; desplegado en `debianm700:~/whatsapp-bot-watchdog/`). Cada 15 min (cron) verifica: (1) la instancia Evolution sigue `open`; (2) **todo mensaje entrante del bot tiene su ejecución en n8n** — Evolution persiste los mensajes en su Postgres aunque el webhook no entregue, así que un mensaje posterior a la última ejecución delata un webhook muerto aunque la conexión siga `open` (correlación por timestamp: Evolution guarda jid `@lid` y n8n recibe el jid telefónico). Alerta `🚨` al **topic 393** de Telegram (el mismo grupo del watchdog del sitio) con cooldown de 4h por problema y aviso `✅ RECUPERADO` al resolverse; auto-rota su log. Prueba de alertas sin caída real: `/tmp/drill_alertas.py` en debianm700 (simula conexión caída; verificado: entrega + cooldown + recuperación).
 - **Regla crítica de n8n 2.x:** los Code nodes corren en task runner aislado **SIN `process.env`** — usar siempre `$env.*` (secretos: `EVOLUTION_API_KEY`, `SUPABASE_FN_URL`, `SUPABASE_BOT_KEY` en el `.env` del stack). Los `try/catch` silenciosos esconden bugs de entorno: visibilizar el error en el item fue la clave del diagnóstico.
 
 ---
