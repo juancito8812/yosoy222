@@ -60,15 +60,26 @@ jobs:
           sleep 2
           curl -sf -o /dev/null http://127.0.0.1:8080/ || { echo "servidor local no respondió"; exit 1; }
 
-      - name: Run Lighthouse (mobile)
+      - name: Run Lighthouse (mobile, con reintentos)
         run: |
-          npx -y lighthouse@12 "http://127.0.0.1:8080/" \
-            --quiet \
-            --chrome-path="$(command -v google-chrome)" \
-            --chrome-flags="--headless=new --no-sandbox --disable-dev-shm-usage" \
-            --output=json --output-path=/tmp/lh-report.json \
-            --only-categories=performance,seo,accessibility,best-practices \
-            --max-wait-for-load=60000
+          set -e
+          for intento in 1 2 3; do
+            echo "::group::Lighthouse intento $intento"
+            if npx -y lighthouse@12 "http://127.0.0.1:8080/" \
+              --quiet \
+              --chrome-path="$(command -v google-chrome)" \
+              --chrome-flags="--headless=new --no-sandbox --disable-dev-shm-usage" \
+              --output=json --output-path=/tmp/lh-report.json \
+              --only-categories=performance,seo,accessibility,best-practices \
+              --max-wait-for-load=60000; then
+              echo "::endgroup::"
+              if [ -s /tmp/lh-report.json ]; then break; fi
+            fi
+            echo "::endgroup::"
+            rm -f /tmp/lh-report.json
+            sleep 5
+            if [ "$intento" = "3" ]; then echo "Lighthouse fallo 3 veces"; exit 1; fi
+          done
           ls -la /tmp/lh-report.json
 
       # Umbrales en scripts/lighthouse_check.py; baseline y contexto en
