@@ -1231,6 +1231,64 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 }
 
 /* ============================================
+   SECCIÓN LEGAL (shell del sitio)
+   Enlaces del pie, aceptación en el checkout y aviso informativo
+   de cookies (no bloqueante). Los documentos legales en sí viven
+   en legal/ con sus propios estilos (css/legal.css).
+   ============================================ */
+.footer-legal {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.35rem 1.25rem;
+  margin-bottom: 0.75rem;
+  font-size: 0.78rem;
+}
+.footer-legal a { color: var(--text-muted); }
+.footer-legal a:hover { color: var(--accent); text-decoration: underline; }
+
+.cart-legal {
+  font-size: 0.7rem;
+  color: var(--text-faint);
+  line-height: 1.5;
+  margin-bottom: 0.6rem;
+}
+.cart-legal a { color: var(--text-muted); text-decoration: underline; }
+.cart-legal a:hover { color: var(--accent); }
+
+.legal-notice {
+  position: fixed;
+  left: 16px;
+  bottom: 16px;
+  z-index: 60; /* por debajo del carrito (200) y del lightbox (300) */
+  max-width: min(430px, calc(100vw - 110px)); /* deja libre el flotante de WhatsApp */
+  background: var(--bg-card);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius, 14px);
+  box-shadow: 0 10px 30px rgba(59, 49, 37, 0.12);
+  padding: 0.9rem 1rem;
+}
+.legal-notice p {
+  font-size: 0.78rem;
+  line-height: 1.55;
+  color: var(--text-muted);
+  margin-bottom: 0.7rem;
+}
+.legal-notice a { color: var(--accent); text-decoration: underline; }
+.legal-notice-accept {
+  background: var(--accent);
+  color: #fff;
+  border: 0;
+  border-radius: 999px;
+  padding: 0.45rem 1.1rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+}
+.legal-notice-accept:hover { background: var(--accent-hover); }
+
+/* ============================================
    SCROLLBAR
    ============================================ */
 ::-webkit-scrollbar { width: 5px; }

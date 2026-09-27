@@ -2,7 +2,7 @@
 
 > Tienda online de velas artesanales, pulseras, collares, franelas y accesorios.
 > Desplegada en **GitHub Pages** con dominio personalizado **yosoy222.com** bajo **Cloudflare**.
-> **PWA instalable** con soporte offline completo (Cache v42), catálogo prerenderizado para SEO (Schema.org), panel privado de analítica con Luxury Glassmorphism y backend en la nube (Supabase Cloud + GA4) y suite de pruebas automatizadas en CI/CD.
+> **PWA instalable** con soporte offline completo (Cache v43), catálogo prerenderizado para SEO (Schema.org), panel privado de analítica con Luxury Glassmorphism y backend en la nube (Supabase Cloud + GA4) y suite de pruebas automatizadas en CI/CD.
 
 **Repositorio:** https://github.com/juancito8812/yosoy222  
 **URL de producción:** https://yosoy222.com  
@@ -22,21 +22,22 @@
 7. [Cómo agregar un producto](#cómo-agregar-un-producto)
 8. [Cómo eliminar un producto](#cómo-eliminar-un-producto)
 9. [Procesamiento de imágenes (bordes blancos)](#procesamiento-de-imágenes-bordes-blancos)
-10. [PWA: instalar y funcionamiento offline (Cache v42)](#pwa-instalar-y-funcionamiento-offline-cache-v42)
+10. [PWA: instalar y funcionamiento offline (Cache v43)](#pwa-instalar-y-funcionamiento-offline-cache-v43)
 11. [Seguridad aplicada (Audit & Hardening)](#seguridad-aplicada-audit--hardening)
 12. [Calidad, Confiabilidad y Accesibilidad](#calidad-confiabilidad-y-accesibilidad)
 13. [Rendimiento y Core Web Vitals](#rendimiento-y-core-web-vitals)
 14. [SEO, Indexabilidad y Datos Estructurados](#seo-indexabilidad-y-datos-estructurados)
 15. [Suite de Tests y CI/CD (GitHub Actions)](#suite-de-tests-y-cicd-github-actions)
 16. [Bot de WhatsApp (n8n + Evolution API)](#bot-de-whatsapp-n8n--evolution-api)
-17. [Ramas de trabajo y política de merge](#ramas-de-trabajo-y-política-de-merge)
-18. [Deploy a GitHub Pages y Cloudflare](#deploy-a-github-pages-y-cloudflare)
-19. [Configurar dominio personalizado](#configurar-dominio-personalizado)
-20. [Tabla de productos completa](#tabla-de-productos-completa)
-21. [Guía de estilos CSS](#guía-de-estilos-css)
-22. [Estructura de archivos](#estructura-de-archivos)
-23. [Comandos git útiles](#comandos-git-útiles)
-24. [Troubleshooting](#troubleshooting)
+17. [Legal: términos, privacidad, envíos y devoluciones](#legal-términos-privacidad-envíos-y-devoluciones)
+18. [Ramas de trabajo y política de merge](#ramas-de-trabajo-y-política-de-merge)
+19. [Deploy a GitHub Pages y Cloudflare](#deploy-a-github-pages-y-cloudflare)
+20. [Configurar dominio personalizado](#configurar-dominio-personalizado)
+21. [Tabla de productos completa](#tabla-de-productos-completa)
+22. [Guía de estilos CSS](#guía-de-estilos-css)
+23. [Estructura de archivos](#estructura-de-archivos)
+24. [Comandos git útiles](#comandos-git-útiles)
+25. [Troubleshooting](#troubleshooting)
 
 ---
 
@@ -56,7 +57,7 @@
   - Sanitización anti-prototype smuggling en la serialización.
 - **Checkout por WhatsApp:** Mensaje preformateado e itemizado (producto × cantidad — subtotal, y total final en USD).
 - **Número real de WhatsApp centralizado:** `+58 412 648 1628` — única fuente en `js/app.js` (`const WHATSAPP = '584126481628'`); todos los botones y enlaces del sitio se sincronizan con este valor.
-- **PWA Instalable (Cache v42):** Estrategia Network-First para navegación HTML (contenido siempre fresco con conexión) y Stale-While-Revalidate para recursos estáticos; precaching enfocado en shell, dashboard, iconos HD y miniaturas (`images/thumbs/`, incluidas las variantes de color del álbum).
+- **PWA Instalable (Cache v43):** Estrategia Network-First para navegación HTML (contenido siempre fresco con conexión) y Stale-While-Revalidate para recursos estáticos; precaching enfocado en shell, dashboard, iconos HD y miniaturas (`images/thumbs/`, incluidas las variantes de color del álbum).
 - **Dashboard Privado de Analítica y Conversión:** Panel de control en `/dashboard.html` con estética *Luxury Glassmorphism*, gráficos de tendencias en curvas Bezier, desglose de canales (Instagram, TikTok, Facebook, Google, WhatsApp), embudo de conversión paso a paso, desglose por dispositivos, ranking de popularidad de productos, actividad en tiempo real, exportación CSV, sincronización en tiempo real con **Supabase Cloud** (`gkekolsttfbiegyhvejy.supabase.co`) con ingesta vía **Edge Function** (`track`, sanitización whitelist server-side + rate limit), integración oficial con **Google Analytics 4** (`G-Y9R0B5NH75`, **carga diferida**: tras la primera interacción o a los 8s de fallback — nunca compite en el arranque) y autenticación criptográfica segura con Web Crypto SHA-256 salted hash y rate-limiting anti-fuerza bruta.
 - **Seguridad integral:**
   - Content Security Policy (CSP) estricto.
@@ -106,35 +107,55 @@ yosoy222/
 │   ├── Carrito drawer (overlay lateral accesible con trap de foco)
 │   └── Lightbox modal (role="dialog" con teclado Esc/Flechas y focus trap)
 │
+├── legal/                         ← Documentos legales públicos (v38)
+│   ├── terminos.html              ← Términos y condiciones de compra
+│   ├── privacidad.html            ← Política de privacidad y cookies
+│   ├── envios.html                ← Envíos y entregas
+│   └── devoluciones.html          ← Devoluciones y garantías
+│                                     ⚠️ Los datos del vendedor siguen marcados con
+│                                     `[COMPLETAR: …]`: ver «Datos pendientes» abajo
+│
 ├── css/
 │   ├── style.css                  ← Estilos completos de la tienda (paleta tierra crema, WCAG AA)
+│   ├── legal.css                  ← Estilos de los documentos legales (solo los carga legal/)
 │   └── dashboard.css              ← Estilos Luxury Glassmorphism para panel de analítica
 │
 ├── js/
 │   ├── app.js                     ← Lógica de la tienda: catálogo inmutable, carrito blindado, filtros, lightbox con álbum de variantes
 │   ├── variants.json              ← Índice de variantes de color por producto (generado por scripts/build_variants.py)
 │   ├── analytics.js               ← Motor de telemetría: GA4 (diferido) + Supabase Cloud vía Edge Function + localStorage
+│   ├── legal.js                   ← Aviso informativo de cookies (no bloqueante, se recuerda si se descarta)
 │   └── dashboard.js               ← Motor del Dashboard: autenticación SHA-256, gráficos Bezier en Canvas
 │
-├── sw.js                          ← Service Worker PWA (Cache v42)
+├── sw.js                          ← Service Worker PWA (Cache v43)
 │   ├── Estrategia Network-First con fallback a Cache para navegaciones (HTML siempre fresco)
 │   ├── Estrategia Stale-While-Revalidate con ignoreSearch para recursos estáticos
 │   ├── Precaching enfocado en miniaturas de imágenes para instalación ultrarrápida
 │   └── Activación con limpieza automática de versiones de caché anteriores
 │
 ├── tests/
-│   ├── cart_and_filters.test.mjs  ← Suite de 16 pruebas unitarias y de seguridad
-│   └── variants.test.mjs          ← Validación de la convención de variantes de color (build_variants.py)
-│       ├── Cálculos matemáticos y subtotales
-│       ├── Filtrado por categoría y búsqueda textual insensible a mayúsculas
-│       ├── Migración de datos legados y expiración TTL de 30 días
-│       ├── Resistencia ante JSON corrupto, NaN e inyecciones maliciosas
-│       └── Protección anti-prototype smuggling
+│   ├── cart_and_filters.test.mjs  ← 13 pruebas del sitio: carrito, filtros y seguridad
+│   │   ├── Cálculos matemáticos y subtotales
+│   │   ├── Filtrado por categoría y búsqueda textual insensible a mayúsculas
+│   │   ├── Migración de datos legados y expiración TTL de 30 días
+│   │   ├── Resistencia ante JSON corrupto, NaN e inyecciones maliciosas
+│   │   └── Protección anti-prototype smuggling
+│   ├── bot_relay.test.mjs         ← 11 pruebas del bot: comandos del staff, atender/fin y relay
+│   │   ├── Parser de comandos (`atender`, `fin`, `>` y nota interna)
+│   │   ├── Toma y cierre del hilo (estado puente ↔ IA)
+│   │   ├── Reenvío de la respuesta humana saliendo del número principal
+│   │   └── Guardas: destinatario inválido, sin asignación, fallo de envío
+│   ├── legal_pages.test.mjs       ← 8 pruebas de las páginas legales
+│   │   ├── Existencia, enlaces cruzados y vuelta a la tienda
+│   │   ├── Cumplimiento de la CSP (nada inline) y versión de caché vigente
+│   │   ├── Marcadores `[COMPLETAR]` siempre visibles y aviso de cookies
+│   │   └── Presencia en el precache del SW y en el sitemap
+│   └── variants.test.mjs          ← 3 pruebas de la convención de variantes de color (build_variants.py)
 │
 ├── .github/
 │   ├── dependabot.yml             ← Actualizaciones automáticas para GitHub Actions y npm
 │   └── workflows/
-│       ├── ci.yml                 ← CI automático: ejecuta las 16 pruebas en cada push/PR
+│       ├── ci.yml                 ← CI automático: ejecuta las 35 pruebas en cada push/PR
 │       └── purge-cache.yml        ← Despliegue: Smoke test (origen 200) + Purge Cloudflare
 │
 ├── scripts/
@@ -169,8 +190,8 @@ yosoy222/
 | **Frontend** | HTML5 semántico | Prerenderizado estático, ARIA interactivo, microdatos Schema.org |
 | **Estilos** | CSS3 Vanilla | Custom properties (:root), Grid, Flexbox, sin preprocesadores |
 | **Interactividad** | ES6+ Vanilla | Zero runtime dependencies, carga diferida (`defer`), módulos nativos |
-| **Pruebas** | Node.js Test Runner | `node --test` nativo (16 pruebas unitarias/seguridad sin librerías pesadas) |
-| **PWA & Offline** | Service Worker API | Cache v42, Network-First en navegación, manifest standalone |
+| **Pruebas** | Node.js Test Runner | `node --test` nativo (35 pruebas: sitio, bot, legales y variantes, sin librerías pesadas) |
+| **PWA & Offline** | Service Worker API | Cache v43, Network-First en navegación, manifest standalone |
 | **SEO & Datos** | JSON-LD / XML | Schema.org Store/ItemList, robots.txt, sitemap.xml canónico |
 | **Hosting & CI/CD** | GitHub Pages + Actions | Despliegue automático, CI de pruebas, Dependabot activo |
 | **CDN & DNS** | Cloudflare | Proxy edge, Cache Rules HTML (TTL 5 min), Transform Rules de seguridad |
@@ -198,7 +219,7 @@ npx serve .
 
 ### 2. Ejecutar la suite de pruebas automatizadas
 
-El proyecto incluye 16 pruebas unitarias, de seguridad y de convención de imágenes con el runner nativo de Node.js:
+El proyecto incluye 35 pruebas con el runner nativo de Node.js (13 del sitio + 11 del bot + 8 del bloque legal + 3 de variantes de imagen):
 
 ```bash
 # Ejecutar con npm
@@ -319,11 +340,11 @@ Las imágenes de catálogo y miniaturas han sido procesadas para eliminar márge
 
 ---
 
-## PWA: INSTALAR Y FUNCIONAMIENTO OFFLINE (CACHE V42)
+## PWA: INSTALAR Y FUNCIONAMIENTO OFFLINE (CACHE V43)
 
 La PWA cumple con todos los estándares modernos de instalación y navegación offline:
 
-### Arquitectura de Caché en `sw.js` (Cache v42)
+### Arquitectura de Caché en `sw.js` (Cache v43)
 1. **Navegación Network-First:**
    Para solicitudes de documentos HTML (`event.request.mode === 'navigate'`), el Service Worker consulta primero la red para obtener la versión más reciente del catálogo y, en caso de estar desconectado o con señal inestable, responde con la copia en caché.
 2. **Stale-While-Revalidate para Recursos Estáticos:**
@@ -331,11 +352,11 @@ La PWA cumple con todos los estándares modernos de instalación y navegación o
 3. **Precache Integral & Resiliencia Offline:**
    Durante la instalación, el Service Worker descarga de forma controlada el shell de la aplicación, el panel de dashboard y las miniaturas del catálogo (141 archivos: 44 portadas + 95 variantes de color + 2 hero, en lotes de 6), garantizando que la navegación visual funcione offline desde el primer instante sin agotar datos móviles del usuario. Las variantes de color del álbum (`js/variants.json`) entran en el precache en cuanto la página las carga, también vía mensaje `PRECACHE_IMAGES` (idempotente por marcador dentro de la caché versionada) — sin ventana de pérdida aunque el SW se active sin pestañas abiertas. Las imágenes grandes del lightbox se descargan y cachean bajo demanda.
 4. **Invalidación Inmediata de Versiones Anteriores:**
-   Al publicarse una nueva versión (`CACHE_NAME = 'yosoy222-v37'`), el evento `activate` purga de forma determinista cualquier almacenamiento obsoleto y el evento `controllerchange` refresca la vista del catálogo automáticamente.
+   Al publicarse una nueva versión (`CACHE_NAME = 'yosoy222-v38'`), el evento `activate` purga de forma determinista cualquier almacenamiento obsoleto y el evento `controllerchange` refresca la vista del catálogo automáticamente.
 5. **Iconos PWA de Alta Definición:**
    10 variantes (incluyendo formatos maskable con padding seguro del 15% para Android/iOS sin franjas negras) validadas con `scripts/verify_icons.py`.
 
-### UX Offline (Cache v42)
+### UX Offline (Cache v43)
 - **Lightbox con degradación elegante:** si la imagen ampliada (`images/catalog/`) no está en caché y la red no responde, el manejador `error` intercambia automáticamente la miniatura precacheada y muestra una nota informativa; al restablecerse la conexión, la imagen grande vuelve a cargar y la nota desaparece sola.
 - **Checkout WhatsApp consciente de la red:** con el navegador offline, el panel del carrito muestra un aviso no bloqueante ("tu carrito queda guardado") que se elimina al reconectar y re-renderizar.
 - **Fuentes asíncronas (v33):** el CSS de Google Fonts carga con `media="print"` + flip en `js/font-flip.js` (el texto pinta en fallback serif y hace swap) — FCP ×8 más rápido medido en bisect controlado; combinado con GA4 diferido mantiene TBT 0ms.
@@ -372,8 +393,20 @@ El checkout de la tienda apunta al número oficial `+58 412 648 1628`, que atien
   - **Delay humano 2-14s** antes de responder al cliente (anti-baneo); avisos internos instantáneos.
   - **Pedidos:** validación server-side contra catálogo empotrado con precios, cálculo de total USD, y aviso "📦 Nuevo pedido" a los 2 agentes **con los últimos 3 turnos de contexto**.
   - **Escalada (handoff):** confirmación al cliente + avisos simultáneos a Agente 1 (`+58 412 992 2399`) y Agente 2 (`+58 424 216 2538`).
-  - **Modo puente:** tras pedido/handoff la sesión pasa a `puente` — el bot calla, el staff atiende con `atender <número>`; pregunta comercial devuelve el hilo al bot (reset), mensaje no-comercial se reenvía al staff; `fin` cierra la atención.
+  - **Modo puente:** tras pedido/handoff la sesión pasa a `puente` — el bot calla; pregunta comercial devuelve el hilo al bot (reset) y mensaje no-comercial se reenvía a los agentes.
+  - **Respuesta del staff desde el número principal:** el agente **no sale de su WhatsApp personal** — escribe al número de la tienda y el bot reenvía el texto **como número oficial**. Cada reenvío confirma el destinatario al agente y deja el mensaje en el historial del cliente (la IA conserva el contexto si el hilo vuelve a ella).
   - **Anti-baneo:** el bot nunca inicia conversación, sin enlaces en respuestas, filtro de grupos `@g.us`.
+- **Comandos del staff** (el agente los escribe **desde su WhatsApp personal** al número de la tienda; el número oficial es el que responde al cliente):
+
+  | El agente escribe | Qué pasa |
+  |---|---|
+  | `>Hola Juan, tu pedido ya salió ✨` | Se reenvía al cliente que tenga asignado — **sale del número oficial** |
+  | `>584126481628 Hola Juan` | Se reenvía a ese cliente explícitamente (útil con varios hilos abiertos) |
+  | `atender 584126481628` | Toma el hilo: fija el cliente asignado y pone la sesión del cliente en `puente` (el bot calla) |
+  | `fin` / `fin 584126481628` | Libera el hilo: la sesión del cliente vuelve a `IA` y el bot retoma la conversación |
+  | Cualquier otro texto | Nota interna entre agentes: no se envía a ningún cliente |
+
+  Cada `>mensaje` produce un `✅ Enviado a <número> desde el número de la tienda` de vuelta al agente (su mensaje no aparece en el chat del agente con la tienda) y un aviso si no se puede enviar. El reenvío es **solo texto**: para fotos, audios o notas de voz la alternativa es vincular WhatsApp Web/Escritorio al número principal (consume uno de los 4 dispositivos vinculados; el teléfono del chip debe estar a mano para el QR).
 - **Despliegue del workflow (reproducible):**
   ```bash
   # 1. Backup del workflow vivo en debianm700
@@ -391,12 +424,33 @@ El checkout de la tienda apunta al número oficial `+58 412 648 1628`, que atien
 
 ---
 
+## LEGAL: TÉRMINOS, PRIVACIDAD, ENVÍOS Y DEVOLUCIONES
+
+El sitio publica cuatro documentos en `/legal/` (estáticos, indexables y en el `sitemap.xml`), enlazados desde el pie de la portada y entre sí:
+
+| Documento | Ruta | Cubre |
+|---|---|---|
+| Términos y condiciones | `/legal/terminos.html` | Cómo funciona la compra por WhatsApp (el sitio no cobra en línea), precios y pagos, naturaleza artesanal de los productos, disponibilidad, cancelaciones, uso permitido y ley aplicable |
+| Política de privacidad y cookies | `/legal/privacidad.html` | Qué datos se tratan (conversación, pedido, datos técnicos), cookies de medición `_ga`/`_gid`, almacenamiento local del carrito, terceros (Google, Supabase, Cloudflare, Meta, geojs.io), plazos y derechos |
+| Envíos y entregas | `/legal/envios.html` | Delivery, encomienda nacional y retiro; plazos, costos, embalaje y datos de entrega |
+| Devoluciones y garantías | `/legal/devoluciones.html` | Cómo reportar, qué cubre y qué no, cómo se resuelve y cancelaciones |
+
+**Aviso de cookies:** `js/legal.js` muestra una tarjeta informativa no bloqueante (abajo a la izquierda, sin tapar el flotante de WhatsApp) con enlace a la política. Al pulsar «Entendido» se recuerda en `localStorage` (`yosoy222_cookie_notice`) y no vuelve a aparecer. No bloquea la analítica: es informativo, no un sistema de consentimiento previo.
+
+**Aceptación en el checkout:** el carrito muestra «Al continuar aceptas los Términos y condiciones y la Política de privacidad» justo antes del botón de WhatsApp.
+
+> ⚠️ **Datos pendientes de completar:** las páginas marcan en amarillo cada dato que solo puede aportar el dueño (razón social, RIF, domicilio fiscal, correo, zonas y plazos de entrega, plazos de garantía…). Están listados en `.agents/MEMORY.md` («Datos pendientes del bloque legal»). Hasta completarlos, los documentos son plantillas completas pero sin identificar al vendedor.
+
+> ✅ **Publicado en producción (27 sep 2026):** commit `fe63284` — CI Tests, Pages build y Purge Cloudflare en verde; las 4 páginas verificadas por HTTP con los datos del vendedor rellenados (26 sep) y cero marcadores `[COMPLETAR]`. El test-guard exige 0 marcadores y identidad verificable, así que ninguna página puede volver a publicarse como borrador.
+
+---
+
 ## RAMAS DE TRABAJO Y POLÍTICA DE MERGE
 
 | Rama | Estado | Propósito |
 |------|--------|-----------|
 | `main` | **Producción** | Todo push despliega automáticamente a yosoy222.com (CI + Pages + Purge). Única rama protegida por el pipeline completo. |
-| `redesign-ritual` | **En desarrollo — NO mergeada (v42, en `origin` desde el 25-sep)** | Rediseño ritualista (fondo beige #F3EDE4, tipografía serif, taxonomía velas/melts/dijes/franelas) con álbum de variantes de color de velas montado (24-sep). Su estado completo vive en `BRANCH_STATUS.md` en la raíz de la rama. |
+| `redesign-ritual` | **QA gate aprobado — NO mergeada (v43, en `origin`)** | Rediseño ritualista (fondo beige #F3EDE4, tipografía serif, taxonomía velas/melts/dijes-pulseras/franelas). Al 22-sep: QA gate + Lighthouse (performance idéntica 92/99). Al 24-sep: álbum de variantes (100 fotos, 22 productos). Al 25-sep: respaldo en `origin` + 14 portadas corregidas por el dueño (`1c87a58`). Al 26-sep: textos de portada ajustados + `imgVer` 13. Al 27-sep: **bloque legal v38 integrado desde main (merge)** — 3 fotos repetidas fuera y 4 álbumes reordenados (`78f815f`, `3b64906`). **Único pendiente: aprobación visual final del dueño.** Estado completo en `BRANCH_STATUS.md` de la rama. |
 
 > 🔒 **POLÍTICA DE MERGE (decisión del dueño, inviolable):** `redesign-ritual` **solo se mergea a `main` cuando el dueño lo autorice explícitamente Y la rama esté 100% lista** (QA gate completo: barrido visual anti-rosado, auditoría móvil 375px, tests en verde, sync con main resuelto, y visto bueno del cliente). Ningún agente debe mergear, abrir PR de merge ni pushear a main contenido de la rama sin esa autorización explícita.
 
@@ -625,9 +679,11 @@ Tokens principales en `:root` de [`css/style.css`](css/style.css):
 | `js/analytics.js` | Motor de telemetría: GA4 diferido, ingesta vía Edge Function y fallback localStorage |
 | `js/dashboard.js` | Motor del Dashboard: autenticación, datos (Edge Function/local) y estado |
 | `js/dashboard-view.js` | Vista del Dashboard (pura): gráficos Bezier en Canvas y render de KPIs/tablas |
-| `sw.js` | Service Worker (Cache v42, Network-First navegación) |
+| `sw.js` | Service Worker (Cache v43, Network-First navegación) |
 | `manifest.json` | Configuración PWA e iconos |
-| `tests/cart_and_filters.test.mjs` | Suite de 16 pruebas unitarias y de seguridad |
+| `tests/cart_and_filters.test.mjs` | 13 pruebas del sitio: carrito, filtros y seguridad |
+| `tests/bot_relay.test.mjs` | 11 pruebas del bot: comandos del staff, atender/fin y relay desde el número principal |
+| `tests/legal_pages.test.mjs` | 8 pruebas del bloque legal: enlaces, CSP, versión de caché, precache y sitemap |
 | `tests/variants.test.mjs` | Validación de la convención de variantes de color (`build_variants.py --check`) |
 | `.github/workflows/` | Automatización de CI y purga de caché con smoke test |
 | `.github/dependabot.yml` | Configuración de actualización de dependencias y acciones |
@@ -678,4 +734,4 @@ gh run list --limit 3
 
 ---
 
-*Documentación técnica actualizada al 25 de septiembre de 2026. Proyecto 100% verificado en pruebas unitarias (16/16 pasadas), CI/CD, auditoría de producción, bot de WhatsApp verificado E2E y despliegue activo en https://yosoy222.com. La rama `redesign-ritual` (v42, con álbum de variantes) está respaldada en `origin` y NO se mergea a main hasta autorización expresa del dueño.*
+*Documentación técnica actualizada al 27 de septiembre de 2026. Proyecto 100% verificado en pruebas unitarias (35/35 pasadas), CI/CD, auditoría de producción, bot de WhatsApp verificado E2E y despliegue activo en https://yosoy222.com — producción en Cache v38 con el bloque legal publicado (`/legal`, commit `fe63284`). La rama `redesign-ritual` (v43 con el legal integrado) está respaldada en `origin` y NO se mergea a main hasta autorización expresa del dueño.*
