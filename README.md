@@ -450,7 +450,7 @@ El sitio publica cuatro documentos en `/legal/` (estáticos, indexables y en el 
 | Rama | Estado | Propósito |
 |------|--------|-----------|
 | `main` | **Producción** | Todo push despliega automáticamente a yosoy222.com (CI + Pages + Purge). Única rama protegida por el pipeline completo. |
-| `redesign-ritual` | **QA gate aprobado — NO mergeada (v43, en `origin`)** | Rediseño ritualista (fondo beige #F3EDE4, tipografía serif, taxonomía velas/melts/dijes-pulseras/franelas). Al 22-sep: QA gate + Lighthouse (performance idéntica 92/99). Al 24-sep: álbum de variantes (100 fotos, 22 productos). Al 25-sep: respaldo en `origin` + 14 portadas corregidas por el dueño (`1c87a58`). Al 26-sep: textos de portada ajustados + `imgVer` 13. Al 27-sep: **bloque legal v38 integrado desde main (merge)** — 3 fotos repetidas fuera y 4 álbumes reordenados (`78f815f`, `3b64906`). **Único pendiente: aprobación visual final del dueño.** Estado completo en `BRANCH_STATUS.md` de la rama. |
+| `redesign-ritual` | **MERGEADA a `main` con autorización expresa del dueño (27-sep, `ee9c3b9`) — producción en v44** | Rediseño ritualista (fondo beige #F3EDE4, tipografía serif, taxonomía velas/melts/dijes-pulseras/franelas). Historia: álbum de variantes (22 productos / 95 fotos), 14 portadas corregidas (`1c87a58`), textos de portada ajustados, bloque legal integrado (`7badf12`) y fixes finales (botón WhatsApp del lightbox visible + wordmark 222 a altura de mayúsculas, bump v44, `ce2fdf0`). La rama permanece en `origin` como registro histórico. |
 
 > 🔒 **POLÍTICA DE MERGE (decisión del dueño, inviolable):** `redesign-ritual` **solo se mergea a `main` cuando el dueño lo autorice explícitamente Y la rama esté 100% lista** (QA gate completo: barrido visual anti-rosado, auditoría móvil 375px, tests en verde, sync con main resuelto, y visto bueno del cliente). Ningún agente debe mergear, abrir PR de merge ni pushear a main contenido de la rama sin esa autorización explícita.
 
@@ -734,4 +734,4 @@ gh run list --limit 3
 
 ---
 
-*Documentación técnica actualizada al 27 de septiembre de 2026. Proyecto 100% verificado en pruebas unitarias (35/35 pasadas), CI/CD, auditoría de producción, bot de WhatsApp verificado E2E y despliegue activo en https://yosoy222.com — producción en Cache v38 con el bloque legal publicado (`/legal`, commit `fe63284`). La rama `redesign-ritual` (v43 con el legal integrado) está respaldada en `origin` y NO se mergea a main hasta autorización expresa del dueño.*
+*Documentación técnica actualizada al 27 de septiembre de 2026. Proyecto 100% verificado en pruebas unitarias (35/35 pasadas), CI/CD, auditoría de producción, bot de WhatsApp verificado E2E y despliegue activo en https://yosoy222.com — producción en **Cache v44** con el rediseño ritualista mergeado desde `redesign-ritual` con autorización expresa del dueño (commit `ee9c3b9`), que incluye el bloque legal publicado (`/legal`). La rama queda respaldada en `origin` como registro histórico.*

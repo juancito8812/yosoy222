@@ -155,4 +155,4 @@ Antes de reportar una tarea como completa:
 
 ---
 
-*Documento actualizado al 27 de septiembre de 2026 (merge `main` → rama: bloque legal v38 integrado). Producción en **v38**: el bloque legal está publicado en https://yosoy222.com/legal (commit `fe63284`, CI Tests + Pages + Purge Cloudflare en verde). La rama `redesign-ritual` va en v43 (álbum de variantes + portadas corregidas + ajustes del 26-sep + legal integrado) — merge a main solo con autorización expresa del dueño (regla 9).*
+*Documento actualizado al 27 de septiembre de 2026. Producción en **v44**: el rediseño ritualista de la rama `redesign-ritual` fue **mergeado a main con autorización expresa del dueño** (commit `ee9c3b9`) — álbumes de variantes (22 productos / 95 fotos), textos de portada corregidos, bloque legal integrado, botón WhatsApp del lightbox siempre visible y wordmark 222 a altura de mayúsculas (35/35 pruebas, CI Tests + Pages + Purge Cloudflare en verde). La rama permanece en `origin` como registro histórico.*
