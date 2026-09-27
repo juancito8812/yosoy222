@@ -31,8 +31,10 @@
   --accent-glow: rgba(133,79,25,0.16);
 
   /* Functional */
-  --whatsapp: #25d366;
-  --whatsapp-hover: #1fbe5a;
+  /* Verde oscuro oficial de WhatsApp: blanco encima alcanza 7.88:1 (AAA),
+     corrigiendo el único fallo de accesibilidad de la auditoría Lighthouse. */
+  --whatsapp: #075e36;
+  --whatsapp-hover: #06512d;
   --danger: #c0392b;
 
   /* Layout */
@@ -105,7 +107,7 @@ em { font-style: italic; color: var(--gold-matte); font-family: 'Playfair Displa
 .btn-ghost:hover { border-color: var(--border-strong); color: var(--text); }
 
 .btn-whatsapp { background: var(--whatsapp); color: #fff; }
-.btn-whatsapp:hover { background: var(--whatsapp-hover); transform: translateY(-1px); box-shadow: 0 6px 20px rgba(37,211,102,0.3); }
+.btn-whatsapp:hover { background: var(--whatsapp-hover); transform: translateY(-1px); box-shadow: 0 6px 20px rgba(7,94,54,0.3); }
 
 .btn-full { width: 100%; }
 
@@ -959,11 +961,11 @@ em { font-style: italic; color: var(--gold-matte); font-family: 'Playfair Displa
   background: var(--whatsapp);
   border-radius: 50%; color: #fff;
   display: flex; align-items: center; justify-content: center;
-  box-shadow: 0 4px 16px rgba(37,211,102,0.35);
+  box-shadow: 0 4px 16px rgba(7,94,54,0.35);
   z-index: 50;
   transition: transform var(--duration) var(--ease), box-shadow var(--duration) var(--ease);
 }
-.whatsapp-float:hover { transform: scale(1.08); box-shadow: 0 6px 22px rgba(37,211,102,0.45); }
+.whatsapp-float:hover { transform: scale(1.08); box-shadow: 0 6px 22px rgba(7,94,54,0.45); }
 
 /* ============================================
    FOOTER

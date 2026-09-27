@@ -23,7 +23,8 @@
   --accent-glow: rgba(198, 138, 76, 0.25);
   --accent-subtle: rgba(198, 138, 76, 0.12);
 
-  --whatsapp: #25d366;
+  /* Verde oscuro oficial de WhatsApp: blanco encima alcanza 7.88:1 (AAA). */
+  --whatsapp: #075e36;
   --whatsapp-glow: rgba(37, 211, 102, 0.2);
   --danger: #ef4444;
   --info: #38bdf8;

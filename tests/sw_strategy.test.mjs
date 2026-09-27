@@ -145,12 +145,14 @@ test('navegacion: Network-First sin regresion', async () => {
 
 test('activate: limpia cachés de versiones anteriores', async () => {
   const sw = loadServiceWorker();
+  const versionActual = SW_SRC.match(/CACHE_NAME\s*=\s*'(yosoy222-v\d+)'/)[1];
+  const versionVieja = versionActual.replace(/(\d+)$/, (n) => String(Number(n) - 1));
   const borradas = [];
-  sw.cachesStub.keys = async () => ['yosoy222-v44', 'yosoy222-v45'];
+  sw.cachesStub.keys = async () => [versionVieja, versionActual];
   sw.cachesStub.delete = async (name) => { borradas.push(name); return true; };
 
   const ev = new sw.FakeEvent('activate');
   sw.listeners.activate(ev);
   await Promise.all(ev.waitUntilPromises);
-  assert.deepEqual(borradas, ['yosoy222-v44'], 'debe borrar solo las cachés que no coinciden con CACHE_NAME');
+  assert.deepEqual(borradas, [versionVieja], 'debe borrar solo las cachés que no coinciden con CACHE_NAME');
 });
