@@ -112,7 +112,7 @@
     todos: 'Explora nuestra colección completa de rituales de luz, prendas conscientes y amuletos para tu día a día.',
     velas: 'Piezas únicas elaboradas en cera de soja botánica y aromas envolventes creadas para iluminar tu espacio, armonizar tu energía y acompañar tus momentos de introspección.',
     melts: 'Wax Melts y figuras aromáticas para difusor que desprenden fragancias puras de forma continua para transformar la atmósfera de tu hogar.',
-    franelas: 'Prendas suaves de algodón con afirmaciones conscientes y corte minimalista que visten tu intención diaria.',
+    franelas: 'Prendas suaves con afirmaciones conscientes y corte minimalista que visten tu intención diaria.',
     'dijes-pulseras': 'Amuletos tejidos a mano y joyería en Gold-Filled con piedras naturales para canalizar protección, claridad y serenidad.'
   };
   const catNouns = { vela: 'la vela', melt: 'el wax melt', collar: 'el collar', pulsera: 'la pulsera', franela: 'la franela', otro: 'el amuleto' };
