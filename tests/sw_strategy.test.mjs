@@ -64,6 +64,8 @@ function loadServiceWorker({ initialCache = new Map() } = {}) {
     delete: async (name) => true,
   };
 
+  // URL y console se inyectan porque no son intrínsecos de un contexto vm;
+  // Promise/Date/Math y demás built-ins de ECMAScript sí existen por defecto.
   const sandbox = {
     self: selfStub,
     caches: cachesStub,
@@ -71,7 +73,7 @@ function loadServiceWorker({ initialCache = new Map() } = {}) {
       if (!state.online) throw new Error('offline');
       return makeResponse(state.networkBody);
     },
-    URL, Promise, console, Date, Math,
+    URL, console,
   };
   vm.createContext(sandbox);
   vm.runInContext(SW_SRC, sandbox, { filename: 'sw.js' });
