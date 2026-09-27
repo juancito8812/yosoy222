@@ -18,6 +18,14 @@ Uso:
     python3 scripts/build_variants.py --check    # solo valida, no escribe
 """
 
+import sys
+
+# Los mensajes usan acentos y el símbolo ✗: bajo locales C/POSIX (runners de
+# CI) stdout por defecto es ASCII y print() lanzaría UnicodeEncodeError.
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8")
+    sys.stderr.reconfigure(encoding="utf-8")
+
 import json
 import re
 import sys

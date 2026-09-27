@@ -19,6 +19,13 @@ import re
 import sys
 from pathlib import Path
 
+# El script imprime acentos ("Versión"): bajo locales C/POSIX (runners de CI)
+# stdout por defecto es ASCII y print() lanza UnicodeEncodeError. Forzar UTF-8
+# lo hace independiente del entorno.
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8")
+    sys.stderr.reconfigure(encoding="utf-8")
+
 REPO_ROOT = Path(__file__).resolve().parent.parent
 
 VERSION_RE = re.compile(r"yosoy222-v(\d+)")
