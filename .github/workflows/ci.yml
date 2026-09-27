@@ -34,7 +34,14 @@ jobs:
           exit $status
 
       - name: Verify cache version coherence
-        run: python3 scripts/verify_versions.py
+        run: |
+          python3 scripts/verify_versions.py 2>&1 | tee /tmp/verify.log || true
+          grep -q "OK: versiones" /tmp/verify.log && exit 0
+          # Si llego aqui, fallo: annotation con el detalle
+          tail -20 /tmp/verify.log | while IFS= read -r linea; do
+            echo "::error::verify_versions: $linea"
+          done
+          exit 1
 
   lighthouse:
     runs-on: ubuntu-latest
