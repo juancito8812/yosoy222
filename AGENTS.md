@@ -155,4 +155,4 @@ Antes de reportar una tarea como completa:
 
 ---
 
-*Documento actualizado al 27 de septiembre de 2026. Producción en **v44**: el rediseño ritualista de la rama `redesign-ritual` fue **mergeado a main con autorización expresa del dueño** (commit `ee9c3b9`) — álbumes de variantes (22 productos / 95 fotos), textos de portada corregidos, bloque legal integrado, botón WhatsApp del lightbox siempre visible y wordmark 222 a altura de mayúsculas (35/35 pruebas, CI Tests + Pages + Purge Cloudflare en verde). La rama permanece en `origin` como registro histórico.*
+*Documento actualizado al 27 de septiembre de 2026. Producción en **v45**: el rediseño ritualista de la rama `redesign-ritual` fue **mergeado a main con autorización expresa del dueño** (commit `ee9c3b9`) — álbumes de variantes (22 productos / 95 fotos), textos de portada corregidos, bloque legal integrado, botón WhatsApp del lightbox siempre visible y wordmark 222 a altura de mayúsculas (35/35 pruebas, CI Tests + Pages + Purge Cloudflare en verde). La rama permanece en `origin` como registro histórico.*

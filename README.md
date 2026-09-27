@@ -734,4 +734,4 @@ gh run list --limit 3
 
 ---
 
-*Documentación técnica actualizada al 27 de septiembre de 2026. Proyecto 100% verificado en pruebas unitarias (35/35 pasadas), CI/CD, auditoría de producción, bot de WhatsApp verificado E2E y despliegue activo en https://yosoy222.com — producción en **Cache v44** con el rediseño ritualista mergeado desde `redesign-ritual` con autorización expresa del dueño (commit `ee9c3b9`), que incluye el bloque legal publicado (`/legal`). La rama queda respaldada en `origin` como registro histórico.*
+*Documentación técnica actualizada al 27 de septiembre de 2026. Proyecto 100% verificado en pruebas unitarias (35/35 pasadas), CI/CD, auditoría de producción, bot de WhatsApp verificado E2E y despliegue activo en https://yosoy222.com — producción en **Cache v45** con el rediseño ritualista mergeado desde `redesign-ritual` con autorización expresa del dueño (commit `ee9c3b9`, más revalidación en segundo plano de `.json` en el Service Worker), que incluye el bloque legal publicado (`/legal`). La rama queda respaldada en `origin` como registro histórico.*

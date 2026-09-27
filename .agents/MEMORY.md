@@ -86,7 +86,8 @@
 ## Estado Actual
 
 - **Branch:** `redesign-ritual` (worktree `~/Documentos/programacion/yosoy222-redesign`; producción en `main` v38 con el bloque legal publicado, commit `fe63284`)
-- **Cache version:** yosoy222-v44 (producción `main` desde el merge `ee9c3b9`; rama `redesign-ritual` en `origin` como registro histórico)
+- **Cache version:** yosoy222-v45 (producción `main`; rama `redesign-ritual` en `origin` como registro histórico)
+- **27 sep 2026 — SW endurecido: `.json` en Network-First (cache v45):** el hallazgo del 27-sep (un `variants.json` viejo servido por el SW a navegantes recurrentes) quedó resuelto estructuralmente: el handler de `.js` se amplió a `.js` + `.json` (Network-First con fallback a caché offline), así `variants.json` (fetch `cache:'no-cache'` en app.js) siempre llega fresco cuando hay red y la copia de caché solo se usa sin conexión. Aplica a todo `.json` same-origin (variants, manifest vía fetch interno). Bump v44→v45 en SW/manifest/HTML. Desplegado a producción con CI + Pages + Purge en verde.
 - **Estado del árbol (27 sep):** rama con el bloque legal integrado desde main (merge del 27-sep, tests 35/35); `.image-review/` sin trackear (herramientas temporales de revisión: `series_check.html`, `album_check.html`, `order_check.html` — **no debe commitearse**, se elimina al cerrar la sesión de imágenes)
 - **Rama `redesign-ritual`:** v43 con álbum de variantes de velas, portadas corregidas, legal integrado; **respaldada en `origin/redesign-ritual` (`3b64906` + merge)**; worktree local en `~/Documentos/programacion/yosoy222-redesign`; preview permanente `preview.yosoy222.com` actualizado. Pendientes de la rama: joyas #107–123, 7 fotos sin renombrar y aprobación visual final del dueño
 - **Dashboard:** https://yosoy222.com/dashboard.html

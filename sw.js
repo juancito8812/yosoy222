@@ -3,25 +3,25 @@
    Offline caching for PWA
    ============================================ */
 
-const CACHE_NAME = 'yosoy222-v44';
+const CACHE_NAME = 'yosoy222-v45';
 
 // Assets to precache on install (offline shell + LCP images)
 const PRECACHE_ASSETS = [
   '/',
   '/index.html',
   '/dashboard.html',
-  '/css/style.css?v=44',
-  '/css/dashboard.css?v=44',
-  '/css/legal.css?v=44',
-  '/js/config.js?v=44',
-  '/js/font-flip.js?v=44',
-  '/js/shared.js?v=44',
-  '/js/analytics.js?v=44',
-  '/js/cart.js?v=44',
-  '/js/app.js?v=44',
-  '/js/legal.js?v=44',
-  '/js/dashboard.js?v=44',
-  '/js/dashboard-view.js?v=44',
+  '/css/style.css?v=45',
+  '/css/dashboard.css?v=45',
+  '/css/legal.css?v=45',
+  '/js/config.js?v=45',
+  '/js/font-flip.js?v=45',
+  '/js/shared.js?v=45',
+  '/js/analytics.js?v=45',
+  '/js/cart.js?v=45',
+  '/js/app.js?v=45',
+  '/js/legal.js?v=45',
+  '/js/dashboard.js?v=45',
+  '/js/dashboard-view.js?v=45',
   '/legal/terminos.html',
   '/legal/privacidad.html',
   '/legal/envios.html',
@@ -86,9 +86,9 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // 2. JavaScript files: Network-First with Cache fallback (ensures installed PWA always runs freshest analytics)
+  // 2. JavaScript and JSON files: Network-First with Cache fallback (ensures installed PWA always runs freshest analytics and variant data)
   const url = new URL(event.request.url);
-  if (url.pathname.endsWith('.js')) {
+  if (url.pathname.endsWith('.js') || url.pathname.endsWith('.json')) {
     event.respondWith(
       fetch(event.request)
         .then((networkResponse) => {
