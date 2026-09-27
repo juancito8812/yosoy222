@@ -26,9 +26,11 @@ jobs:
           set -o pipefail
           node --test --test-reporter=tap tests/*.test.mjs 2>&1 | tee /tmp/tests.log
           status=${PIPESTATUS[0]}
+          # grep sale 1 sin matches (caso normal, 0 tests fallidos): bajo set -e
+          # mataria el paso — se neutraliza con || true.
           grep -E "^not ok" /tmp/tests.log | head -10 | while read -r linea; do
             echo "::error::$linea"
-          done
+          done || true
           exit $status
 
       - name: Verify cache version coherence
