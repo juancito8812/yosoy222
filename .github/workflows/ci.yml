@@ -19,7 +19,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
 
       - name: Run unit tests
         run: node --test tests/*.test.mjs
@@ -36,7 +36,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
 
       # Los runners ubuntu-latest traen Chrome preinstalado; se verifica y, si
       # falta, se instala. Sin Chrome no hay auditoría.
