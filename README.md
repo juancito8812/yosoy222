@@ -2,7 +2,7 @@
 
 > Tienda online de velas artesanales, pulseras, collares, franelas y accesorios.
 > Desplegada en **GitHub Pages** con dominio personalizado **yosoy222.com** bajo **Cloudflare**.
-> **PWA instalable** con soporte offline completo (Cache v38), catálogo prerenderizado para SEO (Schema.org), panel privado de analítica con Luxury Glassmorphism y backend en la nube (Supabase Cloud + GA4) y suite de pruebas automatizadas en CI/CD.
+> **PWA instalable** con soporte offline completo (Cache v43), catálogo prerenderizado para SEO (Schema.org), panel privado de analítica con Luxury Glassmorphism y backend en la nube (Supabase Cloud + GA4) y suite de pruebas automatizadas en CI/CD.
 
 **Repositorio:** https://github.com/juancito8812/yosoy222  
 **URL de producción:** https://yosoy222.com  
@@ -22,7 +22,7 @@
 7. [Cómo agregar un producto](#cómo-agregar-un-producto)
 8. [Cómo eliminar un producto](#cómo-eliminar-un-producto)
 9. [Procesamiento de imágenes (bordes blancos)](#procesamiento-de-imágenes-bordes-blancos)
-10. [PWA: instalar y funcionamiento offline (Cache v38)](#pwa-instalar-y-funcionamiento-offline-cache-v38)
+10. [PWA: instalar y funcionamiento offline (Cache v43)](#pwa-instalar-y-funcionamiento-offline-cache-v43)
 11. [Seguridad aplicada (Audit & Hardening)](#seguridad-aplicada-audit--hardening)
 12. [Calidad, Confiabilidad y Accesibilidad](#calidad-confiabilidad-y-accesibilidad)
 13. [Rendimiento y Core Web Vitals](#rendimiento-y-core-web-vitals)
@@ -57,7 +57,7 @@
   - Sanitización anti-prototype smuggling en la serialización.
 - **Checkout por WhatsApp:** Mensaje preformateado e itemizado (producto × cantidad — subtotal, y total final en USD).
 - **Número real de WhatsApp centralizado:** `+58 412 648 1628` — única fuente en `js/app.js` (`const WHATSAPP = '584126481628'`); todos los botones y enlaces del sitio se sincronizan con este valor.
-- **PWA Instalable (Cache v38):** Estrategia Network-First para navegación HTML (contenido siempre fresco con conexión) y Stale-While-Revalidate para recursos estáticos; precaching enfocado en shell, dashboard, iconos HD y miniaturas (`images/thumbs/`).
+- **PWA Instalable (Cache v43):** Estrategia Network-First para navegación HTML (contenido siempre fresco con conexión) y Stale-While-Revalidate para recursos estáticos; precaching enfocado en shell, dashboard, iconos HD y miniaturas (`images/thumbs/`, incluidas las variantes de color del álbum).
 - **Dashboard Privado de Analítica y Conversión:** Panel de control en `/dashboard.html` con estética *Luxury Glassmorphism*, gráficos de tendencias en curvas Bezier, desglose de canales (Instagram, TikTok, Facebook, Google, WhatsApp), embudo de conversión paso a paso, desglose por dispositivos, ranking de popularidad de productos, actividad en tiempo real, exportación CSV, sincronización en tiempo real con **Supabase Cloud** (`gkekolsttfbiegyhvejy.supabase.co`) con ingesta vía **Edge Function** (`track`, sanitización whitelist server-side + rate limit), integración oficial con **Google Analytics 4** (`G-Y9R0B5NH75`, **carga diferida**: tras la primera interacción o a los 8s de fallback — nunca compite en el arranque) y autenticación criptográfica segura con Web Crypto SHA-256 salted hash y rate-limiting anti-fuerza bruta.
 - **Seguridad integral:**
   - Content Security Policy (CSP) estricto.
@@ -86,8 +86,9 @@
 | Accesorios (dijes) | `otro` | 1 | $7.00 |
 | **Total** | | **44** | **$0.17 – $32.00** |
 
-> ✅ **Los 44 productos tienen imagen real** optimizada (sin bordes blancos, thumbs a máx 480px y catalog a máx 900px).  
-> ✅ **Set híbrido:** 36 productos de velas y joyería usan fotos 1000×1000; las 7 franelas (F-01…F-07) conservan sus fotos de modelo reales; Armonía Coco y Armonía Canela disponen de imágenes profesionales.
+> ✅ **Los 44 productos tienen imagen real** optimizada (thumbs a máx 480px y catalog a máx 900px).  
+> ✅ **Álbum por producto (variantes de color):** 24 velas y wax melts renovados con la nueva sesión fotográfica del 24-sep — 100 fotos nuevas montadas en modo guía. 22 productos muestran un álbum de 95 fotos extra en el lightbox (puntitos bajo la descripción; también navegables con ← →), **arrancando con la foto de grupo donde se ven todos los colores juntos**. Convención y validación en `scripts/IMAGE_GUIDE.md` y `scripts/build_variants.py --check`.
+> ✅ **Set híbrido:** las 7 franelas (F-01…F-07) conservan sus fotos de modelo reales; Cruz con Paloma conserva su foto anterior (sin foto nueva en esta sesión).
 
 ---
 
@@ -120,12 +121,13 @@ yosoy222/
 │   └── dashboard.css              ← Estilos Luxury Glassmorphism para panel de analítica
 │
 ├── js/
-│   ├── app.js                     ← Lógica de la tienda: catálogo inmutable, carrito blindado, filtros
+│   ├── app.js                     ← Lógica de la tienda: catálogo inmutable, carrito blindado, filtros, lightbox con álbum de variantes
+│   ├── variants.json              ← Índice de variantes de color por producto (generado por scripts/build_variants.py)
 │   ├── analytics.js               ← Motor de telemetría: GA4 (diferido) + Supabase Cloud vía Edge Function + localStorage
 │   ├── legal.js                   ← Aviso informativo de cookies (no bloqueante, se recuerda si se descarta)
 │   └── dashboard.js               ← Motor del Dashboard: autenticación SHA-256, gráficos Bezier en Canvas
 │
-├── sw.js                          ← Service Worker PWA (Cache v38)
+├── sw.js                          ← Service Worker PWA (Cache v43)
 │   ├── Estrategia Network-First con fallback a Cache para navegaciones (HTML siempre fresco)
 │   ├── Estrategia Stale-While-Revalidate con ignoreSearch para recursos estáticos
 │   ├── Precaching enfocado en miniaturas de imágenes para instalación ultrarrápida
@@ -143,16 +145,17 @@ yosoy222/
 │   │   ├── Toma y cierre del hilo (estado puente ↔ IA)
 │   │   ├── Reenvío de la respuesta humana saliendo del número principal
 │   │   └── Guardas: destinatario inválido, sin asignación, fallo de envío
-│   └── legal_pages.test.mjs       ← 8 pruebas de las páginas legales
-│       ├── Existencia, enlaces cruzados y vuelta a la tienda
-│       ├── Cumplimiento de la CSP (nada inline) y versión de caché vigente
-│       ├── Marcadores `[COMPLETAR]` siempre visibles y aviso de cookies
-│       └── Presencia en el precache del SW y en el sitemap
+│   ├── legal_pages.test.mjs       ← 8 pruebas de las páginas legales
+│   │   ├── Existencia, enlaces cruzados y vuelta a la tienda
+│   │   ├── Cumplimiento de la CSP (nada inline) y versión de caché vigente
+│   │   ├── Marcadores `[COMPLETAR]` siempre visibles y aviso de cookies
+│   │   └── Presencia en el precache del SW y en el sitemap
+│   └── variants.test.mjs          ← 3 pruebas de la convención de variantes de color (build_variants.py)
 │
 ├── .github/
 │   ├── dependabot.yml             ← Actualizaciones automáticas para GitHub Actions y npm
 │   └── workflows/
-│       ├── ci.yml                 ← CI automático: ejecuta las 32 pruebas en cada push/PR
+│       ├── ci.yml                 ← CI automático: ejecuta las 35 pruebas en cada push/PR
 │       └── purge-cache.yml        ← Despliegue: Smoke test (origen 200) + Purge Cloudflare
 │
 ├── scripts/
@@ -187,8 +190,8 @@ yosoy222/
 | **Frontend** | HTML5 semántico | Prerenderizado estático, ARIA interactivo, microdatos Schema.org |
 | **Estilos** | CSS3 Vanilla | Custom properties (:root), Grid, Flexbox, sin preprocesadores |
 | **Interactividad** | ES6+ Vanilla | Zero runtime dependencies, carga diferida (`defer`), módulos nativos |
-| **Pruebas** | Node.js Test Runner | `node --test` nativo (32 pruebas: sitio, bot y legales, sin librerías pesadas) |
-| **PWA & Offline** | Service Worker API | Cache v38, Network-First en navegación, manifest standalone |
+| **Pruebas** | Node.js Test Runner | `node --test` nativo (35 pruebas: sitio, bot, legales y variantes, sin librerías pesadas) |
+| **PWA & Offline** | Service Worker API | Cache v43, Network-First en navegación, manifest standalone |
 | **SEO & Datos** | JSON-LD / XML | Schema.org Store/ItemList, robots.txt, sitemap.xml canónico |
 | **Hosting & CI/CD** | GitHub Pages + Actions | Despliegue automático, CI de pruebas, Dependabot activo |
 | **CDN & DNS** | Cloudflare | Proxy edge, Cache Rules HTML (TTL 5 min), Transform Rules de seguridad |
@@ -216,7 +219,7 @@ npx serve .
 
 ### 2. Ejecutar la suite de pruebas automatizadas
 
-El proyecto incluye 32 pruebas con el runner nativo de Node.js (13 del sitio + 11 del bot + 8 del bloque legal):
+El proyecto incluye 35 pruebas con el runner nativo de Node.js (13 del sitio + 11 del bot + 8 del bloque legal + 3 de variantes de imagen):
 
 ```bash
 # Ejecutar con npm
@@ -337,23 +340,23 @@ Las imágenes de catálogo y miniaturas han sido procesadas para eliminar márge
 
 ---
 
-## PWA: INSTALAR Y FUNCIONAMIENTO OFFLINE (CACHE V38)
+## PWA: INSTALAR Y FUNCIONAMIENTO OFFLINE (CACHE V43)
 
 La PWA cumple con todos los estándares modernos de instalación y navegación offline:
 
-### Arquitectura de Caché en `sw.js` (Cache v38)
+### Arquitectura de Caché en `sw.js` (Cache v43)
 1. **Navegación Network-First:**
    Para solicitudes de documentos HTML (`event.request.mode === 'navigate'`), el Service Worker consulta primero la red para obtener la versión más reciente del catálogo y, en caso de estar desconectado o con señal inestable, responde con la copia en caché.
 2. **Stale-While-Revalidate para Recursos Estáticos:**
    CSS, fuentes, JS e imágenes secundarias se sirven de inmediato desde la caché mientras se actualizan en segundo plano. La coherencia de versiones (`?v=N` en HTML y `PRECACHE_ASSETS` en el SW) la verifica `scripts/verify_versions.py`, que se ejecuta automáticamente en CI junto a los tests.
 3. **Precache Integral & Resiliencia Offline:**
-   Durante la instalación, el Service Worker descarga de forma controlada el shell de la aplicación, el panel de dashboard y las miniaturas del catálogo (46 archivos: 44 productos + 2 hero, en lotes de 6), garantizando que la navegación visual funcione offline desde el primer instante sin agotar datos móviles del usuario. El precache del catálogo lo dispara la página en cada carga vía mensaje `PRECACHE_IMAGES` (idempotente por marcador dentro de la caché versionada) — sin ventana de pérdida aunque el SW se active sin pestañas abiertas. Las imágenes grandes del lightbox se descargan y cachean bajo demanda.
+   Durante la instalación, el Service Worker descarga de forma controlada el shell de la aplicación, el panel de dashboard y las miniaturas del catálogo (141 archivos: 44 portadas + 95 variantes de color + 2 hero, en lotes de 6), garantizando que la navegación visual funcione offline desde el primer instante sin agotar datos móviles del usuario. Las variantes de color del álbum (`js/variants.json`) entran en el precache en cuanto la página las carga, también vía mensaje `PRECACHE_IMAGES` (idempotente por marcador dentro de la caché versionada) — sin ventana de pérdida aunque el SW se active sin pestañas abiertas. Las imágenes grandes del lightbox se descargan y cachean bajo demanda.
 4. **Invalidación Inmediata de Versiones Anteriores:**
    Al publicarse una nueva versión (`CACHE_NAME = 'yosoy222-v38'`), el evento `activate` purga de forma determinista cualquier almacenamiento obsoleto y el evento `controllerchange` refresca la vista del catálogo automáticamente.
 5. **Iconos PWA de Alta Definición:**
    10 variantes (incluyendo formatos maskable con padding seguro del 15% para Android/iOS sin franjas negras) validadas con `scripts/verify_icons.py`.
 
-### UX Offline (Cache v38)
+### UX Offline (Cache v43)
 - **Lightbox con degradación elegante:** si la imagen ampliada (`images/catalog/`) no está en caché y la red no responde, el manejador `error` intercambia automáticamente la miniatura precacheada y muestra una nota informativa; al restablecerse la conexión, la imagen grande vuelve a cargar y la nota desaparece sola.
 - **Checkout WhatsApp consciente de la red:** con el navegador offline, el panel del carrito muestra un aviso no bloqueante ("tu carrito queda guardado") que se elimina al reconectar y re-renderizar.
 - **Fuentes asíncronas (v33):** el CSS de Google Fonts carga con `media="print"` + flip en `js/font-flip.js` (el texto pinta en fallback serif y hace swap) — FCP ×8 más rápido medido en bisect controlado; combinado con GA4 diferido mantiene TBT 0ms.
@@ -447,7 +450,7 @@ El sitio publica cuatro documentos en `/legal/` (estáticos, indexables y en el 
 | Rama | Estado | Propósito |
 |------|--------|-----------|
 | `main` | **Producción** | Todo push despliega automáticamente a yosoy222.com (CI + Pages + Purge). Única rama protegida por el pipeline completo. |
-| `redesign-ritual` | **QA gate aprobado — NO mergeada (v42, en `origin` desde el 25-sep)** | Rediseño ritualista (fondo beige #F3EDE4, tipografía serif, taxonomía velas/melts/dijes-pulseras/franelas). Al 22-sep: sincronizada con main (merge `9d9043f`), QA gate completo y Lighthouse comparativo (performance idéntica: 92 móvil / 99 desktop; SEO 69 y A11y 96 del preview son artefactos del túnel). Al 24-sep: álbum de variantes de color de velas con la nueva sesión fotográfica (100 fotos, 22 productos con álbum, 76 variantes, portada de grupo de primera, v42, `imgVer` 11). Al 25-sep: **respaldada en `origin/redesign-ritual` (`da8ea11`)** — `origin/main` intacta. **Único pendiente: aprobación visual del dueño.** Su estado completo vive en `BRANCH_STATUS.md` en la raíz de la rama. |
+| `redesign-ritual` | **QA gate aprobado — NO mergeada (v43, en `origin`)** | Rediseño ritualista (fondo beige #F3EDE4, tipografía serif, taxonomía velas/melts/dijes-pulseras/franelas). Al 22-sep: QA gate + Lighthouse (performance idéntica 92/99). Al 24-sep: álbum de variantes (100 fotos, 22 productos). Al 25-sep: respaldo en `origin` + 14 portadas corregidas por el dueño (`1c87a58`). Al 26-sep: textos de portada ajustados + `imgVer` 13. Al 27-sep: **bloque legal v38 integrado desde main (merge)** — 3 fotos repetidas fuera y 4 álbumes reordenados (`78f815f`, `3b64906`). **Único pendiente: aprobación visual final del dueño.** Estado completo en `BRANCH_STATUS.md` de la rama. |
 
 > 🔒 **POLÍTICA DE MERGE (decisión del dueño, inviolable):** `redesign-ritual` **solo se mergea a `main` cuando el dueño lo autorice explícitamente Y la rama esté 100% lista** (QA gate completo: barrido visual anti-rosado, auditoría móvil 375px, tests en verde, sync con main resuelto, y visto bueno del cliente). Ningún agente debe mergear, abrir PR de merge ni pushear a main contenido de la rama sin esa autorización explícita.
 
@@ -676,11 +679,12 @@ Tokens principales en `:root` de [`css/style.css`](css/style.css):
 | `js/analytics.js` | Motor de telemetría: GA4 diferido, ingesta vía Edge Function y fallback localStorage |
 | `js/dashboard.js` | Motor del Dashboard: autenticación, datos (Edge Function/local) y estado |
 | `js/dashboard-view.js` | Vista del Dashboard (pura): gráficos Bezier en Canvas y render de KPIs/tablas |
-| `sw.js` | Service Worker (Cache v38, Network-First navegación) |
+| `sw.js` | Service Worker (Cache v43, Network-First navegación) |
 | `manifest.json` | Configuración PWA e iconos |
 | `tests/cart_and_filters.test.mjs` | 13 pruebas del sitio: carrito, filtros y seguridad |
 | `tests/bot_relay.test.mjs` | 11 pruebas del bot: comandos del staff, atender/fin y relay desde el número principal |
 | `tests/legal_pages.test.mjs` | 8 pruebas del bloque legal: enlaces, CSP, versión de caché, precache y sitemap |
+| `tests/variants.test.mjs` | Validación de la convención de variantes de color (`build_variants.py --check`) |
 | `.github/workflows/` | Automatización de CI y purga de caché con smoke test |
 | `.github/dependabot.yml` | Configuración de actualización de dependencias y acciones |
 | `scripts/` | Prerenderizado, iconos (`verify_icons.py`), versiones (`verify_versions.py`), SQL canónico (`supabase_rls.sql`, `supabase_rate_limit.sql`), imágenes y **espejo del workflow del bot** (`whatsapp-n8n-workflow.json`) |
@@ -730,4 +734,4 @@ gh run list --limit 3
 
 ---
 
-*Documentación técnica actualizada al 27 de septiembre de 2026. Proyecto 100% verificado en pruebas unitarias (32/32 pasadas), CI/CD, auditoría de producción, bot de WhatsApp verificado E2E y despliegue activo en https://yosoy222.com — producción en Cache v38 con el bloque legal publicado (`/legal`, commit `fe63284`). La rama `redesign-ritual` (v43, álbum de variantes + ajustes del 26-sep) está respaldada en `origin` y NO se mergea a main hasta autorización expresa del dueño.*
+*Documentación técnica actualizada al 27 de septiembre de 2026. Proyecto 100% verificado en pruebas unitarias (35/35 pasadas), CI/CD, auditoría de producción, bot de WhatsApp verificado E2E y despliegue activo en https://yosoy222.com — producción en Cache v38 con el bloque legal publicado (`/legal`, commit `fe63284`). La rama `redesign-ritual` (v43 con el legal integrado) está respaldada en `origin` y NO se mergea a main hasta autorización expresa del dueño.*

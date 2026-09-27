@@ -51,14 +51,14 @@
     <!-- Preload del hero (LCP) y de la primera fuente: arranca la descarga antes de parsear CSS -->
     <link rel="preload" as="image" href="images/thumbs/hero-rosas-3.jpg" fetchpriority="high">
     <link rel="preload" as="font" type="font/woff2" href="https://fonts.gstatic.com/s/playfairdisplay/v40/nuFRD-vYSZviVYUb_rj3ij__anPXDTnCjmHKM4nYO7KN_qiTXtHA-Q.woff2" crossorigin>
-    <link rel="stylesheet" href="css/style.css?v=38">
-    <script src="js/font-flip.js?v=38"></script>
+    <link rel="stylesheet" href="css/style.css?v=44">
+    <script src="js/font-flip.js?v=44"></script>
 
     <!-- Telemetry local (sync, es pequeño y configura gtag). El script oficial
          de GA4 se inyecta con carga diferida desde analytics.js (primera
          interacción o fallback 8s) para no competir con el LCP. -->
-    <script src="js/config.js?v=38"></script>
-    <script src="js/analytics.js?v=38"></script>
+    <script src="js/config.js?v=44"></script>
+    <script src="js/analytics.js?v=44"></script>
 
     <!-- Schema.org Datos Estructurados -->
     <script type="application/ld+json">
@@ -95,8 +95,10 @@
 
             <nav class="nav" id="nav" aria-label="Navegación principal">
                 <a href="#inicio" class="nav-link active">Inicio</a>
+                <a href="#rituales" class="nav-link">Rituales</a>
                 <a href="#catalogo" class="nav-link">Catálogo</a>
                 <a href="#como-comprar" class="nav-link">Cómo comprar</a>
+                <a href="#nosotros" class="nav-link">Nosotros</a>
                 <a href="#contacto" class="nav-link">Contacto</a>
             </nav>
 
@@ -121,21 +123,124 @@
         <section class="hero" id="inicio">
             <div class="container hero-inner">
                 <div class="hero-copy">
-                    <p class="eyebrow">Hecho a mano · Con amor</p>
-                    <h1>Velas artesanales que<br><em>encienden</em> tu<br>espacio.</h1>
-                    <p class="hero-lead">Velas artesanales, pulseras, collares y detalles únicos. Cada pieza es hecha a mano — elige la tuya y la pedimos directo por WhatsApp.</p>
+                    <p class="eyebrow">Rituales cotidianos · Hecho con amor</p>
+                    <h1>Luz hecha objeto.<br>Intención hecha forma.<br><span class="hero-brand">YoSoy<span class="accent">222</span></span>.</h1>
+                    <p class="hero-lead">Aquí comienza tu ritual cotidiano.</p>
+                    
+                    <div class="hero-categories-pills" role="group" aria-label="Categorías principales">
+                        <a href="#catalogo" class="hero-pill-btn" data-category="velas">Velas ritualistas</a>
+                        <a href="#catalogo" class="hero-pill-btn" data-category="franelas">Franelas con intención</a>
+                        <a href="#catalogo" class="hero-pill-btn" data-category="dijes-pulseras">Accesorios simbólicos</a>
+                    </div>
+
                     <div class="hero-actions">
-                        <a href="#catalogo" class="btn btn-primary">Ver el catálogo</a>
-                        <a href="#como-comprar" class="btn btn-ghost">Cómo comprar</a>
+                        <a href="#catalogo" class="btn btn-primary">Entrar al ritual</a>
+                        <a href="#rituales" class="btn btn-ghost">Conocer los rituales</a>
                     </div>
                 </div>
                 <div class="hero-visual" aria-hidden="true">
                     <figure class="hero-img hero-img-main">
-                        <img src="images/thumbs/hero-rosas-3.jpg" alt="Velas artesanales en forma de rosa de YoSoy222" width="480" height="480" loading="eager" fetchpriority="high" decoding="async">
+                        <img src="images/thumbs/hero-rosas-3.jpg" alt="Velas artesanales y rituales de luz YoSoy222" width="480" height="480" loading="eager" fetchpriority="high" decoding="async">
                     </figure>
                     <figure class="hero-img hero-img-float">
-                        <img src="images/thumbs/hero-escaparate.jpg" alt="Velas artesanales en escaparate de YoSoy222" width="480" height="480" loading="lazy" fetchpriority="low" decoding="async">
+                        <img src="images/thumbs/hero-escaparate.jpg" alt="Velas en escaparate crema YoSoy222" width="480" height="480" loading="lazy" fetchpriority="low" decoding="async">
                     </figure>
+                </div>
+            </div>
+        </section>
+
+        <!-- ======================= MANIFIESTO DE BIENVENIDA ======================= -->
+        <section class="manifiesto-section" id="manifiesto">
+            <div class="container">
+                <div class="manifiesto-card">
+                    <span class="manifiesto-ornament">✦ YoSoy<span class="accent">222</span> ✦</span>
+                    <h2 class="manifiesto-title">Este espacio es intención.</h2>
+                    <div class="manifiesto-grid">
+                        <div class="manifiesto-item">
+                            <p class="manifiesto-verse">Cada vela,</p>
+                            <p class="manifiesto-emp">un mantra.</p>
+                        </div>
+                        <div class="manifiesto-item">
+                            <p class="manifiesto-verse">Cada franela,</p>
+                            <p class="manifiesto-emp">un abrazo.</p>
+                        </div>
+                        <div class="manifiesto-item">
+                            <p class="manifiesto-verse">Cada accesorio,</p>
+                            <p class="manifiesto-emp">un símbolo que te acompaña.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ======================= LO QUE ENCONTRARÁS AQUÍ ======================= -->
+        <section class="pilares-section" id="lo-que-encontraras">
+            <div class="container">
+                <header class="section-head text-center">
+                    <p class="eyebrow">Nuestros tres pilares</p>
+                    <h2 class="section-title">Lo que encontrarás aquí</h2>
+                    <p class="section-subtitle">Objetos diseñados con propósito para iluminar tu templo interior y exterior.</p>
+                </header>
+
+                <div class="pilares-grid">
+                    <article class="pilar-card">
+                        <h3 class="pilar-title">Rituales de luz</h3>
+                        <p class="pilar-desc">Velas aromáticas vertidas a mano en cera de soja pura. Diseñadas para armonizar tus espacios y encender tu calma.</p>
+                        <a href="#catalogo" class="pilar-link hero-pill-btn" data-category="velas">Ver velas ritualistas →</a>
+                    </article>
+
+                    <article class="pilar-card">
+                        <h3 class="pilar-title">Intención para vestir</h3>
+                        <p class="pilar-desc">Franelas suaves con cortes minimalistas y mensajes que afirman tu bienestar y te recuerdan tu propio poder.</p>
+                        <a href="#catalogo" class="pilar-link hero-pill-btn" data-category="franelas">Ver franelas con intención →</a>
+                    </article>
+
+                    <article class="pilar-card">
+                        <h3 class="pilar-title">Símbolos que protegen</h3>
+                        <p class="pilar-desc">Pulseras de hilo chino, gargantillas en Gold-Filled y dijes de piedras naturales que actúan como amuletos diarios de serenidad.</p>
+                        <a href="#catalogo" class="pilar-link hero-pill-btn" data-category="dijes-pulseras">Ver accesorios simbólicos →</a>
+                    </article>
+                </div>
+
+                <div class="pilares-action text-center">
+                    <a href="#catalogo" class="btn btn-primary btn-lg">Entrar al ritual</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- ======================= RITUALES COTIDIANOS ======================= -->
+        <section class="rituales-section" id="rituales">
+            <div class="container">
+                <header class="section-head text-center">
+                    <p class="eyebrow">Prácticas de conexión</p>
+                    <h2 class="section-title">Rituales Cotidianos</h2>
+                    <p class="section-subtitle">Pequeñas pausas de intención para transformar tu día a día en un momento sagrado.</p>
+                </header>
+
+                <div class="rituales-grid">
+                    <article class="ritual-card">
+                        <h3 class="ritual-title">Ritual de Calma</h3>
+                        <p class="ritual-text">«Enciende tu vela en silencio, respira tres veces profundo y permite que la luz disipe cualquier prisa. Este momento es solo tuyo.»</p>
+                        <div class="ritual-footer">
+                            <span class="ritual-element">✦ Elemento: Fuego & Aromas</span>
+                        </div>
+                    </article>
+
+                    <article class="ritual-card">
+                        <h3 class="ritual-title">Ritual de Protección</h3>
+                        <p class="ritual-text">«Coloca tu accesorio cerca de tu corazón antes de salir. Declara tu intención y siente la seguridad de que la energía correcta te acompaña.»</p>
+                        <div class="ritual-footer">
+                            <span class="ritual-element">✦ Elemento: Símbolo & Cuarzo</span>
+                        </div>
+                    </article>
+
+                    <article class="ritual-card">
+                        <h3 class="ritual-title">Ritual de Claridad</h3>
+                        <p class="ritual-text">«Viste tu franela como una segunda piel de propósito. Enfoca tu mente en lo esencial y deja ir lo que no vibra en tu sintonía.»</p>
+                        <div class="ritual-footer">
+                            <span class="ritual-element">✦ Elemento: Afirmación & Cuerpo</span>
+                        </div>
+                    </article>
                 </div>
             </div>
         </section>
@@ -145,25 +250,28 @@
         <div class="container">
             <header class="catalogo-head">
                 <div>
-                    <p class="eyebrow">Nuestra colección</p>
-                    <h2>Catálogo de productos</h2>
+                    <p class="eyebrow">Catálogo de intención</p>
+                    <h2>Piezas & Colecciones</h2>
                 </div>
                 <label class="search" for="searchInput">
                     <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
                         <circle cx="11" cy="11" r="7"></circle>
                         <path d="m20 20-3.5-3.5"></path>
                     </svg>
-                    <input type="search" id="searchInput" placeholder="Buscar vela, pulsera, collar…" aria-label="Buscar productos" autocomplete="off">
+                    <input type="search" id="searchInput" placeholder="Buscar vela, amuleto, franela…" aria-label="Buscar productos" autocomplete="off">
                 </label>
             </header>
 
             <div class="filters" id="filters" role="group" aria-label="Filtrar por categoría">
                 <button class="filter-btn active" data-filter="todos" aria-pressed="true">Todos</button>
-                <button class="filter-btn" data-filter="velas" aria-pressed="false">Velas</button>
-                <button class="filter-btn" data-filter="pulseras" aria-pressed="false">Pulseras</button>
-                <button class="filter-btn" data-filter="collares" aria-pressed="false">Collares</button>
-                <button class="filter-btn" data-filter="franelas" aria-pressed="false">Franelas</button>
-                <button class="filter-btn" data-filter="accesorios" aria-pressed="false">Accesorios</button>
+                <button class="filter-btn" data-filter="velas" aria-pressed="false">Velas ritualistas</button>
+                <button class="filter-btn" data-filter="melts" aria-pressed="false">Wax Melts</button>
+                <button class="filter-btn" data-filter="franelas" aria-pressed="false">Franelas con intención</button>
+                <button class="filter-btn" data-filter="dijes-pulseras" aria-pressed="false">Dijes y pulseras</button>
+            </div>
+
+            <div class="category-intro-box">
+                <p class="category-intro" id="categoryIntro">Explora nuestra colección completa de rituales de luz, prendas conscientes y amuletos para tu día a día.</p>
             </div>
 
             <p class="results-count" id="resultsCount" role="status"></p>
@@ -171,11 +279,11 @@
             <div class="products-grid" id="productsGrid">
           <article class="product-card" data-index="0">
           <button type="button" class="product-image" data-name="Rosa" aria-label="Ampliar imagen de Rosa">
-            <img src="images/thumbs/VM-ROSA_vela_rosa_79g.jpg?v=9" alt="Rosa artesanal" width="480" height="480" loading="lazy" decoding="async">
+            <img src="images/thumbs/VM-ROSA_vela_rosa_79g.jpg?v=14" alt="Rosa artesanal" width="480" height="480" loading="lazy" decoding="async">
           </button>
           <div class="product-info">
             <h3>Rosa</h3>
-            <p class="product-category">Vela artesanal</p>
+            <p class="product-category">Vela ritualista</p>
             <p class="product-desc">Vela artesanal de 79grs. en forma de Rosa, Elaborada con Cera de Soja en blanco, rosa claro, rosa oscuro. Aroma Coco, Lavanda, Jazmin.</p>
             <div class="product-footer">
               <span class="product-price">$7</span>
@@ -185,12 +293,12 @@
         </article>
           <article class="product-card" data-index="1">
           <button type="button" class="product-image" data-name="Mini Corazones" aria-label="Ampliar imagen de Mini Corazones">
-            <img src="images/thumbs/VM-MINICORAZON_vela_mini_corazones.jpg?v=9" alt="Mini Corazones artesanal" width="480" height="480" loading="lazy" decoding="async">
+            <img src="images/thumbs/VM-MINICORAZON_vela_mini_corazones.jpg?v=14" alt="Mini Corazones artesanal" width="480" height="480" loading="lazy" decoding="async">
           </button>
           <div class="product-info">
             <h3>Mini Corazones</h3>
-            <p class="product-category">Vela artesanal</p>
-            <p class="product-desc">Vela artesanal de 1grs. en forma de Mini corazón, Elaborada con Cera de Soja en blanco, rosa, rojo. Aroma Coco, Jazmin</p>
+            <p class="product-category">Wax Melts</p>
+            <p class="product-desc">Wax Melts de 1grs. en forma de Mini corazón, Elaborada con Cera de Soja en blanco, rosa, rojo. Aroma Coco, Jazmin</p>
             <div class="product-footer">
               <span class="product-price">$0.17</span>
               <button class="add-cart-btn" data-name="Mini Corazones" data-price="0.17">Agregar</button>
@@ -199,11 +307,11 @@
         </article>
           <article class="product-card" data-index="2">
           <button type="button" class="product-image" data-name="Rosa Pequeña" aria-label="Ampliar imagen de Rosa Pequeña">
-            <img src="images/thumbs/VM-ROSAPEQ_vela_rosa_pequena_23g.jpg?v=9" alt="Rosa Pequeña artesanal" width="480" height="480" loading="lazy" decoding="async">
+            <img src="images/thumbs/VM-ROSAPEQ_vela_rosa_pequena_23g.jpg?v=14" alt="Rosa Pequeña artesanal" width="480" height="480" loading="lazy" decoding="async">
           </button>
           <div class="product-info">
             <h3>Rosa Pequeña</h3>
-            <p class="product-category">Vela artesanal</p>
+            <p class="product-category">Vela ritualista</p>
             <p class="product-desc">Vela artesanal de 23grs. en forma de Rosa pequeña presentada en palito decorativo. Elaborada con cera de soja en blanco, rosa, amarillo rosa claro. Aroma: Coco Vainilla</p>
             <div class="product-footer">
               <span class="product-price">$4.5</span>
@@ -213,11 +321,11 @@
         </article>
           <article class="product-card" data-index="3">
           <button type="button" class="product-image" data-name="Mini Margarita" aria-label="Ampliar imagen de Mini Margarita">
-            <img src="images/thumbs/VM-MINIMARGARITA_wax_melts_mini_margarita.jpg?v=9" alt="Mini Margarita artesanal" width="480" height="480" loading="lazy" decoding="async">
+            <img src="images/thumbs/VM-MINIMARGARITA_wax_melts_mini_margarita.jpg?v=14" alt="Mini Margarita artesanal" width="480" height="480" loading="lazy" decoding="async">
           </button>
           <div class="product-info">
             <h3>Mini Margarita</h3>
-            <p class="product-category">Vela artesanal</p>
+            <p class="product-category">Wax Melts</p>
             <p class="product-desc">Wax Melts 6grs. en forma de Mini Margarita. Elaborada con cera de soja en blanco, rosa, amarillo rosa claro. Aroma: Coco Vainilla, Canela</p>
             <div class="product-footer">
               <span class="product-price">$1.7</span>
@@ -227,11 +335,11 @@
         </article>
           <article class="product-card" data-index="4">
           <button type="button" class="product-image" data-name="Margarita Pequeña" aria-label="Ampliar imagen de Margarita Pequeña">
-            <img src="images/thumbs/VM-MARGARITA_vela_margarita_pequena_16g.jpg?v=9" alt="Margarita Pequeña artesanal" width="480" height="480" loading="lazy" decoding="async">
+            <img src="images/thumbs/VM-MARGARITA_vela_margarita_pequena_16g.jpg?v=14" alt="Margarita Pequeña artesanal" width="480" height="480" loading="lazy" decoding="async">
           </button>
           <div class="product-info">
             <h3>Margarita Pequeña</h3>
-            <p class="product-category">Vela artesanal</p>
+            <p class="product-category">Vela ritualista</p>
             <p class="product-desc">Vela artesanal de 16grs. en forma de Margarita pequeña presentada en palito decorativo. Elaborada con cera de soja en blanco, rosa, amarillo rosa claro. Aroma: Coco Vainilla</p>
             <div class="product-footer">
               <span class="product-price">$3</span>
@@ -241,11 +349,11 @@
         </article>
           <article class="product-card" data-index="5">
           <button type="button" class="product-image" data-name="Tulipán Pequeña" aria-label="Ampliar imagen de Tulipán Pequeña">
-            <img src="images/thumbs/VM-TULIPAN_vela_tulipan_pequena_33g.jpg?v=9" alt="Tulipán Pequeña artesanal" width="480" height="480" loading="lazy" decoding="async">
+            <img src="images/thumbs/VM-TULIPAN_vela_tulipan_pequena_33g.jpg?v=14" alt="Tulipán Pequeña artesanal" width="480" height="480" loading="lazy" decoding="async">
           </button>
           <div class="product-info">
             <h3>Tulipán Pequeña</h3>
-            <p class="product-category">Vela artesanal</p>
+            <p class="product-category">Vela ritualista</p>
             <p class="product-desc">Vela artesanal de 33grs. en forma deTulipan pequeña presentada en palito decorativo. Elaborada con cera de soja en blanco, rosa, amarillo rosa claro. Aroma: Coco Vainilla, Jazmin</p>
             <div class="product-footer">
               <span class="product-price">$5</span>
@@ -255,11 +363,11 @@
         </article>
           <article class="product-card" data-index="6">
           <button type="button" class="product-image" data-name="Bouquet Tulipán" aria-label="Ampliar imagen de Bouquet Tulipán">
-            <img src="images/thumbs/VM-BOUQUET_vela_bouquet_tulipan_83g.jpg?v=9" alt="Bouquet Tulipán artesanal" width="480" height="480" loading="lazy" decoding="async">
+            <img src="images/thumbs/VM-BOUQUET_vela_bouquet_tulipan_83g.jpg?v=14" alt="Bouquet Tulipán artesanal" width="480" height="480" loading="lazy" decoding="async">
           </button>
           <div class="product-info">
             <h3>Bouquet Tulipán</h3>
-            <p class="product-category">Vela artesanal</p>
+            <p class="product-category">Vela ritualista</p>
             <p class="product-desc">Vela artesanal de 83grs. en forma de Buquet Tulipan. Elaborada con cera de soja en blanco, rojo, amarillo, rosa claro. Aroma: Lavanda, Café</p>
             <div class="product-footer">
               <span class="product-price">$8.5</span>
@@ -269,11 +377,11 @@
         </article>
           <article class="product-card" data-index="7">
           <button type="button" class="product-image" data-name="Espiral" aria-label="Ampliar imagen de Espiral">
-            <img src="images/thumbs/VM-ESPIRAL_vela_espiral_104g.jpg?v=9" alt="Espiral artesanal" width="480" height="480" loading="lazy" decoding="async">
+            <img src="images/thumbs/VM-ESPIRAL_vela_espiral_104g.jpg?v=14" alt="Espiral artesanal" width="480" height="480" loading="lazy" decoding="async">
           </button>
           <div class="product-info">
             <h3>Espiral</h3>
-            <p class="product-category">Vela artesanal</p>
+            <p class="product-category">Vela ritualista</p>
             <p class="product-desc">Vela artesanal de 104grs. en forma de Espiral. Elaborada con cera de soja en blanco, verde, amarillo, azul. Aroma: Lavanda, Jazmin.</p>
             <div class="product-footer">
               <span class="product-price">$9.5</span>
@@ -283,11 +391,11 @@
         </article>
           <article class="product-card" data-index="8">
           <button type="button" class="product-image" data-name="Sagrada Familia" aria-label="Ampliar imagen de Sagrada Familia">
-            <img src="images/thumbs/VM-SAGRADA_vela_sagrada_familia_75g.jpg?v=9" alt="Sagrada Familia artesanal" width="480" height="480" loading="lazy" decoding="async">
+            <img src="images/thumbs/VM-SAGRADA_vela_sagrada_familia_75g.jpg?v=14" alt="Sagrada Familia artesanal" width="480" height="480" loading="lazy" decoding="async">
           </button>
           <div class="product-info">
             <h3>Sagrada Familia</h3>
-            <p class="product-category">Vela artesanal</p>
+            <p class="product-category">Vela ritualista</p>
             <p class="product-desc">Vela artesanal de 75grs. en forma de Sagrada Familia. Elaborada con cera de soja en blanco, verde, amarillo, azul, rosa, beige, rojo Aroma: Lavanda, Jazmin. Coco Vainilla</p>
             <div class="product-footer">
               <span class="product-price">$7</span>
@@ -297,11 +405,11 @@
         </article>
           <article class="product-card" data-index="9">
           <button type="button" class="product-image" data-name="Buda" aria-label="Ampliar imagen de Buda">
-            <img src="images/thumbs/VM-BUDA_vela_buda_20g.jpg?v=9" alt="Buda artesanal" width="480" height="480" loading="lazy" decoding="async">
+            <img src="images/thumbs/VM-BUDA_vela_buda_20g.jpg?v=14" alt="Buda artesanal" width="480" height="480" loading="lazy" decoding="async">
           </button>
           <div class="product-info">
             <h3>Buda</h3>
-            <p class="product-category">Vela artesanal</p>
+            <p class="product-category">Vela ritualista</p>
             <p class="product-desc">Vela artesanal de 20grs. en forma de Buda. Elaborada con cera de soja en blanco, verde, amarillo, azul, rosa, Beige Aroma: Lavanda. Coco Vainilla.</p>
             <div class="product-footer">
               <span class="product-price">$6.5</span>
@@ -311,11 +419,11 @@
         </article>
           <article class="product-card" data-index="10">
           <button type="button" class="product-image" data-name="Mano Hamsa" aria-label="Ampliar imagen de Mano Hamsa">
-            <img src="images/thumbs/VM-HAMSA_vela_mano_hamsa_75g.jpg?v=9" alt="Mano Hamsa artesanal" width="480" height="480" loading="lazy" decoding="async">
+            <img src="images/thumbs/VM-HAMSA_vela_mano_hamsa_75g.jpg?v=14" alt="Mano Hamsa artesanal" width="480" height="480" loading="lazy" decoding="async">
           </button>
           <div class="product-info">
             <h3>Mano Hamsa</h3>
-            <p class="product-category">Vela artesanal</p>
+            <p class="product-category">Vela ritualista</p>
             <p class="product-desc">Vela artesanal de 75grs. en forma de Mano Hamsa. Elaborada con cera de soja en blanco, verde, rosa, beige Aroma: Coco Vainilla. Canela</p>
             <div class="product-footer">
               <span class="product-price">$8</span>
@@ -325,11 +433,11 @@
         </article>
           <article class="product-card" data-index="11">
           <button type="button" class="product-image" data-name="Corazón" aria-label="Ampliar imagen de Corazón">
-            <img src="images/thumbs/VM-CORAZON_vela_corazon_182g.jpg?v=9" alt="Corazón artesanal" width="480" height="480" loading="lazy" decoding="async">
+            <img src="images/thumbs/VM-CORAZON_vela_corazon_182g.jpg?v=14" alt="Corazón artesanal" width="480" height="480" loading="lazy" decoding="async">
           </button>
           <div class="product-info">
             <h3>Corazón</h3>
-            <p class="product-category">Vela artesanal</p>
+            <p class="product-category">Vela ritualista</p>
             <p class="product-desc">Vela artesanal de 182grs. en forma de Corazón. Elaborada con cera de soja en blanco, rosa, rojo Aroma: Coco Vainilla. Lavanda, Limon Fresh.</p>
             <div class="product-footer">
               <span class="product-price">$13.5</span>
@@ -339,11 +447,11 @@
         </article>
           <article class="product-card" data-index="12">
           <button type="button" class="product-image" data-name="Cruz con Paloma" aria-label="Ampliar imagen de Cruz con Paloma">
-            <img src="images/thumbs/VM-CRUZ_vela_cruz_con_paloma_52g.jpg?v=9" alt="Cruz con Paloma artesanal" width="480" height="480" loading="lazy" decoding="async">
+            <img src="images/thumbs/VM-CRUZ_vela_cruz_con_paloma_52g.jpg?v=14" alt="Cruz con Paloma artesanal" width="480" height="480" loading="lazy" decoding="async">
           </button>
           <div class="product-info">
             <h3>Cruz con Paloma</h3>
-            <p class="product-category">Vela artesanal</p>
+            <p class="product-category">Vela ritualista</p>
             <p class="product-desc">Vela artesanal de 52grs. en forma de Cruz con palomita. Elaborada con cera de soja en blanco con rosa, amarillo, azul Aroma: Coco Vainilla. Jazmin</p>
             <div class="product-footer">
               <span class="product-price">$7</span>
@@ -353,12 +461,12 @@
         </article>
           <article class="product-card" data-index="13">
           <button type="button" class="product-image" data-name="Cubo" aria-label="Ampliar imagen de Cubo">
-            <img src="images/thumbs/VM-CUBO_vela_cubo_40g.jpg?v=9" alt="Cubo artesanal" width="480" height="480" loading="lazy" decoding="async">
+            <img src="images/thumbs/VM-CUBO_vela_cubo_40g.jpg?v=14" alt="Cubo artesanal" width="480" height="480" loading="lazy" decoding="async">
           </button>
           <div class="product-info">
             <h3>Cubo</h3>
-            <p class="product-category">Vela artesanal</p>
-            <p class="product-desc">Vela artesanal de 40grs. en forma de Cubo. Elaborada con cera de soja en blanco, amarillo, azul, rosa Aroma: Coco Vainilla. Canela</p>
+            <p class="product-category">Wax Melts</p>
+            <p class="product-desc">Wax Melts / Vela de 40grs. en forma de Cubo. Elaborada con cera de soja en blanco, amarillo, azul, rosa Aroma: Coco Vainilla. Canela</p>
             <div class="product-footer">
               <span class="product-price">$7</span>
               <button class="add-cart-btn" data-name="Cubo" data-price="7">Agregar</button>
@@ -367,11 +475,11 @@
         </article>
           <article class="product-card" data-index="14">
           <button type="button" class="product-image" data-name="Virgen del Carmen" aria-label="Ampliar imagen de Virgen del Carmen">
-            <img src="images/thumbs/VM-VIRGEN_vela_virgen_del_carmen_42g.jpg?v=9" alt="Virgen del Carmen artesanal" width="480" height="480" loading="lazy" decoding="async">
+            <img src="images/thumbs/VM-VIRGEN_vela_virgen_del_carmen_42g.jpg?v=14" alt="Virgen del Carmen artesanal" width="480" height="480" loading="lazy" decoding="async">
           </button>
           <div class="product-info">
             <h3>Virgen del Carmen</h3>
-            <p class="product-category">Vela artesanal</p>
+            <p class="product-category">Vela ritualista</p>
             <p class="product-desc">Vela artesanal de 42grs. en forma de Virgen del Carmen. Elaborada con cera de soja en blanco y dorado Aroma: Coco Vainilla. Canela</p>
             <div class="product-footer">
               <span class="product-price">$7</span>
@@ -381,11 +489,11 @@
         </article>
           <article class="product-card" data-index="15">
           <button type="button" class="product-image" data-name="Mini Petit" aria-label="Ampliar imagen de Mini Petit">
-            <img src="images/thumbs/VE-MINIPETIT_vela_mini_petit_123g.jpg?v=9" alt="Mini Petit artesanal" width="480" height="480" loading="lazy" decoding="async">
+            <img src="images/thumbs/VE-MINIPETIT_vela_mini_petit_123g.jpg?v=14" alt="Mini Petit artesanal" width="480" height="480" loading="lazy" decoding="async">
           </button>
           <div class="product-info">
             <h3>Mini Petit</h3>
-            <p class="product-category">Vela artesanal</p>
+            <p class="product-category">Vela ritualista</p>
             <p class="product-desc">Vela artesanal de 123grs. Elaborado en envase de vidrio transparente, con tapa metalica dorada. Contiene una base de cera de soja blanca. Aroma: Coco Vainilla</p>
             <div class="product-footer">
               <span class="product-price">$7.5</span>
@@ -395,11 +503,11 @@
         </article>
           <article class="product-card" data-index="16">
           <button type="button" class="product-image" data-name="Mandala" aria-label="Ampliar imagen de Mandala">
-            <img src="images/thumbs/VE-MANDALA_vela_mandala_98g.jpg?v=9" alt="Mandala artesanal" width="480" height="480" loading="lazy" decoding="async">
+            <img src="images/thumbs/VE-MANDALA_vela_mandala_98g.jpg?v=14" alt="Mandala artesanal" width="480" height="480" loading="lazy" decoding="async">
           </button>
           <div class="product-info">
             <h3>Mandala</h3>
-            <p class="product-category">Vela artesanal</p>
+            <p class="product-category">Vela ritualista</p>
             <p class="product-desc">Vela artesanal de 98grs. Elaborada en envase de metal decorativo. Contiene cera blanca. Aroma: limón Fresh</p>
             <div class="product-footer">
               <span class="product-price">$9</span>
@@ -409,11 +517,11 @@
         </article>
           <article class="product-card" data-index="17">
           <button type="button" class="product-image" data-name="Vintage" aria-label="Ampliar imagen de Vintage">
-            <img src="images/thumbs/VE-VINTAGE_vela_vintage_165g.jpg?v=9" alt="Vintage artesanal" width="480" height="480" loading="lazy" decoding="async">
+            <img src="images/thumbs/VE-VINTAGE_vela_vintage_165g.jpg?v=14" alt="Vintage artesanal" width="480" height="480" loading="lazy" decoding="async">
           </button>
           <div class="product-info">
             <h3>Vintage</h3>
-            <p class="product-category">Vela artesanal</p>
+            <p class="product-category">Vela ritualista</p>
             <p class="product-desc">Vela artesanal de 165grs. Elaborado en envase de vidrio transparente, con tapa de corcho. Contiene una base de cera de soja en tonalidades blanco y rosado. Decorado con mecatillo y detalles florales en tono crema. Aroma: Jazmin</p>
             <div class="product-footer">
               <span class="product-price">$9.5</span>
@@ -423,11 +531,11 @@
         </article>
           <article class="product-card" data-index="18">
           <button type="button" class="product-image" data-name="Petit" aria-label="Ampliar imagen de Petit">
-            <img src="images/thumbs/VE-PETIT_vela_petit_171g.jpg?v=9" alt="Petit artesanal" width="480" height="480" loading="lazy" decoding="async">
+            <img src="images/thumbs/VE-PETIT_vela_petit_171g.jpg?v=14" alt="Petit artesanal" width="480" height="480" loading="lazy" decoding="async">
           </button>
           <div class="product-info">
             <h3>Petit</h3>
-            <p class="product-category">Vela artesanal</p>
+            <p class="product-category">Vela ritualista</p>
             <p class="product-desc">Vela artesanal de 171grs. Elaborado en envase de vidrio transparente, con tapa metalica dorada. Contiene una base de cera de soja blanca decorada con corazones rojos en superficie. Aroma: Limón Fresh</p>
             <div class="product-footer">
               <span class="product-price">$11</span>
@@ -437,11 +545,11 @@
         </article>
           <article class="product-card" data-index="19">
           <button type="button" class="product-image" data-name="Estrella" aria-label="Ampliar imagen de Estrella">
-            <img src="images/thumbs/VE-ESTRELLA_vela_estrella_285g.jpg?v=9" alt="Estrella artesanal" width="480" height="480" loading="lazy" decoding="async">
+            <img src="images/thumbs/VE-ESTRELLA_vela_estrella_285g.jpg?v=14" alt="Estrella artesanal" width="480" height="480" loading="lazy" decoding="async">
           </button>
           <div class="product-info">
             <h3>Estrella</h3>
-            <p class="product-category">Vela artesanal</p>
+            <p class="product-category">Vela ritualista</p>
             <p class="product-desc">Vela artesanal de 285grs. Elaborado en envase de vidrio transparente, en forma de estrella. Contiene una base de cera de soja blanca y roja. Aroma: Coco, Café, Jasmin</p>
             <div class="product-footer">
               <span class="product-price">$12</span>
@@ -451,11 +559,11 @@
         </article>
           <article class="product-card" data-index="20">
           <button type="button" class="product-image" data-name="Aura Rosa" aria-label="Ampliar imagen de Aura Rosa">
-            <img src="images/thumbs/VE-AURA-ROSA_vela_aura_rosa_342g.jpg?v=9" alt="Aura Rosa artesanal" width="480" height="480" loading="lazy" decoding="async">
+            <img src="images/thumbs/VE-AURA-ROSA_vela_aura_rosa_342g.jpg?v=14" alt="Aura Rosa artesanal" width="480" height="480" loading="lazy" decoding="async">
           </button>
           <div class="product-info">
             <h3>Aura Rosa</h3>
-            <p class="product-category">Vela artesanal</p>
+            <p class="product-category">Vela ritualista</p>
             <p class="product-desc">Vela artesanal de 342grs. Elaborado en envase de vidrio transparente con tapa de madera. Contiene una base de cera de soja blanca, con rosa pequeña en superficie. Aroma: Jazmin</p>
             <div class="product-footer">
               <span class="product-price">$17</span>
@@ -465,11 +573,11 @@
         </article>
           <article class="product-card" data-index="21">
           <button type="button" class="product-image" data-name="Aura Tulipán" aria-label="Ampliar imagen de Aura Tulipán">
-            <img src="images/thumbs/VE-AURA-TULIPAN_vela_aura_tulipan_335g.jpg?v=9" alt="Aura Tulipán artesanal" width="480" height="480" loading="lazy" decoding="async">
+            <img src="images/thumbs/VE-AURA-TULIPAN_vela_aura_tulipan_335g.jpg?v=14" alt="Aura Tulipán artesanal" width="480" height="480" loading="lazy" decoding="async">
           </button>
           <div class="product-info">
             <h3>Aura Tulipán</h3>
-            <p class="product-category">Vela artesanal</p>
+            <p class="product-category">Vela ritualista</p>
             <p class="product-desc">Vela artesanal de 335grs. Elaborado en envase de vidrio transparente con tapa de madera. Contiene una base de cera de soja blanca, con tulipan pequeña en superficie. Aroma: Coco Vainilla</p>
             <div class="product-footer">
               <span class="product-price">$17</span>
@@ -479,11 +587,11 @@
         </article>
           <article class="product-card" data-index="22">
           <button type="button" class="product-image" data-name="Aura Corazones" aria-label="Ampliar imagen de Aura Corazones">
-            <img src="images/thumbs/VE-AURA-CORAZON_vela_aura_corazones_418g.jpg?v=9" alt="Aura Corazones artesanal" width="480" height="480" loading="lazy" decoding="async">
+            <img src="images/thumbs/VE-AURA-CORAZON_vela_aura_corazones_418g.jpg?v=14" alt="Aura Corazones artesanal" width="480" height="480" loading="lazy" decoding="async">
           </button>
           <div class="product-info">
             <h3>Aura Corazones</h3>
-            <p class="product-category">Vela artesanal</p>
+            <p class="product-category">Vela ritualista</p>
             <p class="product-desc">Vela artesanal de 418grs. Elaborado en envase de vidrio transparente con tapa de madera. Contiene una base de cera de soja marmoleada con blanco y rosa con corazones rojos en superficie. Aroma: Coco Vainilla</p>
             <div class="product-footer">
               <span class="product-price">$20</span>
@@ -493,11 +601,11 @@
         </article>
           <article class="product-card" data-index="23">
           <button type="button" class="product-image" data-name="Armonía Canela" aria-label="Ampliar imagen de Armonía Canela">
-            <img src="images/thumbs/VE-ARMONIA-CANELA_vela_armonia_canela_508g.jpg?v=9" alt="Armonía Canela artesanal" width="480" height="480" loading="lazy" decoding="async">
+            <img src="images/thumbs/VE-ARMONIA-CANELA_vela_armonia_canela_508g.jpg?v=14" alt="Armonía Canela artesanal" width="480" height="480" loading="lazy" decoding="async">
           </button>
           <div class="product-info">
             <h3>Armonía Canela</h3>
-            <p class="product-category">Vela artesanal</p>
+            <p class="product-category">Vela ritualista</p>
             <p class="product-desc">Vela artesanal de 508grs. Elaborado en envase de vidrio opaco con tapa de MDF. Contiene una base de cera de soja color canela y mecha de madera. Aroma: Canela</p>
             <div class="product-footer">
               <span class="product-price">$22</span>
@@ -507,11 +615,11 @@
         </article>
           <article class="product-card" data-index="24">
           <button type="button" class="product-image" data-name="Armonía Coco" aria-label="Ampliar imagen de Armonía Coco">
-            <img src="images/thumbs/Armonia Coco.jpg?v=9" alt="Armonía Coco artesanal" width="480" height="480" loading="lazy" decoding="async">
+            <img src="images/thumbs/Armonia Coco.jpg?v=14" alt="Armonía Coco artesanal" width="480" height="480" loading="lazy" decoding="async">
           </button>
           <div class="product-info">
             <h3>Armonía Coco</h3>
-            <p class="product-category">Vela artesanal</p>
+            <p class="product-category">Vela ritualista</p>
             <p class="product-desc">Vela artesanal de 516grs. Elaborado en envase de vidrio opaco con tapa de MDF. Contiene una base de cera de soja blanca. Aroma: Coco</p>
             <div class="product-footer">
               <span class="product-price">$23</span>
@@ -521,11 +629,11 @@
         </article>
           <article class="product-card" data-index="25">
           <button type="button" class="product-image" data-name="Gargantilla G-01" aria-label="Ampliar imagen de Gargantilla G-01">
-            <img src="images/thumbs/G-01_gargantilla_gold-filled_lisa.jpg?v=9" alt="Gargantilla G-01 artesanal" width="480" height="480" loading="lazy" decoding="async">
+            <img src="images/thumbs/G-01_gargantilla_gold-filled_lisa.jpg?v=14" alt="Gargantilla G-01 artesanal" width="480" height="480" loading="lazy" decoding="async">
           </button>
           <div class="product-info">
             <h3>Gargantilla G-01</h3>
-            <p class="product-category">Collar artesanal</p>
+            <p class="product-category">Collar con intención</p>
             <p class="product-desc">Gargantilla de Gold-Filled bañada en oro. Cuenta con broche estilo langosta. Dije de piedra natural a tu elección y un mini dije complementario. Mide 25cm de largo y tiene un grosor de 1,5mm</p>
             <div class="product-footer">
               <span class="product-price">$20</span>
@@ -535,11 +643,11 @@
         </article>
           <article class="product-card" data-index="26">
           <button type="button" class="product-image" data-name="Gargantilla G-02" aria-label="Ampliar imagen de Gargantilla G-02">
-            <img src="images/thumbs/G-02_gargantilla_gold-filled_con_dije.jpg?v=9" alt="Gargantilla G-02 artesanal" width="480" height="480" loading="lazy" decoding="async">
+            <img src="images/thumbs/G-02_gargantilla_gold-filled_con_dije.jpg?v=14" alt="Gargantilla G-02 artesanal" width="480" height="480" loading="lazy" decoding="async">
           </button>
           <div class="product-info">
             <h3>Gargantilla G-02</h3>
-            <p class="product-category">Collar artesanal</p>
+            <p class="product-category">Collar con intención</p>
             <p class="product-desc">Gargantilla de Gold-Filled bañada en oro. Cuenta con broche estilo ancla para un cierre seguro y estetico. Dije de piedra natural a tu elección y un mini dije complementario. Mide 25cm de largo y tiene un grosor de 3mm</p>
             <div class="product-footer">
               <span class="product-price">$25</span>
@@ -549,11 +657,11 @@
         </article>
           <article class="product-card" data-index="27">
           <button type="button" class="product-image" data-name="Collar Medio C.M-01" aria-label="Ampliar imagen de Collar Medio C.M-01">
-            <img src="images/thumbs/C.M-01_collar_medio_eslabon_29cm.jpg?v=9" alt="Collar Medio C.M-01 artesanal" width="480" height="480" loading="lazy" decoding="async">
+            <img src="images/thumbs/C.M-01_collar_medio_eslabon_29cm.jpg?v=14" alt="Collar Medio C.M-01 artesanal" width="480" height="480" loading="lazy" decoding="async">
           </button>
           <div class="product-info">
             <h3>Collar Medio C.M-01</h3>
-            <p class="product-category">Collar artesanal</p>
+            <p class="product-category">Collar con intención</p>
             <p class="product-desc">Collar Medio de Gold-Filled bañada en oro. Cuenta con broche estilo ancla para un cierre seguro y estetico. Dije de piedra natural a tu elección y un mini dije complementario. Mide 29cm de largo y tiene un grosor de 3mm</p>
             <div class="product-footer">
               <span class="product-price">$25</span>
@@ -563,11 +671,11 @@
         </article>
           <article class="product-card" data-index="28">
           <button type="button" class="product-image" data-name="Collar Medio C.M-02" aria-label="Ampliar imagen de Collar Medio C.M-02">
-            <img src="images/thumbs/C.M-02_collar_medio_solido_34cm.jpg?v=9" alt="Collar Medio C.M-02 artesanal" width="480" height="480" loading="lazy" decoding="async">
+            <img src="images/thumbs/C.M-02_collar_medio_solido_34cm.jpg?v=14" alt="Collar Medio C.M-02 artesanal" width="480" height="480" loading="lazy" decoding="async">
           </button>
           <div class="product-info">
             <h3>Collar Medio C.M-02</h3>
-            <p class="product-category">Collar artesanal</p>
+            <p class="product-category">Collar con intención</p>
             <p class="product-desc">Collar Medio de Gold-Filled bañada en oro. Cuenta con broche estilo ancla para un cierre seguro y estetico. Dije de piedra natural a tu elección y un mini dije complementario. Mide 34cm de largo y tiene un grosor sólido de 4mm</p>
             <div class="product-footer">
               <span class="product-price">$30</span>
@@ -577,11 +685,11 @@
         </article>
           <article class="product-card" data-index="29">
           <button type="button" class="product-image" data-name="Collar Largo C.L-01" aria-label="Ampliar imagen de Collar Largo C.L-01">
-            <img src="images/thumbs/C.L-01_collar_largo_40cm.jpg?v=9" alt="Collar Largo C.L-01 artesanal" width="480" height="480" loading="lazy" decoding="async">
+            <img src="images/thumbs/C.L-01_collar_largo_40cm.jpg?v=14" alt="Collar Largo C.L-01 artesanal" width="480" height="480" loading="lazy" decoding="async">
           </button>
           <div class="product-info">
             <h3>Collar Largo C.L-01</h3>
-            <p class="product-category">Collar artesanal</p>
+            <p class="product-category">Collar con intención</p>
             <p class="product-desc">Collar Largo de Gold-Filled bañada en oro. Cuenta con broche estilo ancla para un cierre seguro y estetico. Dije de piedra natural a tu elección y un mini dije complementario. Mide 40cm de largo y tiene un grosor sólido de 4mm</p>
             <div class="product-footer">
               <span class="product-price">$32</span>
@@ -591,11 +699,11 @@
         </article>
           <article class="product-card" data-index="30">
           <button type="button" class="product-image" data-name="Pulsera Infinito Azul" aria-label="Ampliar imagen de Pulsera Infinito Azul">
-            <img src="images/thumbs/P-01b_pulsera_infinito_azul.jpg?v=9" alt="Pulsera Infinito Azul artesanal" width="480" height="480" loading="lazy" decoding="async">
+            <img src="images/thumbs/P-01b_pulsera_infinito_azul.jpg?v=14" alt="Pulsera Infinito Azul artesanal" width="480" height="480" loading="lazy" decoding="async">
           </button>
           <div class="product-info">
             <h3>Pulsera Infinito Azul</h3>
-            <p class="product-category">Pulsera artesanal</p>
+            <p class="product-category">Pulsera simbólica</p>
             <p class="product-desc">Pulsera Infinito simboliza conexión y propósito. Acompaña tu energía. Trenzado en hilo chino fino. Un amuleto para recordar que todo lo que mereces, permanece.</p>
             <div class="product-footer">
               <span class="product-price">$8</span>
@@ -605,11 +713,11 @@
         </article>
           <article class="product-card" data-index="31">
           <button type="button" class="product-image" data-name="Pulsera Infinito Beige" aria-label="Ampliar imagen de Pulsera Infinito Beige">
-            <img src="images/thumbs/P-01c_pulsera_infinito_beige.jpg?v=9" alt="Pulsera Infinito Beige artesanal" width="480" height="480" loading="lazy" decoding="async">
+            <img src="images/thumbs/P-01c_pulsera_infinito_beige.jpg?v=14" alt="Pulsera Infinito Beige artesanal" width="480" height="480" loading="lazy" decoding="async">
           </button>
           <div class="product-info">
             <h3>Pulsera Infinito Beige</h3>
-            <p class="product-category">Pulsera artesanal</p>
+            <p class="product-category">Pulsera simbólica</p>
             <p class="product-desc">Pulsera Infinito simboliza conexión y propósito. Acompaña tu energía. Trenzado en hilo chino fino. Un amuleto para recordar que todo lo que mereces, permanece.</p>
             <div class="product-footer">
               <span class="product-price">$8</span>
@@ -619,11 +727,11 @@
         </article>
           <article class="product-card" data-index="32">
           <button type="button" class="product-image" data-name="Pulsera Infinito Roja" aria-label="Ampliar imagen de Pulsera Infinito Roja">
-            <img src="images/thumbs/P-01a_pulsera_infinito_roja.jpg?v=9" alt="Pulsera Infinito Roja artesanal" width="480" height="480" loading="lazy" decoding="async">
+            <img src="images/thumbs/P-01a_pulsera_infinito_roja.jpg?v=14" alt="Pulsera Infinito Roja artesanal" width="480" height="480" loading="lazy" decoding="async">
           </button>
           <div class="product-info">
             <h3>Pulsera Infinito Roja</h3>
-            <p class="product-category">Pulsera artesanal</p>
+            <p class="product-category">Pulsera simbólica</p>
             <p class="product-desc">Pulsera Infinito simboliza conexión y propósito. Acompaña tu energía. Trenzado en hilo chino fino. Un amuleto para recordar que todo lo que mereces, permanece.</p>
             <div class="product-footer">
               <span class="product-price">$8</span>
@@ -633,11 +741,11 @@
         </article>
           <article class="product-card" data-index="33">
           <button type="button" class="product-image" data-name="Pulsera San Benito" aria-label="Ampliar imagen de Pulsera San Benito">
-            <img src="images/thumbs/P-02_pulsera_san_benito.jpg?v=9" alt="Pulsera San Benito artesanal" width="480" height="480" loading="lazy" decoding="async">
+            <img src="images/thumbs/P-02_pulsera_san_benito.jpg?v=14" alt="Pulsera San Benito artesanal" width="480" height="480" loading="lazy" decoding="async">
           </button>
           <div class="product-info">
             <h3>Pulsera San Benito</h3>
-            <p class="product-category">Pulsera artesanal</p>
+            <p class="product-category">Pulsera simbólica</p>
             <p class="product-desc">Pulsera San Benito conecta intención y protección. Trenzado en hilo rojo y un dije que acompaña tú energia.</p>
             <div class="product-footer">
               <span class="product-price">$8</span>
@@ -647,11 +755,11 @@
         </article>
           <article class="product-card" data-index="34">
           <button type="button" class="product-image" data-name="Pulsera Perla" aria-label="Ampliar imagen de Pulsera Perla">
-            <img src="images/thumbs/P-03_pulsera_perla.jpg?v=9" alt="Pulsera Perla artesanal" width="480" height="480" loading="lazy" decoding="async">
+            <img src="images/thumbs/P-03_pulsera_perla.jpg?v=14" alt="Pulsera Perla artesanal" width="480" height="480" loading="lazy" decoding="async">
           </button>
           <div class="product-info">
             <h3>Pulsera Perla</h3>
-            <p class="product-category">Pulsera artesanal</p>
+            <p class="product-category">Pulsera simbólica</p>
             <p class="product-desc">Pulsera Perla irradia calma y claridad. Trenzado sutil y un centro que refleja luz y quilibrio.</p>
             <div class="product-footer">
               <span class="product-price">$6</span>
@@ -661,11 +769,11 @@
         </article>
           <article class="product-card" data-index="35">
           <button type="button" class="product-image" data-name="Pulsera Ojito" aria-label="Ampliar imagen de Pulsera Ojito">
-            <img src="images/thumbs/P-04_pulsera_ojito.jpg?v=9" alt="Pulsera Ojito artesanal" width="480" height="480" loading="lazy" decoding="async">
+            <img src="images/thumbs/P-04_pulsera_ojito.jpg?v=14" alt="Pulsera Ojito artesanal" width="480" height="480" loading="lazy" decoding="async">
           </button>
           <div class="product-info">
             <h3>Pulsera Ojito</h3>
-            <p class="product-category">Pulsera artesanal</p>
+            <p class="product-category">Pulsera simbólica</p>
             <p class="product-desc">Pulsera Ojito protege y equilibra tu energia. Trenzado en hilo rojo, y un ojo que acompaña tu camino.</p>
             <div class="product-footer">
               <span class="product-price">$6</span>
@@ -675,11 +783,11 @@
         </article>
           <article class="product-card" data-index="36">
           <button type="button" class="product-image" data-name="Piedras Naturales" aria-label="Ampliar imagen de Piedras Naturales">
-            <img src="images/thumbs/D-01_dijes_piedras_naturales.jpg?v=9" alt="Piedras Naturales artesanal" width="480" height="480" loading="lazy" decoding="async">
+            <img src="images/thumbs/D-01_dijes_piedras_naturales.jpg?v=14" alt="Piedras Naturales artesanal" width="480" height="480" loading="lazy" decoding="async">
           </button>
           <div class="product-info">
             <h3>Piedras Naturales</h3>
-            <p class="product-category">Accesorio artesanal</p>
+            <p class="product-category">Dije amuleto</p>
             <p class="product-desc">Dijes Piedras Naturales. Cada una vibra con intención, protección, claridad, fuerza o calma.</p>
             <div class="product-footer">
               <span class="product-price">$7</span>
@@ -689,11 +797,11 @@
         </article>
           <article class="product-card" data-index="37">
           <button type="button" class="product-image" data-name="F-01 Loto Sagrado" aria-label="Ampliar imagen de F-01 Loto Sagrado">
-            <img src="images/thumbs/F-01.jpg?v=9" alt="F-01 Loto Sagrado artesanal" width="480" height="480" loading="lazy" decoding="async">
+            <img src="images/thumbs/F-01.jpg?v=14" alt="F-01 Loto Sagrado artesanal" width="480" height="480" loading="lazy" decoding="async">
           </button>
           <div class="product-info">
             <h3>F-01 Loto Sagrado</h3>
-            <p class="product-category">Franela artesanal</p>
+            <p class="product-category">Franela con propósito</p>
             <p class="product-desc">Franela que une intención y estilo. El Loto renace, el Om eleva. Tela suave y resistente para acompañar tus días con calma y proposito.</p>
             <div class="product-footer">
               <span class="product-price">$16</span>
@@ -703,11 +811,11 @@
         </article>
           <article class="product-card" data-index="38">
           <button type="button" class="product-image" data-name="F-02 Loto Sagrado" aria-label="Ampliar imagen de F-02 Loto Sagrado">
-            <img src="images/thumbs/F-02.jpg?v=9" alt="F-02 Loto Sagrado artesanal" width="480" height="480" loading="lazy" decoding="async">
+            <img src="images/thumbs/F-02.jpg?v=14" alt="F-02 Loto Sagrado artesanal" width="480" height="480" loading="lazy" decoding="async">
           </button>
           <div class="product-info">
             <h3>F-02 Loto Sagrado</h3>
-            <p class="product-category">Franela artesanal</p>
+            <p class="product-category">Franela con propósito</p>
             <p class="product-desc">Franela que une intención y estilo. El Loto renace, el Om eleva. Tela suave y resistente para acompañar tus días con calma y proposito.</p>
             <div class="product-footer">
               <span class="product-price">$16</span>
@@ -717,11 +825,11 @@
         </article>
           <article class="product-card" data-index="39">
           <button type="button" class="product-image" data-name="F-03 Loto Sagrado" aria-label="Ampliar imagen de F-03 Loto Sagrado">
-            <img src="images/thumbs/F-03.jpg?v=9" alt="F-03 Loto Sagrado artesanal" width="480" height="480" loading="lazy" decoding="async">
+            <img src="images/thumbs/F-03.jpg?v=14" alt="F-03 Loto Sagrado artesanal" width="480" height="480" loading="lazy" decoding="async">
           </button>
           <div class="product-info">
             <h3>F-03 Loto Sagrado</h3>
-            <p class="product-category">Franela artesanal</p>
+            <p class="product-category">Franela con propósito</p>
             <p class="product-desc">Franela que une intención y estilo. El Loto renace, el Om eleva. Tela suave y resistente para acompañar tus días con calma y proposito.</p>
             <div class="product-footer">
               <span class="product-price">$16</span>
@@ -731,11 +839,11 @@
         </article>
           <article class="product-card" data-index="40">
           <button type="button" class="product-image" data-name="F-04 Ser Feliz" aria-label="Ampliar imagen de F-04 Ser Feliz">
-            <img src="images/thumbs/F-04.jpg?v=9" alt="F-04 Ser Feliz artesanal" width="480" height="480" loading="lazy" decoding="async">
+            <img src="images/thumbs/F-04.jpg?v=14" alt="F-04 Ser Feliz artesanal" width="480" height="480" loading="lazy" decoding="async">
           </button>
           <div class="product-info">
             <h3>F-04 Ser Feliz</h3>
-            <p class="product-category">Franela artesanal</p>
+            <p class="product-category">Franela con propósito</p>
             <p class="product-desc">Franela para mujeres que eligen calma sobre exigencia. Tela suave y diseño minimalista que acompaña tu bienestar. La felicidad es un plan que se viste.</p>
             <div class="product-footer">
               <span class="product-price">$14</span>
@@ -745,11 +853,11 @@
         </article>
           <article class="product-card" data-index="41">
           <button type="button" class="product-image" data-name="F-05 Hazte Caso" aria-label="Ampliar imagen de F-05 Hazte Caso">
-            <img src="images/thumbs/F-05.jpg?v=9" alt="F-05 Hazte Caso artesanal" width="480" height="480" loading="lazy" decoding="async">
+            <img src="images/thumbs/F-05.jpg?v=14" alt="F-05 Hazte Caso artesanal" width="480" height="480" loading="lazy" decoding="async">
           </button>
           <div class="product-info">
             <h3>F-05 Hazte Caso</h3>
-            <p class="product-category">Franela artesanal</p>
+            <p class="product-category">Franela con propósito</p>
             <p class="product-desc">Franela que honra tu intuición. Tela suave y diseño minimalista para acompañar tu energia.</p>
             <div class="product-footer">
               <span class="product-price">$14</span>
@@ -759,11 +867,11 @@
         </article>
           <article class="product-card" data-index="42">
           <button type="button" class="product-image" data-name="F-06 Cool" aria-label="Ampliar imagen de F-06 Cool">
-            <img src="images/thumbs/F-06.jpg?v=9" alt="F-06 Cool artesanal" width="480" height="480" loading="lazy" decoding="async">
+            <img src="images/thumbs/F-06.jpg?v=14" alt="F-06 Cool artesanal" width="480" height="480" loading="lazy" decoding="async">
           </button>
           <div class="product-info">
             <h3>F-06 Cool</h3>
-            <p class="product-category">Franela artesanal</p>
+            <p class="product-category">Franela con propósito</p>
             <p class="product-desc">Franela que afirma tu valor. Diseño limpio, tela suave y diseño minimalista que eleva tu energia.</p>
             <div class="product-footer">
               <span class="product-price">$14</span>
@@ -773,11 +881,11 @@
         </article>
           <article class="product-card" data-index="43">
           <button type="button" class="product-image" data-name="F-07 El Amor" aria-label="Ampliar imagen de F-07 El Amor">
-            <img src="images/thumbs/F-07.jpg?v=9" alt="F-07 El Amor artesanal" width="480" height="480" loading="lazy" decoding="async">
+            <img src="images/thumbs/F-07.jpg?v=14" alt="F-07 El Amor artesanal" width="480" height="480" loading="lazy" decoding="async">
           </button>
           <div class="product-info">
             <h3>F-07 El Amor</h3>
-            <p class="product-category">Franela artesanal</p>
+            <p class="product-category">Franela con propósito</p>
             <p class="product-desc">Franela que honra el poder del amor. Tela suave, diseño minimalista y un mensaje que ilumina tu energia. El amor da sentido y se siente.</p>
             <div class="product-footer">
               <span class="product-price">$14</span>
@@ -823,14 +931,17 @@
         </div>
     </section>
 
-    <!-- ======================= NOSOTROS ======================= -->
+    <!-- ======================= NOSOTROS (SOBRE LA MARCA) ======================= -->
     <section class="nosotros" id="nosotros">
         <div class="container nosotros-inner">
             <div class="nosotros-copy">
-                <p class="eyebrow">Nuestra historia</p>
-                <h2>Somos <em>YoSoy222</em></h2>
-                <p>Yo_Soy222 nace en Caracas como un espacio de intención. Primero fueron palabras, luz y rituales; luego esa energía tomó forma en velas, franelas y accesorios creados a mano. Cada vela es un mantra. Cada franela, un abrazo suave. Cada accesorio, un símbolo que acompaña.</p>
-                <p>No son productos. Son rituales cotidianos que iluminan, protegen y recuerdan propósito. Yo_Soy222 es luz hecha objeto. Una marca para quienes desean vivir con calma, intención y significado.</p>
+                <p class="eyebrow">Nuestra esencia</p>
+                <h2>Sobre la <em>Marca</em></h2>
+                <div class="marca-quote">
+                    <p class="marca-p"><strong>YoSoy<span class="accent">222</span></strong> nace como un espacio de intención.</p>
+                    <p class="marca-p">Cada pieza está creada para acompañarte en tu día, para recordarte que la luz también se viste, se enciende, se porta.</p>
+                    <p class="marca-highlight">Aquí, lo ritual se vuelve cotidiano.</p>
+                </div>
             </div>
             <div class="nosotros-imgs">
                 <img src="images/thumbs/nosotros-1.jpg" alt="Vela artesanal YoSoy222" width="480" height="480" loading="lazy" decoding="async">
@@ -842,15 +953,20 @@
     <!-- ======================= CONTACTO ======================= -->
     <section class="contacto" id="contacto">
         <div class="container">
-            <header class="contacto-head">
-                <p class="eyebrow">Contacto</p>
-                <h2>Hablemos por donde te sea más fácil</h2>
+            <header class="contacto-head text-center">
+                <p class="eyebrow">Conexión directa</p>
+                <h2>Hablemos</h2>
+                <p class="contacto-lead">Si necesitas guía, un ritual o una pieza especial, estoy aquí.</p>
             </header>
-            <div class="contact-list">
-                <a class="contact-link" href="https://wa.me/584126481628?text=Hola%20YoSoy222%2C%20me%20interesa%20hacer%20un%20pedido" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp de YoSoy222">
+
+            <div class="contacto-cta-wrap text-center">
+                <a href="https://wa.me/584126481628?text=Hola%20YoSoy222%2C%20me%20gustar%C3%ADa%20recibir%20gu%C3%ADa%20sobre%20un%20ritual%20o%20pieza%20especial" class="btn btn-whatsapp btn-lg" target="_blank" rel="noopener noreferrer">
                     <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor" aria-hidden="true"><path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38a9.9 9.9 0 0 0 4.74 1.21c5.46 0 9.91-4.45 9.91-9.91S17.5 2 12.04 2m0 18.15a8.2 8.2 0 0 1-4.19-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.2 8.2 0 0 1-1.26-4.38c0-4.54 3.7-8.24 8.24-8.24a8.2 8.2 0 0 1 8.24 8.24c0 4.54-3.7 8.24-8.24 8.24m4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.13-.17.25-.64.81-.79.97-.14.17-.29.19-.54.06-.25-.12-1.05-.39-1.99-1.23-.74-.66-1.23-1.47-1.38-1.72-.14-.25-.02-.38.11-.51.11-.11.25-.29.37-.43.12-.14.17-.25.25-.41.08-.17.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.41-.42-.56-.43h-.48c-.17 0-.43.06-.66.31-.22.25-.86.85-.86 2.07 0 1.22.89 2.4 1.01 2.56.12.17 1.75 2.67 4.23 3.74.59.26 1.05.41 1.41.52.59.19 1.13.16 1.56.1.48-.07 1.47-.6 1.67-1.18.21-.58.21-1.07.15-1.18-.06-.1-.23-.16-.48-.29"/></svg>
-                    <span class="contact-name">WhatsApp</span>
+                    Escribir por WhatsApp
                 </a>
+            </div>
+
+            <div class="contact-list">
                 <a class="contact-link" href="https://www.instagram.com/yo_soy222" target="_blank" rel="noopener noreferrer" aria-label="Instagram de YoSoy222">
                     <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="2.5" y="2.5" width="19" height="19" rx="5"></rect><circle cx="12" cy="12" r="4.2"></circle><circle cx="17.6" cy="6.4" r="1.1" fill="currentColor" stroke="none"></circle></svg>
                     <span class="contact-name">Instagram</span>
@@ -879,7 +995,9 @@
         </div>
         <div class="cart-items" id="cartItems">
             <div class="cart-empty" id="cartEmpty">
-                <span class="cart-empty-icon" aria-hidden="true">🕯️</span>
+                <span class="cart-empty-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" width="44" height="44" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2c0 4-4 6.5-4 10.5a4 4 0 0 0 8 0C16 8.5 12 6 12 2z"/><path d="M6 22h12M8 16v6M16 16v6"/></svg>
+                </span>
                 <p>Tu carrito está vacío</p>
                 <a href="#catalogo" class="btn btn-primary" id="cartBrowse">Ver catálogo</a>
             </div>
@@ -952,6 +1070,7 @@
             <div class="lightbox-info">
                 <h3 id="lightboxName">&nbsp;</h3>
                 <p class="lightbox-desc" id="lightboxDesc"></p>
+                <div class="variant-dots" id="variantDots" role="tablist" aria-label="Colores disponibles" hidden></div>
                 <p class="lightbox-price" id="lightboxPrice"></p>
                 <p class="lightbox-counter" id="lightboxCounter"></p>
             </div>
@@ -962,9 +1081,9 @@
         </div>
     </div>
 
-    <script src="js/shared.js?v=38"></script>
-    <script src="js/cart.js?v=38"></script>
-    <script src="js/app.js?v=38" defer></script>
-    <script src="js/legal.js?v=38" defer></script>
+    <script src="js/shared.js?v=44"></script>
+    <script src="js/cart.js?v=44"></script>
+    <script src="js/app.js?v=44" defer></script>
+    <script src="js/legal.js?v=44" defer></script>
 </body>
 </html>

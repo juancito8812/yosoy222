@@ -39,6 +39,10 @@
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+/* El "222" del wordmark: igualar su altura a las mayúsculas (Playfair Display
+   solo trae cifras oldstyle). Mismo criterio que style.css. */
+.accent { color: var(--accent); font-size: 1.29em; line-height: 0; }
+
 body {
   font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
   background: var(--bg);

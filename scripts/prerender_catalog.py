@@ -52,11 +52,12 @@ def main():
         sys.exit(1)
 
     cat_labels = {
-        'vela': 'Vela artesanal',
-        'pulsera': 'Pulsera artesanal',
-        'collar': 'Collar artesanal',
-        'franela': 'Franela artesanal',
-        'otro': 'Accesorio artesanal'
+        'vela': 'Vela ritualista',
+        'melt': 'Wax Melts',
+        'pulsera': 'Pulsera simbólica',
+        'collar': 'Collar con intención',
+        'franela': 'Franela con propósito',
+        'otro': 'Dije amuleto'
     }
 
     cards = []
@@ -66,7 +67,7 @@ def main():
         card = (
             f'          <article class="product-card" data-index="{i}">\n'
             f'          <button type="button" class="product-image" data-name="{escape_html(name)}" aria-label="Ampliar imagen de {escape_html(name)}">\n'
-            f'            <img src="images/thumbs/{escape_html(file)}?v=9" alt="{escape_html(name)} artesanal" width="480" height="480" loading="lazy" decoding="async">\n'
+            f'            <img src="images/thumbs/{escape_html(file)}?v=14" alt="{escape_html(name)} artesanal" width="480" height="480" loading="lazy" decoding="async">\n'
             f'          </button>\n'
             f'          <div class="product-info">\n'
             f'            <h3>{escape_html(name)}</h3>\n'

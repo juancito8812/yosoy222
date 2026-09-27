@@ -13,7 +13,7 @@ Tienda online de velas artesanales, pulseras, collares, franelas y accesorios.
 - **Agentes Humanos de Respaldo:** Agente 1 (`+58 412 992 2399`), Agente 2 (`+58 424 216 2538`)
 - **Bot de WhatsApp:** activo sobre el número oficial vía n8n + Evolution API (Baileys) autohospedados en `debianm700` (Tailscale `100.77.200.34`, stack Docker `/home/debianserver/marketing-agency`). El espejo saneado del workflow vive en `scripts/whatsapp-n8n-workflow.json` (la fuente viva es la instancia n8n de debianm700). Reglas anti-baneo vigentes: el bot solo responde (nunca inicia), delay humano 2-14s, sin enlaces en primer contacto, sin grupos. **Memoria de conversación por cliente** (historial 20 turnos + pedido acumulado en sesión Supabase vía Edge `session_get`/`session_set`; **expira a las 24h sin actividad del cliente** — sello `ultima_actividad` en `datos_parciales`, respaldo `updated_at` — evita heredar pedidos viejos o puentes abandonados): el bot no reinicia la conversación en cada mensaje. Estados de sesión: `IA` (bot responde) y `puente` (humanos atienden; preguntas comerciales devuelven el hilo al bot con reset, mensajes no-comerciales se reenvían al staff). **Respuestas del staff desde el número principal (22 sep 2026):** el agente escribe desde su propio WhatsApp y el bot reenvía su texto **saliendo del número oficial** — `>tu mensaje` (va al cliente que tenga asignado) o `>número tu mensaje` (destinatario explícito); todo lo que no empiece con `>` es nota interna y no sale a nadie. `atender <número>` fija el cliente asignado (en `datos_parciales.cliente_actual` de la fila del agente; `handoff_hilo` quedó deprecado) y `fin [número]` libera el hilo devolviéndolo a la IA. Cada reenvío confirma al agente el destinatario y deja el mensaje en el historial del cliente, para que la IA conserve el contexto si el hilo vuelve. **Importante para n8n 2.x:** los Code nodes corren en task runner aislado SIN `process.env` — usar siempre `$env.*`. Despliegue del workflow: `import:workflow` (desactiva) + `publish:workflow --id` + `docker restart agency-n8n` (backup previo).
 - **Hosting:** GitHub Pages con proxy, DNS y CDN bajo Cloudflare.
-- **Arquitectura:** PWA instalable con catálogo pre-renderizado para SEO (Schema.org), panel de analítica privada con Luxury Glassmorphism, telemetría en la nube (Supabase Cloud + GA4) y soporte offline (Service Worker Cache v38).
+- **Arquitectura:** PWA instalable con catálogo pre-renderizado para SEO (Schema.org), panel de analítica privada con Luxury Glassmorphism, telemetría en la nube (Supabase Cloud + GA4) y soporte offline (Service Worker Cache v43).
 
 ---
 
@@ -21,7 +21,7 @@ Tienda online de velas artesanales, pulseras, collares, franelas y accesorios.
 
 - **Cero dependencias de runtime:** Vanilla HTML5 semántico, CSS3 moderno y ES6+ JavaScript. No introducir frameworks pesados (React, Vue, etc.) ni empaquetadores complejos.
 - **Testing Nativo:** Módulo `node:test` de Node.js (ejecutable con `npm test` o `node --test tests/*.test.mjs`). Cero paquetes de testing externos.
-- **PWA (Cache v38):** Estrategia Network-First para navegación de páginas (`mode === 'navigate'`) y Stale-While-Revalidate para recursos estáticos. Precaching enfocado en shell, dashboard, config compartida, iconos HD y miniaturas (`images/thumbs/`). Iconos de alta resolución generados desde fuente 1280px con fondo blanco sólido y Safe Zone del 80% sin franjas negras.
+- **PWA (Cache v43):** Estrategia Network-First para navegación de páginas (`mode === 'navigate'`) y Stale-While-Revalidate para recursos estáticos. Precaching enfocado en shell, dashboard, config compartida, bloque legal, iconos HD y miniaturas (`images/thumbs/`). Iconos de alta resolución generados desde fuente 1280px con fondo blanco sólido y Safe Zone del 80% sin franjas negras.
 - **Dashboard & Analítica Cloud:** Telemetría sin cookies en `js/analytics.js` con ingesta global en Supabase Cloud (`public.yosoy222_events`) **vía Edge Function `dashboard-stats` acción `track`** (sanitización whitelist + rate limit 30/min **durable en Postgres**: RPC atómica `consume_rate_limit` sobre `private.rate_limit_buckets` con limpieza pg_cron cada 10 min y fallback en memoria — verificado: burst 40 con bucket en 5 → 25×200 y 15×429; SQL en `scripts/supabase_rate_limit.sql`; 20 sep 2026). RLS activado y **tabla 100% service_role-only desde el 20 sep 2026** (política `anon_insert_events` eliminada tras desplegar v31; sondeos: anon INSERT 401, anon SELECT vacío, Edge track 200). Lectura global vía la misma función (login admin server-side; credenciales solo en secrets — ver `supabase/README.md`). El cliente ya NO lleva ninguna clave de BD (`js/config.js` solo tiene `SUPABASE_URL` y `GA_ID`). Forwarder oficial GA4 (`G-Y9R0B5NH75`, **carga diferida**: se inyecta tras la primera interacción del usuario o a los 8s como fallback — nunca compite en el arranque; TBT 0ms verificado con Lighthouse); y panel de control en `dashboard.html` (`/dashboard.html`) protegido con autenticación criptográfica (Web Crypto SHA-256 salted hash, protección anti-fuerza bruta, rate-limiting, sesiones efímeras con timeout de 2h y cambio de credenciales con verificación de la vigente).
 - **SEO & Indexabilidad:** 44 productos prerenderizados en `index.html` mediante `scripts/prerender_catalog.py` y datos estructurados Schema.org (`Store` + `ItemList`).
 - **Base de Datos / Fuente de Verdad:** Archivo Excel `Catalogo.xlsx` ubicado localmente en `/home/jr/Documentos/Catalogo velas/Catalogo.xlsx`.
@@ -34,7 +34,7 @@ Tienda online de velas artesanales, pulseras, collares, franelas y accesorios.
 # 1. Ejecutar servidor local de desarrollo (NUNCA usar file://)
 python3 -m http.server 8080
 
-# 2. Ejecutar la suite de pruebas automatizadas (32: carrito, filtros, seguridad, bot y legales)
+# 2. Ejecutar la suite de pruebas automatizadas (35: carrito, filtros, seguridad, bot, legales y variantes de imagen)
 npm test
 
 # 3. Sincronizar catálogo estático prerenderizado tras modificar js/app.js
@@ -68,12 +68,13 @@ yosoy222/
 ├── css/dashboard.css              ← Estilos dedicados para el dashboard y gráficos
 ├── js/shared.js                   ← Utilidades compartidas (window.YoSoyShared): escapeHtml canónica
 ├── js/font-flip.js                ← Aplica el CSS de Google Fonts cargado async (media=print → all): FCP ×8 más rápido
-├── js/app.js                      ← Catálogo inmutable, filtros, carrito (UI/estado), a11y focus trap
+├── js/app.js                      ← Catálogo inmutable, filtros, carrito (UI/estado), a11y focus trap, álbum de variantes
+├── js/variants.json               ← Índice de variantes de color por producto (generado por scripts/build_variants.py)
 ├── js/cart.js                     ← Lógica pura del carrito (window.YoSoyCart): totales, validación, TTL 30 días
 ├── js/analytics.js                ← Motor de telemetría: GA4 (diferido) + Supabase Cloud + localStorage
 ├── js/dashboard.js                ← Motor del Dashboard: autenticación SHA-256 fail-closed (hash solo en localStorage, nace de login Edge), datos (Edge Function/local), estado
 ├── js/dashboard-view.js           ← Vista del Dashboard (pura): gráficos Bezier en Canvas y render de KPIs/tablas
-├── sw.js                          ← Service Worker (Cache v38, Network-First navegación)
+├── sw.js                          ← Service Worker (Cache v43, Network-First navegación)
 ├── supabase/
 │   ├── functions/dashboard-stats  ← Edge Function: login admin server-side + lectura con service_role (nunca expuesta)
 │   └── README.md                  ← Despliegue, secrets, smoke test y rotación
@@ -85,7 +86,8 @@ yosoy222/
 ├── tests/
 │   ├── cart_and_filters.test.mjs  ← 13 pruebas de carrito, filtros y seguridad sin dependencias
 │   ├── bot_relay.test.mjs         ← 11 pruebas del camino del staff del bot (comandos, atender/fin, relay)
-│   └── legal_pages.test.mjs       ← 8 pruebas del bloque legal (enlaces, CSP, precache, aviso de cookies)
+│   ├── legal_pages.test.mjs       ← 8 pruebas del bloque legal (enlaces, CSP, precache, aviso de cookies)
+│   └── variants.test.mjs          ← 3 pruebas de la convención de variantes de color (build_variants.py)
 ├── .github/
 │   ├── dependabot.yml             ← Dependabot para GitHub Actions y npm
 │   └── workflows/
@@ -143,7 +145,7 @@ Al modificar, agregar o eliminar productos del catálogo:
 ## 7. Protocolo de Verificación Antes de Finalizar Tareas
 
 Antes de reportar una tarea como completa:
-1. Ejecutar `npm test` y confirmar que las 32 pruebas pasan al 100%.
+1. Ejecutar `npm test` y confirmar que las 35 pruebas pasan al 100%.
 2. Ejecutar `python3 scripts/verify_versions.py` si se tocó cualquier versión o asset precacheado.
 3. Ejecutar `git status` para verificar que no queden archivos temporales o cambios sin registrar.
 4. Tras hacer `git push`, monitorear CI (`gh run list --limit 3` o API de check-runs) y confirmar que `CI Tests` y `Purge Cloudflare Cache` concluyan en verde (`✓`).
@@ -153,4 +155,4 @@ Antes de reportar una tarea como completa:
 
 ---
 
-*Documento actualizado al 27 de septiembre de 2026. Producción en **v38**: el bloque legal está publicado en https://yosoy222.com/legal (commit `fe63284`, CI Tests + Pages + Purge Cloudflare en verde). La rama `redesign-ritual` va en v43 (álbum de variantes + portadas corregidas + ajustes de texto del 26-sep) y está respaldada en `origin/redesign-ritual` (`3b64906`) — merge a main solo con autorización expresa del dueño (regla 9).*
+*Documento actualizado al 27 de septiembre de 2026 (merge `main` → rama: bloque legal v38 integrado). Producción en **v38**: el bloque legal está publicado en https://yosoy222.com/legal (commit `fe63284`, CI Tests + Pages + Purge Cloudflare en verde). La rama `redesign-ritual` va en v43 (álbum de variantes + portadas corregidas + ajustes del 26-sep + legal integrado) — merge a main solo con autorización expresa del dueño (regla 9).*

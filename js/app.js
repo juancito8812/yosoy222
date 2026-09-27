@@ -21,13 +21,31 @@
   // Si cambia el número, editar SOLO esta línea; no copiar el número en index.html.
   const WHATSAPP = '584126481628';
 
+  // Variantes de color por producto (generado por scripts/build_variants.py).
+  // Mapa file principal -> [files de variantes]. Si falla el fetch, cada
+  // producto simplemente queda con su imagen única (cero impacto).
+  let colorVariants = {};
+  fetch('js/variants.json?v=14', { cache: 'no-cache' })
+    .then((r) => { if (r.ok) return r.json(); return {}; })
+    .then((data) => {
+      colorVariants = data || {};
+      if (Object.keys(colorVariants).length) {
+        precacheVariantThumbs();
+        if (lightbox && lightbox.classList.contains('active')) updateLightboxContent();
+      }
+    })
+    .catch(() => { /* sin variantes = comportamiento actual */ });
+
+  const imgVer = 14;
+  const imgUrl = (file, kind) => `images/${kind}/${file}?v=${imgVer}`;
+
   /* ----- Product data (synced from Catalogo.xlsx) ----- */
     const products = [
   // === VELAS MOLDES (hoja: Velas Moldes) ===
   { file: "VM-ROSA_vela_rosa_79g.jpg", name: "Rosa", cat: "vela", price: 7, desc: "Vela artesanal de 79grs. en forma de Rosa, Elaborada con Cera de Soja en blanco, rosa claro, rosa oscuro. Aroma Coco, Lavanda, Jazmin." },
-  { file: "VM-MINICORAZON_vela_mini_corazones.jpg", name: "Mini Corazones", cat: "vela", price: 0.17, desc: "Vela artesanal de 1grs. en forma de Mini corazón, Elaborada con Cera de Soja en blanco, rosa, rojo. Aroma Coco, Jazmin" },
+  { file: "VM-MINICORAZON_vela_mini_corazones.jpg", name: "Mini Corazones", cat: "melt", price: 0.17, desc: "Wax Melts de 1grs. en forma de Mini corazón, Elaborada con Cera de Soja en blanco, rosa, rojo. Aroma Coco, Jazmin" },
   { file: "VM-ROSAPEQ_vela_rosa_pequena_23g.jpg", name: "Rosa Pequeña", cat: "vela", price: 4.5, desc: "Vela artesanal de 23grs. en forma de Rosa pequeña presentada en palito decorativo. Elaborada con cera de soja en blanco, rosa, amarillo rosa claro. Aroma: Coco Vainilla" },
-  { file: "VM-MINIMARGARITA_wax_melts_mini_margarita.jpg", name: "Mini Margarita", cat: "vela", price: 1.7, desc: "Wax Melts 6grs. en forma de Mini Margarita. Elaborada con cera de soja en blanco, rosa, amarillo rosa claro. Aroma: Coco Vainilla, Canela" },
+  { file: "VM-MINIMARGARITA_wax_melts_mini_margarita.jpg", name: "Mini Margarita", cat: "melt", price: 1.7, desc: "Wax Melts 6grs. en forma de Mini Margarita. Elaborada con cera de soja en blanco, rosa, amarillo rosa claro. Aroma: Coco Vainilla, Canela" },
   { file: "VM-MARGARITA_vela_margarita_pequena_16g.jpg", name: "Margarita Pequeña", cat: "vela", price: 3, desc: "Vela artesanal de 16grs. en forma de Margarita pequeña presentada en palito decorativo. Elaborada con cera de soja en blanco, rosa, amarillo rosa claro. Aroma: Coco Vainilla" },
   { file: "VM-TULIPAN_vela_tulipan_pequena_33g.jpg", name: "Tulipán Pequeña", cat: "vela", price: 5, desc: "Vela artesanal de 33grs. en forma deTulipan pequeña presentada en palito decorativo. Elaborada con cera de soja en blanco, rosa, amarillo rosa claro. Aroma: Coco Vainilla, Jazmin" },
   { file: "VM-BOUQUET_vela_bouquet_tulipan_83g.jpg", name: "Bouquet Tulipán", cat: "vela", price: 8.5, desc: "Vela artesanal de 83grs. en forma de Buquet Tulipan. Elaborada con cera de soja en blanco, rojo, amarillo, rosa claro. Aroma: Lavanda, Café" },
@@ -37,7 +55,7 @@
   { file: "VM-HAMSA_vela_mano_hamsa_75g.jpg", name: "Mano Hamsa", cat: "vela", price: 8, desc: "Vela artesanal de 75grs. en forma de Mano Hamsa. Elaborada con cera de soja en blanco, verde, rosa, beige Aroma: Coco Vainilla. Canela" },
   { file: "VM-CORAZON_vela_corazon_182g.jpg", name: "Corazón", cat: "vela", price: 13.5, desc: "Vela artesanal de 182grs. en forma de Corazón. Elaborada con cera de soja en blanco, rosa, rojo Aroma: Coco Vainilla. Lavanda, Limon Fresh." },
   { file: "VM-CRUZ_vela_cruz_con_paloma_52g.jpg", name: "Cruz con Paloma", cat: "vela", price: 7, desc: "Vela artesanal de 52grs. en forma de Cruz con palomita. Elaborada con cera de soja en blanco con rosa, amarillo, azul Aroma: Coco Vainilla. Jazmin" },
-  { file: "VM-CUBO_vela_cubo_40g.jpg", name: "Cubo", cat: "vela", price: 7, desc: "Vela artesanal de 40grs. en forma de Cubo. Elaborada con cera de soja en blanco, amarillo, azul, rosa Aroma: Coco Vainilla. Canela" },
+  { file: "VM-CUBO_vela_cubo_40g.jpg", name: "Cubo", cat: "melt", price: 7, desc: "Wax Melts / Vela de 40grs. en forma de Cubo. Elaborada con cera de soja en blanco, amarillo, azul, rosa Aroma: Coco Vainilla. Canela" },
   { file: "VM-VIRGEN_vela_virgen_del_carmen_42g.jpg", name: "Virgen del Carmen", cat: "vela", price: 7, desc: "Vela artesanal de 42grs. en forma de Virgen del Carmen. Elaborada con cera de soja en blanco y dorado Aroma: Coco Vainilla. Canela" },
   // === VELAS ENVASES (hoja: Velas Envases) ===
   { file: "VE-MINIPETIT_vela_mini_petit_123g.jpg", name: "Mini Petit", cat: "vela", price: 7.5, desc: "Vela artesanal de 123grs. Elaborado en envase de vidrio transparente, con tapa metalica dorada. Contiene una base de cera de soja blanca. Aroma: Coco Vainilla" },
@@ -73,10 +91,31 @@
   { file: "F-07.jpg", name: "F-07 El Amor", cat: "franela", price: 14, desc: "Franela que honra el poder del amor. Tela suave, diseño minimalista y un mensaje que ilumina tu energia. El amor da sentido y se siente." },
 ];
 
-  /* Category mapping for display */
-  const catMap = { vela: 'velas', pulsera: 'pulseras', collar: 'collares', franela: 'franelas', otro: 'accesorios' };
-  const catLabels = { vela: 'Vela artesanal', pulsera: 'Pulsera artesanal', collar: 'Collar artesanal', franela: 'Franela artesanal', otro: 'Accesorio artesanal' };
-  const catNouns = { vela: 'la vela', collar: 'el collar', pulsera: 'la pulsera', franela: 'la franela', otro: 'el accesorio' };
+  /* Category mapping for display & ritualistic organization */
+  const catMap = {
+    vela: 'velas',
+    melt: 'melts',
+    pulsera: 'dijes-pulseras',
+    collar: 'dijes-pulseras',
+    otro: 'dijes-pulseras',
+    franela: 'franelas'
+  };
+  const catLabels = {
+    vela: 'Vela ritualista',
+    melt: 'Wax Melts',
+    pulsera: 'Pulsera simbólica',
+    collar: 'Collar con intención',
+    franela: 'Franela con propósito',
+    otro: 'Dije amuleto'
+  };
+  const catDescriptions = {
+    todos: 'Explora nuestra colección completa de rituales de luz, prendas conscientes y amuletos para tu día a día.',
+    velas: 'Piezas únicas elaboradas en cera de soja botánica y aromas envolventes creadas para iluminar tu espacio, armonizar tu energía y acompañar tus momentos de introspección.',
+    melts: 'Wax Melts y figuras aromáticas para difusor que desprenden fragancias puras de forma continua para transformar la atmósfera de tu hogar.',
+    franelas: 'Prendas suaves con afirmaciones conscientes y corte minimalista que visten tu intención diaria.',
+    'dijes-pulseras': 'Amuletos tejidos a mano y joyería en Gold-Filled con piedras naturales para canalizar protección, claridad y serenidad.'
+  };
+  const catNouns = { vela: 'la vela', melt: 'el wax melt', collar: 'el collar', pulsera: 'la pulsera', franela: 'la franela', otro: 'el amuleto' };
 
   /* ----- DOM refs ----- */
   const $ = (s, p) => (p || document).querySelector(s);
@@ -163,7 +202,7 @@
     grid.innerHTML = products.map((p, i) => `
           <article class="product-card" data-index="${i}">
           <button type="button" class="product-image" data-name="${escapeHtml(p.name)}" aria-label="Ampliar imagen de ${escapeHtml(p.name)}">
-            <img src="images/thumbs/${escapeHtml(p.file)}?v=9" alt="${escapeHtml(p.name)} artesanal" width="480" height="480" loading="lazy" decoding="async">
+            <img src="images/thumbs/${escapeHtml(p.file)}?v=10" alt="${escapeHtml(p.name)} artesanal" width="480" height="480" loading="lazy" decoding="async">
           </button>
           <div class="product-info">
             <h3>${escapeHtml(p.name)}</h3>
@@ -277,6 +316,11 @@
     visibleProducts = [];
     let count = 0;
 
+    const catIntro = document.getElementById('categoryIntro');
+    if (catIntro) {
+      catIntro.textContent = catDescriptions[activeFilter] || catDescriptions.todos;
+    }
+
     // Cards keep the same order as `products`, so grid.children[i] is product i.
     products.forEach((p, i) => {
       const card = grid.children[i];
@@ -299,6 +343,22 @@
     if (emptyState) emptyState.hidden = !showEmpty;
     grid.style.display = showEmpty ? 'none' : '';
   }
+
+  // Hero Quick-Category Pills
+  $$('.hero-pill-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const cat = btn.dataset.category;
+      if (cat) {
+        activeFilter = cat;
+        filterBtns.forEach(b => {
+          const match = b.dataset.filter === cat;
+          b.classList.toggle('active', match);
+          b.setAttribute('aria-pressed', match ? 'true' : 'false');
+        });
+        applyFilters();
+      }
+    });
+  });
 
   /* ============================================
      CART
@@ -499,7 +559,9 @@
     const p = visibleProducts[currentLightboxIndex];
     if (!p || lightboxImg.dataset.fallback) return;
     lightboxImg.dataset.fallback = '1';
-    lightboxImg.src = `images/thumbs/${p.file}?v=9`;
+    // Si el error es de una variante, recupera con SU miniatura; si es la principal, con la de ella
+    const shown = lightboxImg.src.split('/').pop().split('?')[0];
+    lightboxImg.src = imgUrl(shown, 'thumbs');
     if (lightboxInfo && !lightboxInfo.querySelector('.offline-note')) lightboxInfo.insertAdjacentHTML('afterbegin',
       '<p class="offline-note">Sin conexión: se muestra la miniatura. La foto ampliada cargará cuando vuelva internet.</p>');
   });
@@ -518,6 +580,7 @@
   const lightboxClose = $('#lightboxClose');
   const lightboxPrev = $('#lightboxPrev');
   const lightboxNext = $('#lightboxNext');
+  const variantDots = $('#variantDots');
 
   function openLightbox(index) {
     // `index` points into `products`; map it to its position among the visible products
@@ -548,15 +611,86 @@
     
     // Add cache-busting query string to force image refresh
     lightboxImg.dataset.fallback = '';
-    lightboxImg.src = `images/catalog/${p.file}?v=9`;
+    lightboxImg.src = imgUrl(p.file, 'catalog');
     lightboxImg.alt = `${p.name} artesanal`;
     lightboxName.textContent = p.name;
     lightboxDesc.textContent = p.desc;
     lightboxPrice.textContent = `$${p.price.toFixed(2)}`;
     lightboxCounter.textContent = `${currentLightboxIndex + 1} / ${visibleProducts.length}`;
+    renderVariantDots(p);
     
     const noun = catNouns[p.cat] || 'este producto';
     lightboxWhatsapp.href = `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(`Hola! Me interesa ${noun} ${p.name}`)}`;
+  }
+
+  /* ============================================
+     VARIANTES DE COLOR (mismo producto, otros colores)
+     Convención: files extra con sufijo -v2, -v3… indexados en js/variants.json
+     ============================================ */
+  let currentVariantIndex = -1;   // -1 = foto principal
+
+  function variantFiles(p) {
+    const extras = colorVariants[p.file] || [];
+    return [p.file, ...extras];
+  }
+
+  function renderVariantDots(p) {
+    if (!variantDots) return;
+    const files = variantFiles(p);
+    currentVariantIndex = 0;
+    if (files.length < 2) {
+      variantDots.hidden = true;
+      variantDots.innerHTML = '';
+      return;
+    }
+    variantDots.hidden = false;
+    variantDots.innerHTML = files.map((f, i) =>
+      `<button type="button" class="variant-dot${i === 0 ? ' active' : ''}"`
+      + ` role="tab" aria-selected="${i === 0}"`
+      + ` aria-label="Ver color ${i + 1} de ${p.name}"`
+      + ` data-vfile="${f.replace(/"/g, '&quot;')}">`
+      + `<img src="${imgUrl(f, 'thumbs')}" alt="" loading="lazy" decoding="async">`
+      + `</button>`
+    ).join('');
+  }
+
+  function selectVariant(dot) {
+    const file = dot.dataset.vfile;
+    if (!file) return;
+    variantDots.querySelectorAll('.variant-dot').forEach((d) => {
+      const on = d === dot;
+      d.classList.toggle('active', on);
+      d.setAttribute('aria-selected', on);
+    });
+    currentVariantIndex = Array.from(variantDots.children).indexOf(dot);
+    // La variante grande vive en catalog/ con el mismo nombre
+    lightboxImg.dataset.fallback = '';
+    lightboxImg.src = imgUrl(file, 'catalog');
+  }
+
+  if (variantDots) {
+    variantDots.addEventListener('click', (e) => {
+      const dot = e.target.closest('.variant-dot');
+      if (dot) selectVariant(dot);
+    });
+    // Teclado: ← → dentro del selector si tiene foco
+    variantDots.addEventListener('keydown', (e) => {
+      if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+      const dots = Array.from(variantDots.querySelectorAll('.variant-dot'));
+      if (!dots.length) return;
+      const cur = dots.findIndex((d) => d.classList.contains('active'));
+      const next = (cur + (e.key === 'ArrowRight' ? 1 : -1) + dots.length) % dots.length;
+      dots[next].focus();
+      selectVariant(dots[next]);
+      e.preventDefault();
+    });
+  }
+
+  function precacheVariantThumbs() {
+    if (!('serviceWorker' in navigator) || !navigator.serviceWorker.controller) return;
+    const urls = Object.values(colorVariants).flat()
+      .map((f) => imgUrl(f, 'thumbs'));
+    if (urls.length) navigator.serviceWorker.controller.postMessage({ type: 'PRECACHE_IMAGES', urls });
   }
 
   function lightboxPrevFn() {
@@ -663,8 +797,13 @@
     }
 
     if (lightboxActive) {
-      if (e.key === 'ArrowLeft') lightboxPrevFn();
-      if (e.key === 'ArrowRight') lightboxNextFn();
+      // Si el foco está en el selector de variantes, sus flechas mandan (no cambia de producto)
+      const onVariant = variantDots && variantDots.contains(document.activeElement)
+        && document.activeElement.classList.contains('variant-dot');
+      if (!onVariant) {
+        if (e.key === 'ArrowLeft') lightboxPrevFn();
+        if (e.key === 'ArrowRight') lightboxNextFn();
+      }
     }
 
     if (e.key !== 'Tab') return;
@@ -704,7 +843,10 @@
      ============================================ */
   function catalogUrls() {
     // Only precache thumbnails for offline browsing; catalog full images load on-demand
-    return products.map(p => `images/thumbs/${p.file}?v=9`);
+    const urls = products.map(p => imgUrl(p.file, 'thumbs'));
+    // + miniaturas de variantes de color ya cargadas (o las que lleguen después vía precacheVariantThumbs)
+    Object.values(colorVariants).flat().forEach((f) => urls.push(imgUrl(f, 'thumbs')));
+    return urls;
   }
 
   function requestCatalogPrecache(reg) {

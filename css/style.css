@@ -8,23 +8,27 @@
 
 :root {
   /* Earth palette: warm white → cream */
-  --bg: #faf6ef;
-  --bg-raised: #f1eadb;
-  --bg-card: #fffdf8;
-  --bg-card-hover: #f7f0e3;
-  --surface: #f3ebdd;
-  --border: rgba(120,90,55,0.14);
-  --border-strong: rgba(120,90,55,0.26);
+  --bg: #F3EDE4;
+  --bg-raised: #FAF9F6;
+  --bg-card: #FAF9F6;
+  --bg-card-hover: #F3EDE4;
+  --surface: #F0E8DF;
+  --border: rgba(211,178,131,0.10);
+  --border-strong: rgba(211,178,131,0.18);
 
   /* Text */
   --text: #3b3125;
-  --text-muted: #6b5a42;
-  --text-faint: #65543c;
+  --text-muted: #66584A;
+  --text-faint: #71654B;
 
-  /* Accent (earth amber, candle flame) */
+  /* New palette: gold bronze AA for titles/ritual phrases, pearl gray for body */
+  --gold-matte: #7A6134;
+  --pearl-gray: #66584A;
+
+  /* Accent (earth amber, candle flame) — canónico pre-rediseño, AA 5.77:1 sobre crema */
   --accent: #854f19;
   --accent-hover: #6e3e10;
-  --accent-glow: rgba(133,79,25,0.22);
+  --accent-glow: rgba(133,79,25,0.16);
 
   /* Functional */
   --whatsapp: #25d366;
@@ -35,8 +39,8 @@
   --radius: 14px;
   --radius-sm: 8px;
   --radius-full: 999px;
-  --shadow: 0 6px 24px rgba(101,71,35,0.10);
-  --shadow-lg: 0 12px 40px rgba(101,71,35,0.15);
+  --shadow: 0 6px 24px rgba(201,168,120,0.08);
+  --shadow-lg: 0 12px 40px rgba(201,168,120,0.09);
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
   --duration: 0.28s;
 }
@@ -47,20 +51,25 @@ html { scroll-behavior: smooth; }
 body {
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
   background: var(--bg);
-  color: var(--text);
+  color: var(--pearl-gray);
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
 }
 
-h1, h2, h3, h4 { font-family: 'Playfair Display', Georgia, serif; font-weight: 600; }
+h1, h2, h3, h4 { font-family: 'Playfair Display', Georgia, serif; font-weight: 600; color: var(--gold-matte); }
 a { color: inherit; text-decoration: none; }
 img { max-width: 100%; display: block; }
 button { cursor: pointer; border: none; background: none; font-family: inherit; color: inherit; }
 input { font-family: inherit; }
 
 .container { max-width: 1140px; margin: 0 auto; padding: 0 1.5rem; }
-.accent { color: var(--accent); }
-em { font-style: italic; color: var(--accent); }
+/* El "222" del wordmark: Playfair Display solo trae cifras oldstyle (altura de
+   minúscula) y sin feature lnum en el subset de Google Fonts. Se escala 1.29em
+   (factor medido tinta mayúscula/dígito = 71/55) para que iguale la altura de
+   las mayúsculas; line-height 0 evita que crezca el interlineado de la línea. */
+.accent { color: var(--accent); font-size: 1.29em; line-height: 0; }
+/* Serif elegante Cursiva para frases */
+em { font-style: italic; color: var(--gold-matte); font-family: 'Playfair Display', Georgia, serif; }
 
 /* --- Eyebrow (small section label) --- */
 .eyebrow {
@@ -105,13 +114,13 @@ em { font-style: italic; color: var(--accent); }
    ============================================ */
 .header {
   position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-  background: rgba(250,246,239,0.88);
+  background: rgba(243,237,228,0.88);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
   border-bottom: 1px solid var(--border);
   transition: background var(--duration) var(--ease), box-shadow var(--duration) var(--ease);
 }
-.header.scrolled { background: rgba(250,246,239,0.97); box-shadow: 0 2px 20px rgba(101,71,35,0.12); }
+.header.scrolled { background: rgba(250,249,246,0.97); box-shadow: 0 2px 20px rgba(101,71,35,0.12); }
 
 .header .container {
   display: flex; align-items: center; justify-content: space-between;
@@ -177,25 +186,60 @@ em { font-style: italic; color: var(--accent); }
    HERO — Decide/Learn entry for Explore surface
    ============================================ */
 .hero {
-  padding-top: 100px; padding-bottom: 4rem;
+  padding-top: 110px; padding-bottom: 4rem;
   overflow: hidden;
 }
 .hero-inner {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 3rem;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: 3.5rem;
   align-items: center;
 }
-.hero-copy { max-width: 520px; }
+.hero-copy { max-width: 540px; }
 .hero h1 {
-  font-size: clamp(2.4rem, 5.5vw, 3.8rem);
-  line-height: 1.08;
+  font-size: clamp(2.4rem, 5.2vw, 3.6rem);
+  line-height: 1.12;
   margin-bottom: 1.25rem;
+  color: var(--gold-matte);
+}
+.hero-brand {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--gold-matte);
 }
 .hero-lead {
-  font-size: 1.05rem; color: var(--text-muted);
-  line-height: 1.7; margin-bottom: 2rem;
-  max-width: 440px;
+  font-size: 1.15rem; color: var(--gold-matte);
+  line-height: 1.7; margin-bottom: 1.75rem;
+  font-style: italic;
+  font-family: 'Playfair Display', Georgia, serif;
+}
+.hero-categories-pills {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 2rem;
+}
+.hero-pill-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 1.05rem;
+  border-radius: var(--radius-full);
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  font-size: 0.84rem;
+  font-weight: 500;
+  box-shadow: 0 2px 8px rgba(101,71,35,0.04);
+  transition: all var(--duration) var(--ease);
+}
+.hero-pill-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--bg-card-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 14px rgba(133,79,25,0.08);
 }
 .hero-actions { display: flex; gap: 0.75rem; flex-wrap: wrap; }
 
@@ -226,6 +270,229 @@ em { font-style: italic; color: var(--accent); }
 }
 .hero-img-float img {
   width: 100%; height: 100%; object-fit: cover;
+}
+
+/* ============================================
+   MANIFIESTO DE BIENVENIDA
+   ============================================ */
+.manifiesto-section {
+  padding: 2.5rem 0 3.5rem;
+}
+.manifiesto-card {
+  background: linear-gradient(135deg, #FAF9F6 0%, #F3EDE4 100%);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 3rem 2rem;
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(101,71,35,0.06);
+  position: relative;
+  overflow: hidden;
+}
+.manifiesto-ornament {
+  display: inline-block;
+  font-family: 'Playfair Display', serif;
+  font-size: 0.85rem;
+  letter-spacing: 0.25em;
+  color: var(--gold-matte);
+  margin-bottom: 0.75rem;
+  text-transform: uppercase;
+}
+.manifiesto-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(1.6rem, 3.5vw, 2.4rem);
+  color: var(--gold-matte);
+  margin-bottom: 2rem;
+  font-weight: 600;
+}
+.manifiesto-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  max-width: 900px;
+  margin: 0 auto;
+}
+.manifiesto-item {
+  padding: 1.85rem 1.25rem;
+  background: rgba(243,237,228,0.85);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-radius: var(--radius);
+  border: 1px solid rgba(133, 79, 25, 0.12);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  transition: transform var(--duration) var(--ease), box-shadow var(--duration) var(--ease);
+}
+.manifiesto-item:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(101,71,35,0.08);
+}
+.manifiesto-verse {
+  font-size: 0.95rem;
+  color: var(--pearl-gray);
+  margin-bottom: 0.25rem;
+}
+.manifiesto-emp {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 1.25rem;
+  font-style: italic;
+  color: var(--gold-matte);
+  font-weight: 600;
+}
+
+/* ============================================
+   PILARES — LO QUE ENCONTRARÁS AQUÍ
+   ============================================ */
+.pilares-section {
+  padding: 3.5rem 0 4rem;
+}
+.section-head {
+  max-width: 640px;
+  margin: 0 auto 2.5rem;
+}
+.text-center { text-align: center; }
+.section-title {
+  font-size: clamp(1.75rem, 3.5vw, 2.4rem);
+  margin-bottom: 0.5rem;
+  color: var(--gold-matte);
+}
+.section-subtitle {
+  font-size: 0.95rem;
+  color: var(--pearl-gray);
+  line-height: 1.55;
+}
+.pilares-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  margin-bottom: 2.5rem;
+}
+.pilar-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 2.5rem 1.75rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  justify-content: center;
+  transition: all var(--duration) var(--ease);
+}
+.pilar-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--border-strong);
+  box-shadow: 0 12px 32px rgba(201,168,120,0.08);
+}
+.pilar-num {
+  font-family: 'Playfair Display', serif;
+  font-size: 0.75rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--accent);
+  font-weight: 600;
+  margin-bottom: 0.85rem;
+}
+.pilar-title {
+  font-size: 1.35rem;
+  margin-bottom: 0.75rem;
+  color: var(--gold-matte);
+}
+.pilar-desc {
+  font-size: 0.9rem;
+  color: var(--pearl-gray);
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+  max-width: 320px;
+  flex-grow: 1;
+}
+.pilar-link {
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: var(--accent);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  transition: transform var(--duration) var(--ease);
+}
+.pilar-link:hover {
+  transform: translateX(4px);
+  color: var(--accent-hover);
+}
+.btn-lg {
+  padding: 0.9rem 2.5rem;
+  font-size: 1rem;
+}
+
+/* ============================================
+   RITUALES COTIDIANOS
+   ============================================ */
+.rituales-section {
+  padding: 4.5rem 0;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+.rituales-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+.ritual-card {
+  background: var(--bg-card);
+  border: 1px solid rgba(133, 79, 25, 0.15);
+  border-radius: 18px;
+  padding: 2.5rem 1.75rem;
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  justify-content: center;
+  transition: all var(--duration) var(--ease);
+}
+.ritual-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--accent);
+  box-shadow: 0 14px 36px rgba(101,71,35,0.08);
+}
+.ritual-num {
+  font-family: 'Playfair Display', serif;
+  font-size: 0.75rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--gold-matte);
+  font-weight: 600;
+  margin-bottom: 0.85rem;
+}
+.ritual-title {
+  font-size: 1.35rem;
+  margin-bottom: 0.85rem;
+  color: var(--gold-matte);
+}
+.ritual-text {
+  font-size: 0.92rem;
+  color: var(--gold-matte);
+  line-height: 1.65;
+  margin-bottom: 1.5rem;
+  font-style: italic;
+  font-family: 'Playfair Display', Georgia, serif;
+  max-width: 320px;
+  flex-grow: 1;
+}
+.ritual-footer {
+  padding-top: 0.85rem;
+  border-top: 1px solid var(--border);
+  width: 100%;
+}
+.ritual-element {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-faint);
+  font-weight: 500;
 }
 
 /* ============================================
@@ -263,15 +530,15 @@ em { font-style: italic; color: var(--accent); }
 
 /* Filters */
 .filters {
-  display: flex; gap: 0.4rem; flex-wrap: wrap;
+  display: flex; gap: 0.5rem; flex-wrap: wrap;
   margin-bottom: 1.25rem;
 }
 .filter-btn {
-  padding: 0.5rem 1.1rem;
+  padding: 0.55rem 1.15rem;
   border-radius: var(--radius-full);
   background: var(--bg-card);
   color: var(--text-muted);
-  font-size: 0.8rem; font-weight: 500;
+  font-size: 0.82rem; font-weight: 500;
   border: 1px solid var(--border);
   transition: all var(--duration) var(--ease);
 }
@@ -279,6 +546,23 @@ em { font-style: italic; color: var(--accent); }
 .filter-btn.active {
   background: var(--accent); color: #fffdf7;
   border-color: var(--accent);
+}
+
+/* Category Intro Banner */
+.category-intro-box {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+  border-radius: var(--radius-sm);
+  padding: 0.85rem 1.25rem;
+  margin-bottom: 1.5rem;
+  transition: all var(--duration) var(--ease);
+}
+.category-intro {
+  font-size: 0.86rem;
+  color: var(--pearl-gray);
+  line-height: 1.55;
+  margin: 0;
 }
 
 .results-count {
@@ -304,7 +588,7 @@ em { font-style: italic; color: var(--accent); }
 .product-card:hover {
   transform: translateY(-3px);
   border-color: var(--border-strong);
-  box-shadow: 0 8px 28px rgba(101,71,35,0.14);
+  box-shadow: 0 8px 28px rgba(101,71,35,0.10);
 }
 .product-card.hidden { display: none; }
 
@@ -352,7 +636,7 @@ em { font-style: italic; color: var(--accent); }
   margin-bottom: 0.35rem;
 }
 .product-desc {
-  font-size: 0.72rem; color: var(--text-faint);
+  font-size: 0.72rem; color: var(--pearl-gray);
   line-height: 1.4; margin-bottom: 0.5rem;
   display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
   overflow: hidden;
@@ -362,15 +646,15 @@ em { font-style: italic; color: var(--accent); }
 }
 .product-price {
   font-family: 'Playfair Display', serif;
-  font-size: 1.1rem; font-weight: 600; color: var(--accent);
+  font-size: 1.1rem; font-weight: 600; color: var(--gold-matte);
 }
 .add-cart-btn {
   padding: 0.4rem 0.85rem;
   border-radius: var(--radius-full);
-  background: rgba(169,111,45,0.1);
-  color: var(--accent-hover);
+  background: rgba(133,79,25,0.10);
+  color: var(--accent);
   font-size: 0.75rem; font-weight: 600;
-  border: 1px solid rgba(169,111,45,0.25);
+  border: 1px solid rgba(201,168,120,0.25);
   transition: all var(--duration) var(--ease);
 }
 .add-cart-btn:hover {
@@ -397,7 +681,7 @@ em { font-style: italic; color: var(--accent); }
   background: var(--surface);
 }
 .como-comprar-head { text-align: center; margin-bottom: 2.5rem; }
-.como-comprar-head h2 { font-size: clamp(1.6rem, 3.5vw, 2.2rem); margin-bottom: 0.5rem; }
+.como-comprar-head h2 { font-size: clamp(1.6rem, 3.5vw, 2.2rem); margin-bottom: 0.5rem; color: var(--gold-matte); }
 .como-comprar-head p { color: var(--text-muted); max-width: 440px; margin: 0 auto; }
 
 .steps {
@@ -414,15 +698,16 @@ em { font-style: italic; color: var(--accent); }
 .step-num {
   display: inline-flex; align-items: center; justify-content: center;
   width: 40px; height: 40px; border-radius: 50%;
-  background: rgba(169,111,45,0.12); color: var(--accent);
+  background: rgba(133,79,25,0.06); color: var(--gold-matte);
   font-family: 'Playfair Display', serif; font-weight: 700;
   font-size: 1.1rem; margin-bottom: 0.75rem;
 }
 .step h3 {
   font-family: 'Inter', sans-serif; font-weight: 600;
   font-size: 0.95rem; margin-bottom: 0.35rem;
+  color: var(--gold-matte);
 }
-.step p { font-size: 0.82rem; color: var(--text-muted); line-height: 1.6; }
+.step p { font-size: 0.82rem; color: var(--pearl-gray); line-height: 1.6; }
 
 .como-comprar-note {
   text-align: center; font-size: 0.85rem; color: var(--text-faint);
@@ -440,36 +725,74 @@ em { font-style: italic; color: var(--accent); }
   align-items: center;
 }
 .nosotros-copy h2 {
-  font-size: clamp(1.6rem, 3.5vw, 2.2rem);
-  margin-bottom: 1rem;
+  font-size: clamp(1.8rem, 3.5vw, 2.4rem);
+  margin-bottom: 1.25rem;
+  color: var(--gold-matte);
 }
-.nosotros-copy p {
-  color: var(--text-muted); line-height: 1.75;
-  margin-bottom: 0.75rem; font-size: 0.92rem;
+.marca-quote {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+  border-radius: var(--radius);
+  padding: 1.75rem 1.5rem;
+  box-shadow: var(--shadow);
 }
+.marca-p {
+  color: var(--pearl-gray);
+  line-height: 1.75;
+  margin-bottom: 0.85rem;
+  font-size: 0.96rem;
+}
+.marca-highlight {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-style: italic;
+  font-size: 1.2rem;
+  color: var(--gold-matte);
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+}
+
 .nosotros-imgs {
   display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;
 }
 .nosotros-imgs img {
-  width: 100%; height: 220px; object-fit: cover;
+  width: 100%; height: 240px; object-fit: cover;
   border-radius: var(--radius);
   border: 1px solid var(--border);
 }
 .nosotros-imgs img:first-child { transform: translateY(16px); }
 
 /* ============================================
-   CONTACTO — SVG icon rows
+   CONTACTO — SVG icon rows & CTA
    ============================================ */
-.contacto { padding: 4rem 0; background: var(--surface); }
-.contacto-head { text-align: center; margin-bottom: 2rem; }
-.contacto-head h2 { font-size: clamp(1.5rem, 3vw, 2rem); }
+.contacto { padding: 4.5rem 0; background: var(--surface); }
+.contacto-head { text-align: center; margin-bottom: 1.5rem; }
+.contacto-head h2 { font-size: clamp(1.75rem, 3.5vw, 2.4rem); margin-bottom: 0.5rem; color: var(--gold-matte); }
+.contacto-lead {
+  font-size: 1.05rem;
+  color: var(--gold-matte);
+  font-style: italic;
+  font-family: 'Playfair Display', Georgia, serif;
+  max-width: 500px;
+  margin: 0 auto;
+}
+.contacto-cta-wrap {
+  margin: 2rem 0 2.5rem;
+}
 
 .contact-list {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 0.85rem;
-  max-width: 860px;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  max-width: 680px;
   margin: 0 auto;
+}
+@media (max-width: 640px) {
+  .contact-list {
+    grid-template-columns: 1fr;
+    max-width: 280px;
+  }
 }
 .contact-link {
   display: flex;
@@ -482,7 +805,7 @@ em { font-style: italic; color: var(--accent); }
   border-radius: var(--radius);
   border: 1px solid var(--border);
   text-decoration: none;
-  color: var(--text);
+  color: var(--pearl-gray);
   box-shadow: var(--shadow-sm);
   transition: border-color var(--duration) var(--ease), transform var(--duration) var(--ease), box-shadow var(--duration) var(--ease);
 }
@@ -657,7 +980,7 @@ em { font-style: italic; color: var(--accent); }
   padding-bottom: 2.5rem;
 }
 .footer-brand p {
-  color: var(--text-muted); font-size: 0.85rem;
+  color: var(--pearl-gray); font-size: 0.85rem;
   margin-top: 0.5rem; max-width: 260px; line-height: 1.6;
 }
 .footer-col h3, .footer-col h4 {
@@ -666,7 +989,7 @@ em { font-style: italic; color: var(--accent); }
   color: var(--accent); margin-bottom: 0.75rem;
 }
 .footer-col a {
-  display: block; font-size: 0.85rem; color: var(--text-muted);
+  display: block; font-size: 0.85rem; color: var(--pearl-gray);
   padding: 0.25rem 0;
   transition: color var(--duration) var(--ease);
 }
@@ -676,7 +999,7 @@ em { font-style: italic; color: var(--accent); }
   border-top: 1px solid var(--border);
   padding: 1.25rem 0; text-align: center;
 }
-.footer-bottom p { font-size: 0.75rem; color: var(--text-faint); }
+.footer-bottom p { font-size: 0.75rem; color: var(--pearl-gray); }
 
 /* ============================================
    RESPONSIVE
@@ -701,6 +1024,24 @@ em { font-style: italic; color: var(--accent); }
 
   .nosotros-inner { grid-template-columns: 1fr; }
   .nosotros-imgs { order: -1; }
+
+  .manifiesto-grid {
+    grid-template-columns: 1fr;
+    max-width: 480px;
+    gap: 1rem;
+  }
+  .pilares-grid {
+    grid-template-columns: 1fr;
+    max-width: 480px;
+    margin-inline: auto;
+    gap: 1rem;
+  }
+  .rituales-grid {
+    grid-template-columns: 1fr;
+    max-width: 480px;
+    margin-inline: auto;
+    gap: 1rem;
+  }
 
   .footer-inner { grid-template-columns: 1fr; gap: 1.5rem; }
 }
@@ -776,13 +1117,14 @@ a:focus-visible, button:focus-visible, input:focus-visible {
   position: fixed; inset: 0; z-index: 300;
   background: rgba(0,0,0,0.92);
   display: flex; align-items: center; justify-content: center;
+  overflow-y: auto; padding: 1.5rem;
   opacity: 0; visibility: hidden;
   transition: opacity 0.3s var(--ease), visibility 0.3s var(--ease);
 }
 .lightbox.active { opacity: 1; visibility: visible; }
 
 .lightbox-close {
-  position: absolute; top: 1.5rem; right: 1.5rem;
+  position: fixed; top: 1.5rem; right: 1.5rem;
   width: 48px; height: 48px; border-radius: 50%;
   background: rgba(255,255,255,0.1); color: #fff;
   display: flex; align-items: center; justify-content: center;
@@ -792,7 +1134,7 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 .lightbox-close:hover { background: rgba(255,255,255,0.2); }
 
 .lightbox-nav {
-  position: absolute; top: 50%; transform: translateY(-50%);
+  position: fixed; top: 50%; transform: translateY(-50%);
   width: 48px; height: 48px; border-radius: 50%;
   background: rgba(255,255,255,0.1); color: #fff;
   display: flex; align-items: center; justify-content: center;
@@ -805,18 +1147,18 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 
 .lightbox-content {
   display: flex; flex-direction: column; align-items: center;
-  max-width: 90vw; max-height: 90vh;
+  max-width: 90vw; margin: auto;
   text-align: center;
 }
 
 .lightbox-img {
-  max-width: 100%; max-height: 60vh;
+  max-width: 100%; max-height: 55vh;
   object-fit: contain; border-radius: var(--radius-sm);
   box-shadow: 0 8px 40px rgba(0,0,0,0.5);
 }
 
 .lightbox-info {
-  margin-top: 1.5rem; color: #fff;
+  margin-top: 1rem; color: #fff;
 }
 .lightbox-info h3 {
   font-family: 'Inter', sans-serif; font-size: 1.2rem;
@@ -833,7 +1175,34 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 }
 .lightbox-counter {
   font-size: 0.8rem; color: rgba(255,255,255,0.5);
-  margin-bottom: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+/* --- Variantes de color: selector circular dentro del lightbox --- */
+.variant-dots {
+  display: flex; gap: 0.5rem; justify-content: center; align-items: center;
+  margin: 0 auto 0.9rem; flex-wrap: wrap;
+}
+.variant-dot {
+  width: 44px; height: 44px; padding: 0;
+  border-radius: 50%; overflow: hidden; cursor: pointer;
+  border: 2px solid rgba(255,255,255,0.35);
+  background: transparent;
+  transition: border-color var(--duration) var(--ease), transform var(--duration) var(--ease);
+}
+.variant-dot img {
+  width: 100%; height: 100%; object-fit: cover; display: block;
+}
+.variant-dot:hover { border-color: rgba(255,255,255,0.7); transform: translateY(-2px); }
+.variant-dot:focus-visible {
+  outline: 2px solid #fff; outline-offset: 2px; border-color: #fff;
+}
+.variant-dot.active {
+  border-color: #c9a878;
+  box-shadow: 0 0 0 2px rgba(255,255,255,0.55);
+}
+@media (max-width: 600px) {
+  .variant-dot { width: 38px; height: 38px; }
 }
 
 .lightbox-whatsapp {
@@ -850,7 +1219,7 @@ a:focus-visible, button:focus-visible, input:focus-visible {
   .lightbox-nav { width: 40px; height: 40px; }
   .lightbox-prev { left: 0.5rem; }
   .lightbox-next { right: 0.5rem; }
-  .lightbox-img { max-height: 50vh; }
+  .lightbox-img { max-height: 45vh; }
   .lightbox-info h3 { font-size: 1rem; }
   .lightbox-price { font-size: 1.2rem; }
 }
@@ -929,5 +1298,5 @@ a:focus-visible, button:focus-visible, input:focus-visible {
    ============================================ */
 ::-webkit-scrollbar { width: 5px; }
 ::-webkit-scrollbar-track { background: var(--bg); }
-::-webkit-scrollbar-thumb { background: rgba(169,111,45,0.25); border-radius: 3px; }
+::-webkit-scrollbar-thumb { background: rgba(201,168,120,0.25); border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: rgba(169,111,45,0.4); }
