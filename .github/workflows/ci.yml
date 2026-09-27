@@ -26,3 +26,49 @@ jobs:
 
       - name: Verify cache version coherence
         run: python3 scripts/verify_versions.py
+
+  lighthouse:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      # Se audita el repo servido en local (no producción) para atrapar
+      # regresiones ANTES del despliegue. Umbrales en
+      # scripts/lighthouse_check.py; baseline en LIGHTHOUSE_BASELINE.md.
+      - name: Serve site locally
+        run: |
+          python3 -m http.server 8080 --bind 127.0.0.1 &
+          sleep 2
+          curl -s -o /dev/null -w "servidor local: %{http_code}\n" http://127.0.0.1:8080/
+
+      - name: Run Lighthouse (mobile)
+        run: |
+          npx -y lighthouse@12 "http://127.0.0.1:8080/" \
+            --quiet \
+            --chrome-path="$(which chrome || echo /usr/bin/google-chrome)" \
+            --chrome-flags="--headless=new --no-sandbox --disable-dev-shm-usage" \
+            --output=json --output-path=/tmp/lh-report.json \
+            --only-categories=performance,seo,accessibility,best-practices \
+            --max-wait-for-load=60000 || true
+
+      # Los runners de ubuntu-latest traen Chrome preinstalado; si no se
+      # encuentra, instalarlo explícitamente.
+      - name: Ensure Chrome present
+        if: ${{ !startsWith(runner.os, 'macOS') }}
+        run: |
+          if ! ls /usr/bin/google-chrome* /opt/google/chrome/chrome 2>/dev/null | head -1; then
+            echo "Chrome no encontrado en el runner: instalando estable"
+            sudo apt-get update -qq && sudo apt-get install -y -qq wget gnupg
+            wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | sudo gpg --dearmor -o /usr/share/keyrings/google.gpg
+            echo "deb [arch=amd64 signed-by=/usr/share/keyrings/google.gpg] https://dl.google.com/linux/chrome/deb/ stable main" | sudo tee /etc/apt/sources.list.d/google-chrome.list
+            sudo apt-get update -qq && sudo apt-get install -y -qq google-chrome-stable
+          fi
+
+      - name: Validate Lighthouse scores
+        run: python3 scripts/lighthouse_check.py /tmp/lh-report.json
