@@ -24,10 +24,14 @@ jobs:
       - name: Run unit tests
         run: |
           set -o pipefail
-          node --test --test-reporter=tap tests/*.test.mjs 2>&1 | tee /tmp/tests.log
-          status=${PIPESTATUS[0]}
-          # grep sale 1 sin matches (caso normal, 0 tests fallidos): bajo set -e
-          # mataria el paso — se neutraliza con || true.
+          # status se captura con `|| status=$?` y NO con PIPESTATUS: bajo bash -e
+          # (el shell de los run: de Actions) un pipeline fallido aborta el paso
+          # en esta línea, y las annotations de abajo quedaban inalcanzables
+          # (verificado por simulación; hallazgo del code review 27-sep).
+          status=0
+          node --test --test-reporter=tap tests/*.test.mjs 2>&1 | tee /tmp/tests.log || status=$?
+          # grep sale 1 sin matches (caso normal, 0 tests fallidos): se neutraliza
+          # con || true para que la captura de annotations no tape el status real.
           grep -E "^not ok" /tmp/tests.log | head -10 | while read -r linea; do
             echo "::error::$linea"
           done || true
