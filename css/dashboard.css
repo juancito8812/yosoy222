@@ -112,7 +112,7 @@ body {
   border: 1px solid rgba(37, 211, 102, 0.25);
   padding: 0.2rem 0.65rem;
   border-radius: var(--radius-full);
-  font-size: 0.72rem;
+  font-size: 0.75rem;
   font-weight: 600;
   letter-spacing: 0.04em;
   text-transform: uppercase;
@@ -392,7 +392,7 @@ canvas {
 }
 
 .funnel-step-label {
-  font-size: 0.72rem;
+  font-size: 0.75rem;
   color: var(--text-muted);
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -408,7 +408,7 @@ canvas {
 }
 
 .funnel-step-rate {
-  font-size: 0.74rem;
+  font-size: 0.75rem;
   font-weight: 600;
   color: #4ade80;
   margin-top: 0.3rem;
@@ -474,7 +474,7 @@ canvas {
   align-items: center;
   padding: 0.2rem 0.55rem;
   border-radius: 6px;
-  font-size: 0.72rem;
+  font-size: 0.75rem;
   font-weight: 600;
   letter-spacing: 0.02em;
 }
