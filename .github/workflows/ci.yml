@@ -23,12 +23,13 @@ jobs:
 
       - name: Run unit tests
         run: |
-          node --test tests/*.test.mjs 2>&1 | tee /tmp/tests.log
-          # Annotation con los tests fallidos visibles sin acceso a logs
+          set -o pipefail
+          node --test --test-reporter=tap tests/*.test.mjs 2>&1 | tee /tmp/tests.log
+          status=${PIPESTATUS[0]}
           grep -E "^not ok" /tmp/tests.log | head -10 | while read -r linea; do
             echo "::error::$linea"
           done
-          grep -qE "^# fail 0" /tmp/tests.log || { echo "::error::suite de tests fallo (ver not ok arriba)"; exit 1; }
+          exit $status
 
       - name: Verify cache version coherence
         run: python3 scripts/verify_versions.py
