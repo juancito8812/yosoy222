@@ -74,7 +74,7 @@ def main():
             f'            <p class="product-category">{escape_html(cat_labels.get(cat, "Producto artesanal"))}</p>\n'
             f'            <p class="product-desc">{escape_html(desc)}</p>\n'
             f'            <div class="product-footer">\n'
-            f'              <span class="product-price">${price_str}</span>\n'
+            f'              <span class="product-price"><span class="currency">$</span>{price_str}</span>\n'
             f'              <button class="add-cart-btn" data-name="{escape_html(name)}" data-price="{price_str}">Agregar</button>\n'
             f'            </div>\n'
             f'          </div>\n'

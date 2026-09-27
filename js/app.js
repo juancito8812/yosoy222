@@ -615,7 +615,7 @@
     lightboxImg.alt = `${p.name} artesanal`;
     lightboxName.textContent = p.name;
     lightboxDesc.textContent = p.desc;
-    lightboxPrice.textContent = `$${p.price.toFixed(2)}`;
+    lightboxPrice.innerHTML = `<span class="currency">$</span>${p.price.toFixed(2)}`;
     lightboxCounter.textContent = `${currentLightboxIndex + 1} / ${visibleProducts.length}`;
     renderVariantDots(p);
     

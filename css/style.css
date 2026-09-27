@@ -650,6 +650,15 @@ em { font-style: italic; color: var(--gold-matte); font-family: 'Playfair Displa
   font-family: 'Playfair Display', serif;
   font-size: 1.1rem; font-weight: 600; color: var(--gold-matte);
 }
+/* El $ de Playfair asciende ~1.5x la altura de sus dígitos oldstyle (medido:
+   13px vs 8-9px a 15.2px). Se reduce al factor dígito/símbolo (~0.65) y con
+   line-height 0 comparte baseline: símbolo y número quedan a la misma altura
+   óptica. Aplica a todos los precios ($ tarjetas, lightbox, carrito). */
+.currency {
+  font-size: 0.65em;
+  line-height: 0;
+  vertical-align: baseline;
+}
 .add-cart-btn {
   padding: 0.4rem 0.85rem;
   border-radius: var(--radius-full);
