@@ -57,10 +57,13 @@ def main() -> int:
         print("\n== REGRESIONES DETECTADAS ==")
         for name, score, umbral, baseline in fallos:
             delta_baseline = score - baseline
-            print(
+            linea = (
                 f"- {name}: {score} < umbral {umbral} "
                 f"(baseline v47: {baseline}, delta {delta_baseline:+d})"
             )
+            print(linea)
+            # Annotation visible en la UI/API de Actions sin necesidad de logs
+            print(f"::error::Lighthouse {name}: {score} < umbral {umbral} (baseline {baseline}, delta {delta_baseline:+d})")
         print(
             "\nRevisa LIGHTHOUSE_BASELINE.md para el contexto y los hallazgos aceptados."
         )
