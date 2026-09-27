@@ -55,7 +55,7 @@
   { file: "VM-HAMSA_vela_mano_hamsa_75g.jpg", name: "Mano Hamsa", cat: "vela", price: 8, desc: "Vela artesanal de 75grs. en forma de Mano Hamsa. Elaborada con cera de soja en blanco, verde, rosa, beige Aroma: Coco Vainilla. Canela" },
   { file: "VM-CORAZON_vela_corazon_182g.jpg", name: "Corazón", cat: "vela", price: 13.5, desc: "Vela artesanal de 182grs. en forma de Corazón. Elaborada con cera de soja en blanco, rosa, rojo Aroma: Coco Vainilla. Lavanda, Limon Fresh." },
   { file: "VM-CRUZ_vela_cruz_con_paloma_52g.jpg", name: "Cruz con Paloma", cat: "vela", price: 7, desc: "Vela artesanal de 52grs. en forma de Cruz con palomita. Elaborada con cera de soja en blanco con rosa, amarillo, azul Aroma: Coco Vainilla. Jazmin" },
-  { file: "VM-CUBO_vela_cubo_40g.jpg", name: "Cubo", cat: "melt", price: 7, desc: "Wax Melts / Vela de 40grs. en forma de Cubo. Elaborada con cera de soja en blanco, amarillo, azul, rosa Aroma: Coco Vainilla. Canela" },
+  { file: "VM-CUBO_vela_cubo_40g.jpg", name: "Cubo", cat: "vela", price: 7, desc: "Vela de 40grs. en forma de Cubo. Elaborada con cera de soja en blanco, amarillo, azul, rosa Aroma: Coco Vainilla. Canela" },
   { file: "VM-VIRGEN_vela_virgen_del_carmen_42g.jpg", name: "Virgen del Carmen", cat: "vela", price: 7, desc: "Vela artesanal de 42grs. en forma de Virgen del Carmen. Elaborada con cera de soja en blanco y dorado Aroma: Coco Vainilla. Canela" },
   // === VELAS ENVASES (hoja: Velas Envases) ===
   { file: "VE-MINIPETIT_vela_mini_petit_123g.jpg", name: "Mini Petit", cat: "vela", price: 7.5, desc: "Vela artesanal de 123grs. Elaborado en envase de vidrio transparente, con tapa metalica dorada. Contiene una base de cera de soja blanca. Aroma: Coco Vainilla" },
