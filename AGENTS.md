@@ -153,4 +153,4 @@ Antes de reportar una tarea como completa:
 
 ---
 
-*Documento actualizado al 25 de septiembre de 2026. Producción sigue en v37; el bloque legal (v38) está implementado en el árbol de trabajo sin commitear. La rama `redesign-ritual` va en v42 (álbum de variantes de color de velas) y está respaldada en `origin/redesign-ritual` (`da8ea11`) — merge a main solo con autorización expresa del dueño (regla 9).*
+*Documento actualizado al 27 de septiembre de 2026. Producción en **v38**: el bloque legal está publicado en https://yosoy222.com/legal (commit `fe63284`, CI Tests + Pages + Purge Cloudflare en verde). La rama `redesign-ritual` va en v43 (álbum de variantes + portadas corregidas + ajustes de texto del 26-sep) y está respaldada en `origin/redesign-ritual` (`3b64906`) — merge a main solo con autorización expresa del dueño (regla 9).*

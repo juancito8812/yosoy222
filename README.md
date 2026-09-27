@@ -438,7 +438,7 @@ El sitio publica cuatro documentos en `/legal/` (estáticos, indexables y en el 
 
 > ⚠️ **Datos pendientes de completar:** las páginas marcan en amarillo cada dato que solo puede aportar el dueño (razón social, RIF, domicilio fiscal, correo, zonas y plazos de entrega, plazos de garantía…). Están listados en `.agents/MEMORY.md` («Datos pendientes del bloque legal»). Hasta completarlos, los documentos son plantillas completas pero sin identificar al vendedor.
 
-> 🟡 **Estado al 22 sep 2026 (cierre de sesión):** este bloque está **implementado y verificado en local, aún SIN commit ni push** — producción sigue en Cache v37. Para retomarlo: `python3 -m http.server 8095` → `http://127.0.0.1:8095/legal/terminos.html` (y los enlaces del pie de la home); verificar con `npm test` + `python3 scripts/verify_versions.py`; después commit **selectivo** y push a `main` (el push despliega de inmediato), vigilando el CI. Detalle completo en `.agents/MEMORY.md` («Estado de cierre»).
+> ✅ **Publicado en producción (27 sep 2026):** commit `fe63284` — CI Tests, Pages build y Purge Cloudflare en verde; las 4 páginas verificadas por HTTP con los datos del vendedor rellenados (26 sep) y cero marcadores `[COMPLETAR]`. El test-guard exige 0 marcadores y identidad verificable, así que ninguna página puede volver a publicarse como borrador.
 
 ---
 
@@ -730,4 +730,4 @@ gh run list --limit 3
 
 ---
 
-*Documentación técnica actualizada al 25 de septiembre de 2026. Proyecto 100% verificado en pruebas unitarias (32/32 pasadas), CI/CD, auditoría de producción, bot de WhatsApp verificado E2E y despliegue activo en https://yosoy222.com. La rama `redesign-ritual` (v42, con álbum de variantes de velas) está respaldada en `origin` y NO se mergea a main hasta autorización expresa del dueño; el bloque legal v38 sigue pendiente de commit en el árbol de trabajo de main.*
+*Documentación técnica actualizada al 27 de septiembre de 2026. Proyecto 100% verificado en pruebas unitarias (32/32 pasadas), CI/CD, auditoría de producción, bot de WhatsApp verificado E2E y despliegue activo en https://yosoy222.com — producción en Cache v38 con el bloque legal publicado (`/legal`, commit `fe63284`). La rama `redesign-ritual` (v43, álbum de variantes + ajustes del 26-sep) está respaldada en `origin` y NO se mergea a main hasta autorización expresa del dueño.*
