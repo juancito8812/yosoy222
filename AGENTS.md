@@ -34,7 +34,7 @@ Tienda online de velas artesanales, pulseras, collares, franelas y accesorios.
 # 1. Ejecutar servidor local de desarrollo (NUNCA usar file://)
 python3 -m http.server 8080
 
-# 2. Ejecutar la suite de pruebas automatizadas (35: carrito, filtros, seguridad, bot, legales y variantes de imagen)
+# 2. Ejecutar la suite de pruebas automatizadas (40: carrito, filtros, seguridad, bot, legales, variantes de imagen y estrategia del SW)
 npm test
 
 # 3. Sincronizar catálogo estático prerenderizado tras modificar js/app.js
@@ -87,7 +87,8 @@ yosoy222/
 │   ├── cart_and_filters.test.mjs  ← 13 pruebas de carrito, filtros y seguridad sin dependencias
 │   ├── bot_relay.test.mjs         ← 11 pruebas del camino del staff del bot (comandos, atender/fin, relay)
 │   ├── legal_pages.test.mjs       ← 8 pruebas del bloque legal (enlaces, CSP, precache, aviso de cookies)
-│   └── variants.test.mjs          ← 3 pruebas de la convención de variantes de color (build_variants.py)
+│   ├── variants.test.mjs          ← 3 pruebas de la convención de variantes de color (build_variants.py)
+│   └── sw_strategy.test.mjs       ← 5 pruebas de la estrategia de caché del SW (ejecuta el sw.js real en sandbox node:vm)
 ├── .github/
 │   ├── dependabot.yml             ← Dependabot para GitHub Actions y npm
 │   └── workflows/
@@ -145,7 +146,7 @@ Al modificar, agregar o eliminar productos del catálogo:
 ## 7. Protocolo de Verificación Antes de Finalizar Tareas
 
 Antes de reportar una tarea como completa:
-1. Ejecutar `npm test` y confirmar que las 35 pruebas pasan al 100%.
+1. Ejecutar `npm test` y confirmar que las 40 pruebas pasan al 100%.
 2. Ejecutar `python3 scripts/verify_versions.py` si se tocó cualquier versión o asset precacheado.
 3. Ejecutar `git status` para verificar que no queden archivos temporales o cambios sin registrar.
 4. Tras hacer `git push`, monitorear CI (`gh run list --limit 3` o API de check-runs) y confirmar que `CI Tests` y `Purge Cloudflare Cache` concluyan en verde (`✓`).
@@ -155,4 +156,4 @@ Antes de reportar una tarea como completa:
 
 ---
 
-*Documento actualizado al 27 de septiembre de 2026. Producción en **v45**: el rediseño ritualista de la rama `redesign-ritual` fue **mergeado a main con autorización expresa del dueño** (commit `ee9c3b9`) — álbumes de variantes (22 productos / 95 fotos), textos de portada corregidos, bloque legal integrado, botón WhatsApp del lightbox siempre visible y wordmark 222 a altura de mayúsculas (35/35 pruebas, CI Tests + Pages + Purge Cloudflare en verde). La rama permanece en `origin` como registro histórico.*
+*Documento actualizado al 27 de septiembre de 2026. Producción en **v45**: el rediseño ritualista de la rama `redesign-ritual` fue **mergeado a main con autorización expresa del dueño** (commit `ee9c3b9`) — álbumes de variantes (22 productos / 95 fotos), textos de portada corregidos, bloque legal integrado, botón WhatsApp del lightbox siempre visible y wordmark 222 a altura de mayúsculas (35/35 pruebas, CI Tests + Pages + Purge Cloudflare en verde). La rama permanece en `origin` como registro histórico.

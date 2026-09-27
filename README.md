@@ -150,12 +150,13 @@ yosoy222/
 │   │   ├── Cumplimiento de la CSP (nada inline) y versión de caché vigente
 │   │   ├── Marcadores `[COMPLETAR]` siempre visibles y aviso de cookies
 │   │   └── Presencia en el precache del SW y en el sitemap
-│   └── variants.test.mjs          ← 3 pruebas de la convención de variantes de color (build_variants.py)
+│   ├── variants.test.mjs          ← 3 pruebas de la convención de variantes de color (build_variants.py)
+│   └── sw_strategy.test.mjs       ← 5 pruebas de la estrategia de caché del SW (ejecuta el sw.js real en sandbox node:vm)
 │
 ├── .github/
 │   ├── dependabot.yml             ← Actualizaciones automáticas para GitHub Actions y npm
 │   └── workflows/
-│       ├── ci.yml                 ← CI automático: ejecuta las 35 pruebas en cada push/PR
+│   ├── ci.yml                 ← CI automático: ejecuta las 40 pruebas en cada push/PR
 │       └── purge-cache.yml        ← Despliegue: Smoke test (origen 200) + Purge Cloudflare
 │
 ├── scripts/
@@ -190,7 +191,7 @@ yosoy222/
 | **Frontend** | HTML5 semántico | Prerenderizado estático, ARIA interactivo, microdatos Schema.org |
 | **Estilos** | CSS3 Vanilla | Custom properties (:root), Grid, Flexbox, sin preprocesadores |
 | **Interactividad** | ES6+ Vanilla | Zero runtime dependencies, carga diferida (`defer`), módulos nativos |
-| **Pruebas** | Node.js Test Runner | `node --test` nativo (35 pruebas: sitio, bot, legales y variantes, sin librerías pesadas) |
+| **Pruebas** | Node.js Test Runner | `node --test` nativo (40 pruebas: sitio, bot, legales, variantes y estrategia del SW, sin librerías pesadas) |
 | **PWA & Offline** | Service Worker API | Cache v43, Network-First en navegación, manifest standalone |
 | **SEO & Datos** | JSON-LD / XML | Schema.org Store/ItemList, robots.txt, sitemap.xml canónico |
 | **Hosting & CI/CD** | GitHub Pages + Actions | Despliegue automático, CI de pruebas, Dependabot activo |
@@ -219,7 +220,7 @@ npx serve .
 
 ### 2. Ejecutar la suite de pruebas automatizadas
 
-El proyecto incluye 35 pruebas con el runner nativo de Node.js (13 del sitio + 11 del bot + 8 del bloque legal + 3 de variantes de imagen):
+El proyecto incluye 40 pruebas con el runner nativo de Node.js (13 del sitio + 11 del bot + 8 del bloque legal + 3 de variantes de imagen + 5 de la estrategia de caché del Service Worker):
 
 ```bash
 # Ejecutar con npm
@@ -683,7 +684,8 @@ Tokens principales en `:root` de [`css/style.css`](css/style.css):
 | `manifest.json` | Configuración PWA e iconos |
 | `tests/cart_and_filters.test.mjs` | 13 pruebas del sitio: carrito, filtros y seguridad |
 | `tests/bot_relay.test.mjs` | 11 pruebas del bot: comandos del staff, atender/fin y relay desde el número principal |
-| `tests/legal_pages.test.mjs` | 8 pruebas del bloque legal: enlaces, CSP, versión de caché, precache y sitemap |
+| `tests/variants.test.mjs` | 3 pruebas de la convención de variantes de color |
+| `tests/sw_strategy.test.mjs` | 5 pruebas de la estrategia de caché del Service Worker: `.json` Network-First, fallback offline y limpieza de cachés (ejecuta el sw.js real en sandbox `node:vm`) |
 | `tests/variants.test.mjs` | Validación de la convención de variantes de color (`build_variants.py --check`) |
 | `.github/workflows/` | Automatización de CI y purga de caché con smoke test |
 | `.github/dependabot.yml` | Configuración de actualización de dependencias y acciones |
@@ -734,4 +736,4 @@ gh run list --limit 3
 
 ---
 
-*Documentación técnica actualizada al 27 de septiembre de 2026. Proyecto 100% verificado en pruebas unitarias (35/35 pasadas), CI/CD, auditoría de producción, bot de WhatsApp verificado E2E y despliegue activo en https://yosoy222.com — producción en **Cache v45** con el rediseño ritualista mergeado desde `redesign-ritual` con autorización expresa del dueño (commit `ee9c3b9`, más revalidación en segundo plano de `.json` en el Service Worker), que incluye el bloque legal publicado (`/legal`). La rama queda respaldada en `origin` como registro histórico.*
+*Documentación técnica actualizada al 27 de septiembre de 2026. Proyecto 100% verificado en pruebas unitarias (40/40 pasadas), CI/CD, auditoría de producción, bot de WhatsApp verificado E2E y despliegue activo en https://yosoy222.com — producción en **Cache v45** con el rediseño ritualista mergeado desde `redesign-ritual` con autorización expresa del dueño (commit `ee9c3b9`, más revalidación en segundo plano de `.json` en el Service Worker), que incluye el bloque legal publicado (`/legal`). La rama queda respaldada en `origin` como registro histórico.*
