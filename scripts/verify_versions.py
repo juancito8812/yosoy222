@@ -58,13 +58,23 @@ def check_manifest(sw_version: int, problems: list) -> None:
         fail(f"manifest.json: start_url ?v={v} != SW v{sw_version}", problems)
 
 
+def html_pages() -> list:
+    """Todas las páginas del sitio: raíz (index, dashboard…) y legal/."""
+    pages = sorted(REPO_ROOT.glob("*.html"))
+    legal_dir = REPO_ROOT / "legal"
+    if legal_dir.is_dir():
+        pages += sorted(legal_dir.glob("*.html"))
+    return pages
+
+
 def check_script_tags(sw_version: int, problems: list) -> None:
-    tag_re = re.compile(r'<script[^>]+src="(js/[^"?]+(?:\?v=(\d+))?)"')
-    for page in ("index.html", "dashboard.html"):
-        path = REPO_ROOT / page
-        if not path.exists():
-            fail(f"no existe {page}", problems)
-            continue
+    tag_re = re.compile(r'<script[^>]+src="((?:\.\./)?js/[^"?]+(?:\?v=(\d+))?)"')
+    pages = html_pages()
+    if not pages:
+        fail("no encuentro ninguna página HTML", problems)
+        return
+    for path in pages:
+        page = path.relative_to(REPO_ROOT).as_posix()
         html = path.read_text(encoding="utf-8")
         for src, qv in tag_re.findall(html):
             if not qv:

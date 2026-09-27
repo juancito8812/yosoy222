@@ -3,23 +3,29 @@
    Offline caching for PWA
    ============================================ */
 
-const CACHE_NAME = 'yosoy222-v37';
+const CACHE_NAME = 'yosoy222-v38';
 
 // Assets to precache on install (offline shell + LCP images)
 const PRECACHE_ASSETS = [
   '/',
   '/index.html',
   '/dashboard.html',
-  '/css/style.css?v=37',
-  '/css/dashboard.css?v=37',
-  '/js/config.js?v=37',
-  '/js/font-flip.js?v=37',
-  '/js/shared.js?v=37',
-  '/js/analytics.js?v=37',
-  '/js/cart.js?v=37',
-  '/js/app.js?v=37',
-  '/js/dashboard.js?v=37',
-  '/js/dashboard-view.js?v=37',
+  '/css/style.css?v=38',
+  '/css/dashboard.css?v=38',
+  '/css/legal.css?v=38',
+  '/js/config.js?v=38',
+  '/js/font-flip.js?v=38',
+  '/js/shared.js?v=38',
+  '/js/analytics.js?v=38',
+  '/js/cart.js?v=38',
+  '/js/app.js?v=38',
+  '/js/legal.js?v=38',
+  '/js/dashboard.js?v=38',
+  '/js/dashboard-view.js?v=38',
+  '/legal/terminos.html',
+  '/legal/privacidad.html',
+  '/legal/envios.html',
+  '/legal/devoluciones.html',
   '/manifest.json',
   '/icons/icon-192x192.png?v=15',
   '/icons/icon-512x512.png?v=15',
