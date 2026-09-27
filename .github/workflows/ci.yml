@@ -84,5 +84,13 @@ jobs:
 
       # Umbrales en scripts/lighthouse_check.py; baseline y contexto en
       # LIGHTHOUSE_BASELINE.md.
+      - name: Upload Lighthouse report (artefacto)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lighthouse-report
+          path: /tmp/lh-report.json
+          if-no-files-found: ignore
+
       - name: Validate Lighthouse scores
         run: python3 scripts/lighthouse_check.py /tmp/lh-report.json
