@@ -106,7 +106,7 @@ jobs:
       # LIGHTHOUSE_BASELINE.md.
       - name: Upload Lighthouse report (artefacto)
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: lighthouse-report
           path: /tmp/lh-report.json
