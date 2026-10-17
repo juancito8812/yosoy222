@@ -624,7 +624,7 @@ gh run list --limit 3   # o la API de check-runs
 | 13 | Cruz con Paloma | `VM-CRUZ_vela_cruz_con_paloma_52g.jpg` | $7.00 | Vela 52g religiosa |
 | 14 | Cubo | `VM-CUBO_vela_cubo_40g.jpg` | $7.00 | Vela ritualista 40g geométrica ("la vela Cubo") |
 | 15 | Virgen del Carmen | `VM-VIRGEN_vela_virgen_del_carmen_42g.jpg` | $7.00 | Vela 42g devoción |
-| 16 | Pino | `VM-PINO_vela_pino_138g.jpg` | $14.00 | Vela 138g en forma de pino, 4 colores (álbum) |
+| 16 | Pino Navideño | `VM-PINO_vela_pino_138g.jpg` | $14.00 | Vela 138g en forma de pino, 4 colores (álbum) |
 
 ### Velas Envases (10) — Cristal y Metal
 | # | Nombre | Archivo | Precio | Resumen |
