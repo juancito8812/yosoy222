@@ -23,7 +23,7 @@ Tienda online de velas artesanales, pulseras, collares, franelas y accesorios.
 - **Testing Nativo:** Módulo `node:test` de Node.js (ejecutable con `npm test` o `node --test tests/*.test.mjs`). Cero paquetes de testing externos.
 - **PWA (Cache v50):** Estrategia Network-First para navegación de páginas (`mode === 'navigate'`) y para `.js`/`.json` (revalidación en background, v45), Stale-While-Revalidate para el resto de estáticos. Precaching enfocado en shell, dashboard, config compartida, bloque legal, iconos HD y miniaturas (`images/thumbs/`, incluidas las variantes del álbum). Iconos de alta resolución generados desde fuente 1280px con fondo blanco sólido y Safe Zone del 80% sin franjas negras.
 - **Dashboard & Analítica Cloud:** Telemetría sin cookies en `js/analytics.js` con ingesta global en Supabase Cloud (`public.yosoy222_events`) **vía Edge Function `dashboard-stats` acción `track`** (sanitización whitelist + rate limit 30/min **durable en Postgres**: RPC atómica `consume_rate_limit` sobre `private.rate_limit_buckets` con limpieza pg_cron cada 10 min y fallback en memoria — verificado: burst 40 con bucket en 5 → 25×200 y 15×429; SQL en `scripts/supabase_rate_limit.sql`; 20 sep 2026). RLS activado y **tabla 100% service_role-only desde el 20 sep 2026** (política `anon_insert_events` eliminada tras desplegar v31; sondeos: anon INSERT 401, anon SELECT vacío, Edge track 200). Lectura global vía la misma función (login admin server-side; credenciales solo en secrets — ver `supabase/README.md`). El cliente ya NO lleva ninguna clave de BD (`js/config.js` solo tiene `SUPABASE_URL` y `GA_ID`). Forwarder oficial GA4 (`G-Y9R0B5NH75`, **carga diferida**: se inyecta tras la primera interacción del usuario o a los 8s como fallback — nunca compite en el arranque; TBT 0ms verificado con Lighthouse); y panel de control en `dashboard.html` (`/dashboard.html`) protegido con autenticación criptográfica (Web Crypto SHA-256 salted hash, protección anti-fuerza bruta, rate-limiting, sesiones efímeras con timeout de 2h y cambio de credenciales con verificación de la vigente).
-- **SEO & Indexabilidad:** 44 productos prerenderizados en `index.html` mediante `scripts/prerender_catalog.py` y datos estructurados Schema.org (`Store` + `ItemList`).
+- **SEO & Indexabilidad:** 45 productos prerenderizados en `index.html` mediante `scripts/prerender_catalog.py` y datos estructurados Schema.org (`Store` + `ItemList`).
 - **Base de Datos / Fuente de Verdad:** Archivo Excel `Catalogo.xlsx` ubicado localmente en `/home/jr/Documentos/Catalogo velas/Catalogo.xlsx`.
 
 ---
@@ -56,7 +56,7 @@ gh run list --limit 3
 
 ```
 yosoy222/
-├── index.html                     ← Landing page con 44 productos prerenderizados y Schema.org LD+JSON
+├── index.html                     ← Landing page con 45 productos prerenderizados y Schema.org LD+JSON
 ├── dashboard.html                 ← Panel de control privado con autenticación SHA-256
 ├── legal/                         ← Documentos legales (términos, privacidad, envíos, devoluciones):
 │                                     los datos del vendedor siguen marcados con `[COMPLETAR: …]` —

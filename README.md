@@ -48,7 +48,7 @@
 
 ### Características del sitio
 
-- **Catálogo 100% Pre-renderizado para SEO:** Los 44 productos vienen renderizados en el HTML estático inicial para rastreo inmediato por Googlebot y Bingbot, complementado con datos estructurados Schema.org (`Store` + `ItemList`).
+- **Catálogo 100% Pre-renderizado para SEO:** Los 45 productos vienen renderizados en el HTML estático inicial para rastreo inmediato por Googlebot y Bingbot, complementado con datos estructurados Schema.org (`Store` + `ItemList`).
 - **Diseño ritualista (post-merge, 27 sep):** paleta beige-crema `#F3EDE4`, tipografía serif Playfair Display en títulos con paleta dorada mate AA, taxonomía de filtros `velas / melts / dijes y pulseras / franelas` y álbum de variantes por producto.
 - **Hero asimétrico** con fotos reales de productos y carga prioritaria (`fetchpriority="high"`).
 - **Búsqueda en tiempo real con debounce:** Filtrado instantáneo por nombre y descripción (ej: "soja", "lavanda", "gold-filled") optimizado con 150 ms de retardo para no saturar el hilo principal.
@@ -73,19 +73,19 @@
 - **CSP estricta vs script anti-bots de Cloudflare (desde ~19 sep 2026):** Cloudflare inyecta en el HTML servido un script de bot-management (`__CF$cv$params`) cuyo contenido rota en cada respuesta y usa un iframe; la CSP (`script-src 'self'`, `default-src 'none'`) lo bloquea → 1 error de consola y Best Practices 92-93/100. Probado y descartado: hash CSP (el hash rota por request), `unsafe-inline` (anula la protección XSS). Estado: **aceptado por el dueño** (AGENTS.md, regla 8); si se deseara BP 100, habría que desactivar Bot Fight Mode en el dashboard de Cloudflare.
 - **El hero móvil domina el LCP (2.5-2.8s en producción):** JPEG grande precacheado; la palanca siguiente es convertirlo a WebP/AVIF (~210ms de ganancia estimada). Detalle en `LIGHTHOUSE_BASELINE.md`.
 
-### Categorías de productos (total: 44)
+### Categorías de productos (total: 45)
 
 | Categoría (filtro) | Catálogo | Cantidad | Rango de precios |
 |--------------------|----------|----------|------------------|
-| Velas (Moldes + Envases, incl. wax melts) | `vela` | 25 | $0.17 – $23.00 |
+| Velas (Moldes + Envases, incl. wax melts) | `vela` | 26 | $0.17 – $23.00 |
 | Collares (gargantillas + collares) | `collar` | 5 | $20.00 – $32.00 |
 | Pulseras | `pulsera` | 6 | $6.00 – $8.00 |
 | Franelas | `franela` | 7 | $14.00 – $16.00 |
 | Accesorios (dijes) | `otro` | 1 | $7.00 |
-| **Total** | | **44** | **$0.17 – $32.00** |
+| **Total** | | **45** | **$0.17 – $32.00** |
 
-> ✅ **Los 44 productos tienen imagen real** optimizada (thumbs a máx 480px y catalog a máx 900px).  
-> ✅ **Álbum por producto (variantes de color):** 22 productos muestran un álbum en el lightbox con la sesión fotográfica de velas del 24-sep (100 fotos nuevas; portada = foto de grupo con todos los colores juntos). Convención y validación en `scripts/IMAGE_GUIDE.md` y `scripts/build_variants.py --check`. Pendiente: 17 fotos de joyas (#107–123) para sus 11 productos.  
+> ✅ **Los 45 productos tienen imagen real** optimizada (thumbs a máx 480px y catalog a máx 900px).  
+> ✅ **Álbum por producto (variantes de color):** 23 productos muestran un álbum en el lightbox con la sesión fotográfica de velas del 24-sep (100 fotos nuevas; portada = foto de grupo con todos los colores juntos). Convención y validación en `scripts/IMAGE_GUIDE.md` y `scripts/build_variants.py --check`. Pendiente: 17 fotos de joyas (#107–123) para sus 11 productos.  
 > ✅ **Set híbrido:** las 7 franelas (F-01…F-07) conservan sus fotos de modelo reales; Cruz con Paloma conserva su foto anterior (sin foto nueva en esa sesión).
 
 ---
@@ -97,10 +97,10 @@ yosoy222/
 │
 ├── index.html                     ← Landing page prerenderizada con el rediseño ritualista
 │   ├── Meta tags: SEO, Open Graph, Twitter Cards, Canonical, PWA, CSP
-│   ├── Schema.org JSON-LD: datos estructurados Store + ItemList (44 productos)
+│   ├── Schema.org JSON-LD: datos estructurados Store + ItemList (45 productos)
 │   ├── Header fijo: logo, nav con trap de foco, carrito, botón mobile con aria-controls
 │   ├── Hero asimétrico (fotos reales con fetchpriority="high")
-│   ├── Catálogo prerenderizado: búsqueda con debounce, filtros con aria-pressed, grid 44 cards
+│   ├── Catálogo prerenderizado: búsqueda con debounce, filtros con aria-pressed, grid 45 cards
 │   ├── Secciones: "Cómo comprar", "Nosotros", "Contacto" y Footer con enlaces legales
 │   ├── Carrito drawer (overlay lateral accesible con trap de foco + aceptación legal)
 │   └── Lightbox modal (role="dialog", teclado Esc/Flechas, focus trap y álbum de variantes)
@@ -154,7 +154,7 @@ yosoy222/
 │       └── purge-cache.yml        ← Despliegue: Smoke test (origen 200) + Purge Cloudflare
 │
 ├── scripts/
-│   ├── prerender_catalog.py       ← Inyecta las 44 tarjetas del catálogo en index.html
+│   ├── prerender_catalog.py       ← Inyecta las 45 tarjetas del catálogo en index.html
 │   ├── build_variants.py          ← Genera js/variants.json desde la convención -v2, -v3… (--check valida)
 │   ├── generate_icons.py          ← Genera los 10 iconos PWA desde icons/source_logo.jpg
 │   ├── verify_icons.py            ← Valida iconos contra manifest.json
@@ -540,7 +540,7 @@ El proyecto cuenta con un esquema de seguridad multicapa validado mediante audit
 
 ## SEO, INDEXABILIDAD Y DATOS ESTRUCTURADOS
 
-1. **Pre-renderizado de Catálogo:** Las 44 tarjetas de productos se encuentran presentes en el código fuente HTML original. Los motores de búsqueda que no ejecutan JavaScript indexan de inmediato todos los títulos, descripciones y precios.
+1. **Pre-renderizado de Catálogo:** Las 45 tarjetas de productos se encuentran presentes en el código fuente HTML original. Los motores de búsqueda que no ejecutan JavaScript indexan de inmediato todos los títulos, descripciones y precios.
 2. **Schema.org JSON-LD:** Bloque estructurado con tipado `Store` y lista ordenada `ItemList` que describe detalladamente cada vela, collar, pulsera o franela, su moneda (USD), precio y disponibilidad (`InStock`).
 3. **Indexación y Rastreo:** Archivos [`robots.txt`](robots.txt) y [`sitemap.xml`](sitemap.xml) canónicos configurados (el sitemap incluye las 4 páginas legales).
 4. **Metadatos Sociales:** Integración completa de Open Graph (`og:title`, `og:image`, `og:description`, `og:url`) y Twitter Cards con URL canónica `https://yosoy222.com/`.
@@ -606,7 +606,7 @@ gh run list --limit 3   # o la API de check-runs
 
 > Fuente: `Catalogo.xlsx` sincronizado con `js/app.js`.
 
-### Velas Moldes (15) — Cera de Soja artesanal
+### Velas Moldes (16) — Cera de Soja artesanal
 | # | Nombre | Archivo | Precio | Resumen |
 |---|--------|---------|--------|---------|
 | 1 | Rosa | `VM-ROSA_vela_rosa_79g.jpg` | $7.00 | Vela 79g en forma de rosa |
@@ -624,47 +624,48 @@ gh run list --limit 3   # o la API de check-runs
 | 13 | Cruz con Paloma | `VM-CRUZ_vela_cruz_con_paloma_52g.jpg` | $7.00 | Vela 52g religiosa |
 | 14 | Cubo | `VM-CUBO_vela_cubo_40g.jpg` | $7.00 | Vela ritualista 40g geométrica ("la vela Cubo") |
 | 15 | Virgen del Carmen | `VM-VIRGEN_vela_virgen_del_carmen_42g.jpg` | $7.00 | Vela 42g devoción |
+| 16 | Pino | `VM-PINO_vela_pino_138g.jpg` | $14.00 | Vela 138g en forma de pino, 4 colores (álbum) |
 
 ### Velas Envases (10) — Cristal y Metal
 | # | Nombre | Archivo | Precio | Resumen |
 |---|--------|---------|--------|---------|
-| 16 | Mini Petit | `VE-MINIPETIT_vela_mini_petit_123g.jpg` | $7.50 | Vela 123g, vidrio, tapa dorada |
-| 17 | Mandala | `VE-MANDALA_vela_mandala_98g.jpg` | $9.00 | Vela 98g, envase metálico |
-| 18 | Vintage | `VE-VINTAGE_vela_vintage_165g.jpg` | $9.50 | Vela 165g, tapa de corcho |
-| 19 | Petit | `VE-PETIT_vela_petit_171g.jpg` | $11.00 | Vela 171g con corazones rojos |
-| 20 | Estrella | `VE-ESTRELLA_vela_estrella_285g.jpg` | $12.00 | Vela 285g envase estrella |
-| 21 | Aura Rosa | `VE-AURA-ROSA_vela_aura_rosa_342g.jpg` | $17.00 | Vela 342g, tapa madera y rosa |
-| 22 | Aura Tulipán | `VE-AURA-TULIPAN_vela_aura_tulipan_335g.jpg` | $17.00 | Vela 335g con tulipán de cera |
-| 23 | Aura Corazones | `VE-AURA-CORAZON_vela_aura_corazones_418g.jpg` | $20.00 | Vela 418g marmoleada |
-| 24 | Armonía Canela | `VE-ARMONIA-CANELA_vela_armonia_canela_508g.jpg` | $22.00 | Vela 508g, mecha de madera |
-| 25 | Armonía Coco | `Armonia Coco.jpg` | $23.00 | Vela 516g, vidrio esmerilado |
+| 17 | Mini Petit | `VE-MINIPETIT_vela_mini_petit_123g.jpg` | $7.50 | Vela 123g, vidrio, tapa dorada |
+| 18 | Mandala | `VE-MANDALA_vela_mandala_98g.jpg` | $9.00 | Vela 98g, envase metálico |
+| 19 | Vintage | `VE-VINTAGE_vela_vintage_165g.jpg` | $9.50 | Vela 165g, tapa de corcho |
+| 20 | Petit | `VE-PETIT_vela_petit_171g.jpg` | $11.00 | Vela 171g con corazones rojos |
+| 21 | Estrella | `VE-ESTRELLA_vela_estrella_285g.jpg` | $12.00 | Vela 285g envase estrella |
+| 22 | Aura Rosa | `VE-AURA-ROSA_vela_aura_rosa_342g.jpg` | $17.00 | Vela 342g, tapa madera y rosa |
+| 23 | Aura Tulipán | `VE-AURA-TULIPAN_vela_aura_tulipan_335g.jpg` | $17.00 | Vela 335g con tulipán de cera |
+| 24 | Aura Corazones | `VE-AURA-CORAZON_vela_aura_corazones_418g.jpg` | $20.00 | Vela 418g marmoleada |
+| 25 | Armonía Canela | `VE-ARMONIA-CANELA_vela_armonia_canela_508g.jpg` | $22.00 | Vela 508g, mecha de madera |
+| 26 | Armonía Coco | `Armonia Coco.jpg` | $23.00 | Vela 516g, vidrio esmerilado |
 
 ### Joyería y Accesorios (12)
 | # | Nombre | Archivo | Precio | Categoría |
 |---|--------|---------|--------|-----------|
-| 26 | Gargantilla G-01 | `G-01_gargantilla_gold-filled_lisa.jpg` | $20.00 | Collar |
-| 27 | Gargantilla G-02 | `G-02_gargantilla_gold-filled_con_dije.jpg` | $25.00 | Collar |
-| 28 | Collar Medio C.M-01 | `C.M-01_collar_medio_eslabon_29cm.jpg` | $25.00 | Collar |
-| 29 | Collar Medio C.M-02 | `C.M-02_collar_medio_solido_34cm.jpg` | $30.00 | Collar |
-| 30 | Collar Largo C.L-01 | `C.L-01_collar_largo_40cm.jpg` | $32.00 | Collar |
-| 31 | Pulsera Infinito Azul | `P-01b_pulsera_infinito_azul.jpg` | $8.00 | Pulsera |
-| 32 | Pulsera Infinito Beige | `P-01c_pulsera_infinito_beige.jpg` | $8.00 | Pulsera |
-| 33 | Pulsera Infinito Roja | `P-01a_pulsera_infinito_roja.jpg` | $8.00 | Pulsera |
-| 34 | Pulsera San Benito | `P-02_pulsera_san_benito.jpg` | $8.00 | Pulsera |
-| 35 | Pulsera Perla | `P-03_pulsera_perla.jpg` | $6.00 | Pulsera |
-| 36 | Pulsera Ojito | `P-04_pulsera_ojito.jpg` | $6.00 | Pulsera |
-| 37 | Piedras Naturales | `D-01_dijes_piedras_naturales.jpg` | $7.00 | Accesorio |
+| 27 | Gargantilla G-01 | `G-01_gargantilla_gold-filled_lisa.jpg` | $20.00 | Collar |
+| 28 | Gargantilla G-02 | `G-02_gargantilla_gold-filled_con_dije.jpg` | $25.00 | Collar |
+| 29 | Collar Medio C.M-01 | `C.M-01_collar_medio_eslabon_29cm.jpg` | $25.00 | Collar |
+| 30 | Collar Medio C.M-02 | `C.M-02_collar_medio_solido_34cm.jpg` | $30.00 | Collar |
+| 31 | Collar Largo C.L-01 | `C.L-01_collar_largo_40cm.jpg` | $32.00 | Collar |
+| 32 | Pulsera Infinito Azul | `P-01b_pulsera_infinito_azul.jpg` | $8.00 | Pulsera |
+| 33 | Pulsera Infinito Beige | `P-01c_pulsera_infinito_beige.jpg` | $8.00 | Pulsera |
+| 34 | Pulsera Infinito Roja | `P-01a_pulsera_infinito_roja.jpg` | $8.00 | Pulsera |
+| 35 | Pulsera San Benito | `P-02_pulsera_san_benito.jpg` | $8.00 | Pulsera |
+| 36 | Pulsera Perla | `P-03_pulsera_perla.jpg` | $6.00 | Pulsera |
+| 37 | Pulsera Ojito | `P-04_pulsera_ojito.jpg` | $6.00 | Pulsera |
+| 38 | Piedras Naturales | `D-01_dijes_piedras_naturales.jpg` | $7.00 | Accesorio |
 
 ### Franelas de Algodón (7)
 | # | Nombre | Archivo | Precio | Resumen |
 |---|--------|---------|--------|---------|
-| 38 | F-01 Loto Sagrado | `F-01.jpg` | $16.00 | Franela oliva, Loto + Om |
-| 39 | F-02 Loto Sagrado | `F-02.jpg` | $16.00 | Franela negra, Loto + Om |
-| 40 | F-03 Loto Sagrado | `F-03.jpg` | $16.00 | Franela celeste, Loto + Om |
-| 41 | F-04 Ser Feliz | `F-04.jpg` | $14.00 | "Mi plan es ser Feliz / No perfecta" |
-| 42 | F-05 Hazte Caso | `F-05.jpg` | $14.00 | "La energía no miente / Hazte caso" |
-| 43 | F-06 Cool | `F-06.jpg` | $14.00 | Franela lavanda, diseño "Cool" |
-| 44 | F-07 El Amor | `F-07.jpg` | $14.00 | "El Amor / Un sentido - nuestras vidas" |
+| 39 | F-01 Loto Sagrado | `F-01.jpg` | $16.00 | Franela oliva, Loto + Om |
+| 40 | F-02 Loto Sagrado | `F-02.jpg` | $16.00 | Franela negra, Loto + Om |
+| 41 | F-03 Loto Sagrado | `F-03.jpg` | $16.00 | Franela celeste, Loto + Om |
+| 42 | F-04 Ser Feliz | `F-04.jpg` | $14.00 | "Mi plan es ser Feliz / No perfecta" |
+| 43 | F-05 Hazte Caso | `F-05.jpg` | $14.00 | "La energía no miente / Hazte caso" |
+| 44 | F-06 Cool | `F-06.jpg` | $14.00 | Franela lavanda, diseño "Cool" |
+| 45 | F-07 El Amor | `F-07.jpg` | $14.00 | "El Amor / Un sentido - nuestras vidas" |
 
 ---
 
