@@ -25,9 +25,13 @@ pero con message_thread_id=393 = topic de alertas YoSoy222).
 Corre desde cron del usuario (debianserver está en el grupo docker).
 
 Despliegue / actualización (fuente canónica: scripts/whatsapp_bot_watchdog.py
-en el repo):
-    scp scripts/whatsapp_bot_watchdog.py \
-      debianm700:/home/debianserver/whatsapp-bot-watchdog/whatsapp_bot_watchdog.py
+en el repo; repo y copia viva conviven en debianm700, así que basta cp):
+    cp scripts/whatsapp_bot_watchdog.py \
+      /home/debianserver/whatsapp-bot-watchdog/whatsapp_bot_watchdog.py
+    python3 /home/debianserver/whatsapp-bot-watchdog/whatsapp_bot_watchdog.py
+    # la pasada debe terminar con "mensajes sin cubrir: 0"
+Desde otra máquina el mismo fichero va por scp a
+debianm700:/home/debianserver/whatsapp-bot-watchdog/whatsapp_bot_watchdog.py
 Cron (ya instalado):
     */15 * * * * /usr/bin/python3 /home/debianserver/whatsapp-bot-watchdog/whatsapp_bot_watchdog.py \
       >> /home/debianserver/whatsapp-bot-watchdog/watchdog.log 2>&1
@@ -52,6 +56,10 @@ EXEC_MATCH_BEFORE = 5    # tolerancia de reloj: mensaje <=5s antes del arranque 
 COOLDOWN_S = 4 * 3600    # re-alerta del mismo problema cada 4h
 LOC = timezone(timedelta(hours=-4))  # Venezuela
 TELEGRAM_TOPIC = "393"
+BOT_INSTANCE = "yosoy222_bot"  # SOLO los mensajes de esta instancia cuentan:
+# la BD de Evolution es compartida (qrcoder_bot vive en el mismo Postgres y su
+# webhook apunta a otro consumidor), y contar sus mensajes produce falsos
+# positivos de "MENSAJES SIN EJECUCIÓN EN N8N".
 
 
 def now_local():
@@ -192,9 +200,11 @@ def check_unprocessed(now_ts, state, execs):
     age_min = (now_ts - last_exec_ts) / 60
     log(f"n8n: última ejecución #{last_eid} hace {age_min:.1f} min; auditando mensajes > cutoff")
     q = (
-        'SELECT "messageTimestamp", key->>\'remoteJid\', "messageType" FROM "Message" '
-        'WHERE key->>\'fromMe\'=\'false\' AND "messageTimestamp" > %d '
-        'ORDER BY "messageTimestamp";' % cutoff
+        'SELECT m."messageTimestamp", m.key->>\'remoteJid\', m."messageType" '
+        'FROM "Message" m JOIN "Instance" i ON i.id = m."instanceId" '
+        'WHERE i.name = \'%s\' AND m.key->>\'fromMe\'=\'false\' '
+        'AND m."messageTimestamp" > %d ORDER BY m."messageTimestamp";'
+        % (BOT_INSTANCE, cutoff)
     )
     try:
         out = sh(["docker", "exec", "agency-postgres-evo", "psql", "-U", "evolution", "-d", "evolution",

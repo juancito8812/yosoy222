@@ -13,7 +13,7 @@ Tienda online de velas artesanales, pulseras, collares, franelas y accesorios.
 - **Agentes Humanos de Respaldo:** Agente 1 (`+58 412 992 2399`), Agente 2 (`+58 424 216 2538`)
 - **Bot de WhatsApp:** activo sobre el número oficial vía n8n + Evolution API (Baileys) autohospedados en `debianm700` (Tailscale `100.77.200.34`, stack Docker `/home/debianserver/marketing-agency`). El espejo saneado del workflow vive en `scripts/whatsapp-n8n-workflow.json` (la fuente viva es la instancia n8n de debianm700). Reglas anti-baneo vigentes: el bot solo responde (nunca inicia), delay humano 2-14s, sin enlaces en primer contacto, sin grupos. **Memoria de conversación por cliente** (historial 20 turnos + pedido acumulado en sesión Supabase vía Edge `session_get`/`session_set`; **expira a las 24h sin actividad del cliente** — sello `ultima_actividad` en `datos_parciales`, respaldo `updated_at` — evita heredar pedidos viejos o puentes abandonados): el bot no reinicia la conversación en cada mensaje. Estados de sesión: `IA` (bot responde) y `puente` (humanos atienden; preguntas comerciales devuelven el hilo al bot con reset, mensajes no-comerciales se reenvían al staff). **Salud verificada 27 sep 2026:** diagnóstico completo tras el reporte "no funciona" — el bot responde y entrega SIN retraso (el supuesto lag de 4h era un error UTC/local: n8n registra `startedAt` en UTC, Venezuela = UTC-4); los mensajes del staff sin `>` no reciben respuesta POR DISEÑO. Receta de diagnóstico (SQLite flattened de n8n, findChats/findMessages de Evolution) en el README §Bot. **Respuestas del staff desde el número principal (22 sep 2026):** el agente escribe desde su propio WhatsApp y el bot reenvía su texto **saliendo del número oficial** — `>tu mensaje` (va al cliente que tenga asignado) o `>número tu mensaje` (destinatario explícito); todo lo que no empiece con `>` es nota interna y no sale a nadie. `atender <número>` fija el cliente asignado (en `datos_parciales.cliente_actual` de la fila del agente; `handoff_hilo` quedó deprecado) y `fin [número]` libera el hilo devolviéndolo a la IA. Cada reenvío confirma al agente el destinatario y deja el mensaje en el historial del cliente, para que la IA conserve el contexto si el hilo vuelve. **Importante para n8n 2.x:** los Code nodes corren en task runner aislado SIN `process.env` — usar siempre `$env.*`. Despliegue del workflow: `import:workflow` (desactiva) + `publish:workflow --id` + `docker restart agency-n8n` (backup previo).
 - **Hosting:** GitHub Pages con proxy, DNS y CDN bajo Cloudflare.
-- **Arquitectura:** PWA instalable con catálogo pre-renderizado para SEO (Schema.org), panel de analítica privada con Luxury Glassmorphism, telemetría en la nube (Supabase Cloud + GA4) y soporte offline (Service Worker Cache v50).
+- **Arquitectura:** PWA instalable con catálogo pre-renderizado para SEO (Schema.org), panel de analítica privada con Luxury Glassmorphism, telemetría en la nube (Supabase Cloud + GA4) y soporte offline (Service Worker Cache v50 en producción; v51 con las correcciones del code review en la rama `fix/code-review-required`).
 
 ---
 
@@ -88,7 +88,8 @@ yosoy222/
 │   ├── bot_relay.test.mjs         ← 11 pruebas del camino del staff del bot (comandos, atender/fin, relay)
 │   ├── legal_pages.test.mjs       ← 8 pruebas del bloque legal (enlaces, CSP, precache, aviso de cookies)
 │   ├── variants.test.mjs          ← 3 pruebas de la convención de variantes de color (build_variants.py)
-│   └── sw_strategy.test.mjs       ← 5 pruebas de la estrategia de caché del SW (ejecuta el sw.js real en sandbox node:vm)
+│   ├── sw_strategy.test.mjs       ← 8 pruebas de la estrategia de caché del SW (ejecuta el sw.js real en sandbox node:vm)
+│   └── edge_rate_limit.test.mjs   ← 7 pruebas del rate limit del login (anti-spoofing de X-Forwarded-For)
 ├── .github/
 │   ├── dependabot.yml             ← Dependabot para GitHub Actions y npm
 │   └── workflows/
@@ -146,7 +147,7 @@ Al modificar, agregar o eliminar productos del catálogo:
 ## 7. Protocolo de Verificación Antes de Finalizar Tareas
 
 Antes de reportar una tarea como completa:
-1. Ejecutar `npm test` y confirmar que las 40 pruebas pasan al 100%.
+1. Ejecutar `npm test` y confirmar que las 50 pruebas pasan al 100%.
 2. Ejecutar `python3 scripts/verify_versions.py` si se tocó cualquier versión o asset precacheado.
 3. Ejecutar `git status` para verificar que no queden archivos temporales o cambios sin registrar.
 4. Tras hacer `git push`, monitorear CI (`gh run list --limit 3` o API de check-runs) y confirmar que `CI Tests` y `Purge Cloudflare Cache` concluyan en verde (`✓`).
@@ -156,4 +157,4 @@ Antes de reportar una tarea como completa:
 
 ---
 
-*Documento actualizado al 27 de septiembre de 2026. Producción en **v50**: sobre el rediseño ritualista mergeado a main con autorización del dueño (commit `ee9c3b9`) se publicaron la revalidación Network-First de `.json` en el SW (v45), el contraste AAA del botón WhatsApp y textos ≥12px (v47), scripts del head a `defer` (v48) y el símbolo `$` alineado (span `.currency`, v50) — 40/40 pruebas, CI Tests + Lighthouse + Pages + Purge Cloudflare en verde. La rama `redesign-ritual` permanece en `origin` como registro histórico.*
+*Documento actualizado al 16 de octubre de 2026: producción en **v50** y correcciones del code review (3 Required) aplicadas en la rama `fix/code-review-required` con **Cache v51** y **50/50 pruebas** en verde. Cuerpo descriptivo vigente desde el 27 de septiembre de 2026: sobre el rediseño ritualista mergeado a main con autorización del dueño (commit `ee9c3b9`) se publicaron la revalidación Network-First de `.json` en el SW (v45), el contraste AAA del botón WhatsApp y textos ≥12px (v47), scripts del head a `defer` (v48) y el símbolo `$` alineado (span `.currency`, v50) — 40/40 pruebas, CI Tests + Lighthouse + Pages + Purge Cloudflare en verde. La rama `redesign-ritual` permanece en `origin` como registro histórico.*

@@ -2,7 +2,7 @@
 
 > Tienda online de velas artesanales, pulseras, collares, franelas y accesorios.
 > Desplegada en **GitHub Pages** con dominio personalizado **yosoy222.com** bajo **Cloudflare**.
-> **PWA instalable** con soporte offline completo (Cache v50), catálogo prerenderizado para SEO (Schema.org), panel privado de analítica con Luxury Glassmorphism, backend en la nube (Supabase Cloud + GA4), suite de 40 pruebas en CI/CD y **bot de WhatsApp verificado E2E**.
+> **PWA instalable** con soporte offline completo (Cache v50 en producción, v51 en la rama de correcciones), catálogo prerenderizado para SEO (Schema.org), panel privado de analítica con Luxury Glassmorphism, backend en la nube (Supabase Cloud + GA4), suite de 50 pruebas en CI/CD y **bot de WhatsApp verificado E2E**.
 
 **Repositorio:** https://github.com/juancito8812/yosoy222  
 **URL de producción:** https://yosoy222.com  
@@ -136,11 +136,12 @@ yosoy222/
 │   ├── Precaching enfocado: shell, dashboard, bloque legal, iconos y miniaturas (en lotes de 6)
 │   └── Activación con limpieza automática de cachés anteriores + auto-refresh en controllerchange
 │
-├── tests/                         ← 40 pruebas nativas node:test (npm test)
+├── tests/                         ← 50 pruebas nativas node:test (npm test)
 │   ├── cart_and_filters.test.mjs  ← 13: carrito, filtros y seguridad
 │   ├── bot_relay.test.mjs         ← 11: comandos del staff, atender/fin, relay del número principal
 │   ├── legal_pages.test.mjs       ← 8: bloque legal, CSP, precache y guard anti-borrador
-│   ├── sw_strategy.test.mjs       ← 5: estrategia de caché (ejecuta el sw.js real en sandbox node:vm)
+│   ├── sw_strategy.test.mjs       ← 8: estrategia de caché (ejecuta el sw.js real en sandbox node:vm)
+│   ├── edge_rate_limit.test.mjs   ← 7: rate limit del login (anti-spoofing de X-Forwarded-For)
 │   └── variants.test.mjs          ← 3: convención de variantes de color
 │
 ├── supabase/
@@ -150,7 +151,7 @@ yosoy222/
 ├── .github/
 │   ├── dependabot.yml             ← Actualizaciones automáticas para GitHub Actions y npm
 │   └── workflows/
-│       ├── ci.yml                 ← CI: 40 pruebas + verify_versions + job Lighthouse con umbrales
+│       ├── ci.yml                 ← CI: 50 pruebas + verify_versions + job Lighthouse con umbrales
 │       └── purge-cache.yml        ← Despliegue: Smoke test (origen 200) + Purge Cloudflare
 │
 ├── scripts/
@@ -194,7 +195,7 @@ yosoy222/
 | **Frontend** | HTML5 semántico | Prerenderizado estático, ARIA interactivo, microdatos Schema.org |
 | **Estilos** | CSS3 Vanilla | Custom properties (:root), Grid, Flexbox, sin preprocesadores |
 | **Interactividad** | ES6+ Vanilla | Zero runtime dependencies, carga diferida (`defer`), módulos nativos |
-| **Pruebas** | Node.js Test Runner | `node --test` nativo (40 pruebas: sitio, bot, legales, variantes y estrategia del SW, sin librerías externas) |
+| **Pruebas** | Node.js Test Runner | `node --test` nativo (50 pruebas: sitio, bot, legales, variantes, estrategia del SW y rate limit del Edge Function, sin librerías externas) |
 | **PWA & Offline** | Service Worker API | Cache v50, Network-First en navegación y `.json`, manifest standalone |
 | **SEO & Datos** | JSON-LD / XML | Schema.org Store/ItemList, robots.txt, sitemap.xml canónico |
 | **Hosting & CI/CD** | GitHub Pages + Actions | Despliegue automático, CI (tests + Lighthouse), Dependabot activo |
@@ -226,7 +227,7 @@ npx serve .
 
 ### 2. Ejecutar la suite de pruebas automatizadas
 
-El proyecto incluye **40 pruebas** con el runner nativo de Node.js (13 del sitio + 11 del bot + 8 del bloque legal + 5 de la estrategia del SW + 3 de variantes de imagen):
+El proyecto incluye **50 pruebas** con el runner nativo de Node.js (13 del sitio + 11 del bot + 8 del bloque legal + 8 de la estrategia del SW + 7 del rate limit del Edge Function + 3 de variantes de imagen):
 
 ```bash
 # Ejecutar con npm
@@ -245,7 +246,7 @@ node --test tests/*.test.mjs
 ✔ LEGAL: los datos identificables de la tienda están rellenados
 ✔ sw.js: declara la estrategia Network-First para .js y .json
 ✔ VARIANTS: variants.json coherente si existe (claves son files reales del catálogo)
-ℹ tests 40 | pass 40 | fail 0
+ℹ tests 50 | pass 50 | fail 0
 ```
 
 ### 3. Verificadores auxiliares
@@ -255,6 +256,25 @@ python3 scripts/verify_versions.py      # coherencia sw ↔ manifest ↔ HTML �
 python3 scripts/build_variants.py --check  # convención del álbum de variantes
 npm test && python3 scripts/verify_versions.py   # lo mismo que corre CI
 ```
+
+### 4. Correcciones del code review (rama `fix/code-review-required`, Cache v51)
+
+El code review de seguridad y calidad del 16-oct sobre `main` `143bcb3` (v50) emitió
+**Request changes** con 3 hallazgos Required; los tres están corregidos en la rama
+`fix/code-review-required` (tests incluidos, suite 50/50 en verde). **No se ha mergeado
+a `main`** (producción sigue en v50):
+
+| Hallazgo | Fix aplicado |
+|----------|--------------|
+| **#1 Rate limit del login esquivablespoofeando `X-Forwarded-For`** — `getClientIp()` leía el **primer** valor de la cabecera, que controla el cliente; rotándolo se reseteaba el contador de 5 intentos/15 min | `getClientIp()` prioriza `cf-connecting-ip` y, si no está, toma el **último** salto de `X-Forwarded-For` (el único añadido por infraestructura fiable); rate limit por doble clave (IP real **y** usuario normalizado) con `MAX_TRACKED = 1000` y evicción `pruneAttempts()` |
+| **#2 `sw.js` servía `index.html` en offline para rutas no-index** — la navegación cacheaba bajo `'/index.html'` y el fallback era `caches.match('/index.html')`, así que `/dashboard.html` o `/legal/terminos.html` mostraban la portada | La navegación se cachea bajo la **URL real** de la petición y el fallback usa `caches.match(event.request, { ignoreSearch: true })`; `CACHE_NAME` → `yosoy222-v51` |
+| **#3 Watchdog del repo desincronizado con la copia viva** — 28 líneas divergentes; el siguiente deploy habría revertido el filtro por instancia | La copia viva (`BOT_INSTANCE = "yosoy222_bot"` + `JOIN "Instance"`) es la que está commiteada en `scripts/whatsapp_bot_watchdog.py`; repo y copia viva verificados idénticos (`diff -q`) |
+
+**Pruebas añadidas:** `tests/sw_strategy.test.mjs` pasa de 5 a 8 (offline de subpágina,
+offline sin copia → fallback a index, y no-regresión de Network-First) y el nuevo
+`tests/edge_rate_limit.test.mjs` (7 pruebas) importa las funciones reales de
+`supabase/functions/dashboard-stats/index.ts` (type-stripping de Node 22, sin Deno ni red)
+para verificar la IP real y el bloqueo aunque se rote `X-Forwarded-For`.
 
 ---
 
@@ -366,7 +386,7 @@ La PWA cumple con todos los estándares modernos de instalación y navegación o
 4. **Precache Integral & Resiliencia Offline:**
    Durante la instalación, el Service Worker descarga de forma controlada el shell de la aplicación, el panel de dashboard, las 4 páginas legales, los iconos HD y las miniaturas del catálogo (portadas + variantes de color del álbum, en lotes de 6), garantizando navegación visual offline desde el primer instante. Las imágenes grandes del lightbox se descargan y cachean bajo demanda.
 5. **Invalidación Inmediata de Versiones Anteriores:**
-   Al publicarse una nueva versión (`CACHE_NAME = 'yosoy222-v50'`), el evento `activate` purga de forma determinista cualquier almacenamiento obsoleto y el evento `controllerchange` refresca la vista del catálogo automáticamente.
+   Al publicarse una nueva versión (`CACHE_NAME = 'yosoy222-v51'`), el evento `activate` purga de forma determinista cualquier almacenamiento obsoleto y el evento `controllerchange` refresca la vista del catálogo automáticamente.
 6. **Iconos PWA de Alta Definición:**
    10 variantes (incluyendo formatos maskable con fondo blanco sólido y Safe Zone del 80%, sin franjas negras en Android/iOS) validadas con `scripts/verify_icons.py`.
 
@@ -438,12 +458,17 @@ El checkout de la tienda apunta al número oficial `+58 412 648 1628`, que atien
   ssh debianm700 'curl -s -o /dev/null -w "%{http_code}" http://localhost:5678/healthz'
   ```
 - **Actualización del watchdog** (cambios en `scripts/whatsapp_bot_watchdog.py`):
+  repo y copia viva conviven en `debianm700`, así que basta copiar y comprobar:
   ```bash
-  scp scripts/whatsapp_bot_watchdog.py \
-    debianm700:/home/debianserver/whatsapp-bot-watchdog/whatsapp_bot_watchdog.py
+  cp scripts/whatsapp_bot_watchdog.py \
+    /home/debianserver/whatsapp-bot-watchdog/whatsapp_bot_watchdog.py
+  python3 /home/debianserver/whatsapp-bot-watchdog/whatsapp_bot_watchdog.py
+  # la pasada debe cerrar sin "mensajes sin cubrir" (exit 0)
   ```
+  Desde otra máquina, el mismo fichero va por `scp` a
+  `debianm700:/home/debianserver/whatsapp-bot-watchdog/whatsapp_bot_watchdog.py`.
 - **Diagnóstico (receta del 27-sep):** ejecuciones y payloads viven en el SQLite de n8n (`/home/node/.n8n/database.sqlite` dentro del contenedor — copiar DB+`-wal`+`-shm` con `docker cp` o los datos parecen viejos). El campo `data` de `execution_data` es JSON flattened con referencias tipo puntero y cíclicas. Chats de Evolution: `POST /chat/findChats/yosoy222_bot` y `POST /chat/findMessages/yosoy222_bot` con `{"remoteJid": ..., "limit": N}` (GET da 404). Para ejercitar el camino del staff sin clientes reales: POST sintético a `http://localhost:5678/webhook/yosoy222-whatsapp` con el jid de un agente como emisor y la tienda como cliente.
-- **Watchdog (27-sep):** `scripts/whatsapp_bot_watchdog.py` (fuente canónica en el repo; desplegado en `debianm700:~/whatsapp-bot-watchdog/`). Cada 15 min (cron) verifica: (1) la instancia Evolution sigue `open`; (2) **todo mensaje entrante del bot tiene su ejecución en n8n** — Evolution persiste los mensajes en su Postgres aunque el webhook no entregue, así que un mensaje posterior a la última ejecución delata un webhook muerto aunque la conexión siga `open` (correlación por timestamp: Evolution guarda jid `@lid` y n8n recibe el jid telefónico). Alerta `🚨` al **topic 393** de Telegram (el mismo grupo del watchdog del sitio) con cooldown de 4h por problema y aviso `✅ RECUPERADO` al resolverse; auto-rota su log. Prueba de alertas sin caída real: `/tmp/drill_alertas.py` en debianm700 (simula conexión caída; verificado: entrega + cooldown + recuperación).
+- **Watchdog (27-sep):** `scripts/whatsapp_bot_watchdog.py` (fuente canónica en el repo; desplegado en `debianm700:~/whatsapp-bot-watchdog/`). Cada 15 min (cron) verifica: (1) la instancia Evolution sigue `open`; (2) **todo mensaje entrante del bot `yosoy222_bot` tiene su ejecución en n8n** (la query filtra por `Instance.name` porque la BD compartida también guarda `qrcoder_bot`: sin el filtro, sus mensajes generaban falsos positivos) — Evolution persiste los mensajes en su Postgres aunque el webhook no entregue, así que un mensaje posterior a la última ejecución delata un webhook muerto aunque la conexión siga `open` (correlación por timestamp: Evolution guarda jid `@lid` y n8n recibe el jid telefónico). Alerta `🚨` al **topic 393** de Telegram (el mismo grupo del watchdog del sitio) con cooldown de 4h por problema y aviso `✅ RECUPERADO` al resolverse; auto-rota su log. Prueba de alertas sin caída real: `/tmp/drill_alertas.py` en debianm700 (simula conexión caída; verificado: entrega + cooldown + recuperación).
 - **Regla crítica de n8n 2.x:** los Code nodes corren en task runner aislado **SIN `process.env`** — usar siempre `$env.*` (secretos: `EVOLUTION_API_KEY`, `SUPABASE_FN_URL`, `SUPABASE_BOT_KEY` en el `.env` del stack). Los `try/catch` silenciosos esconden bugs de entorno: visibilizar el error en el item fue la clave del diagnóstico.
 
 ---
@@ -713,7 +738,7 @@ Tipografía de títulos: **Playfair Display** (serif, cargada async con `js/font
 | `sw.js` | Service Worker (Cache v50, Network-First navegación y .json/.js) |
 | `manifest.json` | Configuración PWA e iconos |
 | `legal/` | 4 documentos legales publicados con identidad verificable (guard anti-borrador) |
-| `tests/*.test.mjs` | 40 pruebas nativas (13 sitio + 11 bot + 8 legal + 5 SW + 3 variantes) |
+| `tests/*.test.mjs` | 50 pruebas nativas (13 sitio + 11 bot + 8 legal + 8 SW + 7 rate limit Edge + 3 variantes) |
 | `.github/workflows/ci.yml` | CI: tests TAP con annotations + verify_versions + job Lighthouse con umbrales |
 | `.github/workflows/purge-cache.yml` | Deploy: smoke test (origen 200) + purge Cloudflare |
 | `.github/dependabot.yml` | Configuración de actualización de dependencias y acciones |
@@ -778,4 +803,4 @@ gh run list --limit 3
 
 ---
 
-*Documentación técnica actualizada al 27 de septiembre de 2026. Proyecto 100% verificado en pruebas unitarias (40/40 pasadas), CI/CD (tests + Lighthouse), auditoría de producción, bloque legal publicado, bot de WhatsApp verificado E2E y despliegue activo en https://yosoy222.com — producción en **Cache v50** con el rediseño ritualista mergeado desde `redesign-ritual` con autorización expresa del dueño (commit `ee9c3b9`). La rama queda respaldada en `origin` como registro histórico.*
+*Documentación técnica actualizada al 27 de septiembre de 2026. Proyecto 100% verificado en pruebas unitarias (50/50 pasadas), CI/CD (tests + Lighthouse), auditoría de producción, bloque legal publicado, bot de WhatsApp verificado E2E y despliegue activo en https://yosoy222.com — producción en **Cache v50** con el rediseño ritualista mergeado desde `redesign-ritual` con autorización expresa del dueño (commit `ee9c3b9`). La rama queda respaldada en `origin` como registro histórico.*

@@ -143,6 +143,36 @@ test('navegacion: Network-First sin regresion', async () => {
   assert.equal(await p2.text(), 'HTML_FRESH');
 });
 
+test('navegacion offline a subpagina: sirve ESA pagina, no el index', async () => {
+  const initialCache = new Map([
+    ['/index.html', 'INDEX_HTML'],
+    ['/legal/terminos.html', 'LEGAL_HTML'],
+  ]);
+  const sw = loadServiceWorker({ initialCache });
+  sw.goOffline();
+  const res = await serve(sw, '/legal/terminos.html', { mode: 'navigate' });
+  assert.equal(await res.text(), 'LEGAL_HTML', 'offline en /legal/terminos.html debe servir terminos, no el index');
+});
+
+test('navegacion offline a subpagina sin copia: ultimo recurso al index', async () => {
+  const initialCache = new Map([['/index.html', 'INDEX_HTML']]);
+  const sw = loadServiceWorker({ initialCache });
+  sw.goOffline();
+  const res = await serve(sw, '/legal/envios.html', { mode: 'navigate' });
+  assert.equal(await res.text(), 'INDEX_HTML');
+});
+
+test('navegacion online a subpagina: cachea bajo su URL y no pisa el index', async () => {
+  const initialCache = new Map([['/index.html', 'INDEX_HTML']]);
+  const sw = loadServiceWorker({ initialCache });
+  sw.setNetworkBody('LEGAL_FRESCO');
+  const res = await serve(sw, '/legal/terminos.html', { mode: 'navigate' });
+  assert.equal(await res.text(), 'LEGAL_FRESCO');
+  await new Promise((r) => setTimeout(r, 0)); // deja resolver el cache.put encadenado
+  assert.equal(sw.cacheStore.get('/legal/terminos.html'), 'LEGAL_FRESCO', 'la subpagina se cachea bajo su propia URL');
+  assert.equal(sw.cacheStore.get('/index.html'), 'INDEX_HTML', 'el index cacheado no debe ser sobrescrito');
+});
+
 test('activate: limpia cachés de versiones anteriores', async () => {
   const sw = loadServiceWorker();
   const versionActual = SW_SRC.match(/CACHE_NAME\s*=\s*'(yosoy222-v\d+)'/)[1];
