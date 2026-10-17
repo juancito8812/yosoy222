@@ -3,25 +3,25 @@
    Offline caching for PWA
    ============================================ */
 
-const CACHE_NAME = 'yosoy222-v50';
+const CACHE_NAME = 'yosoy222-v51';
 
 // Assets to precache on install (offline shell + LCP images)
 const PRECACHE_ASSETS = [
   '/',
   '/index.html',
   '/dashboard.html',
-  '/css/style.css?v=50',
-  '/css/dashboard.css?v=50',
-  '/css/legal.css?v=50',
-  '/js/config.js?v=50',
-  '/js/font-flip.js?v=50',
-  '/js/shared.js?v=50',
-  '/js/analytics.js?v=50',
-  '/js/cart.js?v=50',
-  '/js/app.js?v=50',
-  '/js/legal.js?v=50',
-  '/js/dashboard.js?v=50',
-  '/js/dashboard-view.js?v=50',
+  '/css/style.css?v=51',
+  '/css/dashboard.css?v=51',
+  '/css/legal.css?v=51',
+  '/js/config.js?v=51',
+  '/js/font-flip.js?v=51',
+  '/js/shared.js?v=51',
+  '/js/analytics.js?v=51',
+  '/js/cart.js?v=51',
+  '/js/app.js?v=51',
+  '/js/legal.js?v=51',
+  '/js/dashboard.js?v=51',
+  '/js/dashboard-view.js?v=51',
   '/legal/terminos.html',
   '/legal/privacidad.html',
   '/legal/envios.html',
@@ -77,11 +77,22 @@ self.addEventListener('fetch', (event) => {
         .then((networkResponse) => {
           if (networkResponse && networkResponse.status === 200) {
             const clone = networkResponse.clone();
-            caches.open(CACHE_NAME).then((cache) => cache.put('/index.html', clone));
+            // Se cachea bajo la URL REAL de la petición, no bajo '/index.html':
+            // con la clave fija, navegar a /legal/terminos.html o /dashboard.html
+            // sobrescribía la copia cacheada del index con OTRA página, y en
+            // offline cualquier ruta devolvía la página equivocada.
+            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
           }
           return networkResponse;
         })
-        .catch(() => caches.match('/index.html'))
+        .catch(async () => {
+          // Offline: primero la página pedida (ignorando query), y solo como
+          // último recurso el shell del index.
+          return (await caches.match(event.request, { ignoreSearch: true })) ||
+            (await caches.match('/index.html')) ||
+            (await caches.match('/')) ||
+            new Response('Offline', { status: 503, statusText: 'Service Unavailable' });
+        })
     );
     return;
   }

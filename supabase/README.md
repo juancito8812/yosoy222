@@ -8,7 +8,11 @@ Complemento del fix `scripts/supabase_rls.sql` (RLS insert-only).
 ```
 dashboard.html ──1──▶ POST /functions/v1/dashboard-stats {action:"login", user, pass}
                        │  valida sha256(user:pass:salt) contra secret DASH_AUTH_HASH
-                       │  rate limit 5/15min por IP · timingSafeEqual
+                       │  rate limit 5/15min por IP REAL y por USUARIO
+                       │  (claves separadas; `cf-connecting-ip` manda y de
+                       │  `X-Forwarded-For` se toma el ÚLTIMO salto: el primer
+                       │  valor lo controla el cliente y permitía resetear el
+                       │  contador rotándolo) · timingSafeEqual
                        ◀── { ok, token: "<exp>.<hmac>", expiresInMs: 7200000 }
 dashboard.html ──2──▶ POST {action:"stats", user, token}
                        │  verifica HMAC (sin estado, 2h)

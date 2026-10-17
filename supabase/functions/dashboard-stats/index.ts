@@ -51,28 +51,79 @@ function json(body: unknown, status = 200, origin: string | null = null): Respon
 }
 
 // --- Rate limiting en memoria (por instancia) ---
-const attempts = new Map<string, { n: number; until: number }>();
+// El login se cuenta por DOS claves: IP real y usuario normalizado. Rotar la
+// IP (o el header X-Forwarded-For) ya no resetea el contador.
+const attempts = new Map<string, { n: number; until: number; ts: number }>();
 const MAX_ATTEMPTS = 5;
 const LOCK_MS = 15 * 60 * 1000;
+const WINDOW_MS = 15 * 60 * 1000; // caducidad de los contadores sin bloqueo
+const MAX_TRACKED = 1000;         // techo del mapa (evita crecimiento sin fin)
 
-function isLocked(ip: string): number {
-  const a = attempts.get(ip);
+function pruneAttempts(now: number): void {
+  if (attempts.size < MAX_TRACKED) return;
+  for (const [k, v] of attempts) {
+    if ((v.until && v.until <= now) || now - v.ts > WINDOW_MS) attempts.delete(k);
+  }
+  if (attempts.size < MAX_TRACKED) return;
+  // Sigue lleno: se sueltan los contadores más antiguos para que el mapa no
+  // crezca sin límite bajo un ataque de claves nuevas. Los bloqueos vigentes
+  // se conservan mientras se pueda; si TODOS están bloqueados, se sacrifica el
+  // más antiguo (válvula de presión: preferible a agotar memoria).
+  const byAge = [...attempts.entries()].sort((a, b) => a[1].ts - b[1].ts);
+  for (const [k, v] of byAge) {
+    if (attempts.size <= MAX_TRACKED) break;
+    if (v.until > now) continue; // no soltar un bloqueo vigente si hay otros
+    attempts.delete(k);
+  }
+  // Si aun así sigue lleno (todos con bloqueo vigente), se sacrifica el más
+  // antiguo: válvula de presión para no agotar memoria.
+  for (const [k] of byAge) {
+    if (attempts.size <= MAX_TRACKED) break;
+    attempts.delete(k);
+  }
+}
+
+function isLocked(key: string): number {
+  const a = attempts.get(key);
   if (!a) return 0;
-  if (a.until > Date.now()) return a.until;
-  if (a.until && a.until <= Date.now()) attempts.delete(ip);
+  const now = Date.now();
+  if (a.until > now) return a.until;
+  if (now - a.ts > WINDOW_MS) { attempts.delete(key); return 0; }
   return 0;
 }
 
-function recordFail(ip: string): number {
-  const a = attempts.get(ip) ?? { n: 0, until: 0 };
+function recordFail(key: string): number {
+  const now = Date.now();
+  pruneAttempts(now);
+  const a = attempts.get(key) ?? { n: 0, until: 0, ts: 0 };
+  if (now - a.ts > WINDOW_MS) { a.n = 0; a.until = 0; }
   a.n += 1;
-  if (a.n >= MAX_ATTEMPTS) a.until = Date.now() + LOCK_MS;
-  attempts.set(ip, a);
+  a.ts = now;
+  if (a.n >= MAX_ATTEMPTS) a.until = now + LOCK_MS;
+  attempts.set(key, a);
   return a.until;
 }
 
-function clearFails(ip: string): void {
-  attempts.delete(ip);
+function clearFails(keys: string[]): void {
+  for (const k of keys) attempts.delete(k);
+}
+
+// Claves de conteo del login. El usuario se normaliza igual que en la
+// verificación (trim + lowercase) para que "Admin" y "admin" cuenten juntos.
+function loginKeys(ip: string, user: string): string[] {
+  // NOTA: el bloqueo por usuario permite a un atacante dejar la cuenta fuera
+  // 15 min a propósito; se acepta el trade-off porque sin él basta rotar la IP
+  // para tener intentos infinitos.
+  return [`ip:${ip}`, `user:${user || "anon"}`];
+}
+
+function lockedUntilAny(keys: string[]): number {
+  let max = 0;
+  for (const k of keys) {
+    const u = isLocked(k);
+    if (u > max) max = u;
+  }
+  return max;
 }
 
 // Rate limit de ingesta (acción "track"): ventana fija por IP.
@@ -164,11 +215,20 @@ function verifyToken(token: string, user: string, secret: string): boolean {
 }
 
 function getClientIp(req: Request): string {
-  return (
-    req.headers.get("x-forwarded-for")?.split(",")[0].trim() ||
-    req.headers.get("cf-connecting-ip") ||
-    "desconocida"
-  );
+  // cf-connecting-ip la fija la plataforma (Cloudflare/Supabase) y el cliente
+  // no puede falsificarla: es la fuente primaria.
+  const cf = req.headers.get("cf-connecting-ip")?.trim();
+  if (cf) return cf;
+  // X-Forwarded-For es una lista "cliente, proxy1, proxy2…": el PRIMER valor lo
+  // controla quien hace la petición, así que rotándolo se reseteaba el rate
+  // limit de login (spoofing trivial). El ÚLTIMO salto lo añade el proxy de
+  // confianza, así que ese es el que vale.
+  const xff = req.headers.get("x-forwarded-for");
+  if (xff) {
+    const hops = xff.split(",").map(s => s.trim()).filter(Boolean);
+    if (hops.length) return hops[hops.length - 1];
+  }
+  return "desconocida";
 }
 
 Deno.serve(async (req: Request) => {
@@ -219,7 +279,11 @@ Deno.serve(async (req: Request) => {
 
   // ---------- ACCIÓN: login ----------
   if (body.action === "login") {
-    const lockedUntil = isLocked(ip);
+    const user = (body.user ?? "").trim().toLowerCase();
+    const pass = body.pass ?? "";
+    // Se comprueban ambas claves (IP real y usuario) antes de validar nada.
+    const keys = loginKeys(ip, user);
+    const lockedUntil = lockedUntilAny(keys);
     if (lockedUntil) {
       return json(
         { error: "locked", minutes: Math.ceil((lockedUntil - Date.now()) / 60000) },
@@ -228,8 +292,6 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    const user = (body.user ?? "").trim().toLowerCase();
-    const pass = body.pass ?? "";
     if (!user || !pass) {
       return json({ error: "missing_credentials" }, 400, origin);
     }
@@ -237,7 +299,8 @@ Deno.serve(async (req: Request) => {
     const salt = Deno.env.get("DASH_AUTH_SALT") ?? "";
     const candidate = sha256hex(`${user}:${pass}:${salt}`);
     if (!safeEqualHex(candidate, authHash)) {
-      const until = recordFail(ip);
+      let until = 0;
+      for (const k of keys) until = Math.max(until, recordFail(k));
       if (until) {
         return json(
           { error: "locked", minutes: Math.ceil((until - Date.now()) / 60000) },
@@ -248,7 +311,7 @@ Deno.serve(async (req: Request) => {
       return json({ error: "bad_credentials" }, 401, origin);
     }
 
-    clearFails(ip);
+    clearFails(keys);
     const token = mintToken(user, Date.now(), sessionSecret);
     return json({ ok: true, token, expiresInMs: SESSION_TTL_MS }, 200, origin);
   }
