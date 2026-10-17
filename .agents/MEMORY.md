@@ -20,7 +20,7 @@
 - **Dashboard:** `dashboard.html` (`/dashboard.html`), `css/dashboard.css`, `js/dashboard.js` — estética Luxury Glassmorphism, autenticación criptográfica SHA-256 con sal, selector de fechas segmentado, KPIs, gráficos Canvas en curvas Bezier con gradientes, embudo de conversión, desglose por dispositivos, ranking de popularidad y exportación CSV
 - **Telemetría:** `js/analytics.js` — captura de visitas, detección de canales (Instagram, TikTok, Facebook, Google, WhatsApp, Directo), visualización de productos, carrito, búsquedas y clics a WhatsApp (compatible con GA4)
 - **Estilos:** `css/style.css` (~833 líneas) — paleta tierra crema (#faf6ef) con contraste WCAG AA (`--accent: #854f19`)
-- **Lógica:** `js/app.js` (~904 líneas) — catálogo inmutable, 44 productos, búsqueda con debounce, filtros, carrito seguro con TTL de 30 días, WhatsApp, lightbox con álbum de variantes de color (`js/variants.json`, puntitos navegables + teclado), a11y focus trap
+- **Lógica:** `js/app.js` (~904 líneas) — catálogo inmutable, 45 productos, búsqueda con debounce, filtros, carrito seguro con TTL de 30 días, WhatsApp, lightbox con álbum de variantes de color (`js/variants.json`, puntitos navegables + teclado), a11y focus trap
 - **PWA:** `manifest.json` + `sw.js` (cache v43, Network-First para navegación, stale-while-revalidate para estáticos, query strings `?v=N`, `ignoreSearch: true`, auto-refresh en controllerchange, offline total; precache incluye miniaturas de variantes vía `PRECACHE_IMAGES` y las 4 páginas legales con `legal.css`/`legal.js`)
 - **Testing:** 35 pruebas nativas con `node:test` (`npm test`): 13 del sitio en `tests/cart_and_filters.test.mjs` + 11 del bot en `tests/bot_relay.test.mjs` + 8 del bloque legal en `tests/legal_pages.test.mjs` + 3 de variantes en `tests/variants.test.mjs`
 - **Imágenes:** `images/thumbs/` (136 archivos, máx 480px) + `images/catalog/` (133 archivos, máx 900px); 22 productos con álbum de variantes (73 fotos extra, portada = foto de grupo de todos los colores); índice en `js/variants.json` generado por `scripts/build_variants.py`
@@ -95,7 +95,7 @@
 - **Estado del árbol (27 sep):** rama con el bloque legal integrado desde main (merge del 27-sep, tests 35/35); `.image-review/` sin trackear (herramientas temporales de revisión: `series_check.html`, `album_check.html`, `order_check.html` — **no debe commitearse**, se elimina al cerrar la sesión de imágenes)
 - **Rama `redesign-ritual`:** v43 con álbum de variantes de velas, portadas corregidas, legal integrado; **respaldada en `origin/redesign-ritual` (`3b64906` + merge)**; worktree local en `~/Documentos/programacion/yosoy222-redesign`; preview permanente `preview.yosoy222.com` actualizado. Pendientes de la rama: joyas #107–123, 7 fotos sin renombrar y aprobación visual final del dueño
 - **Dashboard:** https://yosoy222.com/dashboard.html
-- **Productos:** 44 (25 velas, 5 collares, 6 pulseras, 7 franelas, 1 accesorio)
+- **Productos:** 45 (26 velas, 5 collares, 6 pulseras, 7 franelas, 1 accesorio)
 - **Imágenes:** 63 thumbs, 60 catalog (incluye 4 decorativas y 15 variantes adicionales)
 - **WhatsApp:** 584126481628 (configurado en `js/app.js` y 3 lugares de `index.html`)
 - **Agentes Humanos WhatsApp:** `+58 412 992 2399` y `+58 424 216 2538` (enrutamiento de desvío configurado en n8n y Evolution API `yosoy222_bot`)

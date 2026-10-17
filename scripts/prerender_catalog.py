@@ -4,7 +4,7 @@ scripts/prerender_catalog.py
 Lee los productos de js/app.js y prerenderiza las tarjetas de producto
 dentro de <div class="products-grid" id="productsGrid"> en index.html.
 Esto asegura que motores de búsqueda (Google, Bing), rastreadores de IA
-y navegadores sin JavaScript puedan indexar y ver los 44 productos inmediatamente.
+y navegadores sin JavaScript puedan indexar y ver los 45 productos inmediatamente.
 """
 
 import re
