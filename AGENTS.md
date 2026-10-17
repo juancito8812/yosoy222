@@ -34,7 +34,7 @@ Tienda online de velas artesanales, pulseras, collares, franelas y accesorios.
 # 1. Ejecutar servidor local de desarrollo (NUNCA usar file://)
 python3 -m http.server 8080
 
-# 2. Ejecutar la suite de pruebas automatizadas (40: carrito, filtros, seguridad, bot, legales, variantes de imagen y estrategia del SW)
+# 2. Ejecutar la suite de pruebas automatizadas (44: carrito, filtros, seguridad, bot, legales, variantes de imagen y estrategia del SW)
 npm test
 
 # 3. Sincronizar catálogo estático prerenderizado tras modificar js/app.js
@@ -146,7 +146,7 @@ Al modificar, agregar o eliminar productos del catálogo:
 ## 7. Protocolo de Verificación Antes de Finalizar Tareas
 
 Antes de reportar una tarea como completa:
-1. Ejecutar `npm test` y confirmar que las 40 pruebas pasan al 100%.
+1. Ejecutar `npm test` y confirmar que las 44 pruebas pasan al 100%.
 2. Ejecutar `python3 scripts/verify_versions.py` si se tocó cualquier versión o asset precacheado.
 3. Ejecutar `git status` para verificar que no queden archivos temporales o cambios sin registrar.
 4. Tras hacer `git push`, monitorear CI (`gh run list --limit 3` o API de check-runs) y confirmar que `CI Tests` y `Purge Cloudflare Cache` concluyan en verde (`✓`).
@@ -156,4 +156,4 @@ Antes de reportar una tarea como completa:
 
 ---
 
-*Documento actualizado al 27 de septiembre de 2026. Producción en **v50**: sobre el rediseño ritualista mergeado a main con autorización del dueño (commit `ee9c3b9`) se publicaron la revalidación Network-First de `.json` en el SW (v45), el contraste AAA del botón WhatsApp y textos ≥12px (v47), scripts del head a `defer` (v48) y el símbolo `$` alineado (span `.currency`, v50) — 40/40 pruebas, CI Tests + Lighthouse + Pages + Purge Cloudflare en verde. La rama `redesign-ritual` permanece en `origin` como registro histórico.*
+*Documento actualizado al 17 de octubre de 2026. Producción en **v50**: sobre el rediseño ritualista mergeado a main con autorización del dueño (commit `ee9c3b9`) se publicaron la revalidación Network-First de `.json` en el SW (v45), el contraste AAA del botón WhatsApp y textos ≥12px (v47), scripts del head a `defer` (v48) y el símbolo `$` alineado (span `.currency`, v50) — 44/44 pruebas, CI Tests + Lighthouse + Pages + Purge Cloudflare en verde. El 17 de octubre se añadieron la vela **Pino Navideño** (44 → 45 productos) y el bloque `ItemList` JSON-LD autogenerado, con `tests/schema_itemlist.test.mjs` cubriendo la sincronía catálogo/datos estructurados. La rama `redesign-ritual` permanece en `origin` como registro histórico.*

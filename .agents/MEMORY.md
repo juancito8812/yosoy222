@@ -1,5 +1,6 @@
 # Memoria del Proyecto: YoSoy222
 
+- **17 oct 2026 — Vela "Pino Navideño" + ItemList JSON-LD:** se publicó en producción la vela Pino Navideño (138 g, cera de soja en blanco/rojo/verde, aroma canela+lavanda+limón fresh, 14 USD) con álbum de 4 variantes de color; el catálogo pasó de 44 a **45 productos** (26 velas). Además `scripts/prerender_catalog.py` ahora emite un bloque `ItemList` JSON-LD derivado de `js/app.js` (45 `Product` con imagen absoluta, descripción, categoría y `Offer` USD `InStock`), idempotente vía marcas `SCHEMA-ITEMLIST:START/END`, y `tests/schema_itemlist.test.mjs` (4 pruebas) falla ante cualquier desincronía. Suite: 40 → **44 pruebas** en verde.
 ## Información General
 
 - **Propósito:** Tienda online de velas artesanales, pulseras, collares, franelas y accesorios con PWA offline, checkout por WhatsApp y dashboard de analítica privada
