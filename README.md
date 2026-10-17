@@ -24,7 +24,7 @@
 7. [Cómo agregar un producto](#cómo-agregar-un-producto)
 8. [Cómo eliminar un producto](#cómo-eliminar-un-producto)
 9. [Procesamiento de imágenes (bordes blancos)](#procesamiento-de-imágenes-bordes-blancos)
-10. [PWA: instalar y funcionamiento offline (Cache v50)](#pwa-instalar-y-funcionamiento-offline-cache-v50)
+10. [PWA: instalar y funcionamiento offline (Cache v51 en la rama; v50 en producción)](#pwa-instalar-y-funcionamiento-offline-cache-v50)
 11. [Telemetría y backend en la nube (Supabase & GA4)](#telemetría-y-backend-en-la-nube-supabase--ga4)
 12. [Seguridad aplicada (Audit & Hardening)](#seguridad-aplicada-audit--hardening)
 13. [Calidad, Confiabilidad y Accesibilidad](#calidad-confiabilidad-y-accesibilidad)
@@ -62,7 +62,7 @@
   - Aviso de aceptación legal (Términos + Privacidad) antes del botón de WhatsApp.
 - **Checkout por WhatsApp:** Mensaje preformateado e itemizado (producto × cantidad — subtotal, y total final en USD). Con el navegador offline muestra un aviso no bloqueante: el carrito queda guardado hasta reconectar.
 - **Número real de WhatsApp centralizado:** `+58 412 648 1628` — única fuente en `js/app.js` (`const WHATSAPP = '584126481628'`); todos los botones y enlaces del sitio se sincronizan con este valor.
-- **PWA Instalable (Cache v50):** Network-First para navegación HTML **y para `.json`** (contenido siempre fresco con conexión), Stale-While-Revalidate para recursos estáticos; precaching enfocado en shell, dashboard, bloque legal, iconos HD y miniaturas (`images/thumbs/`, incluidas las variantes de color del álbum).
+- **PWA Instalable (Cache v51 en la rama `fix/code-review-required`; producción v50):** Network-First para navegación HTML **y para `.json`** (contenido siempre fresco con conexión), Stale-While-Revalidate para recursos estáticos; precaching enfocado en shell, dashboard, bloque legal, iconos HD y miniaturas (`images/thumbs/`, incluidas las variantes de color del álbum).
 - **Dashboard Privado de Analítica y Conversión:** Panel en `/dashboard.html` con estética *Luxury Glassmorphism*, gráficos de tendencias en curvas Bezier, desglose de canales (Instagram, TikTok, Facebook, Google, WhatsApp), embudo de conversión, desglose por dispositivos, ranking de popularidad, actividad en tiempo real, exportación CSV (incluida la era pre-Supabase, fusionada con la cloud), sincronización con **Supabase Cloud** vía **Edge Function** (login server-side + ingesta `track` sanitizada con rate limit durable) e integración oficial con **Google Analytics 4** (`G-Y9R0B5NH75`, **carga diferida**: tras la primera interacción o a los 8s de fallback).
 - **Seguridad integral:** CSP estricto, cabeceras de seguridad en el Edge de Cloudflare, mínimo privilegio en workflows, handler global de errores no capturados.
 - **Accesibilidad WCAG AA/AAA:** navegación por teclado completa, trampas de foco en modal y drawer, ARIA interactivo, `prefers-reduced-motion`, contraste verificado (botón WhatsApp en AAA 7.88:1).
@@ -130,7 +130,7 @@ yosoy222/
 │   ├── dashboard.js               ← Motor del Dashboard: autenticación, datos (Edge Function/local), estado
 │   └── dashboard-view.js          ← Vista del Dashboard (pura): gráficos Bezier en Canvas y render de KPIs
 │
-├── sw.js                          ← Service Worker PWA (Cache v50)
+├── sw.js                          ← Service Worker PWA (Cache v51 en la rama; producción v50)
 │   ├── Network-First para navegaciones (HTML siempre fresco) y para .js/.json (revalidación en background)
 │   ├── Stale-While-Revalidate con ignoreSearch para el resto de estáticos
 │   ├── Precaching enfocado: shell, dashboard, bloque legal, iconos y miniaturas (en lotes de 6)
@@ -196,7 +196,7 @@ yosoy222/
 | **Estilos** | CSS3 Vanilla | Custom properties (:root), Grid, Flexbox, sin preprocesadores |
 | **Interactividad** | ES6+ Vanilla | Zero runtime dependencies, carga diferida (`defer`), módulos nativos |
 | **Pruebas** | Node.js Test Runner | `node --test` nativo (50 pruebas: sitio, bot, legales, variantes, estrategia del SW y rate limit del Edge Function, sin librerías externas) |
-| **PWA & Offline** | Service Worker API | Cache v50, Network-First en navegación y `.json`, manifest standalone |
+| **PWA & Offline** | Service Worker API | Cache v51 en la rama (v50 en producción), Network-First en navegación y `.json`, manifest standalone |
 | **SEO & Datos** | JSON-LD / XML | Schema.org Store/ItemList, robots.txt, sitemap.xml canónico |
 | **Hosting & CI/CD** | GitHub Pages + Actions | Despliegue automático, CI (tests + Lighthouse), Dependabot activo |
 | **CDN & DNS** | Cloudflare | Proxy edge, Cache Rules HTML (TTL 5 min), Transform Rules de seguridad, purga automática post-deploy |
@@ -376,7 +376,7 @@ Las imágenes de catálogo y miniaturas están procesadas para eliminar márgene
 
 La PWA cumple con todos los estándares modernos de instalación y navegación offline:
 
-### Arquitectura de Caché en `sw.js` (Cache v50)
+### Arquitectura de Caché en `sw.js` (Cache v51 en la rama)
 1. **Navegación Network-First:**
    Para solicitudes de documentos HTML (`event.request.mode === 'navigate'`), el Service Worker consulta primero la red y, sin conexión, responde con la copia en caché.
 2. **`.js` y `.json` también Network-First (v45):**
@@ -390,7 +390,7 @@ La PWA cumple con todos los estándares modernos de instalación y navegación o
 6. **Iconos PWA de Alta Definición:**
    10 variantes (incluyendo formatos maskable con fondo blanco sólido y Safe Zone del 80%, sin franjas negras en Android/iOS) validadas con `scripts/verify_icons.py`.
 
-### UX Offline (Cache v50)
+### UX Offline (Cache v51 en la rama)
 - **Lightbox con degradación elegante:** si la imagen ampliada (`images/catalog/`) no está en caché y la red no responde, el manejador `error` intercambia automáticamente la miniatura precacheada y muestra una nota informativa; al restablecerse la conexión, la imagen grande vuelve a cargar y la nota desaparece sola.
 - **Checkout WhatsApp consciente de la red:** con el navegador offline, el panel del carrito muestra un aviso no bloqueante ("tu carrito queda guardado") que se elimina al reconectar y re-renderizar.
 - **Fuentes asíncronas (v33):** el CSS de Google Fonts carga con `media="print"` + flip en `js/font-flip.js` (el texto pinta en fallback serif y hace swap) — FCP ×8 más rápido medido en bisect controlado; combinado con GA4 diferido mantiene TBT 0ms.
@@ -735,7 +735,7 @@ Tipografía de títulos: **Playfair Display** (serif, cargada async con `js/font
 | `js/legal.js` | Aviso informativo de cookies (no bloqueante, dismissible) |
 | `js/dashboard.js` | Motor del Dashboard: autenticación, datos (Edge Function/local) y estado |
 | `js/dashboard-view.js` | Vista del Dashboard (pura): gráficos Bezier en Canvas y render de KPIs/tablas |
-| `sw.js` | Service Worker (Cache v50, Network-First navegación y .json/.js) |
+| `sw.js` | Service Worker (Cache v51 en la rama, Network-First navegación y .json/.js) |
 | `manifest.json` | Configuración PWA e iconos |
 | `legal/` | 4 documentos legales publicados con identidad verificable (guard anti-borrador) |
 | `tests/*.test.mjs` | 50 pruebas nativas (13 sitio + 11 bot + 8 legal + 8 SW + 7 rate limit Edge + 3 variantes) |
