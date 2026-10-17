@@ -34,7 +34,7 @@ Tienda online de velas artesanales, pulseras, collares, franelas y accesorios.
 # 1. Ejecutar servidor local de desarrollo (NUNCA usar file://)
 python3 -m http.server 8080
 
-# 2. Ejecutar la suite de pruebas automatizadas (40: carrito, filtros, seguridad, bot, legales, variantes de imagen y estrategia del SW)
+# 2. Ejecutar la suite de pruebas automatizadas (50: carrito, filtros, seguridad, bot, legales, variantes de imagen, estrategia del SW y rate limit del login)
 npm test
 
 # 3. Sincronizar catálogo estático prerenderizado tras modificar js/app.js
