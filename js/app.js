@@ -37,7 +37,9 @@
     .catch(() => { /* sin variantes = comportamiento actual */ });
 
   const imgVer = 14;
-  const imgUrl = (file, kind) => `images/${kind}/${file}?v=${imgVer}`;
+  // encodeURIComponent: hay fotos heredadas con espacios en el nombre
+  // ("Armonia Coco.jpg"). Los nombres limpios quedan idénticos.
+  const imgUrl = (file, kind) => `images/${kind}/${encodeURIComponent(file)}?v=${imgVer}`;
 
   /* ----- Product data (synced from Catalogo.xlsx) ----- */
     const products = [
@@ -858,7 +860,10 @@
 
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-      navigator.serviceWorker.register('/sw.js')
+      // updateViaCache:'none' → la comprobación de actualización del SW no usa
+      // la caché HTTP (el borde guarda sw.js ~4 h). Sin esto, un despliegue
+      // nuevo podía tardar horas en llegar a las PWA instaladas.
+      navigator.serviceWorker.register('/sw.js', { updateViaCache: 'none' })
         .then((reg) => {
           // Immediately check for updates
           reg.update().catch(() => {});

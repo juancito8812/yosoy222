@@ -2,14 +2,14 @@
 
 > Tienda online de velas artesanales, pulseras, collares, franelas y accesorios.
 > Desplegada en **GitHub Pages** con dominio personalizado **yosoy222.com** bajo **Cloudflare**.
-> **PWA instalable** con soporte offline completo (Cache v50), catálogo prerenderizado para SEO (Schema.org), panel privado de analítica con Luxury Glassmorphism, backend en la nube (Supabase Cloud + GA4), suite de 44 pruebas en CI/CD y **bot de WhatsApp verificado E2E**.
+> **PWA instalable** con soporte offline completo (Cache v51), catálogo prerenderizado para SEO (Schema.org), panel privado de analítica con Luxury Glassmorphism, backend en la nube (Supabase Cloud + GA4), suite de 44 pruebas en CI/CD y **bot de WhatsApp verificado E2E**.
 
 **Repositorio:** https://github.com/juancito8812/yosoy222  
 **URL de producción:** https://yosoy222.com  
 **URL GitHub Pages:** https://juancito8812.github.io/yosoy222/  
 **WhatsApp (pedidos):** +58 412 648 1628 (`584126481628`)
 
-**Producción actual (27 sep 2026, v50):** el rediseño ritualista de la rama `redesign-ritual` fue **mergeado a `main` con autorización expresa del dueño** (commit `ee9c3b9`) y encima se publicaron: revalidación Network-First de `.json` en el SW (v45), contraste AAA del botón WhatsApp `#075E36` (7.88:1), textos ≥12px (v47), scripts del head a `defer` (v48) y el símbolo `$` alineado con los dígitos vía `span.currency` (v50). Lighthouse móvil en producción: **Perf 96–97 · A11y 100 · BP 93 · SEO 92**. La rama `redesign-ritual` permanece en `origin` como registro histórico.
+**Producción actual (17 oct 2026, v51):** el rediseño ritualista de la rama `redesign-ritual` fue **mergeado a `main` con autorización expresa del dueño** (commit `ee9c3b9`) y encima se publicaron: revalidación Network-First de `.json` en el SW (v45), contraste AAA del botón WhatsApp `#075E36` (7.88:1), textos ≥12px (v47), scripts del head a `defer` (v48) y el símbolo `$` alineado con los dígitos vía `span.currency` (v50). El **17-oct** se sumaron la vela **Pino Navideño** (44 → 45 productos), el bloque `ItemList` JSON-LD autogenerado y el **fix de caché v51** (bump de versión + `updateViaCache:'none'` + guard de CI contra despliegues sin bump, ver «Lección del 17-oct»). Lighthouse móvil en producción: **Perf 96–97 · A11y 100 · BP 93 · SEO 92**. La rama `redesign-ritual` permanece en `origin` como registro histórico.
 
 ---
 
@@ -24,7 +24,7 @@
 7. [Cómo agregar un producto](#cómo-agregar-un-producto)
 8. [Cómo eliminar un producto](#cómo-eliminar-un-producto)
 9. [Procesamiento de imágenes (bordes blancos)](#procesamiento-de-imágenes-bordes-blancos)
-10. [PWA: instalar y funcionamiento offline (Cache v50)](#pwa-instalar-y-funcionamiento-offline-cache-v50)
+10. [PWA: instalar y funcionamiento offline (Cache v51)](#pwa-instalar-y-funcionamiento-offline-cache-v51)
 11. [Telemetría y backend en la nube (Supabase & GA4)](#telemetría-y-backend-en-la-nube-supabase--ga4)
 12. [Seguridad aplicada (Audit & Hardening)](#seguridad-aplicada-audit--hardening)
 13. [Calidad, Confiabilidad y Accesibilidad](#calidad-confiabilidad-y-accesibilidad)
@@ -62,7 +62,7 @@
   - Aviso de aceptación legal (Términos + Privacidad) antes del botón de WhatsApp.
 - **Checkout por WhatsApp:** Mensaje preformateado e itemizado (producto × cantidad — subtotal, y total final en USD). Con el navegador offline muestra un aviso no bloqueante: el carrito queda guardado hasta reconectar.
 - **Número real de WhatsApp centralizado:** `+58 412 648 1628` — única fuente en `js/app.js` (`const WHATSAPP = '584126481628'`); todos los botones y enlaces del sitio se sincronizan con este valor.
-- **PWA Instalable (Cache v50):** Network-First para navegación HTML **y para `.json`** (contenido siempre fresco con conexión), Stale-While-Revalidate para recursos estáticos; precaching enfocado en shell, dashboard, bloque legal, iconos HD y miniaturas (`images/thumbs/`, incluidas las variantes de color del álbum).
+- **PWA Instalable (Cache v51):** Network-First para navegación HTML **y para `.json`** (contenido siempre fresco con conexión), Stale-While-Revalidate para recursos estáticos; precaching enfocado en shell, dashboard, bloque legal, iconos HD y miniaturas (`images/thumbs/`, incluidas las variantes de color del álbum).
 - **Dashboard Privado de Analítica y Conversión:** Panel en `/dashboard.html` con estética *Luxury Glassmorphism*, gráficos de tendencias en curvas Bezier, desglose de canales (Instagram, TikTok, Facebook, Google, WhatsApp), embudo de conversión, desglose por dispositivos, ranking de popularidad, actividad en tiempo real, exportación CSV (incluida la era pre-Supabase, fusionada con la cloud), sincronización con **Supabase Cloud** vía **Edge Function** (login server-side + ingesta `track` sanitizada con rate limit durable) e integración oficial con **Google Analytics 4** (`G-Y9R0B5NH75`, **carga diferida**: tras la primera interacción o a los 8s de fallback).
 - **Seguridad integral:** CSP estricto, cabeceras de seguridad en el Edge de Cloudflare, mínimo privilegio en workflows, handler global de errores no capturados.
 - **Accesibilidad WCAG AA/AAA:** navegación por teclado completa, trampas de foco en modal y drawer, ARIA interactivo, `prefers-reduced-motion`, contraste verificado (botón WhatsApp en AAA 7.88:1).
@@ -130,7 +130,7 @@ yosoy222/
 │   ├── dashboard.js               ← Motor del Dashboard: autenticación, datos (Edge Function/local), estado
 │   └── dashboard-view.js          ← Vista del Dashboard (pura): gráficos Bezier en Canvas y render de KPIs
 │
-├── sw.js                          ← Service Worker PWA (Cache v50)
+├── sw.js                          ← Service Worker PWA (Cache v51)
 │   ├── Network-First para navegaciones (HTML siempre fresco) y para .js/.json (revalidación en background)
 │   ├── Stale-While-Revalidate con ignoreSearch para el resto de estáticos
 │   ├── Precaching enfocado: shell, dashboard, bloque legal, iconos y miniaturas (en lotes de 6)
@@ -151,7 +151,7 @@ yosoy222/
 ├── .github/
 │   ├── dependabot.yml             ← Actualizaciones automáticas para GitHub Actions y npm
 │   └── workflows/
-│       ├── ci.yml                 ← CI: 44 pruebas + verify_versions + job Lighthouse con umbrales
+│       ├── ci.yml                 ← CI: 44 pruebas + verify_versions + guard de caché + Lighthouse
 │       └── purge-cache.yml        ← Despliegue: Smoke test (origen 200) + Purge Cloudflare
 │
 ├── scripts/
@@ -160,6 +160,7 @@ yosoy222/
 │   ├── generate_icons.py          ← Genera los 10 iconos PWA desde icons/source_logo.jpg
 │   ├── verify_icons.py            ← Valida iconos contra manifest.json
 │   ├── verify_versions.py         ← Verificador de coherencia de versiones (sw ↔ manifest ↔ HTML ↔ precache ↔ docs)
+│   ├── check_cache_bump.py        ← Guard de CI: contenido cacheable modificado exige bump de `CACHE_NAME`
 │   ├── lighthouse_check.py        ← Valida el reporte JSON de Lighthouse contra los umbrales de CI
 │   ├── process_images.py          ← Procesamiento de bordes blancos (v1)
 │   ├── process_images_v2.py       ← Procesamiento adaptativo/agresivo (v2)
@@ -196,7 +197,7 @@ yosoy222/
 | **Estilos** | CSS3 Vanilla | Custom properties (:root), Grid, Flexbox, sin preprocesadores |
 | **Interactividad** | ES6+ Vanilla | Zero runtime dependencies, carga diferida (`defer`), módulos nativos |
 | **Pruebas** | Node.js Test Runner | `node --test` nativo (44 pruebas: sitio, bot, legales, variantes, estrategia del SW y datos estructurados, sin librerías externas) |
-| **PWA & Offline** | Service Worker API | Cache v50, Network-First en navegación y `.json`, manifest standalone |
+| **PWA & Offline** | Service Worker API | Cache v51, Network-First en navegación y `.json`, manifest standalone |
 | **SEO & Datos** | JSON-LD / XML | Schema.org LocalBusiness/ItemList, robots.txt, sitemap.xml canónico |
 | **Hosting & CI/CD** | GitHub Pages + Actions | Despliegue automático, CI (tests + Lighthouse), Dependabot activo |
 | **CDN & DNS** | Cloudflare | Proxy edge, Cache Rules HTML (TTL 5 min), Transform Rules de seguridad, purga automática post-deploy |
@@ -329,6 +330,8 @@ El archivo Excel es la **fuente de verdad** para los precios, medidas, aromas y 
 
 > **Lección del 27-sep:** tras cada bump de versión de caché, commitear SIEMPRE la lista completa de archivos que reporta el sed (un `dashboard.html` olvidado en v49/v50 rompió CI por refs `?v=` desfasadas).
 
+> **Lección del 17-oct (publicar contenido nuevo sin bump de caché):** la vela «Pino Navideño» y el bloque `ItemList` salieron a producción **sin subir la versión de caché**: el HTML se refresca en ~10 min (`max-age=600`), pero `js/*.js`, `css/*.css` y `sw.js` quedan hasta ~4 h en la caché del borde y del navegador, así que 2 clientes (navegador y PWA instalada) siguieron ejecutando el catálogo de 44 productos sin ver la vela. **Regla:** todo cambio en contenido cacheable sube `CACHE_NAME` (`yosoy222-vNN`) **y todas las referencias `?v=` en el MISMO commit**; `scripts/check_cache_bump.py` lo vigila en CI y el build falla si no se cumple. Complemento: `sw.js` se registra ahora con `{ updateViaCache: 'none' }` para que la comprobación de actualización del service worker ignore la caché HTTP de 4 h del borde.
+
 ---
 
 ## CÓMO ELIMINAR UN PRODUCTO
@@ -357,7 +360,7 @@ Las imágenes de catálogo y miniaturas están procesadas para eliminar márgene
 
 La PWA cumple con todos los estándares modernos de instalación y navegación offline:
 
-### Arquitectura de Caché en `sw.js` (Cache v50)
+### Arquitectura de Caché en `sw.js` (Cache v51)
 1. **Navegación Network-First:**
    Para solicitudes de documentos HTML (`event.request.mode === 'navigate'`), el Service Worker consulta primero la red y, sin conexión, responde con la copia en caché.
 2. **`.js` y `.json` también Network-First (v45):**
@@ -367,11 +370,11 @@ La PWA cumple con todos los estándares modernos de instalación y navegación o
 4. **Precache Integral & Resiliencia Offline:**
    Durante la instalación, el Service Worker descarga de forma controlada el shell de la aplicación, el panel de dashboard, las 4 páginas legales, los iconos HD y las miniaturas del catálogo (portadas + variantes de color del álbum, en lotes de 6), garantizando navegación visual offline desde el primer instante. Las imágenes grandes del lightbox se descargan y cachean bajo demanda.
 5. **Invalidación Inmediata de Versiones Anteriores:**
-   Al publicarse una nueva versión (`CACHE_NAME = 'yosoy222-v50'`), el evento `activate` purga de forma determinista cualquier almacenamiento obsoleto y el evento `controllerchange` refresca la vista del catálogo automáticamente.
+   Al publicarse una nueva versión (`CACHE_NAME = 'yosoy222-v51'`), el evento `activate` purga de forma determinista cualquier almacenamiento obsoleto y el evento `controllerchange` refresca la vista del catálogo automáticamente.
 6. **Iconos PWA de Alta Definición:**
    10 variantes (incluyendo formatos maskable con fondo blanco sólido y Safe Zone del 80%, sin franjas negras en Android/iOS) validadas con `scripts/verify_icons.py`.
 
-### UX Offline (Cache v50)
+### UX Offline (Cache v51)
 - **Lightbox con degradación elegante:** si la imagen ampliada (`images/catalog/`) no está en caché y la red no responde, el manejador `error` intercambia automáticamente la miniatura precacheada y muestra una nota informativa; al restablecerse la conexión, la imagen grande vuelve a cargar y la nota desaparece sola.
 - **Checkout WhatsApp consciente de la red:** con el navegador offline, el panel del carrito muestra un aviso no bloqueante ("tu carrito queda guardado") que se elimina al reconectar y re-renderizar.
 - **Fuentes asíncronas (v33):** el CSS de Google Fonts carga con `media="print"` + flip en `js/font-flip.js` (el texto pinta en fallback serif y hace swap) — FCP ×8 más rápido medido en bisect controlado; combinado con GA4 diferido mantiene TBT 0ms.
@@ -472,7 +475,7 @@ El sitio publica cuatro documentos en `/legal/` (estáticos, indexables y en el 
 
 | Rama | Estado | Propósito |
 |------|--------|-----------|
-| `main` | **Producción (v50)** | Todo push despliega automáticamente a yosoy222.com (CI + Pages + Purge). Única rama protegida por el pipeline completo. |
+| `main` | **Producción (v51)** | Todo push despliega automáticamente a yosoy222.com (CI + Pages + Purge). Única rama protegida por el pipeline completo. |
 | `redesign-ritual` | **MERGEADA a `main` (27-sep, `ee9c3b9`, autorización expresa del dueño) — registro histórico en `origin`** | Rediseño ritualista: fondo beige #F3EDE4, tipografía Playfair, taxonomía velas/melts/dijes-pulseras/franelas, álbum de variantes (22 productos / 95 fotos), 14 portadas corregidas (`1c87a58`), legal integrado y fixes finales (botón WhatsApp del lightbox visible, wordmark 222). Su handoff vive en `BRANCH_STATUS.md`. |
 
 > 🔒 **POLÍTICA DE MERGE (decisión del dueño, inviolable — AGENTS.md regla 9):** ninguna rama se mergea a `main` —ni se abre PR de merge, ni se pushea su contenido— sin autorización explícita del dueño Y estar 100% lista (QA gate completo: barrido visual, auditoría móvil 375px, tests en verde, sync con main resuelto, visto bueno del cliente). `main` es producción: todo push despliega.
@@ -560,7 +563,7 @@ La suite corre bajo el runner nativo `node --test` y verifica:
 
 ### 2. Pipeline de Integración Continua (`.github/workflows/ci.yml`)
 En cada `push` y `pull_request` a `main`, GitHub Actions (Node 22) ejecuta:
-1. **Job `test`:** la suite completa con reporter TAP, `pipefail` y **annotations `::error::`** por cada test fallido (canal de diagnóstico sin acceso a logs), más `scripts/verify_versions.py` (coherencia de versiones con annotations al fallar).
+1. **Job `test`:** la suite completa con reporter TAP, `pipefail` y **annotations `::error::`** por cada test fallido (canal de diagnóstico sin acceso a logs), más `scripts/verify_versions.py` (coherencia de versiones) y `scripts/check_cache_bump.py` (**guard anti-despliegue sin bump**, con annotations al fallar) — ambos con annotations.
 2. **Job `lighthouse`:** garantiza Chrome, sirve el repo con `http.server`, audita con Lighthouse 12 (móvil, 3 reintentos ante fallos de infraestructura), sube el reporte JSON como artefacto y valida con `scripts/lighthouse_check.py` contra umbrales que emiten annotations con el delta por categoría (Performance ≥75 por el suelo del runner, documentado en `LIGHTHOUSE_BASELINE.md`; A11y ≥95, BP ≥85, SEO ≥85).
 
 Si algo falla, el commit se bloquea impidiendo despliegues rotos.
@@ -579,7 +582,7 @@ Monitoreo semanal automatizado para actualizar acciones de GitHub y paquetes bas
 
 ### Flujo de Publicación
 ```
-Push a main ──▶ CI Tests (44 tests + verify_versions) ──▶ Job Lighthouse ──▶ GitHub Pages Build ──▶ Purge Cloudflare Cache + Smoke Test ──▶ Producción OK
+Push a main ──▶ CI Tests (44 tests + verify_versions + guard de bump) ──▶ Job Lighthouse ──▶ GitHub Pages Build ──▶ Purge Cloudflare Cache + Smoke Test ──▶ Producción OK
 ```
 
 ### Comprobación de Producción
@@ -712,11 +715,11 @@ Tipografía de títulos: **Playfair Display** (serif, cargada async con `js/font
 | `js/legal.js` | Aviso informativo de cookies (no bloqueante, dismissible) |
 | `js/dashboard.js` | Motor del Dashboard: autenticación, datos (Edge Function/local) y estado |
 | `js/dashboard-view.js` | Vista del Dashboard (pura): gráficos Bezier en Canvas y render de KPIs/tablas |
-| `sw.js` | Service Worker (Cache v50, Network-First navegación y .json/.js) |
+| `sw.js` | Service Worker (Cache v51, Network-First navegación y .json/.js) |
 | `manifest.json` | Configuración PWA e iconos |
 | `legal/` | 4 documentos legales publicados con identidad verificable (guard anti-borrador) |
 | `tests/*.test.mjs` | 44 pruebas nativas (13 sitio + 11 bot + 8 legal + 5 SW + 3 variantes + 4 schema) |
-| `.github/workflows/ci.yml` | CI: tests TAP con annotations + verify_versions + job Lighthouse con umbrales |
+| `.github/workflows/ci.yml` | CI: tests TAP con annotations + verify_versions + guard de bump de caché + job Lighthouse con umbrales |
 | `.github/workflows/purge-cache.yml` | Deploy: smoke test (origen 200) + purge Cloudflare |
 | `.github/dependabot.yml` | Configuración de actualización de dependencias y acciones |
 | `scripts/` | Prerenderizado, variantes, iconos (`verify_icons.py`), versiones (`verify_versions.py`), Lighthouse check, SQL canónico (`supabase_rls.sql`, `supabase_rate_limit.sql`), imágenes, **espejo del workflow del bot** (`whatsapp-n8n-workflow.json`) e `IMAGE_GUIDE.md` |
@@ -780,4 +783,4 @@ gh run list --limit 3
 
 ---
 
-*Documentación técnica actualizada al 17 de octubre de 2026. Proyecto 100% verificado en pruebas unitarias (44/44 pasadas), CI/CD (tests + Lighthouse), auditoría de producción, bloque legal publicado, bot de WhatsApp verificado E2E y despliegue activo en https://yosoy222.com — producción en **Cache v50** con el rediseño ritualista mergeado desde `redesign-ritual` con autorización expresa del dueño (commit `ee9c3b9`). La rama queda respaldada en `origin` como registro histórico.*
+*Documentación técnica actualizada al 17 de octubre de 2026. Proyecto 100% verificado en pruebas unitarias (44/44 pasadas), CI/CD (tests + Lighthouse), auditoría de producción, bloque legal publicado, bot de WhatsApp verificado E2E y despliegue activo en https://yosoy222.com — producción en **Cache v51** con el rediseño ritualista mergeado desde `redesign-ritual` con autorización expresa del dueño (commit `ee9c3b9`). La rama queda respaldada en `origin` como registro histórico.*
