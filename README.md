@@ -2,7 +2,7 @@
 
 > Tienda online de velas artesanales, pulseras, collares, franelas y accesorios.
 > Desplegada en **GitHub Pages** con dominio personalizado **yosoy222.com** bajo **Cloudflare**.
-> **PWA instalable** con soporte offline completo (Cache v50), catálogo prerenderizado para SEO (Schema.org), panel privado de analítica con Luxury Glassmorphism, backend en la nube (Supabase Cloud + GA4), suite de 40 pruebas en CI/CD y **bot de WhatsApp verificado E2E**.
+> **PWA instalable** con soporte offline completo (Cache v50), catálogo prerenderizado para SEO (Schema.org), panel privado de analítica con Luxury Glassmorphism, backend en la nube (Supabase Cloud + GA4), suite de 44 pruebas en CI/CD y **bot de WhatsApp verificado E2E**.
 
 **Repositorio:** https://github.com/juancito8812/yosoy222  
 **URL de producción:** https://yosoy222.com  
@@ -48,7 +48,7 @@
 
 ### Características del sitio
 
-- **Catálogo 100% Pre-renderizado para SEO:** Los 45 productos vienen renderizados en el HTML estático inicial para rastreo inmediato por Googlebot y Bingbot, complementado con datos estructurados Schema.org (`Store` + `ItemList`).
+- **Catálogo 100% Pre-renderizado para SEO:** Los 45 productos vienen renderizados en el HTML estático inicial para rastreo inmediato por Googlebot y Bingbot, complementado con datos estructurados Schema.org (`LocalBusiness` + `ItemList` con los 45 productos).
 - **Diseño ritualista (post-merge, 27 sep):** paleta beige-crema `#F3EDE4`, tipografía serif Playfair Display en títulos con paleta dorada mate AA, taxonomía de filtros `velas / melts / dijes y pulseras / franelas` y álbum de variantes por producto.
 - **Hero asimétrico** con fotos reales de productos y carga prioritaria (`fetchpriority="high"`).
 - **Búsqueda en tiempo real con debounce:** Filtrado instantáneo por nombre y descripción (ej: "soja", "lavanda", "gold-filled") optimizado con 150 ms de retardo para no saturar el hilo principal.
@@ -97,7 +97,7 @@ yosoy222/
 │
 ├── index.html                     ← Landing page prerenderizada con el rediseño ritualista
 │   ├── Meta tags: SEO, Open Graph, Twitter Cards, Canonical, PWA, CSP
-│   ├── Schema.org JSON-LD: datos estructurados Store + ItemList (45 productos)
+│   ├── Schema.org JSON-LD: datos estructurados LocalBusiness + ItemList (45 productos)
 │   ├── Header fijo: logo, nav con trap de foco, carrito, botón mobile con aria-controls
 │   ├── Hero asimétrico (fotos reales con fetchpriority="high")
 │   ├── Catálogo prerenderizado: búsqueda con debounce, filtros con aria-pressed, grid 45 cards
@@ -136,12 +136,13 @@ yosoy222/
 │   ├── Precaching enfocado: shell, dashboard, bloque legal, iconos y miniaturas (en lotes de 6)
 │   └── Activación con limpieza automática de cachés anteriores + auto-refresh en controllerchange
 │
-├── tests/                         ← 40 pruebas nativas node:test (npm test)
+├── tests/                         ← 44 pruebas nativas node:test (npm test)
 │   ├── cart_and_filters.test.mjs  ← 13: carrito, filtros y seguridad
 │   ├── bot_relay.test.mjs         ← 11: comandos del staff, atender/fin, relay del número principal
 │   ├── legal_pages.test.mjs       ← 8: bloque legal, CSP, precache y guard anti-borrador
 │   ├── sw_strategy.test.mjs       ← 5: estrategia de caché (ejecuta el sw.js real en sandbox node:vm)
-│   └── variants.test.mjs          ← 3: convención de variantes de color
+│   ├── variants.test.mjs          ← 3: convención de variantes de color
+│   └── schema_itemlist.test.mjs   ← 4: ItemList JSON-LD sincronizado con app.js
 │
 ├── supabase/
 │   ├── functions/dashboard-stats  ← Edge Function: login admin server-side + lectura global + ingesta track
@@ -150,7 +151,7 @@ yosoy222/
 ├── .github/
 │   ├── dependabot.yml             ← Actualizaciones automáticas para GitHub Actions y npm
 │   └── workflows/
-│       ├── ci.yml                 ← CI: 40 pruebas + verify_versions + job Lighthouse con umbrales
+│       ├── ci.yml                 ← CI: 44 pruebas + verify_versions + job Lighthouse con umbrales
 │       └── purge-cache.yml        ← Despliegue: Smoke test (origen 200) + Purge Cloudflare
 │
 ├── scripts/
@@ -194,9 +195,9 @@ yosoy222/
 | **Frontend** | HTML5 semántico | Prerenderizado estático, ARIA interactivo, microdatos Schema.org |
 | **Estilos** | CSS3 Vanilla | Custom properties (:root), Grid, Flexbox, sin preprocesadores |
 | **Interactividad** | ES6+ Vanilla | Zero runtime dependencies, carga diferida (`defer`), módulos nativos |
-| **Pruebas** | Node.js Test Runner | `node --test` nativo (40 pruebas: sitio, bot, legales, variantes y estrategia del SW, sin librerías externas) |
+| **Pruebas** | Node.js Test Runner | `node --test` nativo (44 pruebas: sitio, bot, legales, variantes, estrategia del SW y datos estructurados, sin librerías externas) |
 | **PWA & Offline** | Service Worker API | Cache v50, Network-First en navegación y `.json`, manifest standalone |
-| **SEO & Datos** | JSON-LD / XML | Schema.org Store/ItemList, robots.txt, sitemap.xml canónico |
+| **SEO & Datos** | JSON-LD / XML | Schema.org LocalBusiness/ItemList, robots.txt, sitemap.xml canónico |
 | **Hosting & CI/CD** | GitHub Pages + Actions | Despliegue automático, CI (tests + Lighthouse), Dependabot activo |
 | **CDN & DNS** | Cloudflare | Proxy edge, Cache Rules HTML (TTL 5 min), Transform Rules de seguridad, purga automática post-deploy |
 | **Backend de telemetría** | Supabase Cloud | Edge Function `dashboard-stats` (login HMAC + service_role) y `session_get`/`session_set` (sesión del bot) |
@@ -226,7 +227,7 @@ npx serve .
 
 ### 2. Ejecutar la suite de pruebas automatizadas
 
-El proyecto incluye **40 pruebas** con el runner nativo de Node.js (13 del sitio + 11 del bot + 8 del bloque legal + 5 de la estrategia del SW + 3 de variantes de imagen):
+El proyecto incluye **44 pruebas** con el runner nativo de Node.js (13 del sitio + 11 del bot + 8 del bloque legal + 5 de la estrategia del SW + 3 de variantes de imagen + 4 de datos estructurados):
 
 ```bash
 # Ejecutar con npm
@@ -541,7 +542,7 @@ El proyecto cuenta con un esquema de seguridad multicapa validado mediante audit
 ## SEO, INDEXABILIDAD Y DATOS ESTRUCTURADOS
 
 1. **Pre-renderizado de Catálogo:** Las 45 tarjetas de productos se encuentran presentes en el código fuente HTML original. Los motores de búsqueda que no ejecutan JavaScript indexan de inmediato todos los títulos, descripciones y precios.
-2. **Schema.org JSON-LD:** Bloque estructurado con tipado `Store` y lista ordenada `ItemList` que describe detalladamente cada vela, collar, pulsera o franela, su moneda (USD), precio y disponibilidad (`InStock`).
+2. **Schema.org JSON-LD:** Bloque `LocalBusiness` (identidad de la tienda) más una lista ordenada `ItemList` con un `Product` por artículo: nombre, imagen absoluta, descripción, categoría y `Offer` en USD con disponibilidad `InStock`. Ambos bloques los genera `scripts/prerender_catalog.py` a partir de `js/app.js`, y `tests/schema_itemlist.test.mjs` falla si se desincronizan (posiciones, nombres, precios y total).
 3. **Indexación y Rastreo:** Archivos [`robots.txt`](robots.txt) y [`sitemap.xml`](sitemap.xml) canónicos configurados (el sitemap incluye las 4 páginas legales).
 4. **Metadatos Sociales:** Integración completa de Open Graph (`og:title`, `og:image`, `og:description`, `og:url`) y Twitter Cards con URL canónica `https://yosoy222.com/`.
 
@@ -578,7 +579,7 @@ Monitoreo semanal automatizado para actualizar acciones de GitHub y paquetes bas
 
 ### Flujo de Publicación
 ```
-Push a main ──▶ CI Tests (40 tests + verify_versions) ──▶ Job Lighthouse ──▶ GitHub Pages Build ──▶ Purge Cloudflare Cache + Smoke Test ──▶ Producción OK
+Push a main ──▶ CI Tests (44 tests + verify_versions) ──▶ Job Lighthouse ──▶ GitHub Pages Build ──▶ Purge Cloudflare Cache + Smoke Test ──▶ Producción OK
 ```
 
 ### Comprobación de Producción
@@ -714,7 +715,7 @@ Tipografía de títulos: **Playfair Display** (serif, cargada async con `js/font
 | `sw.js` | Service Worker (Cache v50, Network-First navegación y .json/.js) |
 | `manifest.json` | Configuración PWA e iconos |
 | `legal/` | 4 documentos legales publicados con identidad verificable (guard anti-borrador) |
-| `tests/*.test.mjs` | 40 pruebas nativas (13 sitio + 11 bot + 8 legal + 5 SW + 3 variantes) |
+| `tests/*.test.mjs` | 44 pruebas nativas (13 sitio + 11 bot + 8 legal + 5 SW + 3 variantes + 4 schema) |
 | `.github/workflows/ci.yml` | CI: tests TAP con annotations + verify_versions + job Lighthouse con umbrales |
 | `.github/workflows/purge-cache.yml` | Deploy: smoke test (origen 200) + purge Cloudflare |
 | `.github/dependabot.yml` | Configuración de actualización de dependencias y acciones |
@@ -779,4 +780,4 @@ gh run list --limit 3
 
 ---
 
-*Documentación técnica actualizada al 27 de septiembre de 2026. Proyecto 100% verificado en pruebas unitarias (40/40 pasadas), CI/CD (tests + Lighthouse), auditoría de producción, bloque legal publicado, bot de WhatsApp verificado E2E y despliegue activo en https://yosoy222.com — producción en **Cache v50** con el rediseño ritualista mergeado desde `redesign-ritual` con autorización expresa del dueño (commit `ee9c3b9`). La rama queda respaldada en `origin` como registro histórico.*
+*Documentación técnica actualizada al 17 de octubre de 2026. Proyecto 100% verificado en pruebas unitarias (44/44 pasadas), CI/CD (tests + Lighthouse), auditoría de producción, bloque legal publicado, bot de WhatsApp verificado E2E y despliegue activo en https://yosoy222.com — producción en **Cache v50** con el rediseño ritualista mergeado desde `redesign-ritual` con autorización expresa del dueño (commit `ee9c3b9`). La rama queda respaldada en `origin` como registro histórico.*
