@@ -11,6 +11,7 @@ import json
 import re
 import sys
 from pathlib import Path
+from urllib.parse import quote
 
 ROOT = Path(__file__).resolve().parent.parent
 APP_JS = ROOT / 'js' / 'app.js'
@@ -20,6 +21,17 @@ SITE_URL = 'https://yosoy222.com/'
 CATALOG_URL = SITE_URL + '#catalogo'
 ITEMLIST_START = '    <!-- SCHEMA-ITEMLIST:START -->'
 ITEMLIST_END = '    <!-- SCHEMA-ITEMLIST:END -->'
+
+
+def image_path(file):
+    """Nombre de archivo listo para URL (percent-encoded).
+
+    Hay fotos heredadas con espacios en el nombre ("Armonia Coco.jpg"). Sin
+    codificar, la URL viaja con un espacio literal tanto al JSON-LD como a la
+    tarjeta: los validadores la marcan como URL inválida y algunos clientes la
+    rechazan. quote() no toca los nombres que ya son limpios.
+    """
+    return quote(file, safe='')
 
 
 def build_itemlist(matches):
@@ -39,7 +51,7 @@ def build_itemlist(matches):
             "item": {
                 "@type": "Product",
                 "name": name,
-                "image": SITE_URL + 'images/thumbs/' + file,
+                "image": SITE_URL + 'images/thumbs/' + image_path(file),
                 "description": desc,
                 "category": cat,
                 "url": CATALOG_URL,
@@ -143,7 +155,7 @@ def main():
         card = (
             f'          <article class="product-card" data-index="{i}">\n'
             f'          <button type="button" class="product-image" data-name="{escape_html(name)}" aria-label="Ampliar imagen de {escape_html(name)}">\n'
-            f'            <img src="images/thumbs/{escape_html(file)}?v=14" alt="{escape_html(name)} artesanal" width="480" height="480" loading="lazy" decoding="async">\n'
+            f'            <img src="images/thumbs/{escape_html(image_path(file))}?v=14" alt="{escape_html(name)} artesanal" width="480" height="480" loading="lazy" decoding="async">\n'
             f'          </button>\n'
             f'          <div class="product-info">\n'
             f'            <h3>{escape_html(name)}</h3>\n'

@@ -15,6 +15,9 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          # fetch-depth 2: el guard de versión de caché compara HEAD con HEAD^
+          fetch-depth: 2
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -46,6 +49,16 @@ jobs:
             echo "::error::verify_versions: $linea"
           done
           exit 1
+
+      - name: Guard - cache version bump
+        run: |
+          set -o pipefail
+          status=0
+          python3 scripts/check_cache_bump.py HEAD^ 2>&1 | tee /tmp/cache_bump.log || status=$?
+          grep -E "^(ERROR|  - )" /tmp/cache_bump.log | head -20 | while IFS= read -r linea; do
+            echo "::error::$linea"
+          done || true
+          exit $status
 
   lighthouse:
     runs-on: ubuntu-latest
