@@ -1,10 +1,13 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import appModule from '../js/app.js';
 import cartModule from '../js/cart.js';
 
 const {
   filterProductList,
+  seasonFilters,
+  catDescriptions,
   products,
   catMap
 } = appModule;
@@ -179,6 +182,47 @@ test('RELIABILITY: filterProductList safely handles corrupted product records wi
   const result = filterProductList(malformed, 'todos', 'rosa');
   assert.equal(result.length, 1);
   assert.equal(result[0].name, 'Rosa');
+});
+
+test('FILTERS: la colección "Velas Navideñas" agrupa piezas por temporada sin sacarlas de su categoría', () => {
+  const testProducts = [
+    { name: 'Pino Navideño', cat: 'vela', desc: 'Canela', season: 'navidad' },
+    { name: 'Rosa', cat: 'vela', desc: 'Coco' },
+    { name: 'Mini Corazones', cat: 'melt', desc: 'Jazmin' }
+  ];
+  const testCatMap = { vela: 'velas', melt: 'melts' };
+
+  const navidad = filterProductList(testProducts, 'navidad', '', testCatMap);
+  assert.equal(navidad.length, 1);
+  assert.equal(navidad[0].name, 'Pino Navideño');
+
+  // La pieza estacional sigue viva en su categoría madre
+  assert.equal(filterProductList(testProducts, 'velas', '', testCatMap).length, 2);
+  // No se cuela en otras categorías ni ignora el buscador
+  assert.equal(filterProductList(testProducts, 'melts', '', testCatMap).length, 1);
+  assert.equal(filterProductList(testProducts, 'navidad', 'rosa', testCatMap).length, 0);
+  assert.equal(filterProductList(testProducts, 'todos', '', testCatMap).length, 3);
+});
+
+test('FILTERS: el catálogo real marca las piezas de temporada y siguen siendo velas', () => {
+  const seasonal = (products || []).filter(p => p.season === 'navidad');
+  assert.ok(seasonal.length >= 1, 'debe haber al menos una pieza en Velas Navideñas');
+  assert.ok(seasonal.every(p => p.cat === 'vela'), 'las piezas navideñas actuales son velas');
+  assert.equal(filterProductList(products, 'navidad', '', catMap).length, seasonal.length);
+});
+
+test('FILTERS: cada chip del catálogo tiene su descripción de categoría', () => {
+  const html = readFileSync(new URL('../index.html', import.meta.url), 'utf8');
+  const chips = [...html.matchAll(/class="filter-btn[^"]*" data-filter="([a-z-]+)"/g)].map(m => m[1]);
+  assert.ok(chips.includes('todos'), 'falta el chip Todos');
+  assert.ok(chips.includes('navidad'), 'falta el chip Velas Navideñas');
+  for (const chip of chips) {
+    if (chip === 'todos') continue;
+    const known = catDescriptions[chip] || Object.values(seasonFilters).includes(chip);
+    assert.ok(known, `el chip "${chip}" no tiene categoría ni colección asociada`);
+  }
+  assert.ok(catDescriptions.navidad && catDescriptions.navidad.length > 20,
+    'Velas Navideñas necesita texto de introducción propio');
 });
 
 

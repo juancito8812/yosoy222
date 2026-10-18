@@ -59,7 +59,7 @@
   { file: "VM-CRUZ_vela_cruz_con_paloma_52g.jpg", name: "Cruz con Paloma", cat: "vela", price: 7, desc: "Vela artesanal de 52grs. en forma de Cruz con palomita. Elaborada con cera de soja en blanco con rosa, amarillo, azul Aroma: Coco Vainilla. Jazmin" },
   { file: "VM-CUBO_vela_cubo_40g.jpg", name: "Cubo", cat: "vela", price: 7, desc: "Vela de 40grs. en forma de Cubo. Elaborada con cera de soja en blanco, amarillo, azul, rosa Aroma: Coco Vainilla. Canela" },
   { file: "VM-VIRGEN_vela_virgen_del_carmen_42g.jpg", name: "Virgen del Carmen", cat: "vela", price: 7, desc: "Vela artesanal de 42grs. en forma de Virgen del Carmen. Elaborada con cera de soja en blanco y dorado Aroma: Coco Vainilla. Canela" },
-  { file: "VM-PINO_vela_pino_138g.jpg", name: "Pino Navideño", cat: "vela", price: 14, desc: "Vela artesanal de 138grs. en forma de Pino. Elaborada con cera de soja en blanco, rojo y verde. Aroma: Canela, Lavanda, Limón Fresh." },
+  { file: "VM-PINO_vela_pino_138g.jpg", name: "Pino Navideño", cat: "vela", price: 14, desc: "Vela artesanal de 138grs. en forma de Pino. Elaborada con cera de soja en blanco, rojo y verde. Aroma: Canela, Lavanda, Limón Fresh.", season: "navidad" },
   // === VELAS ENVASES (hoja: Velas Envases) ===
   { file: "VE-MINIPETIT_vela_mini_petit_123g.jpg", name: "Mini Petit", cat: "vela", price: 7.5, desc: "Vela artesanal de 123grs. Elaborado en envase de vidrio transparente, con tapa metalica dorada. Contiene una base de cera de soja blanca. Aroma: Coco Vainilla" },
   { file: "VE-MANDALA_vela_mandala_98g.jpg", name: "Mandala", cat: "vela", price: 9, desc: "Vela artesanal de 98grs. Elaborada en envase de metal decorativo. Contiene cera blanca. Aroma: limón Fresh" },
@@ -116,9 +116,15 @@
     velas: 'Piezas únicas elaboradas en cera de soja botánica y aromas envolventes creadas para iluminar tu espacio, armonizar tu energía y acompañar tus momentos de introspección.',
     melts: 'Wax Melts y figuras aromáticas para difusor que desprenden fragancias puras de forma continua para transformar la atmósfera de tu hogar.',
     franelas: 'Prendas suaves con afirmaciones conscientes y corte minimalista que visten tu intención diaria.',
-    'dijes-pulseras': 'Amuletos tejidos a mano y joyería en Gold-Filled con piedras naturales para canalizar protección, claridad y serenidad.'
+    'dijes-pulseras': 'Amuletos tejidos a mano y joyería en Gold-Filled con piedras naturales para canalizar protección, claridad y serenidad.',
+    navidad: 'Colección de temporada: piezas de luz creadas para acompañar las fiestas, con aromas cálidos y verdes de invierno. Crece cada diciembre.'
   };
   const catNouns = { vela: 'la vela', melt: 'el wax melt', collar: 'el collar', pulsera: 'la pulsera', franela: 'la franela', otro: 'el amuleto' };
+
+  // Colecciones estacionales: transversales a las categorías. Una pieza marcada con
+  // `season` sigue viva en su categoría habitual (Velas ritualistas) y entra además
+  // en su colección de temporada ("Velas Navideñas") sin duplicarla en el array.
+  const seasonFilters = { navidad: 'navidad' };
 
   /* ----- DOM refs ----- */
   const $ = (s, p) => (p || document).querySelector(s);
@@ -137,16 +143,20 @@
   if (!YoSoyCartModule) throw new Error('YoSoy222: js/cart.js debe cargarse antes que app.js');
   const { calculateCartTotals, loadCartData, saveCartData } = YoSoyCartModule;
 
-  function filterProductList(items, filter, search, map = catMap) {
+  function matchesFilter(p, filter, search, map = catMap) {
+    if (!p || typeof p !== 'object') return false;
     const normSearch = (search || '').trim().toLowerCase();
-    return (items || []).filter(p => {
-      if (!p || typeof p !== 'object') return false;
-      const matchesCat = !filter || filter === 'todos' || (map && map[p.cat] === filter);
-      const name = (p.name || '').toLowerCase();
-      const desc = (p.desc || '').toLowerCase();
-      const matchesSearch = !normSearch || name.includes(normSearch) || desc.includes(normSearch);
-      return matchesCat && matchesSearch;
-    });
+    const matchesCat = !filter || filter === 'todos' || (seasonFilters[filter]
+      ? p.season === seasonFilters[filter]
+      : (map && map[p.cat] === filter));
+    const name = (p.name || '').toLowerCase();
+    const desc = (p.desc || '').toLowerCase();
+    const matchesSearch = !normSearch || name.includes(normSearch) || desc.includes(normSearch);
+    return matchesCat && matchesSearch;
+  }
+
+  function filterProductList(items, filter, search, map = catMap) {
+    return (items || []).filter(p => matchesFilter(p, filter, search, map));
   }
 
   /* ----- Browser DOM & Runtime Initialization ----- */
@@ -328,10 +338,7 @@
     products.forEach((p, i) => {
       const card = grid.children[i];
       if (!card) return;
-      const matchesCat = activeFilter === 'todos' || catMap[p.cat] === activeFilter;
-      const name = p.name.toLowerCase();
-      const desc = p.desc.toLowerCase();
-      const show = matchesCat && (!searchTerm || name.includes(searchTerm) || desc.includes(searchTerm));
+      const show = matchesFilter(p, activeFilter, searchTerm, catMap);
       card.classList.toggle('hidden', !show);
       if (show) {
         count++;
@@ -901,6 +908,9 @@
   if (typeof module !== 'undefined' && module.exports) {
     module.exports = {
       filterProductList,
+      matchesFilter,
+      seasonFilters,
+      catDescriptions,
       products,
       catMap,
       escapeHtml

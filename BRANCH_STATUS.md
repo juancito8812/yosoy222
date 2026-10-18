@@ -2,7 +2,7 @@
 
 > ⚠️ **ESTADO: MERGEADA A `main` (27 sep 2026, commit `ee9c3b9`, con autorización expresa del dueño).**
 > Este documento queda como **registro histórico** del trabajo de la rama (v38→v43).
-> El estado vivo del proyecto (producción v51) vive en `.agents/MEMORY.md` y `AGENTS.md` en `main`.
+> El estado vivo del proyecto (producción v51; rama `feat/velas-navidenas` en v52 sin mergear) vive en `.agents/MEMORY.md` y `AGENTS.md` en `main`.
 > La rama permanece en `origin` sin más desarrollo previsto.
 
 > Última actualización: **27 de septiembre de 2026** (banner de cierre; contenido congelado al 25-sep).

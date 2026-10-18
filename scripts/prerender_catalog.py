@@ -43,7 +43,7 @@ def build_itemlist(matches):
     de mantenerlo a mano, que es como se quedó desincronizado antes.
     """
     items = []
-    for position, (file, name, cat, price, desc) in enumerate(matches, start=1):
+    for position, (file, name, cat, price, desc, *_season) in enumerate(matches, start=1):
         price_val = float(price)
         items.append({
             "@type": "ListItem",
@@ -131,7 +131,8 @@ def main():
     products_js = js_content[start:end]
 
     pattern = re.compile(
-        r'\{\s*file:\s*\"([^\"]+)\",\s*name:\s*\"([^\"]+)\",\s*cat:\s*\"([^\"]+)\",\s*price:\s*([0-9.]+),\s*desc:\s*\"([^\"]+)\"\s*\}'
+        r'\{\s*file:\s*"([^"]+)",\s*name:\s*"([^"]+)",\s*cat:\s*"([^"]+)",\s*price:\s*([0-9.]+),\s*desc:\s*"([^"]+)"'
+        r'(?:\s*,\s*season:\s*"([^"]+)")?\s*\}'
     )
     matches = pattern.findall(products_js)
 
@@ -149,7 +150,7 @@ def main():
     }
 
     cards = []
-    for i, (file, name, cat, price, desc) in enumerate(matches):
+    for i, (file, name, cat, price, desc, *_season) in enumerate(matches):
         price_val = float(price)
         price_str = str(int(price_val)) if price_val.is_integer() else str(price_val)
         card = (

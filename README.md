@@ -2,14 +2,14 @@
 
 > Tienda online de velas artesanales, pulseras, collares, franelas y accesorios.
 > Desplegada en **GitHub Pages** con dominio personalizado **yosoy222.com** bajo **Cloudflare**.
-> **PWA instalable** con soporte offline completo (Cache v51), catálogo prerenderizado para SEO (Schema.org), panel privado de analítica con Luxury Glassmorphism, backend en la nube (Supabase Cloud + GA4), suite de 44 pruebas en CI/CD y **bot de WhatsApp verificado E2E**.
+> **PWA instalable** con soporte offline completo (Cache v52 en `feat/velas-navidenas`; producción sigue en v51), catálogo prerenderizado para SEO (Schema.org), panel privado de analítica con Luxury Glassmorphism, backend en la nube (Supabase Cloud + GA4), suite de 47 pruebas en CI/CD y **bot de WhatsApp verificado E2E**.
 
 **Repositorio:** https://github.com/juancito8812/yosoy222  
 **URL de producción:** https://yosoy222.com  
 **URL GitHub Pages:** https://juancito8812.github.io/yosoy222/  
 **WhatsApp (pedidos):** +58 412 648 1628 (`584126481628`)
 
-**Producción actual (17 oct 2026, v51):** el rediseño ritualista de la rama `redesign-ritual` fue **mergeado a `main` con autorización expresa del dueño** (commit `ee9c3b9`) y encima se publicaron: revalidación Network-First de `.json` en el SW (v45), contraste AAA del botón WhatsApp `#075E36` (7.88:1), textos ≥12px (v47), scripts del head a `defer` (v48) y el símbolo `$` alineado con los dígitos vía `span.currency` (v50). El **17-oct** se sumaron la vela **Pino Navideño** (44 → 45 productos), el bloque `ItemList` JSON-LD autogenerado y el **fix de caché v51** (bump de versión + `updateViaCache:'none'` + guard de CI contra despliegues sin bump, ver «Lección del 17-oct»). Lighthouse móvil en producción: **Perf 96–97 · A11y 100 · BP 93 · SEO 92**. La rama `redesign-ritual` permanece en `origin` como registro histórico.
+**Producción actual (18 oct 2026, v51):** el rediseño ritualista de la rama `redesign-ritual` fue **mergeado a `main` con autorización expresa del dueño** (commit `ee9c3b9`) y encima se publicaron: revalidación Network-First de `.json` en el SW (v45), contraste AAA del botón WhatsApp `#075E36` (7.88:1), textos ≥12px (v47), scripts del head a `defer` (v48) y el símbolo `$` alineado con los dígitos vía `span.currency` (v50). El **17-oct** se sumaron la vela **Pino Navideño** (44 → 45 productos), el bloque `ItemList` JSON-LD autogenerado y el **fix de caché v51** (bump de versión + `updateViaCache:'none'` + guard de CI contra despliegues sin bump, ver «Lección del 17-oct»). Lighthouse móvil en producción: **Perf 96–97 · A11y 100 · BP 93 · SEO 92**. La rama `redesign-ritual` permanece en `origin` como registro histórico. **En curso (rama `feat/velas-navidenas`, sin mergear):** nuevo chip de colección **Velas Navideñas** (`data-filter="navidad"`, transversal a las categorías vía `season: 'navidad'`) y bump de caché a **v52**; producción sigue sirviendo v51 hasta que el dueño apruebe el merge.
 
 ---
 
@@ -24,7 +24,7 @@
 7. [Cómo agregar un producto](#cómo-agregar-un-producto)
 8. [Cómo eliminar un producto](#cómo-eliminar-un-producto)
 9. [Procesamiento de imágenes (bordes blancos)](#procesamiento-de-imágenes-bordes-blancos)
-10. [PWA: instalar y funcionamiento offline (Cache v51)](#pwa-instalar-y-funcionamiento-offline-cache-v51)
+10. [PWA: instalar y funcionamiento offline (Cache v52)](#pwa-instalar-y-funcionamiento-offline-cache-v52)
 11. [Telemetría y backend en la nube (Supabase & GA4)](#telemetría-y-backend-en-la-nube-supabase--ga4)
 12. [Seguridad aplicada (Audit & Hardening)](#seguridad-aplicada-audit--hardening)
 13. [Calidad, Confiabilidad y Accesibilidad](#calidad-confiabilidad-y-accesibilidad)
@@ -49,10 +49,10 @@
 ### Características del sitio
 
 - **Catálogo 100% Pre-renderizado para SEO:** Los 45 productos vienen renderizados en el HTML estático inicial para rastreo inmediato por Googlebot y Bingbot, complementado con datos estructurados Schema.org (`LocalBusiness` + `ItemList` con los 45 productos).
-- **Diseño ritualista (post-merge, 27 sep):** paleta beige-crema `#F3EDE4`, tipografía serif Playfair Display en títulos con paleta dorada mate AA, taxonomía de filtros `velas / melts / dijes y pulseras / franelas` y álbum de variantes por producto.
+- **Diseño ritualista (post-merge, 27 sep):** paleta beige-crema `#F3EDE4`, tipografía serif Playfair Display en títulos con paleta dorada mate AA, taxonomía de filtros `velas / velas navideñas / melts / dijes y pulseras / franelas` y álbum de variantes por producto.
 - **Hero asimétrico** con fotos reales de productos y carga prioritaria (`fetchpriority="high"`).
 - **Búsqueda en tiempo real con debounce:** Filtrado instantáneo por nombre y descripción (ej: "soja", "lavanda", "gold-filled") optimizado con 150 ms de retardo para no saturar el hilo principal.
-- **Filtros por categoría accesibles:** estado interactivo `aria-pressed` y contador de resultados con estado vacío.
+- **Filtros por categoría accesibles:** estado interactivo `aria-pressed` y contador de resultados con estado vacío. Cada chip declara su texto de introducción (`catDescriptions`) y la colección **Velas Navideñas** (`data-filter="navidad"`) es transversal: agrupa las piezas marcadas con `season: 'navidad'` sin sacarlas de *Velas ritualistas*.
 - **Lightbox con álbum de variantes:** vista ampliada desde `images/catalog/`, flechas ◀ ▶ y teclado (Esc, ←, →), contador, puntitos navegables de variantes de color (también con teclado) y botón WhatsApp siempre visible incluso con scroll de seguridad en móvil. Los precios muestran el `$` escalado a la altura óptica de los dígitos (span `.currency`, 0.65em — Playfair solo trae cifras oldstyle).
 - **Carrito de compras blindado:**
   - Steppers de cantidad (+/−) con validación estricta de enteros finitos (1 a 999).
@@ -62,7 +62,7 @@
   - Aviso de aceptación legal (Términos + Privacidad) antes del botón de WhatsApp.
 - **Checkout por WhatsApp:** Mensaje preformateado e itemizado (producto × cantidad — subtotal, y total final en USD). Con el navegador offline muestra un aviso no bloqueante: el carrito queda guardado hasta reconectar.
 - **Número real de WhatsApp centralizado:** `+58 412 648 1628` — única fuente en `js/app.js` (`const WHATSAPP = '584126481628'`); todos los botones y enlaces del sitio se sincronizan con este valor.
-- **PWA Instalable (Cache v51):** Network-First para navegación HTML **y para `.json`** (contenido siempre fresco con conexión), Stale-While-Revalidate para recursos estáticos; precaching enfocado en shell, dashboard, bloque legal, iconos HD y miniaturas (`images/thumbs/`, incluidas las variantes de color del álbum).
+- **PWA Instalable (Cache v52):** Network-First para navegación HTML **y para `.json`** (contenido siempre fresco con conexión), Stale-While-Revalidate para recursos estáticos; precaching enfocado en shell, dashboard, bloque legal, iconos HD y miniaturas (`images/thumbs/`, incluidas las variantes de color del álbum).
 - **Dashboard Privado de Analítica y Conversión:** Panel en `/dashboard.html` con estética *Luxury Glassmorphism*, gráficos de tendencias en curvas Bezier, desglose de canales (Instagram, TikTok, Facebook, Google, WhatsApp), embudo de conversión, desglose por dispositivos, ranking de popularidad, actividad en tiempo real, exportación CSV (incluida la era pre-Supabase, fusionada con la cloud), sincronización con **Supabase Cloud** vía **Edge Function** (login server-side + ingesta `track` sanitizada con rate limit durable) e integración oficial con **Google Analytics 4** (`G-Y9R0B5NH75`, **carga diferida**: tras la primera interacción o a los 8s de fallback).
 - **Seguridad integral:** CSP estricto, cabeceras de seguridad en el Edge de Cloudflare, mínimo privilegio en workflows, handler global de errores no capturados.
 - **Accesibilidad WCAG AA/AAA:** navegación por teclado completa, trampas de foco en modal y drawer, ARIA interactivo, `prefers-reduced-motion`, contraste verificado (botón WhatsApp en AAA 7.88:1).
@@ -130,14 +130,14 @@ yosoy222/
 │   ├── dashboard.js               ← Motor del Dashboard: autenticación, datos (Edge Function/local), estado
 │   └── dashboard-view.js          ← Vista del Dashboard (pura): gráficos Bezier en Canvas y render de KPIs
 │
-├── sw.js                          ← Service Worker PWA (Cache v51)
+├── sw.js                          ← Service Worker PWA (Cache v52)
 │   ├── Network-First para navegaciones (HTML siempre fresco) y para .js/.json (revalidación en background)
 │   ├── Stale-While-Revalidate con ignoreSearch para el resto de estáticos
 │   ├── Precaching enfocado: shell, dashboard, bloque legal, iconos y miniaturas (en lotes de 6)
 │   └── Activación con limpieza automática de cachés anteriores + auto-refresh en controllerchange
 │
-├── tests/                         ← 44 pruebas nativas node:test (npm test)
-│   ├── cart_and_filters.test.mjs  ← 13: carrito, filtros y seguridad
+├── tests/                         ← 47 pruebas nativas node:test (npm test)
+│   ├── cart_and_filters.test.mjs  ← 16: carrito, filtros, colecciones y seguridad
 │   ├── bot_relay.test.mjs         ← 11: comandos del staff, atender/fin, relay del número principal
 │   ├── legal_pages.test.mjs       ← 8: bloque legal, CSP, precache y guard anti-borrador
 │   ├── sw_strategy.test.mjs       ← 5: estrategia de caché (ejecuta el sw.js real en sandbox node:vm)
@@ -151,7 +151,7 @@ yosoy222/
 ├── .github/
 │   ├── dependabot.yml             ← Actualizaciones automáticas para GitHub Actions y npm
 │   └── workflows/
-│       ├── ci.yml                 ← CI: 44 pruebas + verify_versions + guard de caché + Lighthouse
+│       ├── ci.yml                 ← CI: 47 pruebas + verify_versions + guard de caché + Lighthouse
 │       └── purge-cache.yml        ← Despliegue: Smoke test (origen 200) + Purge Cloudflare
 │
 ├── scripts/
@@ -196,8 +196,8 @@ yosoy222/
 | **Frontend** | HTML5 semántico | Prerenderizado estático, ARIA interactivo, microdatos Schema.org |
 | **Estilos** | CSS3 Vanilla | Custom properties (:root), Grid, Flexbox, sin preprocesadores |
 | **Interactividad** | ES6+ Vanilla | Zero runtime dependencies, carga diferida (`defer`), módulos nativos |
-| **Pruebas** | Node.js Test Runner | `node --test` nativo (44 pruebas: sitio, bot, legales, variantes, estrategia del SW y datos estructurados, sin librerías externas) |
-| **PWA & Offline** | Service Worker API | Cache v51, Network-First en navegación y `.json`, manifest standalone |
+| **Pruebas** | Node.js Test Runner | `node --test` nativo (47 pruebas: sitio, bot, legales, variantes, estrategia del SW y datos estructurados, sin librerías externas) |
+| **PWA & Offline** | Service Worker API | Cache v52, Network-First en navegación y `.json`, manifest standalone |
 | **SEO & Datos** | JSON-LD / XML | Schema.org LocalBusiness/ItemList, robots.txt, sitemap.xml canónico |
 | **Hosting & CI/CD** | GitHub Pages + Actions | Despliegue automático, CI (tests + Lighthouse), Dependabot activo |
 | **CDN & DNS** | Cloudflare | Proxy edge, Cache Rules HTML (TTL 5 min), Transform Rules de seguridad, purga automática post-deploy |
@@ -228,7 +228,7 @@ npx serve .
 
 ### 2. Ejecutar la suite de pruebas automatizadas
 
-El proyecto incluye **44 pruebas** con el runner nativo de Node.js (13 del sitio + 11 del bot + 8 del bloque legal + 5 de la estrategia del SW + 3 de variantes de imagen + 4 de datos estructurados):
+El proyecto incluye **47 pruebas** con el runner nativo de Node.js (16 del sitio + 11 del bot + 8 del bloque legal + 5 de la estrategia del SW + 3 de variantes de imagen + 4 de datos estructurados):
 
 ```bash
 # Ejecutar con npm
@@ -360,7 +360,7 @@ Las imágenes de catálogo y miniaturas están procesadas para eliminar márgene
 
 La PWA cumple con todos los estándares modernos de instalación y navegación offline:
 
-### Arquitectura de Caché en `sw.js` (Cache v51)
+### Arquitectura de Caché en `sw.js` (Cache v52)
 1. **Navegación Network-First:**
    Para solicitudes de documentos HTML (`event.request.mode === 'navigate'`), el Service Worker consulta primero la red y, sin conexión, responde con la copia en caché.
 2. **`.js` y `.json` también Network-First (v45):**
@@ -370,11 +370,11 @@ La PWA cumple con todos los estándares modernos de instalación y navegación o
 4. **Precache Integral & Resiliencia Offline:**
    Durante la instalación, el Service Worker descarga de forma controlada el shell de la aplicación, el panel de dashboard, las 4 páginas legales, los iconos HD y las miniaturas del catálogo (portadas + variantes de color del álbum, en lotes de 6), garantizando navegación visual offline desde el primer instante. Las imágenes grandes del lightbox se descargan y cachean bajo demanda.
 5. **Invalidación Inmediata de Versiones Anteriores:**
-   Al publicarse una nueva versión (`CACHE_NAME = 'yosoy222-v51'`), el evento `activate` purga de forma determinista cualquier almacenamiento obsoleto y el evento `controllerchange` refresca la vista del catálogo automáticamente.
+   Al publicarse una nueva versión (`CACHE_NAME = 'yosoy222-v52'`), el evento `activate` purga de forma determinista cualquier almacenamiento obsoleto y el evento `controllerchange` refresca la vista del catálogo automáticamente.
 6. **Iconos PWA de Alta Definición:**
    10 variantes (incluyendo formatos maskable con fondo blanco sólido y Safe Zone del 80%, sin franjas negras en Android/iOS) validadas con `scripts/verify_icons.py`.
 
-### UX Offline (Cache v51)
+### UX Offline (Cache v52)
 - **Lightbox con degradación elegante:** si la imagen ampliada (`images/catalog/`) no está en caché y la red no responde, el manejador `error` intercambia automáticamente la miniatura precacheada y muestra una nota informativa; al restablecerse la conexión, la imagen grande vuelve a cargar y la nota desaparece sola.
 - **Checkout WhatsApp consciente de la red:** con el navegador offline, el panel del carrito muestra un aviso no bloqueante ("tu carrito queda guardado") que se elimina al reconectar y re-renderizar.
 - **Fuentes asíncronas (v33):** el CSS de Google Fonts carga con `media="print"` + flip en `js/font-flip.js` (el texto pinta en fallback serif y hace swap) — FCP ×8 más rápido medido en bisect controlado; combinado con GA4 diferido mantiene TBT 0ms.
@@ -582,7 +582,7 @@ Monitoreo semanal automatizado para actualizar acciones de GitHub y paquetes bas
 
 ### Flujo de Publicación
 ```
-Push a main ──▶ CI Tests (44 tests + verify_versions + guard de bump) ──▶ Job Lighthouse ──▶ GitHub Pages Build ──▶ Purge Cloudflare Cache + Smoke Test ──▶ Producción OK
+Push a main ──▶ CI Tests (47 tests + verify_versions + guard de bump) ──▶ Job Lighthouse ──▶ GitHub Pages Build ──▶ Purge Cloudflare Cache + Smoke Test ──▶ Producción OK
 ```
 
 ### Comprobación de Producción
@@ -715,10 +715,10 @@ Tipografía de títulos: **Playfair Display** (serif, cargada async con `js/font
 | `js/legal.js` | Aviso informativo de cookies (no bloqueante, dismissible) |
 | `js/dashboard.js` | Motor del Dashboard: autenticación, datos (Edge Function/local) y estado |
 | `js/dashboard-view.js` | Vista del Dashboard (pura): gráficos Bezier en Canvas y render de KPIs/tablas |
-| `sw.js` | Service Worker (Cache v51, Network-First navegación y .json/.js) |
+| `sw.js` | Service Worker (Cache v52, Network-First navegación y .json/.js) |
 | `manifest.json` | Configuración PWA e iconos |
 | `legal/` | 4 documentos legales publicados con identidad verificable (guard anti-borrador) |
-| `tests/*.test.mjs` | 44 pruebas nativas (13 sitio + 11 bot + 8 legal + 5 SW + 3 variantes + 4 schema) |
+| `tests/*.test.mjs` | 47 pruebas nativas (16 sitio + 11 bot + 8 legal + 5 SW + 3 variantes + 4 schema) |
 | `.github/workflows/ci.yml` | CI: tests TAP con annotations + verify_versions + guard de bump de caché + job Lighthouse con umbrales |
 | `.github/workflows/purge-cache.yml` | Deploy: smoke test (origen 200) + purge Cloudflare |
 | `.github/dependabot.yml` | Configuración de actualización de dependencias y acciones |
@@ -783,4 +783,4 @@ gh run list --limit 3
 
 ---
 
-*Documentación técnica actualizada al 17 de octubre de 2026. Proyecto 100% verificado en pruebas unitarias (44/44 pasadas), CI/CD (tests + Lighthouse), auditoría de producción, bloque legal publicado, bot de WhatsApp verificado E2E y despliegue activo en https://yosoy222.com — producción en **Cache v51** con el rediseño ritualista mergeado desde `redesign-ritual` con autorización expresa del dueño (commit `ee9c3b9`). La rama queda respaldada en `origin` como registro histórico.*
+*Documentación técnica actualizada al 18 de octubre de 2026. Proyecto 100% verificado en pruebas unitarias (47/47 pasadas), CI/CD (tests + Lighthouse), auditoría de producción, bloque legal publicado, bot de WhatsApp verificado E2E y despliegue activo en https://yosoy222.com — producción en **Cache v51** (rama `feat/velas-navidenas` en v52, pendiente de aprobación) con el rediseño ritualista mergeado desde `redesign-ritual` con autorización expresa del dueño (commit `ee9c3b9`). La rama queda respaldada en `origin` como registro histórico.*
