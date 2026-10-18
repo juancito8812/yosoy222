@@ -2,14 +2,14 @@
 
 > Tienda online de velas artesanales, pulseras, collares, franelas y accesorios.
 > Desplegada en **GitHub Pages** con dominio personalizado **yosoy222.com** bajo **Cloudflare**.
-> **PWA instalable** con soporte offline completo (Cache v52 en `feat/velas-navidenas`; producción sigue en v51), catálogo prerenderizado para SEO (Schema.org), panel privado de analítica con Luxury Glassmorphism, backend en la nube (Supabase Cloud + GA4), suite de 47 pruebas en CI/CD y **bot de WhatsApp verificado E2E**.
+> **PWA instalable** con soporte offline completo (Cache v52), catálogo prerenderizado para SEO (Schema.org), panel privado de analítica con Luxury Glassmorphism, backend en la nube (Supabase Cloud + GA4), suite de 47 pruebas en CI/CD y **bot de WhatsApp verificado E2E**.
 
 **Repositorio:** https://github.com/juancito8812/yosoy222  
 **URL de producción:** https://yosoy222.com  
 **URL GitHub Pages:** https://juancito8812.github.io/yosoy222/  
 **WhatsApp (pedidos):** +58 412 648 1628 (`584126481628`)
 
-**Producción actual (18 oct 2026, v51):** el rediseño ritualista de la rama `redesign-ritual` fue **mergeado a `main` con autorización expresa del dueño** (commit `ee9c3b9`) y encima se publicaron: revalidación Network-First de `.json` en el SW (v45), contraste AAA del botón WhatsApp `#075E36` (7.88:1), textos ≥12px (v47), scripts del head a `defer` (v48) y el símbolo `$` alineado con los dígitos vía `span.currency` (v50). El **17-oct** se sumaron la vela **Pino Navideño** (44 → 45 productos), el bloque `ItemList` JSON-LD autogenerado y el **fix de caché v51** (bump de versión + `updateViaCache:'none'` + guard de CI contra despliegues sin bump, ver «Lección del 17-oct»). Lighthouse móvil en producción: **Perf 96–97 · A11y 100 · BP 93 · SEO 92**. La rama `redesign-ritual` permanece en `origin` como registro histórico. **En curso (rama `feat/velas-navidenas`, sin mergear):** nuevo chip de colección **Velas Navideñas** (`data-filter="navidad"`, transversal a las categorías vía `season: 'navidad'`) y bump de caché a **v52**; producción sigue sirviendo v51 hasta que el dueño apruebe el merge.
+**Producción actual (18 oct 2026, v52):** el rediseño ritualista de la rama `redesign-ritual` fue **mergeado a `main` con autorización expresa del dueño** (commit `ee9c3b9`) y encima se publicaron: revalidación Network-First de `.json` en el SW (v45), contraste AAA del botón WhatsApp `#075E36` (7.88:1), textos ≥12px (v47), scripts del head a `defer` (v48) y el símbolo `$` alineado con los dígitos vía `span.currency` (v50). El **17-oct** se sumaron la vela **Pino Navideño** (44 → 45 productos), el bloque `ItemList` JSON-LD autogenerado y el **fix de caché v51** (bump de versión + `updateViaCache:'none'` + guard de CI contra despliegues sin bump, ver «Lección del 17-oct»). Lighthouse móvil en producción: **Perf 96–97 · A11y 100 · BP 93 · SEO 92**. La rama `redesign-ritual` permanece en `origin` como registro histórico. **Publicado el 18-oct (merge `66ec336`):** nuevo chip de colección **Velas Navideñas** (`data-filter="navidad"`, transversal a las categorías vía `season: 'navidad'`) sobre caché **v52** — 47/47 pruebas, CI Tests + Pages + Purge Cloudflare en verde, Pino Navideño visible en producción.
 
 ---
 
@@ -475,7 +475,7 @@ El sitio publica cuatro documentos en `/legal/` (estáticos, indexables y en el 
 
 | Rama | Estado | Propósito |
 |------|--------|-----------|
-| `main` | **Producción (v51)** | Todo push despliega automáticamente a yosoy222.com (CI + Pages + Purge). Única rama protegida por el pipeline completo. |
+| `main` | **Producción (v52)** | Todo push despliega automáticamente a yosoy222.com (CI + Pages + Purge). Única rama protegida por el pipeline completo. |
 | `redesign-ritual` | **MERGEADA a `main` (27-sep, `ee9c3b9`, autorización expresa del dueño) — registro histórico en `origin`** | Rediseño ritualista: fondo beige #F3EDE4, tipografía Playfair, taxonomía velas/melts/dijes-pulseras/franelas, álbum de variantes (22 productos / 95 fotos), 14 portadas corregidas (`1c87a58`), legal integrado y fixes finales (botón WhatsApp del lightbox visible, wordmark 222). Su handoff vive en `BRANCH_STATUS.md`. |
 
 > 🔒 **POLÍTICA DE MERGE (decisión del dueño, inviolable — AGENTS.md regla 9):** ninguna rama se mergea a `main` —ni se abre PR de merge, ni se pushea su contenido— sin autorización explícita del dueño Y estar 100% lista (QA gate completo: barrido visual, auditoría móvil 375px, tests en verde, sync con main resuelto, visto bueno del cliente). `main` es producción: todo push despliega.
@@ -783,4 +783,4 @@ gh run list --limit 3
 
 ---
 
-*Documentación técnica actualizada al 18 de octubre de 2026. Proyecto 100% verificado en pruebas unitarias (47/47 pasadas), CI/CD (tests + Lighthouse), auditoría de producción, bloque legal publicado, bot de WhatsApp verificado E2E y despliegue activo en https://yosoy222.com — producción en **Cache v51** (rama `feat/velas-navidenas` en v52, pendiente de aprobación) con el rediseño ritualista mergeado desde `redesign-ritual` con autorización expresa del dueño (commit `ee9c3b9`). La rama queda respaldada en `origin` como registro histórico.*
+*Documentación técnica actualizada al 18 de octubre de 2026. Proyecto 100% verificado en pruebas unitarias (47/47 pasadas), CI/CD (tests + Lighthouse), auditoría de producción, bloque legal publicado, bot de WhatsApp verificado E2E y despliegue activo en https://yosoy222.com — producción en **Cache v52** con el rediseño ritualista mergeado desde `redesign-ritual` con autorización expresa del dueño (commit `ee9c3b9`). La rama queda respaldada en `origin` como registro histórico.*
