@@ -2,7 +2,7 @@
 
 > ⚠️ **ESTADO: MERGEADA A `main` (27 sep 2026, commit `ee9c3b9`, con autorización expresa del dueño).**
 > Este documento queda como **registro histórico** del trabajo de la rama (v38→v43).
-> El estado vivo del proyecto (producción v52; la colección Velas Navideñas ya está mergeada) vive en `.agents/MEMORY.md` y `AGENTS.md` en `main`.
+> El estado vivo del proyecto (producción v52; la colección Velas Navideñas ya está mergeada, y la vela Cubo Navideño espera en la rama `feat/cubo-navidena` (caché v53)) vive en `.agents/MEMORY.md` y `AGENTS.md` en `main`.
 > La rama permanece en `origin` sin más desarrollo previsto.
 
 > Última actualización: **27 de septiembre de 2026** (banner de cierre; contenido congelado al 25-sep).
