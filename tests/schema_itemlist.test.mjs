@@ -9,7 +9,7 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const appJs = readFileSync(path.join(ROOT, 'js', 'app.js'), 'utf8');
 const html = readFileSync(path.join(ROOT, 'index.html'), 'utf8');
 
-const PRODUCT_RE = /\{\s*file:\s*"([^"]+)",\s*name:\s*"([^"]+)",\s*cat:\s*"([^"]+)",\s*price:\s*([0-9.]+),\s*desc:\s*"([^"]+)"\s*\}/g;
+const PRODUCT_RE = /\{\s*file:\s*"([^"]+)",\s*name:\s*"([^"]+)",\s*cat:\s*"([^"]+)",\s*price:\s*([0-9.]+),\s*desc:\s*"([^"]+)"(?:\s*,\s*season:\s*"([^"]+)")?\s*\}/g;
 
 function productsFromApp() {
   const out = [];
