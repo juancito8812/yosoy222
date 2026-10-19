@@ -629,7 +629,7 @@ gh run list --limit 3   # o la API de check-runs
 | 14 | Cubo | `VM-CUBO_vela_cubo_40g.jpg` | $7.00 | Vela ritualista 40g geométrica ("la vela Cubo") |
 | 15 | Virgen del Carmen | `VM-VIRGEN_vela_virgen_del_carmen_42g.jpg` | $7.00 | Vela 42g devoción |
 | 16 | Pino Navideño | `VM-PINO_vela_pino_138g.jpg` | $14.00 | Vela 138g en forma de pino, 4 colores (álbum) |
-| 17 | Cubo Navideño | `VM-CUBO-NAVIDAD_vela_cubo_navidena_40g.jpg` | $7.00 | Vela 40g cubo de esferas, lazo; edición navideña (colección Velas Navideñas) |
+| 17 | Cubo Navideño | `VM-CUBO-NAVIDAD_vela_cubo_navidena_40g.jpg` | $7.00 | Vela 40g cubo de esferas, cera blanco/rojo/verde; aroma Coco Vainilla, Limón Fresh, Lavanda (colección Velas Navideñas) |
 
 ### Velas Envases (10) — Cristal y Metal
 | # | Nombre | Archivo | Precio | Resumen |
