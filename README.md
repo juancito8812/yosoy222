@@ -9,7 +9,7 @@
 **URL GitHub Pages:** https://juancito8812.github.io/yosoy222/  
 **WhatsApp (pedidos):** +58 412 648 1628 (`584126481628`)
 
-**Producción actual (18 oct 2026, v54):** el rediseño ritualista de la rama `redesign-ritual` fue **mergeado a `main` con autorización expresa del dueño** (commit `ee9c3b9`) y encima se publicaron: revalidación Network-First de `.json` en el SW (v45), contraste AAA del botón WhatsApp `#075E36` (7.88:1), textos ≥12px (v47), scripts del head a `defer` (v48) y el símbolo `$` alineado con los dígitos vía `span.currency` (v50). El **17-oct** se sumaron la vela **Pino Navideño** (44 → 45 productos), el bloque `ItemList` JSON-LD autogenerado y el **fix de caché v51** (bump de versión + `updateViaCache:'none'` + guard de CI contra despliegues sin bump, ver «Lección del 17-oct»). Lighthouse móvil en producción: **Perf 96–97 · A11y 100 · BP 93 · SEO 92**. La rama `redesign-ritual` permanece en `origin` como registro histórico. **Publicado el 18-oct (merge `66ec336`):** nuevo chip de colección **Velas Navideñas** (`data-filter="navidad"`, transversal a las categorías vía `season: 'navidad'`) sobre caché **v52** — 47/47 pruebas, CI Tests + Pages + Purge Cloudflare en verde, Pino Navideño visible en producción. **Rama `feat/cubo-navidena` (18-oct, caché v54, mergeada a `main`):** nuevas velas **Cubo Navideño** (45 → 46 productos) y **Aura Navidad** (46 → 47 productos) — Cubo de esferas de cera, 40 g, blanco/rojo/verde, aroma Coco Vainilla + Canela, 7 USD; Aura: 409 g, vidrio + tapa de madera, cera de soja blanco/marrón/rojo con corazones, aroma coco vainilla, 20 USD. Ambas con `season: 'navidad'` para aparecer en la colección **Velas Navideñas**.
+**Producción actual (18 oct 2026, v54):** el rediseño ritualista de la rama `redesign-ritual` fue **mergeado a `main` con autorización expresa del dueño** (commit `ee9c3b9`) y encima se publicaron: revalidación Network-First de `.json` en el SW (v45), contraste AAA del botón WhatsApp `#075E36` (7.88:1), textos ≥12px (v47), scripts del head a `defer` (v48) y el símbolo `$` alineado con los dígitos vía `span.currency` (v50). El **17-oct** se sumaron la vela **Pino Navideño** (44 → 45 productos), el bloque `ItemList` JSON-LD autogenerado y el **fix de caché v51** (bump de versión + `updateViaCache:'none'` + guard de CI contra despliegues sin bump, ver «Lección del 17-oct»). Lighthouse móvil en producción: **Perf 96–97 · A11y 100 · BP 93 · SEO 92**. La rama `redesign-ritual` permanece en `origin` como registro histórico. **Publicado el 18-oct (merge `66ec336`):** nuevo chip de colección **Velas Navideñas** (`data-filter="navidad"`, transversal a las categorías vía `season: 'navidad'`) sobre caché **v52** — 47/47 pruebas, CI Tests + Pages + Purge Cloudflare en verde, Pino Navideño visible en producción. **Rama `feat/cubo-navidena` (18-oct, caché v54, mergeada a `main`):** nuevas velas **Cubo Navideño** (45 → 46 productos) y **Aura Navidad** (46 → 47 productos) — Cubo de esferas de cera, 40 g, blanco/rojo/verde, aroma Coco Vainilla + Canela, 7 USD; Aura: 409 g, vidrio + tapa de madera, cera de soja blanco/marrón/rojo con corazones, aroma coco vainilla, 20 USD. **Rama `feat/virgen-del-valle` (19-oct, caché v55):** nueva vela **Virgen del Valle** de 32 g (cera de soja blanca con detalles dorados; aromas Coco Vainilla, Limón Fresh y Lavanda; 7 USD) — 47 → 48 productos.
 
 ---
 
@@ -48,7 +48,7 @@
 
 ### Características del sitio
 
-- **Catálogo 100% Pre-renderizado para SEO:** Los 47 productos vienen renderizados en el HTML estático inicial para rastreo inmediato por Googlebot y Bingbot, complementado con datos estructurados Schema.org (`LocalBusiness` + `ItemList` con los 47 productos).
+- **Catálogo 100% Pre-renderizado para SEO:** Los 48 productos vienen renderizados en el HTML estático inicial para rastreo inmediato por Googlebot y Bingbot, complementado con datos estructurados Schema.org (`LocalBusiness` + `ItemList` con los 48 productos).
 - **Diseño ritualista (post-merge, 27 sep):** paleta beige-crema `#F3EDE4`, tipografía serif Playfair Display en títulos con paleta dorada mate AA, taxonomía de filtros `velas / velas navideñas / melts / dijes y pulseras / franelas` y álbum de variantes por producto.
 - **Hero asimétrico** con fotos reales de productos y carga prioritaria (`fetchpriority="high"`).
 - **Búsqueda en tiempo real con debounce:** Filtrado instantáneo por nombre y descripción (ej: "soja", "lavanda", "gold-filled") optimizado con 150 ms de retardo para no saturar el hilo principal.
@@ -84,7 +84,7 @@
 | Accesorios (dijes) | `otro` | 1 | $7.00 |
 | **Total** | | **45** | **$0.17 – $32.00** |
 
-> ✅ **Los 47 productos tienen imagen real** optimizada (thumbs a máx 480px y catalog a máx 900px).  
+> ✅ **Los 48 productos tienen imagen real** optimizada (thumbs a máx 480px y catalog a máx 900px).  
 > ✅ **Álbum por producto (variantes de color):** 23 productos muestran un álbum en el lightbox con la sesión fotográfica de velas del 24-sep (100 fotos nuevas; portada = foto de grupo con todos los colores juntos). Convención y validación en `scripts/IMAGE_GUIDE.md` y `scripts/build_variants.py --check`. Pendiente: 17 fotos de joyas (#107–123) para sus 11 productos.  
 > ✅ **Set híbrido:** las 7 franelas (F-01…F-07) conservan sus fotos de modelo reales; Cruz con Paloma conserva su foto anterior (sin foto nueva en esa sesión).
 
@@ -97,7 +97,7 @@ yosoy222/
 │
 ├── index.html                     ← Landing page prerenderizada con el rediseño ritualista
 │   ├── Meta tags: SEO, Open Graph, Twitter Cards, Canonical, PWA, CSP
-│   ├── Schema.org JSON-LD: datos estructurados LocalBusiness + ItemList (47 productos)
+│   ├── Schema.org JSON-LD: datos estructurados LocalBusiness + ItemList (48 productos)
 │   ├── Header fijo: logo, nav con trap de foco, carrito, botón mobile con aria-controls
 │   ├── Hero asimétrico (fotos reales con fetchpriority="high")
 │   ├── Catálogo prerenderizado: búsqueda con debounce, filtros con aria-pressed, grid 45 cards
