@@ -2,14 +2,14 @@
 
 > Tienda online de velas artesanales, pulseras, collares, franelas y accesorios.
 > Desplegada en **GitHub Pages** con dominio personalizado **yosoy222.com** bajo **Cloudflare**.
-> **PWA instalable** con soporte offline completo (Cache v52), catálogo prerenderizado para SEO (Schema.org), panel privado de analítica con Luxury Glassmorphism, backend en la nube (Supabase Cloud + GA4), suite de 47 pruebas en CI/CD y **bot de WhatsApp verificado E2E**.
+> **PWA instalable** con soporte offline completo (Cache v53), catálogo prerenderizado para SEO (Schema.org), panel privado de analítica con Luxury Glassmorphism, backend en la nube (Supabase Cloud + GA4), suite de 47 pruebas en CI/CD y **bot de WhatsApp verificado E2E**.
 
 **Repositorio:** https://github.com/juancito8812/yosoy222  
 **URL de producción:** https://yosoy222.com  
 **URL GitHub Pages:** https://juancito8812.github.io/yosoy222/  
 **WhatsApp (pedidos):** +58 412 648 1628 (`584126481628`)
 
-**Producción actual (18 oct 2026, v52):** el rediseño ritualista de la rama `redesign-ritual` fue **mergeado a `main` con autorización expresa del dueño** (commit `ee9c3b9`) y encima se publicaron: revalidación Network-First de `.json` en el SW (v45), contraste AAA del botón WhatsApp `#075E36` (7.88:1), textos ≥12px (v47), scripts del head a `defer` (v48) y el símbolo `$` alineado con los dígitos vía `span.currency` (v50). El **17-oct** se sumaron la vela **Pino Navideño** (44 → 45 productos), el bloque `ItemList` JSON-LD autogenerado y el **fix de caché v51** (bump de versión + `updateViaCache:'none'` + guard de CI contra despliegues sin bump, ver «Lección del 17-oct»). Lighthouse móvil en producción: **Perf 96–97 · A11y 100 · BP 93 · SEO 92**. La rama `redesign-ritual` permanece en `origin` como registro histórico. **Publicado el 18-oct (merge `66ec336`):** nuevo chip de colección **Velas Navideñas** (`data-filter="navidad"`, transversal a las categorías vía `season: 'navidad'`) sobre caché **v52** — 47/47 pruebas, CI Tests + Pages + Purge Cloudflare en verde, Pino Navideño visible en producción.
+**Producción actual (18 oct 2026, v53):** el rediseño ritualista de la rama `redesign-ritual` fue **mergeado a `main` con autorización expresa del dueño** (commit `ee9c3b9`) y encima se publicaron: revalidación Network-First de `.json` en el SW (v45), contraste AAA del botón WhatsApp `#075E36` (7.88:1), textos ≥12px (v47), scripts del head a `defer` (v48) y el símbolo `$` alineado con los dígitos vía `span.currency` (v50). El **17-oct** se sumaron la vela **Pino Navideño** (44 → 45 productos), el bloque `ItemList` JSON-LD autogenerado y el **fix de caché v51** (bump de versión + `updateViaCache:'none'` + guard de CI contra despliegues sin bump, ver «Lección del 17-oct»). Lighthouse móvil en producción: **Perf 96–97 · A11y 100 · BP 93 · SEO 92**. La rama `redesign-ritual` permanece en `origin` como registro histórico. **Publicado el 18-oct (merge `66ec336`):** nuevo chip de colección **Velas Navideñas** (`data-filter="navidad"`, transversal a las categorías vía `season: 'navidad'`) sobre caché **v52** — 47/47 pruebas, CI Tests + Pages + Purge Cloudflare en verde, Pino Navideño visible en producción. **Rama `feat/cubo-navidena` (18-oct, caché v53):** nueva vela **Cubo Navideño** (45 → 46 productos) — cubo de esferas de cera, 40 g, blanco/rojo/verde, aroma Coco Vainilla + Canela, 7 USD, con `season: 'navidad'` para aparecer en la colección **Velas Navideñas**.
 
 ---
 
@@ -24,7 +24,7 @@
 7. [Cómo agregar un producto](#cómo-agregar-un-producto)
 8. [Cómo eliminar un producto](#cómo-eliminar-un-producto)
 9. [Procesamiento de imágenes (bordes blancos)](#procesamiento-de-imágenes-bordes-blancos)
-10. [PWA: instalar y funcionamiento offline (Cache v52)](#pwa-instalar-y-funcionamiento-offline-cache-v52)
+10. [PWA: instalar y funcionamiento offline (Cache v53)](#pwa-instalar-y-funcionamiento-offline-cache-v53)
 11. [Telemetría y backend en la nube (Supabase & GA4)](#telemetría-y-backend-en-la-nube-supabase--ga4)
 12. [Seguridad aplicada (Audit & Hardening)](#seguridad-aplicada-audit--hardening)
 13. [Calidad, Confiabilidad y Accesibilidad](#calidad-confiabilidad-y-accesibilidad)
@@ -48,7 +48,7 @@
 
 ### Características del sitio
 
-- **Catálogo 100% Pre-renderizado para SEO:** Los 45 productos vienen renderizados en el HTML estático inicial para rastreo inmediato por Googlebot y Bingbot, complementado con datos estructurados Schema.org (`LocalBusiness` + `ItemList` con los 45 productos).
+- **Catálogo 100% Pre-renderizado para SEO:** Los 46 productos vienen renderizados en el HTML estático inicial para rastreo inmediato por Googlebot y Bingbot, complementado con datos estructurados Schema.org (`LocalBusiness` + `ItemList` con los 46 productos).
 - **Diseño ritualista (post-merge, 27 sep):** paleta beige-crema `#F3EDE4`, tipografía serif Playfair Display en títulos con paleta dorada mate AA, taxonomía de filtros `velas / velas navideñas / melts / dijes y pulseras / franelas` y álbum de variantes por producto.
 - **Hero asimétrico** con fotos reales de productos y carga prioritaria (`fetchpriority="high"`).
 - **Búsqueda en tiempo real con debounce:** Filtrado instantáneo por nombre y descripción (ej: "soja", "lavanda", "gold-filled") optimizado con 150 ms de retardo para no saturar el hilo principal.
@@ -62,7 +62,7 @@
   - Aviso de aceptación legal (Términos + Privacidad) antes del botón de WhatsApp.
 - **Checkout por WhatsApp:** Mensaje preformateado e itemizado (producto × cantidad — subtotal, y total final en USD). Con el navegador offline muestra un aviso no bloqueante: el carrito queda guardado hasta reconectar.
 - **Número real de WhatsApp centralizado:** `+58 412 648 1628` — única fuente en `js/app.js` (`const WHATSAPP = '584126481628'`); todos los botones y enlaces del sitio se sincronizan con este valor.
-- **PWA Instalable (Cache v52):** Network-First para navegación HTML **y para `.json`** (contenido siempre fresco con conexión), Stale-While-Revalidate para recursos estáticos; precaching enfocado en shell, dashboard, bloque legal, iconos HD y miniaturas (`images/thumbs/`, incluidas las variantes de color del álbum).
+- **PWA Instalable (Cache v53):** Network-First para navegación HTML **y para `.json`** (contenido siempre fresco con conexión), Stale-While-Revalidate para recursos estáticos; precaching enfocado en shell, dashboard, bloque legal, iconos HD y miniaturas (`images/thumbs/`, incluidas las variantes de color del álbum).
 - **Dashboard Privado de Analítica y Conversión:** Panel en `/dashboard.html` con estética *Luxury Glassmorphism*, gráficos de tendencias en curvas Bezier, desglose de canales (Instagram, TikTok, Facebook, Google, WhatsApp), embudo de conversión, desglose por dispositivos, ranking de popularidad, actividad en tiempo real, exportación CSV (incluida la era pre-Supabase, fusionada con la cloud), sincronización con **Supabase Cloud** vía **Edge Function** (login server-side + ingesta `track` sanitizada con rate limit durable) e integración oficial con **Google Analytics 4** (`G-Y9R0B5NH75`, **carga diferida**: tras la primera interacción o a los 8s de fallback).
 - **Seguridad integral:** CSP estricto, cabeceras de seguridad en el Edge de Cloudflare, mínimo privilegio en workflows, handler global de errores no capturados.
 - **Accesibilidad WCAG AA/AAA:** navegación por teclado completa, trampas de foco en modal y drawer, ARIA interactivo, `prefers-reduced-motion`, contraste verificado (botón WhatsApp en AAA 7.88:1).
@@ -73,7 +73,7 @@
 - **CSP estricta vs script anti-bots de Cloudflare (desde ~19 sep 2026):** Cloudflare inyecta en el HTML servido un script de bot-management (`__CF$cv$params`) cuyo contenido rota en cada respuesta y usa un iframe; la CSP (`script-src 'self'`, `default-src 'none'`) lo bloquea → 1 error de consola y Best Practices 92-93/100. Probado y descartado: hash CSP (el hash rota por request), `unsafe-inline` (anula la protección XSS). Estado: **aceptado por el dueño** (AGENTS.md, regla 8); si se deseara BP 100, habría que desactivar Bot Fight Mode en el dashboard de Cloudflare.
 - **El hero móvil domina el LCP (2.5-2.8s en producción):** JPEG grande precacheado; la palanca siguiente es convertirlo a WebP/AVIF (~210ms de ganancia estimada). Detalle en `LIGHTHOUSE_BASELINE.md`.
 
-### Categorías de productos (total: 45)
+### Categorías de productos (total: 46)
 
 | Categoría (filtro) | Catálogo | Cantidad | Rango de precios |
 |--------------------|----------|----------|------------------|
@@ -84,7 +84,7 @@
 | Accesorios (dijes) | `otro` | 1 | $7.00 |
 | **Total** | | **45** | **$0.17 – $32.00** |
 
-> ✅ **Los 45 productos tienen imagen real** optimizada (thumbs a máx 480px y catalog a máx 900px).  
+> ✅ **Los 46 productos tienen imagen real** optimizada (thumbs a máx 480px y catalog a máx 900px).  
 > ✅ **Álbum por producto (variantes de color):** 23 productos muestran un álbum en el lightbox con la sesión fotográfica de velas del 24-sep (100 fotos nuevas; portada = foto de grupo con todos los colores juntos). Convención y validación en `scripts/IMAGE_GUIDE.md` y `scripts/build_variants.py --check`. Pendiente: 17 fotos de joyas (#107–123) para sus 11 productos.  
 > ✅ **Set híbrido:** las 7 franelas (F-01…F-07) conservan sus fotos de modelo reales; Cruz con Paloma conserva su foto anterior (sin foto nueva en esa sesión).
 
@@ -97,7 +97,7 @@ yosoy222/
 │
 ├── index.html                     ← Landing page prerenderizada con el rediseño ritualista
 │   ├── Meta tags: SEO, Open Graph, Twitter Cards, Canonical, PWA, CSP
-│   ├── Schema.org JSON-LD: datos estructurados LocalBusiness + ItemList (45 productos)
+│   ├── Schema.org JSON-LD: datos estructurados LocalBusiness + ItemList (46 productos)
 │   ├── Header fijo: logo, nav con trap de foco, carrito, botón mobile con aria-controls
 │   ├── Hero asimétrico (fotos reales con fetchpriority="high")
 │   ├── Catálogo prerenderizado: búsqueda con debounce, filtros con aria-pressed, grid 45 cards
@@ -130,7 +130,7 @@ yosoy222/
 │   ├── dashboard.js               ← Motor del Dashboard: autenticación, datos (Edge Function/local), estado
 │   └── dashboard-view.js          ← Vista del Dashboard (pura): gráficos Bezier en Canvas y render de KPIs
 │
-├── sw.js                          ← Service Worker PWA (Cache v52)
+├── sw.js                          ← Service Worker PWA (Cache v53)
 │   ├── Network-First para navegaciones (HTML siempre fresco) y para .js/.json (revalidación en background)
 │   ├── Stale-While-Revalidate con ignoreSearch para el resto de estáticos
 │   ├── Precaching enfocado: shell, dashboard, bloque legal, iconos y miniaturas (en lotes de 6)
@@ -155,7 +155,7 @@ yosoy222/
 │       └── purge-cache.yml        ← Despliegue: Smoke test (origen 200) + Purge Cloudflare
 │
 ├── scripts/
-│   ├── prerender_catalog.py       ← Inyecta las 45 tarjetas del catálogo en index.html
+│   ├── prerender_catalog.py       ← Inyecta las 46 tarjetas del catálogo en index.html
 │   ├── build_variants.py          ← Genera js/variants.json desde la convención -v2, -v3… (--check valida)
 │   ├── generate_icons.py          ← Genera los 10 iconos PWA desde icons/source_logo.jpg
 │   ├── verify_icons.py            ← Valida iconos contra manifest.json
@@ -197,7 +197,7 @@ yosoy222/
 | **Estilos** | CSS3 Vanilla | Custom properties (:root), Grid, Flexbox, sin preprocesadores |
 | **Interactividad** | ES6+ Vanilla | Zero runtime dependencies, carga diferida (`defer`), módulos nativos |
 | **Pruebas** | Node.js Test Runner | `node --test` nativo (47 pruebas: sitio, bot, legales, variantes, estrategia del SW y datos estructurados, sin librerías externas) |
-| **PWA & Offline** | Service Worker API | Cache v52, Network-First en navegación y `.json`, manifest standalone |
+| **PWA & Offline** | Service Worker API | Cache v53, Network-First en navegación y `.json`, manifest standalone |
 | **SEO & Datos** | JSON-LD / XML | Schema.org LocalBusiness/ItemList, robots.txt, sitemap.xml canónico |
 | **Hosting & CI/CD** | GitHub Pages + Actions | Despliegue automático, CI (tests + Lighthouse), Dependabot activo |
 | **CDN & DNS** | Cloudflare | Proxy edge, Cache Rules HTML (TTL 5 min), Transform Rules de seguridad, purga automática post-deploy |
@@ -360,7 +360,7 @@ Las imágenes de catálogo y miniaturas están procesadas para eliminar márgene
 
 La PWA cumple con todos los estándares modernos de instalación y navegación offline:
 
-### Arquitectura de Caché en `sw.js` (Cache v52)
+### Arquitectura de Caché en `sw.js` (Cache v53)
 1. **Navegación Network-First:**
    Para solicitudes de documentos HTML (`event.request.mode === 'navigate'`), el Service Worker consulta primero la red y, sin conexión, responde con la copia en caché.
 2. **`.js` y `.json` también Network-First (v45):**
@@ -370,11 +370,11 @@ La PWA cumple con todos los estándares modernos de instalación y navegación o
 4. **Precache Integral & Resiliencia Offline:**
    Durante la instalación, el Service Worker descarga de forma controlada el shell de la aplicación, el panel de dashboard, las 4 páginas legales, los iconos HD y las miniaturas del catálogo (portadas + variantes de color del álbum, en lotes de 6), garantizando navegación visual offline desde el primer instante. Las imágenes grandes del lightbox se descargan y cachean bajo demanda.
 5. **Invalidación Inmediata de Versiones Anteriores:**
-   Al publicarse una nueva versión (`CACHE_NAME = 'yosoy222-v52'`), el evento `activate` purga de forma determinista cualquier almacenamiento obsoleto y el evento `controllerchange` refresca la vista del catálogo automáticamente.
+   Al publicarse una nueva versión (`CACHE_NAME = 'yosoy222-v53'`), el evento `activate` purga de forma determinista cualquier almacenamiento obsoleto y el evento `controllerchange` refresca la vista del catálogo automáticamente.
 6. **Iconos PWA de Alta Definición:**
    10 variantes (incluyendo formatos maskable con fondo blanco sólido y Safe Zone del 80%, sin franjas negras en Android/iOS) validadas con `scripts/verify_icons.py`.
 
-### UX Offline (Cache v52)
+### UX Offline (Cache v53)
 - **Lightbox con degradación elegante:** si la imagen ampliada (`images/catalog/`) no está en caché y la red no responde, el manejador `error` intercambia automáticamente la miniatura precacheada y muestra una nota informativa; al restablecerse la conexión, la imagen grande vuelve a cargar y la nota desaparece sola.
 - **Checkout WhatsApp consciente de la red:** con el navegador offline, el panel del carrito muestra un aviso no bloqueante ("tu carrito queda guardado") que se elimina al reconectar y re-renderizar.
 - **Fuentes asíncronas (v33):** el CSS de Google Fonts carga con `media="print"` + flip en `js/font-flip.js` (el texto pinta en fallback serif y hace swap) — FCP ×8 más rápido medido en bisect controlado; combinado con GA4 diferido mantiene TBT 0ms.
@@ -475,7 +475,7 @@ El sitio publica cuatro documentos en `/legal/` (estáticos, indexables y en el 
 
 | Rama | Estado | Propósito |
 |------|--------|-----------|
-| `main` | **Producción (v52)** | Todo push despliega automáticamente a yosoy222.com (CI + Pages + Purge). Única rama protegida por el pipeline completo. |
+| `main` | **Producción (v53)** | Todo push despliega automáticamente a yosoy222.com (CI + Pages + Purge). Única rama protegida por el pipeline completo. |
 | `redesign-ritual` | **MERGEADA a `main` (27-sep, `ee9c3b9`, autorización expresa del dueño) — registro histórico en `origin`** | Rediseño ritualista: fondo beige #F3EDE4, tipografía Playfair, taxonomía velas/melts/dijes-pulseras/franelas, álbum de variantes (22 productos / 95 fotos), 14 portadas corregidas (`1c87a58`), legal integrado y fixes finales (botón WhatsApp del lightbox visible, wordmark 222). Su handoff vive en `BRANCH_STATUS.md`. |
 
 > 🔒 **POLÍTICA DE MERGE (decisión del dueño, inviolable — AGENTS.md regla 9):** ninguna rama se mergea a `main` —ni se abre PR de merge, ni se pushea su contenido— sin autorización explícita del dueño Y estar 100% lista (QA gate completo: barrido visual, auditoría móvil 375px, tests en verde, sync con main resuelto, visto bueno del cliente). `main` es producción: todo push despliega.
@@ -544,7 +544,7 @@ El proyecto cuenta con un esquema de seguridad multicapa validado mediante audit
 
 ## SEO, INDEXABILIDAD Y DATOS ESTRUCTURADOS
 
-1. **Pre-renderizado de Catálogo:** Las 45 tarjetas de productos se encuentran presentes en el código fuente HTML original. Los motores de búsqueda que no ejecutan JavaScript indexan de inmediato todos los títulos, descripciones y precios.
+1. **Pre-renderizado de Catálogo:** Las 46 tarjetas de productos se encuentran presentes en el código fuente HTML original. Los motores de búsqueda que no ejecutan JavaScript indexan de inmediato todos los títulos, descripciones y precios.
 2. **Schema.org JSON-LD:** Bloque `LocalBusiness` (identidad de la tienda) más una lista ordenada `ItemList` con un `Product` por artículo: nombre, imagen absoluta, descripción, categoría y `Offer` en USD con disponibilidad `InStock`. Ambos bloques los genera `scripts/prerender_catalog.py` a partir de `js/app.js`, y `tests/schema_itemlist.test.mjs` falla si se desincronizan (posiciones, nombres, precios y total).
 3. **Indexación y Rastreo:** Archivos [`robots.txt`](robots.txt) y [`sitemap.xml`](sitemap.xml) canónicos configurados (el sitemap incluye las 4 páginas legales).
 4. **Metadatos Sociales:** Integración completa de Open Graph (`og:title`, `og:image`, `og:description`, `og:url`) y Twitter Cards con URL canónica `https://yosoy222.com/`.
@@ -553,7 +553,7 @@ El proyecto cuenta con un esquema de seguridad multicapa validado mediante audit
 
 ## SUITE DE TESTS Y CI/CD (GITHUB ACTIONS)
 
-### 1. Pruebas Automatizadas (40, `npm test`)
+### 1. Pruebas Automatizadas (47, `npm test`)
 La suite corre bajo el runner nativo `node --test` y verifica:
 - **Sitio (13):** exactitud de subtotales/totales del carrito, filtrado por categoría y búsqueda insensible a mayúsculas, migración de carritos legacy, expiración a 30 días, resistencia ante JSON corrupto/NaN, protección anti-prototype smuggling y null-safety de filtros.
 - **Bot (11):** parser de comandos (`atender`, `fin`, `>`, nota interna), toma y cierre de hilo (puente ↔ IA), reenvío saliendo del número principal, guardas (destinatario inválido, sin asignación, fallo de envío) y que el espejo del workflow no lleva secretos ni `process.env`.
@@ -610,7 +610,7 @@ gh run list --limit 3   # o la API de check-runs
 
 > Fuente: `Catalogo.xlsx` sincronizado con `js/app.js`.
 
-### Velas Moldes (16) — Cera de Soja artesanal
+### Velas Moldes (17) — Cera de Soja artesanal
 | # | Nombre | Archivo | Precio | Resumen |
 |---|--------|---------|--------|---------|
 | 1 | Rosa | `VM-ROSA_vela_rosa_79g.jpg` | $7.00 | Vela 79g en forma de rosa |
@@ -629,47 +629,48 @@ gh run list --limit 3   # o la API de check-runs
 | 14 | Cubo | `VM-CUBO_vela_cubo_40g.jpg` | $7.00 | Vela ritualista 40g geométrica ("la vela Cubo") |
 | 15 | Virgen del Carmen | `VM-VIRGEN_vela_virgen_del_carmen_42g.jpg` | $7.00 | Vela 42g devoción |
 | 16 | Pino Navideño | `VM-PINO_vela_pino_138g.jpg` | $14.00 | Vela 138g en forma de pino, 4 colores (álbum) |
+| 17 | Cubo Navideño | `VM-CUBO-NAVIDAD_vela_cubo_navidena_40g.jpg` | $7.00 | Vela 40g cubo de esferas, cera blanco/rojo/verde; aroma Coco Vainilla, Limón Fresh, Lavanda (colección Velas Navideñas) |
 
 ### Velas Envases (10) — Cristal y Metal
 | # | Nombre | Archivo | Precio | Resumen |
 |---|--------|---------|--------|---------|
-| 17 | Mini Petit | `VE-MINIPETIT_vela_mini_petit_123g.jpg` | $7.50 | Vela 123g, vidrio, tapa dorada |
-| 18 | Mandala | `VE-MANDALA_vela_mandala_98g.jpg` | $9.00 | Vela 98g, envase metálico |
-| 19 | Vintage | `VE-VINTAGE_vela_vintage_165g.jpg` | $9.50 | Vela 165g, tapa de corcho |
-| 20 | Petit | `VE-PETIT_vela_petit_171g.jpg` | $11.00 | Vela 171g con corazones rojos |
-| 21 | Estrella | `VE-ESTRELLA_vela_estrella_285g.jpg` | $12.00 | Vela 285g envase estrella |
-| 22 | Aura Rosa | `VE-AURA-ROSA_vela_aura_rosa_342g.jpg` | $17.00 | Vela 342g, tapa madera y rosa |
-| 23 | Aura Tulipán | `VE-AURA-TULIPAN_vela_aura_tulipan_335g.jpg` | $17.00 | Vela 335g con tulipán de cera |
-| 24 | Aura Corazones | `VE-AURA-CORAZON_vela_aura_corazones_418g.jpg` | $20.00 | Vela 418g marmoleada |
-| 25 | Armonía Canela | `VE-ARMONIA-CANELA_vela_armonia_canela_508g.jpg` | $22.00 | Vela 508g, mecha de madera |
-| 26 | Armonía Coco | `Armonia Coco.jpg` | $23.00 | Vela 516g, vidrio esmerilado |
+| 18 | Mini Petit | `VE-MINIPETIT_vela_mini_petit_123g.jpg` | $7.50 | Vela 123g, vidrio, tapa dorada |
+| 19 | Mandala | `VE-MANDALA_vela_mandala_98g.jpg` | $9.00 | Vela 98g, envase metálico |
+| 20 | Vintage | `VE-VINTAGE_vela_vintage_165g.jpg` | $9.50 | Vela 165g, tapa de corcho |
+| 21 | Petit | `VE-PETIT_vela_petit_171g.jpg` | $11.00 | Vela 171g con corazones rojos |
+| 22 | Estrella | `VE-ESTRELLA_vela_estrella_285g.jpg` | $12.00 | Vela 285g envase estrella |
+| 23 | Aura Rosa | `VE-AURA-ROSA_vela_aura_rosa_342g.jpg` | $17.00 | Vela 342g, tapa madera y rosa |
+| 24 | Aura Tulipán | `VE-AURA-TULIPAN_vela_aura_tulipan_335g.jpg` | $17.00 | Vela 335g con tulipán de cera |
+| 25 | Aura Corazones | `VE-AURA-CORAZON_vela_aura_corazones_418g.jpg` | $20.00 | Vela 418g marmoleada |
+| 26 | Armonía Canela | `VE-ARMONIA-CANELA_vela_armonia_canela_508g.jpg` | $22.00 | Vela 508g, mecha de madera |
+| 27 | Armonía Coco | `Armonia Coco.jpg` | $23.00 | Vela 516g, vidrio esmerilado |
 
 ### Joyería y Accesorios (12)
 | # | Nombre | Archivo | Precio | Categoría |
 |---|--------|---------|--------|-----------|
-| 27 | Gargantilla G-01 | `G-01_gargantilla_gold-filled_lisa.jpg` | $20.00 | Collar |
-| 28 | Gargantilla G-02 | `G-02_gargantilla_gold-filled_con_dije.jpg` | $25.00 | Collar |
-| 29 | Collar Medio C.M-01 | `C.M-01_collar_medio_eslabon_29cm.jpg` | $25.00 | Collar |
-| 30 | Collar Medio C.M-02 | `C.M-02_collar_medio_solido_34cm.jpg` | $30.00 | Collar |
-| 31 | Collar Largo C.L-01 | `C.L-01_collar_largo_40cm.jpg` | $32.00 | Collar |
-| 32 | Pulsera Infinito Azul | `P-01b_pulsera_infinito_azul.jpg` | $8.00 | Pulsera |
-| 33 | Pulsera Infinito Beige | `P-01c_pulsera_infinito_beige.jpg` | $8.00 | Pulsera |
-| 34 | Pulsera Infinito Roja | `P-01a_pulsera_infinito_roja.jpg` | $8.00 | Pulsera |
-| 35 | Pulsera San Benito | `P-02_pulsera_san_benito.jpg` | $8.00 | Pulsera |
-| 36 | Pulsera Perla | `P-03_pulsera_perla.jpg` | $6.00 | Pulsera |
-| 37 | Pulsera Ojito | `P-04_pulsera_ojito.jpg` | $6.00 | Pulsera |
-| 38 | Piedras Naturales | `D-01_dijes_piedras_naturales.jpg` | $7.00 | Accesorio |
+| 28 | Gargantilla G-01 | `G-01_gargantilla_gold-filled_lisa.jpg` | $20.00 | Collar |
+| 29 | Gargantilla G-02 | `G-02_gargantilla_gold-filled_con_dije.jpg` | $25.00 | Collar |
+| 30 | Collar Medio C.M-01 | `C.M-01_collar_medio_eslabon_29cm.jpg` | $25.00 | Collar |
+| 31 | Collar Medio C.M-02 | `C.M-02_collar_medio_solido_34cm.jpg` | $30.00 | Collar |
+| 32 | Collar Largo C.L-01 | `C.L-01_collar_largo_40cm.jpg` | $32.00 | Collar |
+| 33 | Pulsera Infinito Azul | `P-01b_pulsera_infinito_azul.jpg` | $8.00 | Pulsera |
+| 34 | Pulsera Infinito Beige | `P-01c_pulsera_infinito_beige.jpg` | $8.00 | Pulsera |
+| 35 | Pulsera Infinito Roja | `P-01a_pulsera_infinito_roja.jpg` | $8.00 | Pulsera |
+| 36 | Pulsera San Benito | `P-02_pulsera_san_benito.jpg` | $8.00 | Pulsera |
+| 37 | Pulsera Perla | `P-03_pulsera_perla.jpg` | $6.00 | Pulsera |
+| 38 | Pulsera Ojito | `P-04_pulsera_ojito.jpg` | $6.00 | Pulsera |
+| 39 | Piedras Naturales | `D-01_dijes_piedras_naturales.jpg` | $7.00 | Accesorio |
 
 ### Franelas de Algodón (7)
 | # | Nombre | Archivo | Precio | Resumen |
 |---|--------|---------|--------|---------|
-| 39 | F-01 Loto Sagrado | `F-01.jpg` | $16.00 | Franela oliva, Loto + Om |
-| 40 | F-02 Loto Sagrado | `F-02.jpg` | $16.00 | Franela negra, Loto + Om |
-| 41 | F-03 Loto Sagrado | `F-03.jpg` | $16.00 | Franela celeste, Loto + Om |
-| 42 | F-04 Ser Feliz | `F-04.jpg` | $14.00 | "Mi plan es ser Feliz / No perfecta" |
-| 43 | F-05 Hazte Caso | `F-05.jpg` | $14.00 | "La energía no miente / Hazte caso" |
-| 44 | F-06 Cool | `F-06.jpg` | $14.00 | Franela lavanda, diseño "Cool" |
-| 45 | F-07 El Amor | `F-07.jpg` | $14.00 | "El Amor / Un sentido - nuestras vidas" |
+| 40 | F-01 Loto Sagrado | `F-01.jpg` | $16.00 | Franela oliva, Loto + Om |
+| 41 | F-02 Loto Sagrado | `F-02.jpg` | $16.00 | Franela negra, Loto + Om |
+| 42 | F-03 Loto Sagrado | `F-03.jpg` | $16.00 | Franela celeste, Loto + Om |
+| 43 | F-04 Ser Feliz | `F-04.jpg` | $14.00 | "Mi plan es ser Feliz / No perfecta" |
+| 44 | F-05 Hazte Caso | `F-05.jpg` | $14.00 | "La energía no miente / Hazte caso" |
+| 45 | F-06 Cool | `F-06.jpg` | $14.00 | Franela lavanda, diseño "Cool" |
+| 46 | F-07 El Amor | `F-07.jpg` | $14.00 | "El Amor / Un sentido - nuestras vidas" |
 
 ---
 
@@ -715,7 +716,7 @@ Tipografía de títulos: **Playfair Display** (serif, cargada async con `js/font
 | `js/legal.js` | Aviso informativo de cookies (no bloqueante, dismissible) |
 | `js/dashboard.js` | Motor del Dashboard: autenticación, datos (Edge Function/local) y estado |
 | `js/dashboard-view.js` | Vista del Dashboard (pura): gráficos Bezier en Canvas y render de KPIs/tablas |
-| `sw.js` | Service Worker (Cache v52, Network-First navegación y .json/.js) |
+| `sw.js` | Service Worker (Cache v53, Network-First navegación y .json/.js) |
 | `manifest.json` | Configuración PWA e iconos |
 | `legal/` | 4 documentos legales publicados con identidad verificable (guard anti-borrador) |
 | `tests/*.test.mjs` | 47 pruebas nativas (16 sitio + 11 bot + 8 legal + 5 SW + 3 variantes + 4 schema) |
@@ -783,4 +784,4 @@ gh run list --limit 3
 
 ---
 
-*Documentación técnica actualizada al 18 de octubre de 2026. Proyecto 100% verificado en pruebas unitarias (47/47 pasadas), CI/CD (tests + Lighthouse), auditoría de producción, bloque legal publicado, bot de WhatsApp verificado E2E y despliegue activo en https://yosoy222.com — producción en **Cache v52** con el rediseño ritualista mergeado desde `redesign-ritual` con autorización expresa del dueño (commit `ee9c3b9`). La rama queda respaldada en `origin` como registro histórico.*
+*Documentación técnica actualizada al 18 de octubre de 2026. Proyecto 100% verificado en pruebas unitarias (47/47 pasadas), CI/CD (tests + Lighthouse), auditoría de producción, bloque legal publicado, bot de WhatsApp verificado E2E y despliegue activo en https://yosoy222.com — producción en **Cache v53**, con la vela **Cubo Navideño** en la colección Velas Navideñas y el rediseño ritualista mergeado desde `redesign-ritual` con autorización expresa del dueño (commit `ee9c3b9`). La rama queda respaldada en `origin` como registro histórico.*

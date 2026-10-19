@@ -36,7 +36,7 @@
     })
     .catch(() => { /* sin variantes = comportamiento actual */ });
 
-  const imgVer = 14;
+  const imgVer = 15;
   // encodeURIComponent: hay fotos heredadas con espacios en el nombre
   // ("Armonia Coco.jpg"). Los nombres limpios quedan idénticos.
   const imgUrl = (file, kind) => `images/${kind}/${encodeURIComponent(file)}?v=${imgVer}`;
@@ -60,6 +60,7 @@
   { file: "VM-CUBO_vela_cubo_40g.jpg", name: "Cubo", cat: "vela", price: 7, desc: "Vela de 40grs. en forma de Cubo. Elaborada con cera de soja en blanco, amarillo, azul, rosa Aroma: Coco Vainilla. Canela" },
   { file: "VM-VIRGEN_vela_virgen_del_carmen_42g.jpg", name: "Virgen del Carmen", cat: "vela", price: 7, desc: "Vela artesanal de 42grs. en forma de Virgen del Carmen. Elaborada con cera de soja en blanco y dorado Aroma: Coco Vainilla. Canela" },
   { file: "VM-PINO_vela_pino_138g.jpg", name: "Pino Navideño", cat: "vela", price: 14, desc: "Vela artesanal de 138grs. en forma de Pino. Elaborada con cera de soja en blanco, rojo y verde. Aroma: Canela, Lavanda, Limón Fresh.", season: "navidad" },
+  { file: "VM-CUBO-NAVIDAD_vela_cubo_navidena_40g.jpg", name: "Cubo Navideño", cat: "vela", price: 7, desc: "Vela de 40gr en forma de cubo, elaborado con cera de soja en blanco, rojo y verde. Aroma: Coco Vainilla, Limón Fresh, Lavanda.", season: "navidad" },
   // === VELAS ENVASES (hoja: Velas Envases) ===
   { file: "VE-MINIPETIT_vela_mini_petit_123g.jpg", name: "Mini Petit", cat: "vela", price: 7.5, desc: "Vela artesanal de 123grs. Elaborado en envase de vidrio transparente, con tapa metalica dorada. Contiene una base de cera de soja blanca. Aroma: Coco Vainilla" },
   { file: "VE-MANDALA_vela_mandala_98g.jpg", name: "Mandala", cat: "vela", price: 9, desc: "Vela artesanal de 98grs. Elaborada en envase de metal decorativo. Contiene cera blanca. Aroma: limón Fresh" },
@@ -69,6 +70,7 @@
   { file: "VE-AURA-ROSA_vela_aura_rosa_342g.jpg", name: "Aura Rosa", cat: "vela", price: 17, desc: "Vela artesanal de 342grs. Elaborado en envase de vidrio transparente con tapa de madera. Contiene una base de cera de soja blanca, con rosa pequeña en superficie. Aroma: Jazmin" },
   { file: "VE-AURA-TULIPAN_vela_aura_tulipan_335g.jpg", name: "Aura Tulipán", cat: "vela", price: 17, desc: "Vela artesanal de 335grs. Elaborado en envase de vidrio transparente con tapa de madera. Contiene una base de cera de soja blanca, con tulipan pequeña en superficie. Aroma: Coco Vainilla" },
   { file: "VE-AURA-CORAZON_vela_aura_corazones_418g.jpg", name: "Aura Corazones", cat: "vela", price: 20, desc: "Vela artesanal de 418grs. Elaborado en envase de vidrio transparente con tapa de madera. Contiene una base de cera de soja marmoleada con blanco y rosa con corazones rojos en superficie. Aroma: Coco Vainilla" },
+  { file: "VE-AURA-NAVIDAD_vela_aura_navidena_409g.jpg", name: "Aura Navidad", cat: "vela", price: 20, desc: "Vela artesanal de 409grs. Elaborado en envase de vidrio transparente con tapa de madera. Contiene una base de cera de Soja en blanco, marrón y rojo con mini corazones rojos y verdes en superficie. Aroma: coco vainilla.", season: "navidad" },
   { file: "VE-ARMONIA-CANELA_vela_armonia_canela_508g.jpg", name: "Armonía Canela", cat: "vela", price: 22, desc: "Vela artesanal de 508grs. Elaborado en envase de vidrio opaco con tapa de MDF. Contiene una base de cera de soja color canela y mecha de madera. Aroma: Canela" },
   { file: "Armonia Coco.jpg", name: "Armonía Coco", cat: "vela", price: 23, desc: "Vela artesanal de 516grs. Elaborado en envase de vidrio opaco con tapa de MDF. Contiene una base de cera de soja blanca. Aroma: Coco" },
   // === COLLARES / PULSERAS / ACCESORIOS (hoja: Gargantillas y Pulseras) ===

@@ -122,6 +122,14 @@ def main():
     with open(APP_JS, 'r', encoding='utf-8') as f:
         js_content = f.read()
 
+    # v=? de las imágenes: se lee de app.js (const imgVer = N) para que el HTML
+    # prerenderizado nunca quede desincronizado del catálogo cliente.
+    ver_match = re.search(r'const\s+imgVer\s*=\s*(\d+)', js_content)
+    if not ver_match:
+        print("Error: no se encontró 'const imgVer = N' en app.js", file=sys.stderr)
+        sys.exit(1)
+    img_ver = int(ver_match.group(1))
+
     # Extraer array products
     start = js_content.find('const products = [')
     if start == -1:
@@ -156,7 +164,7 @@ def main():
         card = (
             f'          <article class="product-card" data-index="{i}">\n'
             f'          <button type="button" class="product-image" data-name="{escape_html(name)}" aria-label="Ampliar imagen de {escape_html(name)}">\n'
-            f'            <img src="images/thumbs/{escape_html(image_path(file))}?v=14" alt="{escape_html(name)} artesanal" width="480" height="480" loading="lazy" decoding="async">\n'
+            f'            <img src="images/thumbs/{escape_html(image_path(file))}?v={img_ver}" alt="{escape_html(name)} artesanal" width="480" height="480" loading="lazy" decoding="async">\n'
             f'          </button>\n'
             f'          <div class="product-info">\n'
             f'            <h3>{escape_html(name)}</h3>\n'
