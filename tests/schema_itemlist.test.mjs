@@ -64,7 +64,7 @@ test('SCHEMA: cada Product lleva imagen absoluta y oferta en USD con disponibili
   }
 });
 
-test('SCHEMA: el catálogo y el ItemList no se desincronizan (47 tarjetas)', () => {
+test('SCHEMA: el catálogo y el ItemList no se desincronizan (49 tarjetas)', () => {
   const cards = html.match(/class="product-card"/g) || [];
   assert.equal(cards.length, productsFromApp().length);
   assert.equal(cards.length, itemListBlocks()[0].numberOfItems);

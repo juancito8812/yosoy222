@@ -36,7 +36,7 @@
     })
     .catch(() => { /* sin variantes = comportamiento actual */ });
 
-  const imgVer = 15;
+  const imgVer = 17;
   // encodeURIComponent: hay fotos heredadas con espacios en el nombre
   // ("Armonia Coco.jpg"). Los nombres limpios quedan idénticos.
   const imgUrl = (file, kind) => `images/${kind}/${encodeURIComponent(file)}?v=${imgVer}`;
@@ -58,6 +58,8 @@
   { file: "VM-CORAZON_vela_corazon_182g.jpg", name: "Corazón", cat: "vela", price: 13.5, desc: "Vela artesanal de 182grs. en forma de Corazón. Elaborada con cera de soja en blanco, rosa, rojo Aroma: Coco Vainilla. Lavanda, Limon Fresh." },
   { file: "VM-CRUZ_vela_cruz_con_paloma_52g.jpg", name: "Cruz con Paloma", cat: "vela", price: 7, desc: "Vela artesanal de 52grs. en forma de Cruz con palomita. Elaborada con cera de soja en blanco con rosa, amarillo, azul Aroma: Coco Vainilla. Jazmin" },
   { file: "VM-CUBO_vela_cubo_40g.jpg", name: "Cubo", cat: "vela", price: 7, desc: "Vela de 40grs. en forma de Cubo. Elaborada con cera de soja en blanco, amarillo, azul, rosa Aroma: Coco Vainilla. Canela" },
+  { file: "VM-ONDULADA_vela_ondulada_40g.jpg", name: "Ondulada Fé y Familia", cat: "vela", price: 6, desc: "Vela artesanal de 40grs. en forma ondulada. Elaborada con cera de soja en blanco con letras doradas. Modelos: Fé y Familia. Aroma: Coco Vainilla, Limón Fresh, Lavanda." },
+  { file: "VM-VIRGEN-VALLE_vela_virgen_del_valle_32g.jpg", name: "Virgen del Valle", cat: "vela", price: 7, desc: "Vela artesanal de 32grs. en forma de Virgen del Valle. Elaborada con cera de soja en blanco con detalles dorados. Aroma: Coco Vainilla, Limón Fresh, Lavanda." },
   { file: "VM-VIRGEN_vela_virgen_del_carmen_42g.jpg", name: "Virgen del Carmen", cat: "vela", price: 7, desc: "Vela artesanal de 42grs. en forma de Virgen del Carmen. Elaborada con cera de soja en blanco y dorado Aroma: Coco Vainilla. Canela" },
   { file: "VM-PINO_vela_pino_138g.jpg", name: "Pino Navideño", cat: "vela", price: 14, desc: "Vela artesanal de 138grs. en forma de Pino. Elaborada con cera de soja en blanco, rojo y verde. Aroma: Canela, Lavanda, Limón Fresh.", season: "navidad" },
   { file: "VM-CUBO-NAVIDAD_vela_cubo_navidena_40g.jpg", name: "Cubo Navideño", cat: "vela", price: 7, desc: "Vela de 40gr en forma de cubo, elaborado con cera de soja en blanco, rojo y verde. Aroma: Coco Vainilla, Limón Fresh, Lavanda.", season: "navidad" },
