@@ -51,10 +51,13 @@ WhatsApp en `#075E36` (7.88:1 AAA) y todos los textos a ≥12px (`d49ba51`).
 ## Lighthouse en CI
 
 El workflow `ci.yml` incluye el job `lighthouse`: sirve el repo con
-`http.server`, audita con Lighthouse 12 (móvil, 3 reintentos ante fallos de
-infraestructura) y valida con `scripts/lighthouse_check.py` contra estos
-umbrales. El reporte JSON queda como artefacto del job y los fallos de umbral
-emiten annotations `::error::` con el delta por categoría.
+`http.server` y audita con Lighthouse 12 (móvil). Hace 3 mediciones y valida la
+mejor: el TBT de los runners compartidos oscila entre 0 ms y ~600 ms y una sola
+corrida genera falsos rojos (se han visto 55–90 con el mismo código). Un
+rendimiento real degradado empeora las 3. Valida con
+`scripts/lighthouse_check.py` contra estos umbrales. El reporte JSON queda como
+artefacto del job y los fallos de umbral emiten annotations `::error::` con el
+delta por categoría.
 
 | Categoría | Umbral CI | Baseline producción |
 |---|---|---|
