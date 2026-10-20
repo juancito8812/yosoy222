@@ -36,7 +36,7 @@
     })
     .catch(() => { /* sin variantes = comportamiento actual */ });
 
-  const imgVer = 22;
+  const imgVer = 23;
   // encodeURIComponent: hay fotos heredadas con espacios en el nombre
   // ("Armonia Coco.jpg"). Los nombres limpios quedan idénticos.
   const imgUrl = (file, kind) => `images/${kind}/${encodeURIComponent(file)}?v=${imgVer}`;
