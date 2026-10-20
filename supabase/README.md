@@ -145,3 +145,28 @@ aplicar `scripts/supabase_rls.sql`.
   `SESSION_SECRET` vía API de Management (`POST /v1/projects/{ref}/secrets`); verificado:
   login con credenciales nuevas ✓ (token 120 min), `stats` con token ✓ (235 filas),
   control negativo 401 ✓. La contraseña no queda registrada en ningún archivo.
+
+## Grants para tablas NUEVAS (cambio de Supabase, 30-oct-2026)
+
+Desde el **30 de octubre de 2026** Supabase ya **no otorga permisos automáticos por
+Data API** (PostgREST / supabase-js / GraphQL) a las tablas creadas en `public`.
+Las tablas existentes conservan sus permisos; una tabla nueva nace **sin grants** y
+cualquier llamada devuelve `42501 permission denied for table <tabla>` (HTTP 403),
+**aunque la RLS esté correctamente configurada**.
+
+En este proyecto la base es `service_role`-only, así que el único rol que necesita
+acceso es `service_role`:
+
+```sql
+alter table public.<tabla> enable row level security;
+grant select, insert, update, delete on public.<tabla> to service_role;
+revoke all on public.<tabla> from anon, authenticated;
+```
+
+Red de seguridad (ejecutar una vez en el SQL Editor, idempotente, no toca tablas
+existentes): `scripts/supabase_grants_nuevas_tablas.sql` — deja los `alter default
+privileges` para que las tablas futuras hereden el grant y trae la plantilla a copiar.
+
+Recordatorio: **GRANT y RLS son capas distintas** — sin GRANT el 403 llega antes de
+evaluar la RLS; con GRANT y RLS cerrada el resultado es `0 filas`. Se necesitan ambas.
+
