@@ -3,25 +3,25 @@
    Offline caching for PWA
    ============================================ */
 
-const CACHE_NAME = 'yosoy222-v61';
+const CACHE_NAME = 'yosoy222-v62';
 
 // Assets to precache on install (offline shell + LCP images)
 const PRECACHE_ASSETS = [
   '/',
   '/index.html',
   '/dashboard.html',
-  '/css/style.css?v=61',
-  '/css/dashboard.css?v=61',
-  '/css/legal.css?v=61',
-  '/js/config.js?v=61',
-  '/js/font-flip.js?v=61',
-  '/js/shared.js?v=61',
-  '/js/analytics.js?v=61',
-  '/js/cart.js?v=61',
-  '/js/app.js?v=61',
-  '/js/legal.js?v=61',
-  '/js/dashboard.js?v=61',
-  '/js/dashboard-view.js?v=61',
+  '/css/style.css?v=62',
+  '/css/dashboard.css?v=62',
+  '/css/legal.css?v=62',
+  '/js/config.js?v=62',
+  '/js/font-flip.js?v=62',
+  '/js/shared.js?v=62',
+  '/js/analytics.js?v=62',
+  '/js/cart.js?v=62',
+  '/js/app.js?v=62',
+  '/js/legal.js?v=62',
+  '/js/dashboard.js?v=62',
+  '/js/dashboard-view.js?v=62',
   '/legal/terminos.html',
   '/legal/privacidad.html',
   '/legal/envios.html',
