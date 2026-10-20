@@ -170,3 +170,12 @@ privileges` para que las tablas futuras hereden el grant y trae la plantilla a c
 Recordatorio: **GRANT y RLS son capas distintas** — sin GRANT el 403 llega antes de
 evaluar la RLS; con GRANT y RLS cerrada el resultado es `0 filas`. Se necesitan ambas.
 
+**Aplicado en producción el 20-oct-2026.** Resultado en `pg_default_acl` (rol
+`postgres`): tablas `postgres=arwdDxtm | service_role=arwdDxtm` (anon y authenticated
+sin acceso), secuencias y funciones solo `service_role`. **Límite conocido:** existe
+una segunda ACL por defecto en `public` propiedad de `supabase_admin` que `postgres`
+no puede modificar (`42501 permission denied to change default privileges`); las tablas
+creadas como `postgres` (SQL Editor, migraciones) sí heredan lo correcto, pero cualquier
+objeto creado como `supabase_admin` necesita el `grant`/`revoke` explícito.
+
+
