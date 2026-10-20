@@ -31,21 +31,27 @@ def neutralize(im):
     return Image.fromarray(np.clip(a * gain, 0, 255).astype(np.uint8))
 
 
-def template(im, cx, size=900, ratio=3 / 2):
+def template(im, cx, size=900, ratio=1.2, inset=0.935):
+    """Blur de la misma escena + foto nítida insertada con margen en los 4 lados.
+
+    Geometría medida en el catálogo existente: la foto nítida ocupa ~93,5 %
+    del ancho (≈29 px de blur a cada lado) y se centra verticalmente.
+    """
     w, h = im.size
     side = min(w, h)
     bg = im.crop(((w - side) // 2, 0, (w + side) // 2, side))
     bg = bg.resize((size, size), Image.LANCZOS).filter(ImageFilter.GaussianBlur(30))
     bg = ImageEnhance.Brightness(bg).enhance(0.96)
 
-    band_w = min(w, int(h * ratio))
-    left = max(0, min(cx - band_w // 2, w - band_w))
-    band = im.crop((left, 0, left + band_w, h))
-    band = band.resize((size, int(size * h / band_w)), Image.LANCZOS)
-    band = band.filter(ImageFilter.UnsharpMask(radius=1.4, percent=45, threshold=3))
+    crop_w = min(w, int(h * ratio))
+    left = max(0, min(cx - crop_w // 2, w - crop_w))
+    fg = im.crop((left, 0, left + crop_w, h))
+    fg_w = int(size * inset)
+    fg = fg.resize((fg_w, int(fg_w * h / crop_w)), Image.LANCZOS)
+    fg = fg.filter(ImageFilter.UnsharpMask(radius=1.4, percent=45, threshold=3))
 
     canvas = bg.copy()
-    canvas.paste(band, (0, (size - band.height) // 2))
+    canvas.paste(fg, ((size - fg.width) // 2, (size - fg.height) // 2))
     return canvas
 
 
