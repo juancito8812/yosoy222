@@ -45,6 +45,17 @@ alter default privileges for role postgres in schema public
 -- Verificación (solo lectura). Debe devolver 0 filas.
 -- Cualquier tabla listada es inaccesible por Data API para service_role.
 -- ---------------------------------------------------------------------------
+-- ⚠️ LÍMITE CONOCIDO (aplicado en producción el 2026-10-20): el proyecto tiene
+-- una SEGUNDA ACL por defecto en `public` propiedad de `supabase_admin`
+-- (tablas anon=arwdDxtm, secuencias anon=rwU). `postgres` NO puede cambiarla:
+--   alter default privileges for role supabase_admin ... → 42501 permission denied
+-- Las tablas creadas desde el SQL Editor / migraciones corren como `postgres`
+-- y sí heredan el bloque de arriba; si algo se crea como `supabase_admin`,
+-- aplicar el grant/revoke explícito de la plantilla (no confiar en el default).
+-- Verificación:
+--   select defaclrole::regrole, defaclobjtype, defaclacl
+--     from pg_default_acl where defaclnamespace = 'public'::regnamespace;
+-- ---------------------------------------------------------------------------
 do $$
 declare
   faltantes text;
