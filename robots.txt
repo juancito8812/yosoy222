@@ -1,4 +1,7 @@
 User-agent: *
 Allow: /
+Disallow: /dashboard.html
+Disallow: /sw.js
+Disallow: /manifest.json
 
 Sitemap: https://yosoy222.com/sitemap.xml
